@@ -3,4 +3,4 @@
 
 # environment files
 .env
-.env.*
+.env.dev
