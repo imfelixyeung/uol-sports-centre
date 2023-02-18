@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "format:fix": "prettier --config prettier.config.cjs --ignore-path .prettierignore --write .",
+    "format:check": "prettier --config prettier.config.cjs --ignore-path .prettierignore --check ."
   },
   "dependencies": {
     "next": "13.1.6",
