@@ -1,0 +1,6 @@
+# Mac
+.DS_Store
+
+# environment files
+.env
+.env.dev

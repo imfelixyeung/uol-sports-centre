@@ -1,0 +1,33 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  web-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+        working-directory: ./services/web
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./services/web
+
+      - name: Check formatting
+        run: pnpm run format:check
+        working-directory: ./services/web
+
+      - name: Lint code base
+        run: pnpm run lint
+        working-directory: ./services/web

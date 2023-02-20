@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  web:
+    build: ./services/web
+    environment:
+      - PORT=80
+      - HOST=web
+    networks:
+      - network
+
+  gateway:
+    build: ./gateway
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:80"
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
