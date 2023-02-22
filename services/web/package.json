@@ -5,10 +5,15 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "next lint",
+    "lint": "gts lint",
     "start": "next start",
-    "format:fix": "prettier --config prettier.config.cjs --ignore-path .prettierignore --write .",
-    "format:check": "prettier --config prettier.config.cjs --ignore-path .prettierignore --check ."
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "pnpm compile",
+    "pretest": "pnpm compile",
+    "posttest": "pnpm lint",
+    "ci": "pnpm lint"
   },
   "dependencies": {
     "next": "13.1.6",
@@ -30,7 +35,8 @@
     "prettier": "^2.8.1",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "tailwindcss": "^3.2.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "gts": "^3.1.1"
   },
   "ct3aMetadata": {
     "initVersion": "7.5.4"
