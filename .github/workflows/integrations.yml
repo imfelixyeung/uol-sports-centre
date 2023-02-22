@@ -24,10 +24,6 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./services/web
 
-      - name: Check formatting
-        run: pnpm run format:check
-        working-directory: ./services/web
-
-      - name: Lint code base
-        run: pnpm run lint
+      - name: Lint code base with GTS
+        run: pnpm run ci
         working-directory: ./services/web
