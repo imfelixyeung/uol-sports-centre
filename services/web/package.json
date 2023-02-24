@@ -8,11 +8,7 @@
     "lint": "gts lint",
     "start": "next start",
     "clean": "gts clean",
-    "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "pnpm compile",
-    "pretest": "pnpm compile",
-    "posttest": "pnpm lint",
     "ci": "pnpm lint"
   },
   "dependencies": {
