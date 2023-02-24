@@ -1,5 +1,5 @@
 import express from 'express';
-import {env} from './env/index.mjs';
+import {env} from './env/index.js';
 
 const app = express();
 
