@@ -14,6 +14,19 @@ services:
       - ./services/web:/app
       - /app/node_modules
 
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=80
+      - HOST=auth
+    networks:
+      - network
+    volumes:
+      - ./services/auth:/app
+      - /app/node_modules
+
   gateway:
     build: ./gateway
     env_file:

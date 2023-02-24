@@ -6,13 +6,10 @@
   "scripts": {
     "lint": "gts lint",
     "clean": "gts clean",
-    "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "npm run compile",
-    "pretest": "npm run compile",
     "posttest": "npm run lint",
     "start": "tsx src/index.mts",
-    "dev": "tsx watch src/index.mts"
+    "dev": "tsx watch --clear-screen=false src/index.mts"
   },
   "keywords": [],
   "author": "",
