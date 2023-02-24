@@ -9,7 +9,7 @@ export const safeEnv = envSchema.safeParse(process.env);
 
 if (!safeEnv.success) {
   console.log('Error while parsing env', safeEnv.error);
-  process.exit(1);
+  throw new Error('Failed to parse env');
 }
 
 export const env = safeEnv.data;
