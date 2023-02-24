@@ -14,10 +14,6 @@ services:
     environment:
       - PORT=80
       - HOST=auth
-    env_file:
-      - .env
-    ports:
-      - "${APP_PORT}:80"
     networks:
       - network
 
