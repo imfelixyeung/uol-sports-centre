@@ -1,13 +1,10 @@
 import express from 'express';
 import {env} from './env';
+import authRouter from './routers/auth';
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello World',
-  });
-});
+app.use('', authRouter);
 
 const {PORT, HOST} = env;
 
