@@ -19,3 +19,7 @@ Registers a user with email password
 ### `/session`
 
 Validates a session and returns the decoded session
+
+### `/health`
+
+Health check endpoint
