@@ -1,13 +1,10 @@
 import express from 'express';
 import {env} from './env/index.js';
+import reportRouter from './routers/report.js';
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello World',
-  });
-});
+app.use('/report', reportRouter);
 
 const {PORT, HOST} = env;
 
