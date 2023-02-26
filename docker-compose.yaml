@@ -16,6 +16,14 @@ services:
       - HOST=auth
     networks:
       - network
+  
+  status:
+    build: ./services/status
+    environment:
+      - PORT=80
+      - HOST=status
+    networks:
+      - network
 
   gateway:
     build: ./gateway
