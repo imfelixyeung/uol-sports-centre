@@ -9,7 +9,7 @@
     "clean": "gts clean",
     "fix": "gts fix",
     "start": "tsx src/index.ts",
-    "dev": "tsx watch --clear-- screen=false src/index.ts"
+    "dev": "tsx watch --clear-screen=false src/index.ts"
   },
   "keywords": [],
   "author": "",
