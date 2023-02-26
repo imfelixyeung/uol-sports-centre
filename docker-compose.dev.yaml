@@ -27,6 +27,19 @@ services:
       - ./services/auth:/app
       - /app/node_modules
   
+  users:
+    build:
+      context: ./services/users
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=80
+      - HOST=users
+    networks:
+      - network
+    volumes:
+      - ./services/users:/app
+      - /app/node_modules
+
   status:
     build:
       context: ./services/status
