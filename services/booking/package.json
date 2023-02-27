@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "winston": "^3.8.2",
     "zod": "^3.20.6"
   },
   "devDependencies": {
