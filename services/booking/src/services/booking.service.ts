@@ -1,5 +1,4 @@
-type CreateBookingDTO = {};
-type UpdateBookingDTO = {};
+import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
 
 class BookingService {
   async create(resource: CreateBookingDTO) {}
