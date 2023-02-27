@@ -9,6 +9,14 @@ services:
     networks:
       - network
 
+  booking:
+    build: ./services/booking
+    environment:
+      - PORT=80
+      - HOST=booking
+    networks:
+      - network
+
   gateway:
     build: ./gateway
     env_file:
