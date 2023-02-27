@@ -7,8 +7,17 @@ from app import app
 def getFacility(id):
     return
 
+# API call to return the name of every facility with its related ID
+@app.route('/getAllFacilities', methods=['GET', 'POST'])
+def getAllFacilities():
+    return
 
 # API call to update a facility based on ID
 @app.route('/updateFacility/<int:id>', methods=['GET', 'POST'])
 def updateFacility(id):
+    return
+
+# API call to add a facility to the database
+@app.route('/addFacility', methods=['GET', 'POST'])
+def addFacility():
     return
