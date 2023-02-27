@@ -45,7 +45,7 @@ paths:
           $ref: "#/components/responses/JWT"
 
   /auth/session:
-    post:
+    get:
       description: "Validates a JWT, returning it's contents if valid"
 
       security:
@@ -58,6 +58,22 @@ paths:
   /auth/health:
     get:
       description: "Returns the health of the auth service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+  /status/report:
+    get:
+      description: "Returns the status report of the system"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/ServiceStatusReport"
+
+  /status/health:
+    get:
+      description: "Returns the health of the status service"
 
       responses:
         "200":
@@ -125,3 +141,28 @@ components:
                   - "up"
                   - "down"
                   - "degraded"
+
+    ServiceStatusReport:
+      description: Status report of the system
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service:
+                  type: string
+                  description: "The id of the service"
+                  example: "auth"
+                status:
+                  type: string
+                  description: "The status of the system"
+                  enum:
+                    - "up"
+                    - "down"
+                    - "degraded"
+                timestamp:
+                  type: number
+                  description: "The milliseconds since epoch"
+                  example: 1680307200000
