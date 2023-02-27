@@ -25,6 +25,14 @@ services:
     networks:
       - network
 
+  users:
+    build: ./services/users
+    environment:
+      - PORT=80
+      - HOST=users
+    networks:
+      - network
+  
   gateway:
     build: ./gateway
     env_file:
