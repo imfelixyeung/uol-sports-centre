@@ -2,7 +2,7 @@
 Provides functionality for making payments for subscriptions'''
 import stripe
 from flask import Flask
-
+# test
 app = Flask(__name__)
 
 stripe.api_key = "APIKEY"
