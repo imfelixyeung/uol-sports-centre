@@ -10,3 +10,118 @@ paths:
       responses:
         "200":
           description: OK
+
+  /auth/login:
+    post:
+      description: "Logs a user into the system, returning a JWT if successful."
+
+      requestBody:
+        $ref: "#/components/requestBodies/Credentials"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
+  /auth/logout:
+    post:
+      description: "Logs a user out of the system, invalidating their JWT"
+
+      security:
+        - JWT: []
+
+      responses:
+        "200":
+          description: "OK"
+
+  /auth/register:
+    post:
+      description: "Registers a user into the system, returning a JWT if successful."
+
+      requestBody:
+        $ref: "#/components/requestBodies/Credentials"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
+  /auth/session:
+    post:
+      description: "Validates a JWT, returning it's contents if valid"
+
+      security:
+        - JWT: []
+
+      responses:
+        "200":
+          $ref: "#/components/responses/DecodedJWT"
+
+  /auth/health:
+    get:
+      description: "Returns the health of the auth service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  requestBodies:
+    Credentials:
+      description: "User's credentials (email password)"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: "The user's email"
+              password:
+                type: string
+                description: "The user's password"
+  responses:
+    JWT:
+      description: JSON Web Token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: JWT
+
+    DecodedJWT:
+      description: JSON Web Token decoded contents
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              sub:
+                type: string
+                description: User's unique ID
+              email:
+                type: string
+                description: User's email
+
+    HealthCheck:
+      description: Health check successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The health status of the service"
+                enum:
+                  - "up"
+                  - "down"
+                  - "degraded"
