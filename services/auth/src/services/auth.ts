@@ -2,15 +2,15 @@ import jwt from 'jsonwebtoken';
 import {Credentials} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
-import {db} from '../utils/db';
 import {env} from '../env';
 import {User} from '@prisma/client';
 import {randomUUID} from 'crypto';
+import {UserRegistry} from '../persistence/users';
 
 export const signInWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
 
-  const user = await db.user.findUnique({where: {email}});
+  const user = await UserRegistry.getUserByEmail(email);
 
   if (!user) {
     // user not found
@@ -34,7 +34,7 @@ export const signInWithCredentials = async (credentials: Credentials) => {
 export const registerWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
 
-  const user = await db.user.findUnique({where: {email}});
+  const user = await UserRegistry.getUserByEmail(email);
 
   if (user) {
     // user already exists
@@ -44,11 +44,9 @@ export const registerWithCredentials = async (credentials: Credentials) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // create user
-  const newUser = await db.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-    },
+  const newUser = await UserRegistry.createUser({
+    email,
+    password: hashedPassword,
   });
 
   // success, create token
