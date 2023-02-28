@@ -9,8 +9,9 @@
     "clean": "gts clean",
     "fix": "gts fix",
     "posttest": "npm run lint",
-    "start": "tsx src/index.ts",
-    "dev": "tsx watch --clear-screen=false src/index.ts"
+    "start": "pnpm db:push && tsx src/index.ts",
+    "dev": "pnpm db:push && tsx watch --clear-screen=false src/index.ts",
+    "db:push": "prisma db push"
   },
   "keywords": [],
   "author": "",
