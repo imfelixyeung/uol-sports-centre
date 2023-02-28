@@ -1,0 +1,48 @@
+import jwt from 'jsonwebtoken';
+import {env} from '../env';
+import {randomUUID} from 'crypto';
+import {User} from '@prisma/client';
+import {db} from '../utils/db';
+import dayjs from 'dayjs';
+
+export class TokenRegistry {
+  static async createTokenForUser(user: User) {
+    const tokenId = randomUUID();
+
+    const token = jwt.sign(
+      {email: user.email, type: 'access'},
+      env.JWT_SIGNING_SECRET,
+      {
+        subject: user.id,
+        algorithm: 'HS256',
+        expiresIn: '1h',
+        issuer: 'auth',
+        jwtid: tokenId,
+      }
+    );
+
+    await db.token.create({
+      data: {
+        id: tokenId,
+        token: token,
+        expiresAt: dayjs().add(1, 'hour').toDate(),
+        user: {connect: {id: user.id}},
+      },
+    });
+
+    return token;
+  }
+
+  static async getTokenDataByToken(token: string) {
+    const decoded = jwt.decode(token, {json: true});
+    const tokenId = decoded?.jti;
+
+    if (!tokenId) throw new Error('Malformed token');
+
+    const tokenData = await db.token.findUnique({
+      where: {id: tokenId},
+    });
+
+    return tokenData;
+  }
+}

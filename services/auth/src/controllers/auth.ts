@@ -24,7 +24,7 @@ const postLogin = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      token,
+      data: token,
     });
   } catch (error) {
     console.log(error);
@@ -66,7 +66,7 @@ const postRegister = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      token,
+      data: token,
     });
   } catch (error) {
     console.log(error);
@@ -90,7 +90,7 @@ const getSession = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      session,
+      data: session,
     });
   } catch (error) {
     return res.status(401).json({

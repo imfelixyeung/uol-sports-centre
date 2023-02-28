@@ -3,9 +3,9 @@ import {Credentials} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
 import {env} from '../env';
-import {User} from '@prisma/client';
-import {randomUUID} from 'crypto';
 import {UserRegistry} from '../persistence/users';
+import {TokenRegistry} from '../persistence/tokens';
+import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
 
 export const signInWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
@@ -27,8 +27,12 @@ export const signInWithCredentials = async (credentials: Credentials) => {
   }
 
   // success, create token
-  const token = createTokenFromUser(user);
-  return token;
+  const token = await TokenRegistry.createTokenForUser(user);
+  const refreshToken = await RefreshTokenRegistry.createRefreshTokenForToken(
+    token
+  );
+
+  return {token, refreshToken};
 };
 
 export const registerWithCredentials = async (credentials: Credentials) => {
@@ -50,7 +54,7 @@ export const registerWithCredentials = async (credentials: Credentials) => {
   });
 
   // success, create token
-  const token = createTokenFromUser(newUser);
+  const token = TokenRegistry.createTokenForUser(newUser);
   return token;
 };
 
@@ -66,16 +70,4 @@ export const getSessionFromToken = async (token: JsonWebToken) => {
 export const signOutToken = async (token: JsonWebToken) => {
   // todo: invalidate refresh tokens associated with this token
   return null;
-};
-
-const createTokenFromUser = (user: User) => {
-  const token = jwt.sign({email: user.email}, env.JWT_SIGNING_SECRET, {
-    subject: user.id,
-    algorithm: 'HS256',
-    expiresIn: '1d',
-    issuer: 'auth',
-    jwtid: randomUUID(),
-  });
-
-  return token;
 };
