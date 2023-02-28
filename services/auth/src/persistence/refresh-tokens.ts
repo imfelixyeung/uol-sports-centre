@@ -10,13 +10,17 @@ export class RefreshTokenRegistry {
 
     if (!tokenData) throw new Error('Token not found');
 
-    const refreshToken = jwt.sign({type: 'refresh'}, env.JWT_SIGNING_SECRET, {
-      jwtid: tokenData.id,
-      subject: tokenData.userId,
-      algorithm: 'HS256',
-      expiresIn: '24h',
-      issuer: 'auth',
-    });
+    const refreshToken = jwt.sign(
+      {type: 'refresh'},
+      env.JWT_REFRESH_SIGNING_SECRET,
+      {
+        jwtid: tokenData.id,
+        subject: tokenData.userId,
+        algorithm: 'HS256',
+        expiresIn: '24h',
+        issuer: 'auth',
+      }
+    );
 
     await db.refreshToken.create({
       data: {

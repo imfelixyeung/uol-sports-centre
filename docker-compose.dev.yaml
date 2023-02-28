@@ -22,6 +22,7 @@ services:
       - PORT=80
       - HOST=auth
       - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
       - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
