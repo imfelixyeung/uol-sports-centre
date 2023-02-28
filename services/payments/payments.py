@@ -5,7 +5,7 @@ from flask import Flask
 # test
 app = Flask(__name__)
 
-stripe.api_key = "test_key"
+stripe.api_key = "apikey"
 #stripe.product.create(
     #To Do: create products for bookings and subscriptions
 #)
@@ -22,11 +22,20 @@ customer = stripe.Customer.create(
 
 #Creating a test card for our use
 card = {
-    "number": "1234567890123456",
+    "number": "4242424242424242",
     "exp_month": 12,
     "exp_year": 2024,
     "cvc": "123"
 }
+
+stripe.checkout.Session.create(
+    success_url = 'https://example.com/',
+    mode = "subscription",
+    line_items = [{
+        "quantity": 1,
+        "price": "price_1MgZPvDun2r5uAIS4e80HNl5",
+    }],
+)
 
 @app.route("/checkout-session", methods=['POST'])
 def createCheckout():
