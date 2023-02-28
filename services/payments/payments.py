@@ -5,7 +5,7 @@ from flask import Flask
 # test
 app = Flask(__name__)
 
-stripe.api_key = "sk_test_51MgYvJDun2r5uAISiltspozIO7k5uU7em0iQhMpyIoey6EG0KKgDEU9fIFAB0z16l3cReky9Nrqpua4yGApiyGEu00pkoQjpEy"
+stripe.api_key = "test_key"
 #stripe.product.create(
     #To Do: create products for bookings and subscriptions
 #)
