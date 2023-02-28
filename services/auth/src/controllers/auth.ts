@@ -19,12 +19,20 @@ const postLogin = async (req: Request, res: Response) => {
 
   const credentials = credentialsData.data;
 
-  const token = await signInWithCredentials(credentials);
+  try {
+    const token = await signInWithCredentials(credentials);
 
-  return res.json({
-    success: true,
-    token,
-  });
+    return res.json({
+      success: true,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
+      success: false,
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };
 
 const postLogout = async (req: Request, res: Response) => {
@@ -53,12 +61,20 @@ const postRegister = async (req: Request, res: Response) => {
 
   const credentials = credentialsData.data;
 
-  const token = await registerWithCredentials(credentials);
+  try {
+    const token = await registerWithCredentials(credentials);
 
-  return res.json({
-    success: true,
-    token,
-  });
+    return res.json({
+      success: true,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
+      success: false,
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };
 
 const getSession = async (req: Request, res: Response) => {
