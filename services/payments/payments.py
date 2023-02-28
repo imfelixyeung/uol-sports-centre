@@ -2,10 +2,10 @@
 Provides functionality for making payments for subscriptions'''
 import stripe
 from flask import Flask
-
+# test
 app = Flask(__name__)
 
-stripe.api_key = "APIKEY"
+stripe.api_key = "apikey"
 #stripe.product.create(
     #To Do: create products for bookings and subscriptions
 #)
@@ -14,17 +14,40 @@ stripe.api_key = "APIKEY"
     #and bookings
 #)
 
+#Creating a test customer
+customer = stripe.Customer.create(
+    email = "examplecustomer@example.com",
+    name = "Minoru Kishinami"
+)
+
+#Creating a test card for our use
+card = {
+    "number": "4242424242424242",
+    "exp_month": 12,
+    "exp_year": 2024,
+    "cvc": "123"
+}
+
+stripe.checkout.Session.create(
+    success_url = 'https://example.com/',
+    mode = "subscription",
+    line_items = [{
+        "quantity": 1,
+        "price": "price_1MgZPvDun2r5uAIS4e80HNl5",
+    }],
+)
+
 @app.route("/checkout-session", methods=['POST'])
 def createCheckout():
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     checkoutSession = stripe.checkout.Session.create(
         successUrl = "paymentSuccessPage",
+        mode = 'subscription',
         line_items=[
         {
-            "price": "subscriptionPage",
+            "price": "price_1MgZPvDun2r5uAIS4e80HNl5",
             "quantity": 1
         },],
-        mode = 'subscription',
     )
 
 @app.route('/webhook', methods=['POST'])
