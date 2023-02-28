@@ -5,15 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "posttest": "npm run lint",
-    "lint": "gts lint",
+    "posttest": "pnpm run lint",
+    "lint": "pnpm run check-types && gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
     "start": "tsx src/index.ts",
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate",
-    "build": "tsc"
+    "build": "tsc",
+    "check-types": "tsc --noemit"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +37,6 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
     "tsx": "^3.12.3",
-    "typescript": "^4.9.5"
+    "typescript": "^4.4.4"
   }
 }
