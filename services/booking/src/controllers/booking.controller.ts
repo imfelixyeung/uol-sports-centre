@@ -1,5 +1,5 @@
 import express from 'express';
-import logger from '../logger';
+import logger from '../lib/logger';
 
 /**
  * The Booking Controller handles the incomming network requests and validates

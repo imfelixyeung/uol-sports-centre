@@ -138,3 +138,7 @@ dist
 
 # Ignore build directory
 build/
+
+# Databases
+*.db
+*.db-journal

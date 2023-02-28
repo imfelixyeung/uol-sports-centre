@@ -1,5 +1,5 @@
 import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
-import logger from '../logger';
+import logger from '../lib/logger';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying
