@@ -17,7 +17,7 @@ class BookingService {
     logger.debug(`Create new booking, ${bookingData}`);
   }
 
-  async get(limit: number = undefined, page: number = undefined) {
+  async get(limit?: number, page?: number) {
     logger.debug(`Get bookings, limit: ${limit}, page: ${page}`);
     return await bookingDao.getBookings(limit, page);
   }

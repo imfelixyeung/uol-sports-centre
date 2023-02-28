@@ -14,7 +14,8 @@
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate",
     "build": "tsc",
-    "check-types": "tsc --noemit"
+    "check-types": "tsc --noemit",
+    "db:push": "prisma db push --skip-generate"
   },
   "keywords": [],
   "author": "",

@@ -29,7 +29,7 @@ class BookingDAO {
     logger.debug(`Getting booking from database, ${bookingId}`);
   }
 
-  async getBookings(limit: number = undefined, page: number) {
+  async getBookings(limit?: number, page?: number) {
     logger.debug(
       `Getting bookings from database, limit: ${limit}, page: ${page}`
     );
