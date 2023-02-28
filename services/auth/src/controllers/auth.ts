@@ -85,12 +85,19 @@ const getSession = async (req: Request, res: Response) => {
       success: false,
     });
 
-  const session = await getSessionFromToken(token);
+  try {
+    const session = await getSessionFromToken(token);
 
-  return res.json({
-    success: true,
-    session,
-  });
+    return res.json({
+      success: true,
+      session,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };
 
 const authControllers = {

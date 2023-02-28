@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import {db} from '../utils/db';
 import {env} from '../env';
 import {User} from '@prisma/client';
+import {randomUUID} from 'crypto';
 
 export const signInWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
@@ -56,8 +57,12 @@ export const registerWithCredentials = async (credentials: Credentials) => {
 };
 
 export const getSessionFromToken = async (token: JsonWebToken) => {
-  const decoded = jwt.verify(token, env.JWT_SIGNING_SECRET);
-  return decoded;
+  try {
+    const decoded = jwt.verify(token, env.JWT_SIGNING_SECRET);
+    return decoded;
+  } catch (error) {
+    throw new Error('Malformed token');
+  }
 };
 
 export const signOutToken = async (token: JsonWebToken) => {
@@ -71,6 +76,7 @@ const createTokenFromUser = (user: User) => {
     algorithm: 'HS256',
     expiresIn: '1d',
     issuer: 'auth',
+    jwtid: randomUUID(),
   });
 
   return token;
