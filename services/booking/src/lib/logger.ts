@@ -1,7 +1,9 @@
 import winston from 'winston';
+import {env} from '../env';
 
+const logLevel = env.DEBUG ? 'debug' : 'info';
 const logger = winston.createLogger({
-  level: 'info',
+  level: logLevel,
   format: winston.format.json(),
   defaultMeta: {service: 'booking-service'},
   transports: [
@@ -9,5 +11,7 @@ const logger = winston.createLogger({
     new winston.transports.File({filename: 'combined.log'}),
   ],
 });
+
+logger.info(`Initialised logger in '${logLevel}' mode`);
 
 export default logger;

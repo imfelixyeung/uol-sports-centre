@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import {z} from 'zod';
+
+dotenv.config();
 
 const envSchema = z.object({
   PORT: z
@@ -6,6 +9,7 @@ const envSchema = z.object({
     .transform(port => parseInt(port))
     .default('5000'),
   HOST: z.string().default('0.0.0.0'),
+  DEBUG: z.string().transform(debug => debug === 'true'),
 });
 
 export const safeEnv = envSchema.safeParse(process.env);

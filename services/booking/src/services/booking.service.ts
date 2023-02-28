@@ -1,3 +1,4 @@
+import bookingDao from '../dao/booking.dao';
 import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
 import logger from '../lib/logger';
 
@@ -9,15 +10,16 @@ import logger from '../lib/logger';
  */
 class BookingService {
   constructor() {
-    logger.debug('Created instance of BookingService');
+    logger.debug('Created instance of Booking Service');
   }
 
   async create(bookingData: CreateBookingDTO) {
     logger.debug(`Create new booking, ${bookingData}`);
   }
 
-  async get(limit: number, page: number) {
+  async get(limit: number = undefined, page: number = undefined) {
     logger.debug(`Get bookings, limit: ${limit}, page: ${page}`);
+    return await bookingDao.getBookings(limit, page);
   }
 
   async getById(id: string) {

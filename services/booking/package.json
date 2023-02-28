@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.10.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "winston": "^3.8.2",
     "zod": "^3.20.6"

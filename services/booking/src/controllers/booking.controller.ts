@@ -1,5 +1,6 @@
 import express from 'express';
 import logger from '../lib/logger';
+import bookingService from '../services/booking.service';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -16,7 +17,7 @@ class BookingController {
   async getBookings(req: express.Request, res: express.Response) {
     logger.debug('Received getBookings request');
 
-    res.status(200).send({status: 'OK'});
+    res.status(200).send({status: 'OK', bookings: await bookingService.get()});
   }
 
   async createBooking(req: express.Request, res: express.Response) {

@@ -1,5 +1,6 @@
 import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
 import logger from '../lib/logger';
+import prisma from '../lib/prisma';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying
@@ -28,10 +29,18 @@ class BookingDAO {
     logger.debug(`Getting booking from database, ${bookingId}`);
   }
 
-  async getBookings(limit: number, page: number) {
+  async getBookings(limit: number = undefined, page: number) {
     logger.debug(
       `Getting bookings from database, limit: ${limit}, page: ${page}`
     );
+
+    // using offset based pagination for simplicity here
+    const bookings = await prisma.booking.findMany({
+      skip: page && limit ? page * limit : undefined,
+      take: limit,
+    });
+
+    return bookings;
   }
 }
 
