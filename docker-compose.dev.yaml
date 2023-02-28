@@ -21,7 +21,7 @@ services:
     environment:
       - PORT=80
       - HOST=auth
-      - DATABASE_URL=mongodb://auth-db:27017/dev
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
     volumes:
@@ -29,12 +29,16 @@ services:
       - /app/node_modules
   
   auth-db:
-    image: mongo
+    image: postgres
     restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
     networks:
       - network
     volumes:
-      - ./persistence/auth/db:/data/db
+      - ./persistence/auth/db:/var/lib/postgresql/data
   
   users:
     build:
