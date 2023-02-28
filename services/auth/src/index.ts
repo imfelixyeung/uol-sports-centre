@@ -5,6 +5,7 @@ import healthRouter from './routers/health';
 
 const app = express();
 
+app.use(express.json());
 app.use('/', authRouter);
 app.use('/health', healthRouter);
 
