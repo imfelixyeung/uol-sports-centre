@@ -1,6 +1,6 @@
 import express from 'express';
 import supertest from 'supertest';
-import {createServer} from '../src/index';
+import {createServer} from '../src/server';
 
 let app: express.Express;
 
