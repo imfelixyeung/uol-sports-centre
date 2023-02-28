@@ -21,11 +21,20 @@ services:
     environment:
       - PORT=80
       - HOST=auth
+      - DATABASE_URL=mongodb://auth-db:27017/dev
     networks:
       - network
     volumes:
       - ./services/auth:/app
       - /app/node_modules
+  
+  auth-db:
+    image: mongo
+    restart: always
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/data/db
   
   users:
     build:
