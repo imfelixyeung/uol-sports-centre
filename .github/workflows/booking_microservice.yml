@@ -7,7 +7,7 @@ on:
     branches: ["main", "dev"]
 
 jobs:
-  build:
+  test-booking-microservice:
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,7 +19,6 @@ jobs:
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
-        working-directory: ./services/booking
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -32,7 +31,7 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./services/booking
 
-      - run: pnpm run build --if-present
+      - run: pnpm run build
         working-directory: ./services/booking
 
       - run: pnpm run lint
