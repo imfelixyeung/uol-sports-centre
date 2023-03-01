@@ -12,7 +12,7 @@ import {
   Tokens,
 } from '~/redux/services/types/auth';
 import {AuthContext} from './context';
-import {useLocalStorage} from '@rehooks/local-storage';
+import {useStorage} from './hooks/useStorage';
 
 useLoginMutation;
 useLogoutMutation;
@@ -21,9 +21,13 @@ useGetSessionQuery;
 useRefreshTokenMutation;
 
 export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
-  const [token, setToken] = useLocalStorage('accessToken');
-  const [refreshToken, setRefreshToken] = useLocalStorage('refreshToken');
-  const [session, setSession] = useLocalStorage<DecodedJsonWebToken>('session');
+  const [token, setToken] = useStorage<string | null>('accessToken');
+  const [refreshToken, setRefreshToken] = useStorage<string | null>(
+    'refreshToken'
+  );
+  const [session, setSession] = useStorage<DecodedJsonWebToken | null>(
+    'session'
+  );
 
   const [loginMutation, loginMutationData] = useLoginMutation();
   const [logoutMutation, logoutMutationData] = useLogoutMutation();
