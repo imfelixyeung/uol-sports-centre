@@ -1,13 +1,20 @@
 '''Payments Microservice:
 Provides functionality for making payments for subscriptions'''
 import stripe
-from flask import Flask, current_app, render_template, redirect
+import os
+from dotenv import load_dotenv
+from pathlib import Path
+from flask import Flask, redirect, render_template
 # test
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='public')
 
+dotenv_path = Path('../.env')
+load_dotenv(dotenv_path=dotenv_path)
 localDomain = 'http://localhost:5000'
 
-stripe.api_key = "apikey"
+stripe.api_key = os.getenv('STRIPE_API')
 #stripe.product.create(
     #To Do: create products for bookings and subscriptions
 #)
@@ -47,11 +54,11 @@ def get_index():
 def createCheckout():
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     checkoutSession = stripe.checkout.Session.create(
-        successUrl = "paymentSuccessPage",
+        success_url=localDomain + '/index.html',
         mode = 'subscription',
         line_items=[
         {
-            "price": "priceKey",
+            "price": "price_1MgV8AEFmvAnvjKIvysiJpuy",
             "quantity": 1
         },],
     )

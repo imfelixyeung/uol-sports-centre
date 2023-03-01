@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>Checkout</title>
@@ -5,8 +6,8 @@
     </head>
 
     <body>
-        <form action="http://localhost:5000/" method="POST">
-            <input type="hidden" name="priceId" value="priceKey">
+        <form action="/checkout-session" method="post">
+            <input type="hidden" name="priceId" value="price_1MgV8AEFmvAnvjKIvysiJpuy">
             <button type="submit">Checkout</button>
         </form>
     </body>
