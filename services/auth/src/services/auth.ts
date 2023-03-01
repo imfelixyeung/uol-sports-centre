@@ -52,8 +52,11 @@ export const registerWithCredentials = async (credentials: Credentials) => {
   });
 
   // success, create token
-  const token = TokenRegistry.createTokenForUser(newUser);
-  return token;
+  const token = await TokenRegistry.createTokenForUser(newUser);
+  const refreshToken = await RefreshTokenRegistry.createRefreshTokenForToken(
+    token
+  );
+  return {token, refreshToken};
 };
 
 export const getSessionFromToken = async (token: JsonWebToken) => {
