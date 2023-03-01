@@ -15,6 +15,8 @@ class BookingService {
 
   async create(bookingData: CreateBookingDTO) {
     logger.debug(`Create new booking, ${bookingData}`);
+
+    return await bookingDao.addBooking(bookingData);
   }
 
   async get(limit?: number, page?: number) {
@@ -29,12 +31,16 @@ class BookingService {
     return await bookingDao.getBooking(id);
   }
 
-  async updateById(id: string, bookingData: UpdateBookingDTO) {
-    logger.debug(`Update booking by id, ${id}, ${bookingData}`);
+  async update(bookingData: UpdateBookingDTO) {
+    logger.debug(`Update booking by id, ${bookingData.id}, ${bookingData}`);
+
+    return await bookingDao.editBooking(bookingData);
   }
 
-  async deleteById(id: string) {
+  async deleteById(id: number) {
     logger.debug(`Delete booking by id, ${id}`);
+
+    return await bookingDao.deleteBooking(id);
   }
 }
 

@@ -1,11 +1,25 @@
 export interface BookingDTO {
-  name: string;
+  id: number;
+  userId: number;
+  facilityId: number;
+  transactionId: number;
+  startTime: Date;
+  duration: number;
 }
 
 export interface CreateBookingDTO {
-  name: string;
+  userId: number;
+  facilityId: number;
+  transactionId: number;
+  startTime: Date;
+  duration: number;
 }
 
 export interface UpdateBookingDTO {
-  name: string;
+  id: number;
+  userId?: number;
+  facilityId?: number;
+  transactionId?: number;
+  startTime?: Date;
+  duration?: number;
 }

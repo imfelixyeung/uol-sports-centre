@@ -12,7 +12,7 @@ jobs:
     env:
       HOST: localhost
       PORT: 12345
-      DEBUG: true
+      DEBUG: false
       DATABASE_URL: file:./dev.db
 
     strategy:

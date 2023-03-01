@@ -15,14 +15,42 @@ class BookingDAO {
 
   async addBooking(bookingData: CreateBookingDTO) {
     logger.debug(`Adding booking to database, ${bookingData}`);
+
+    const booking = await prisma.booking.create({
+      data: bookingData,
+    });
+
+    return booking;
   }
 
-  async editBooking(bookingId: string, bookingData: UpdateBookingDTO) {
-    logger.debug(`Editing booking in database, ${bookingId}, ${bookingData}`);
+  async editBooking(bookingData: UpdateBookingDTO) {
+    logger.debug(
+      `Editing booking in database, ${bookingData.id}, ${bookingData}`
+    );
+
+    // split id and the rest of the data
+    const {id, ...updateData} = bookingData;
+
+    const booking = await prisma.booking.update({
+      where: {
+        id: id,
+      },
+      data: updateData,
+    });
+
+    return booking;
   }
 
-  async deleteBooking(bookingId: string) {
+  async deleteBooking(bookingId: number) {
     logger.debug(`Deleting booking in database, ${bookingId}`);
+
+    const booking = await prisma.booking.delete({
+      where: {
+        id: bookingId,
+      },
+    });
+
+    return booking;
   }
 
   async getBooking(bookingId: number) {
