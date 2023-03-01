@@ -4,3 +4,4 @@
 # environment files
 .env
 .env.dev
+database.db

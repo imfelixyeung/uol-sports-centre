@@ -24,7 +24,7 @@ stripe.api_key = os.getenv('STRIPE_API')
 def addProductDatabase(name, priceID, price, type):
     '''Adds a new product to the database'''
     connection = sqlite3.connect('database.db')
-    with open('paymentSchema.sql') as schema:
+    with open('services/payments/paymentSchema.sql') as schema:
         connection.executescript(schema.read())
     
     cur = connection.cursor()
@@ -35,9 +35,15 @@ def addProductDatabase(name, priceID, price, type):
 
 def MakePurchasable(productName, productPrice, productType="product"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
-    #stripe.product.create(
+    stripe.product.create(
         #To Do: create products for bookings and subscriptions
-    #)
+    )
+    addProductDatabase(productName, "pricekey", productPrice, productType)
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    products = cur.execute('SELECT * FROM products').fetchall()
+    print(products[0])
+    con.close()
     #stripe.price.create(
         #To Do: create prices for annual and monthly memberships
         #and bookings
@@ -62,6 +68,7 @@ card = {
 
 @app.route('/', methods=['GET'])
 def get_index():
+    MakePurchasable("Booking1", "10.99")
     return render_template('index.html')
 
 @app.route("/checkout-session", methods=['POST'])
