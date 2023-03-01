@@ -19,11 +19,14 @@ class BookingService {
 
   async get(limit?: number, page?: number) {
     logger.debug(`Get bookings, limit: ${limit}, page: ${page}`);
+
     return await bookingDao.getBookings(limit, page);
   }
 
-  async getById(id: string) {
+  async getById(id: number) {
     logger.debug(`Get booking by id, ${id}`);
+
+    return await bookingDao.getBooking(id);
   }
 
   async updateById(id: string, bookingData: UpdateBookingDTO) {

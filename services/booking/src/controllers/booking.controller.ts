@@ -1,4 +1,5 @@
 import express from 'express';
+import {z} from 'zod';
 import logger from '../lib/logger';
 import bookingService from '../services/booking.service';
 
@@ -29,7 +30,31 @@ class BookingController {
   async getBookingById(req: express.Request, res: express.Response) {
     logger.debug('Received getBookingById request');
 
-    res.status(200).send({status: 'OK'});
+    // create a schema, outlining what we expect from params
+    const paramSchema = z.object({
+      id: z.string().transform(id => parseInt(id)),
+    });
+
+    // ensure the request params abide by that schema
+    const params = paramSchema.safeParse(req.params);
+    if (!params.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: params.error,
+      });
+
+    if (Number.isNaN(params.data.id))
+      return res.status(400).json({
+        status: 'error',
+        message: 'Non-number id supplied',
+        error: `parsed ${req.params.id} as ${params.data.id}`,
+      });
+
+    return res.status(200).send({
+      status: 'OK',
+      booking: await bookingService.getById(params.data.id),
+    });
   }
 
   async updateBookingById(req: express.Request, res: express.Response) {

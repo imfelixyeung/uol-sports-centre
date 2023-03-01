@@ -25,8 +25,16 @@ class BookingDAO {
     logger.debug(`Deleting booking in database, ${bookingId}`);
   }
 
-  async getBooking(bookingId: string) {
+  async getBooking(bookingId: number) {
     logger.debug(`Getting booking from database, ${bookingId}`);
+
+    const booking = await prisma.booking.findFirst({
+      where: {
+        id: bookingId,
+      },
+    });
+
+    return booking;
   }
 
   async getBookings(limit?: number, page?: number) {
