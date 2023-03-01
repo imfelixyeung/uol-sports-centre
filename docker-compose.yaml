@@ -10,7 +10,9 @@ services:
       - network
 
   auth:
-    build: ./services/auth
+    build:
+      context: ./services/auth
+      target: dev
     environment:
       - PORT=80
       - HOST=auth
@@ -19,7 +21,7 @@ services:
       - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
-  
+
   auth-db:
     image: postgres
     restart: always
@@ -33,7 +35,9 @@ services:
       - ./persistence/auth/db:/var/lib/postgresql/data
 
   status:
-    build: ./services/status
+    build:
+      context: ./services/status
+      target: prod
     environment:
       - PORT=80
       - HOST=status
@@ -41,13 +45,15 @@ services:
       - network
 
   users:
-    build: ./services/users
+    build:
+      context: ./services/users
+      target: prod
     environment:
       - PORT=80
       - HOST=users
     networks:
       - network
-  
+
   gateway:
     build: ./gateway
     env_file:

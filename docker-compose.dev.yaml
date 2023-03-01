@@ -17,7 +17,7 @@ services:
   auth:
     build:
       context: ./services/auth
-      dockerfile: Dockerfile.dev
+      target: dev
     environment:
       - PORT=80
       - HOST=auth
@@ -32,7 +32,7 @@ services:
     depends_on:
       auth-db:
         condition: service_healthy
-  
+
   auth-db:
     image: postgres
     restart: always
@@ -50,11 +50,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   users:
     build:
       context: ./services/users
-      dockerfile: Dockerfile.dev
+      target: dev
     environment:
       - PORT=80
       - HOST=users
@@ -67,7 +67,7 @@ services:
   status:
     build:
       context: ./services/status
-      dockerfile: Dockerfile.dev
+      target: dev
     environment:
       - PORT=80
       - HOST=status
