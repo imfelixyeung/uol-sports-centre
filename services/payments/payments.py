@@ -10,9 +10,16 @@ app = Flask(__name__,
             static_url_path='',
             static_folder='public')
 
-dotenv_path = Path('../.env')
-load_dotenv(dotenv_path=dotenv_path)
-print(os.getenv('APP_PORT'))
+#dotenv_path = Path('../.env')
+#print(dotenv_path)
+#load_dotenv(dotenv_path=dotenv_path)
+
+# Get absolute path of directory where .env is 
+dirtoenv = os.path.dirname(os.path.abspath(__file__))
+
+# Load .env file from base directory
+load_dotenv(os.path.join(dirtoenv, '.env'))
+
 localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
 stripe.api_key = os.getenv('STRIPE_API')
@@ -70,5 +77,5 @@ def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=os.getenv('APP_PORT'))
+    app.run(host='localhost', port=os.getenv('APP_PORT'))
 
