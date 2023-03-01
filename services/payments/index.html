@@ -1,11 +1,12 @@
 <html>
     <head>
         <title>Checkout</title>
+        <script src="https://js.stripe.com/v3/"></script>
     </head>
 
     <body>
-        <form action="/create-checkout-session" method="POST">
-            <input type="hidden" name="priceId" value="price_1MgZPvDun2r5uAIS4e80HNl5">
+        <form action="http://localhost:5000/" method="POST">
+            <input type="hidden" name="priceId" value="priceKey">
             <button type="submit">Checkout</button>
         </form>
     </body>
