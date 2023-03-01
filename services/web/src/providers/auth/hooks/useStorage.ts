@@ -3,8 +3,13 @@
 
 import {useEffect, useState} from 'react';
 
-export const useStorage = <T>(key: string) => {
-  const [data, setData] = useState<T | null>(null);
+export const useStorage = <T, D = null | T>(
+  key: string,
+  defaultValue: D | null = null
+) => {
+  const [data, setData] = useState<D extends null ? T | null : T>(
+    defaultValue as D extends null ? T | null : T
+  );
 
   const updateData = (data: any) => {
     setData(data);
@@ -22,16 +27,16 @@ export const useStorage = <T>(key: string) => {
     const onStorageEvent = (event: StorageEvent) => {
       if (event.key !== key) return;
       if (event.storageArea !== localStorage) return;
+      const newValue = event.newValue;
+      if (!newValue) return;
+      if (newValue === JSON.stringify(data)) return;
 
-      const storedData = localStorage.getItem(key);
-      if (storedData) {
-        setData(JSON.parse(storedData));
-      }
+      setData(JSON.parse(newValue));
     };
 
     window.addEventListener('storage', onStorageEvent);
     return () => window.removeEventListener('storage', onStorageEvent);
-  });
+  }, [key, data]);
 
   return [data, updateData] as const;
 };
