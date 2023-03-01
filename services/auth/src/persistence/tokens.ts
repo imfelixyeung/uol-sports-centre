@@ -33,6 +33,39 @@ export class TokenRegistry {
     return token;
   }
 
+  static async renewToken(token: string) {
+    const tokenData = await this.getTokenDataByToken(token);
+    if (!tokenData) throw new Error('Token not found');
+
+    const user = await db.user.findUnique({
+      where: {id: tokenData.userId},
+    });
+    if (!user) throw new Error('User not found');
+
+    const newToken = jwt.sign(
+      {email: user.email, type: 'access'},
+      env.JWT_SIGNING_SECRET,
+      {
+        subject: user.id,
+        algorithm: 'HS256',
+        expiresIn: '1h',
+        issuer: 'auth',
+        jwtid: tokenData.id,
+      }
+    );
+
+    await db.token.update({
+      where: {id: tokenData.id},
+      data: {
+        token: newToken,
+        expiresAt: dayjs().add(1, 'hour').toDate(),
+        refreshTokens: {delete: true},
+      },
+    });
+
+    return newToken;
+  }
+
   static async getTokenDataByToken(token: string) {
     const decoded = jwt.decode(token, {json: true});
     const tokenId = decoded?.jti;

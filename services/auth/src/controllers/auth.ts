@@ -1,7 +1,9 @@
 import {Request, Response} from 'express';
+import {z} from 'zod';
 import {credentialsSchema} from '../schema/credentials';
 import {
   getSessionFromToken,
+  refreshAccessToken,
   registerWithCredentials,
   signInWithCredentials,
   signOutToken,
@@ -106,11 +108,47 @@ const getSession = async (req: Request, res: Response) => {
   }
 };
 
+const postRefreshToken = async (req: Request, res: Response) => {
+  const token = getJwtFromRequest(req);
+  if (!token)
+    return res.status(401).json({
+      success: false,
+    });
+
+  const parsedBody = z
+    .object({
+      refreshToken: z.string(),
+    })
+    .safeParse(req.body);
+  if (!parsedBody.success) {
+    return res.status(400).json({
+      success: false,
+      error: parsedBody.error,
+    });
+  }
+
+  const {refreshToken} = parsedBody.data;
+
+  try {
+    const tokens = await refreshAccessToken(token, refreshToken);
+    return res.json({
+      success: true,
+      data: tokens,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      error: error instanceof Error ? error.message : error,
+    });
+  }
+};
+
 const authControllers = {
   postLogin,
   postLogout,
   postRegister,
   getSession,
+  postRefreshToken,
 };
 
 export default authControllers;

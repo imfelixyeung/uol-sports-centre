@@ -68,3 +68,25 @@ export const getSessionFromToken = async (token: JsonWebToken) => {
 export const signOutToken = async (token: JsonWebToken) => {
   await TokenRegistry.invalidateToken(token);
 };
+
+export const refreshAccessToken = async (
+  token: string,
+  refreshToken: string
+) => {
+  const verified = !!(
+    (await TokenRegistry.verifyToken(token)) &&
+    (await RefreshTokenRegistry.verifyRefreshToken(refreshToken))
+  );
+
+  if (!verified) {
+    throw new Error('Malformed token or refresh token');
+  }
+
+  // success, create tokens
+  const newToken = await TokenRegistry.renewToken(token);
+  const newRefreshToken = await RefreshTokenRegistry.createRefreshTokenForToken(
+    token
+  );
+
+  return {token: newToken, refreshToken: newRefreshToken};
+};
