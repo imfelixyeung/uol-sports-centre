@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {
+import type {
   GetSessionResponse,
   LoginRequest,
   LoginResponse,
@@ -8,7 +8,7 @@ import {
   RegisterRequest,
   RegisterResponse,
 } from './types/auth';
-import {StatusReportResponse} from './types/status';
+import type {StatusReportResponse} from './types/status';
 
 interface Token {
   token: string;

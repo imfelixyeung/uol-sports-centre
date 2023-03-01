@@ -1,7 +1,6 @@
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import React from 'react';
 import toast from 'react-hot-toast';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
@@ -27,6 +26,7 @@ const RegisterPage = () => {
               error: 'Failed to register',
             })
             .then(() => router.push('/'));
+          actions.setSubmitting(false);
         }}
       >
         <Form className="bg-gray-200 p-3">

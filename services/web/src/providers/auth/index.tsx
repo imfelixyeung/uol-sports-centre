@@ -1,4 +1,7 @@
-import {FC, PropsWithChildren, useEffect} from 'react';
+import dayjs from 'dayjs';
+import jwt_decode from 'jwt-decode';
+import type {FC, PropsWithChildren} from 'react';
+import {useCallback, useEffect} from 'react';
 import {
   useGetSessionQuery,
   useLoginMutation,
@@ -6,7 +9,7 @@ import {
   useRefreshTokenMutation,
   useRegisterMutation,
 } from '~/redux/services/api';
-import {
+import type {
   Credentials,
   DecodedJsonWebToken,
   Names,
@@ -14,8 +17,6 @@ import {
 } from '~/redux/services/types/auth';
 import {AuthContext} from './context';
 import {useStorage} from './hooks/useStorage';
-import dayjs from 'dayjs';
-import jwt_decode from 'jwt-decode';
 
 useLoginMutation;
 useLogoutMutation;
@@ -32,17 +33,20 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
     'session'
   );
 
-  const [loginMutation, loginMutationData] = useLoginMutation();
-  const [logoutMutation, logoutMutationData] = useLogoutMutation();
-  const [registerMutation, registerMutationData] = useRegisterMutation();
+  const [loginMutation] = useLoginMutation();
+  const [logoutMutation] = useLogoutMutation();
+  const [registerMutation] = useRegisterMutation();
   const [refreshTokenMutation, refreshTokenMutationData] =
     useRefreshTokenMutation();
   const sessionData = useGetSessionQuery({token: token ?? ''}, {skip: !token});
 
-  const saveTokens = (tokens: Tokens) => {
-    setToken(tokens.token);
-    setRefreshToken(tokens.refreshToken);
-  };
+  const saveTokens = useCallback(
+    (tokens: Tokens) => {
+      setToken(tokens.token);
+      setRefreshToken(tokens.refreshToken);
+    },
+    [setRefreshToken, setToken]
+  );
 
   const login = async (credentials: Credentials) => {
     const data = await loginMutation(credentials)
@@ -73,7 +77,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
   };
 
   const getSession = async () => {
-    const test = sessionData.refetch().unwrap();
+    await sessionData.refetch().unwrap();
   };
 
   useEffect(() => {
@@ -82,14 +86,14 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
     if (!token || !refreshToken) return;
 
     setSession(sessionData.data.data);
-  }, [sessionData.data]);
+  }, [sessionData.data, refreshToken, token, setSession]);
 
-  const clear = () => {
+  const clear = useCallback(() => {
     console.debug('Clearing tokens and session...');
     setToken(null);
     setRefreshToken(null);
     setSession(null);
-  };
+  }, [setRefreshToken, setSession, setToken]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,7 +108,11 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
         return clear();
       }
 
-      const exp = (decoded as any).exp;
+      const exp = (
+        decoded as {
+          exp: number;
+        }
+      ).exp;
 
       const expiration = dayjs(exp * 1000);
       console.debug(expiration.subtract(1, 'minute').toDate().toLocaleString());
@@ -125,7 +133,14 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
         });
     }, 500);
     return () => clearInterval(interval);
-  }, [token, refreshToken, refreshTokenMutationData.isLoading]);
+  }, [
+    token,
+    refreshToken,
+    refreshTokenMutationData.isLoading,
+    clear,
+    refreshTokenMutation,
+    saveTokens,
+  ]);
 
   return (
     <AuthContext.Provider
