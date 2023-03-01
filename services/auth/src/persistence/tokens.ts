@@ -45,4 +45,12 @@ export class TokenRegistry {
 
     return tokenData;
   }
+
+  static async verifyToken(token: string) {
+    try {
+      return jwt.verify(token, env.JWT_SIGNING_SECRET);
+    } catch (error) {
+      throw new Error('Malformed token');
+    }
+  }
 }

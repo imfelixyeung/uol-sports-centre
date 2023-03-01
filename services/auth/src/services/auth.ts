@@ -1,8 +1,6 @@
-import jwt from 'jsonwebtoken';
 import {Credentials} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
-import {env} from '../env';
 import {UserRegistry} from '../persistence/users';
 import {TokenRegistry} from '../persistence/tokens';
 import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
@@ -60,7 +58,7 @@ export const registerWithCredentials = async (credentials: Credentials) => {
 
 export const getSessionFromToken = async (token: JsonWebToken) => {
   try {
-    const decoded = jwt.verify(token, env.JWT_SIGNING_SECRET);
+    const decoded = TokenRegistry.verifyToken(token);
     return decoded;
   } catch (error) {
     throw new Error('Malformed token');

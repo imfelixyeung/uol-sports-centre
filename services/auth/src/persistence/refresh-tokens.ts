@@ -32,4 +32,12 @@ export class RefreshTokenRegistry {
 
     return refreshToken;
   }
+
+  static async verifyRefreshToken(token: string) {
+    try {
+      return jwt.verify(token, env.JWT_REFRESH_SIGNING_SECRET);
+    } catch (error) {
+      throw new Error('Malformed refresh token');
+    }
+  }
 }
