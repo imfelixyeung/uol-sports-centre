@@ -7,6 +7,8 @@ from flask_admin.contrib.sqla import ModelView
 app.logger.info('index route request')
 
 admin.add_view(ModelView(Facility, db.session))
+admin.add_view(ModelView(OpenTime, db.session))
+admin.add_view(ModelView(Activity, db.session))
 
 ################# FACILITIES API CALLS #################
 
@@ -42,3 +44,35 @@ def updateFacility(id):
 @app.route('/addFacility', methods=['GET', 'POST'])
 def addFacility():
     return
+
+################# OPENING TIMES API CALLS #################
+
+# API call to get an opening time by ID
+@app.route('/facility/time/<int:id>', methods=['GET', 'POST'])
+def getOpeningTime(id):
+    openTimeQuery = models.OpenTime.query.get(id)
+
+    openTimeID = openTimeQuery.id
+    Day = openTimeQuery.day
+    Open = openTimeQuery.openingTime
+    Close = openTimeQuery.closingTime
+
+    returnValue = {
+        "id": openTimeID,
+        "Day": Day,
+        "Open Time": Open,
+        "Close Time": Close
+    }
+
+    return json.dumps(returnValue)
+
+################# ACTIVITY API CALLS #################
+
+# API call to get an opening time by ID
+@app.route('/facility/activity/<int:id>', methods=['GET', 'POST'])
+def getActivity(id):
+    returnValue = {
+
+    }
+
+    return json.dumps(returnValue)
