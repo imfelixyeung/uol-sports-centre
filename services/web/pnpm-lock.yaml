@@ -10,10 +10,12 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.47.1
   '@typescript-eslint/parser': ^5.47.1
   autoprefixer: ^10.4.7
+  dayjs: ^1.11.7
   eslint: ^8.30.0
   eslint-config-next: 13.1.6
   formik: ^2.2.9
   gts: ^3.1.1
+  jwt-decode: ^3.1.2
   next: 13.1.6
   postcss: ^8.4.14
   prettier: ^2.8.1
@@ -29,7 +31,9 @@ specifiers:
 dependencies:
   '@reduxjs/toolkit': 1.9.3_k4ae6lp43ej6mezo3ztvx6pykq
   '@rehooks/local-storage': 2.4.4_react@18.2.0
+  dayjs: 1.11.7
   formik: 2.2.9_react@18.2.0
+  jwt-decode: 3.1.2
   next: 13.1.6_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -1020,6 +1024,10 @@ packages:
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
+
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
+    dev: false
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
@@ -2421,6 +2429,10 @@ packages:
       array-includes: 3.1.6
       object.assign: 4.1.4
     dev: true
+
+  /jwt-decode/3.1.2:
+    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
+    dev: false
 
   /kind-of/6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}

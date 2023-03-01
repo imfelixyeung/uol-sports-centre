@@ -22,6 +22,9 @@ const LoginPage = () => {
           <button type="submit">Submit</button>
         </Form>
       </Formik>
+      <pre>
+        <code>{JSON.stringify(auth, null, 2)}</code>
+      </pre>
     </div>
   );
 };

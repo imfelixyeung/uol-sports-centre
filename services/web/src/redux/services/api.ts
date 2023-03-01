@@ -10,6 +10,10 @@ import {
 } from './types/auth';
 import {StatusReportResponse} from './types/status';
 
+interface Token {
+  token: string;
+}
+
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
@@ -33,21 +37,30 @@ export const api = createApi({
       }),
     }),
 
-    logout: builder.mutation<void, void>({
-      query: () => ({
+    logout: builder.mutation<void, Token>({
+      query: ({token}) => ({
         url: '/auth/logout',
         method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
       }),
     }),
 
-    getSession: builder.query<GetSessionResponse, void>({
-      query: () => '/auth/session',
+    getSession: builder.query<GetSessionResponse, Token>({
+      query: ({token}) => ({
+        url: '/auth/session',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
     }),
 
-    refreshToken: builder.mutation<RefreshTokenResponse, RefreshTokenRequest>({
-      query: () => ({
+    refreshToken: builder.mutation<
+      RefreshTokenResponse,
+      RefreshTokenRequest & Token
+    >({
+      query: ({token, ...data}) => ({
         url: '/auth/token',
         method: 'POST',
+        body: data,
+        headers: {Authorization: `Bearer ${token}`},
       }),
     }),
 

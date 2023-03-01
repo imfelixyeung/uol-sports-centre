@@ -14,7 +14,9 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.3",
     "@rehooks/local-storage": "^2.4.4",
+    "dayjs": "^1.11.7",
     "formik": "^2.2.9",
+    "jwt-decode": "^3.1.2",
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
