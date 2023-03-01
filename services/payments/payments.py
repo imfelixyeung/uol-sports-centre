@@ -10,8 +10,16 @@ app = Flask(__name__,
             static_url_path='',
             static_folder='public')
 
-dotenv_path = Path('../.env')
-load_dotenv(dotenv_path=dotenv_path)
+#dotenv_path = Path('../.env')
+#print(dotenv_path)
+#load_dotenv(dotenv_path=dotenv_path)
+
+# Get absolute path of directory where .env is 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load .env file from base directory
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
 stripe.api_key = os.getenv('STRIPE_API')
