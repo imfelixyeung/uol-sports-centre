@@ -1,13 +1,31 @@
-import logging
+import logging, json
 from flask import Flask
-from app import app
+from app import app, db, models, admin
+from .models import Facility, OpenTime, Activity
+from flask_admin.contrib.sqla import ModelView
 
 app.logger.info('index route request')
 
+admin.add_view(ModelView(Facility, db.session))
+
+################# FACILITIES API CALLS #################
+
 # API call to get a facility from the database based on ID
-@app.route('/getFacility/<int:id>', methods=['GET', 'POST'])
-def getFacility(id):
-    return
+@app.route('/facility/<int:id>', methods=['GET', 'POST'])
+def getFacility(id):    
+    facilityQuery = models.Facility.query.get(id)
+
+    facilityID = facilityQuery.id
+    facilityName = facilityQuery.name
+    facilityCapacity = facilityQuery.capacity
+
+    returnValue = {
+        "id": facilityID,
+        "name": facilityID,
+        "capacity": facilityCapacity
+    }
+
+    return json.dumps(returnValue)
 
 # API call to return the name of every facility with its related ID
 @app.route('/getAllFacilities', methods=['GET', 'POST'])

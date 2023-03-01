@@ -7,8 +7,8 @@ class Facility(db.Model):
     capacity = db.Column(db.Integer)
 
     # Foreign Connectors for the Facilities table
-    openTimes = db.relationship('openTime', backref='facility', lazy='dynamic')
-    activities = db.relationship('activity', backref='facility', lazy='dynamic')
+    openTimes = db.relationship('OpenTime', backref='facility', lazy='dynamic')
+    activities = db.relationship('Activity', backref='facility', lazy='dynamic')
 
 # Model for the OpenTime table
 # The openingTime and closingTime fields are stored as minutes after midnight.
