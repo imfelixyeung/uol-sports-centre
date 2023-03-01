@@ -78,6 +78,70 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/HealthCheck"
+  
+  /users/login:
+    post:
+      description: "Takes the user through the log in phase"
+      responses:
+        "200":
+          description: OK
+  
+  /users/accountInfo:
+    get:
+      description: "Returns account info as JSON"
+      responses:
+        "200":
+          description: OK
+          
+  /users/pricingList:
+    get:
+      description: "Returns pricing list as JSON"
+      responses:
+        "200":
+          description: OK      
+   
+   /users/bookSession:
+    post:
+      description: "Allows the user to book a session"
+      responses:
+        "200":
+          description: OK    
+   
+   /users/membership:
+    post:
+      description: "Takes the user through the process of signing up for the membership or modifying it"
+      responses:
+        "200":
+          description: OK  
+   
+   /users/payment:
+    post:
+      description: "Takes the user through the process of payment"
+      responses:
+        "200":
+          description: OK 
+          
+   /users/bookingHistory:
+    get:
+      description: "Returns booking history as JSON"
+      responses:
+        "200":
+          description: OK 
+   
+   /users/upcomingSessions:
+    get:
+      description: "Returns upcoming sessions as JSON"
+      responses:
+        "200":
+          description: OK 
+  
+   /users/upcomingSessions:
+    get:
+      description: "Returns upcoming sessions as JSON"
+      responses:
+        "200":
+          description: OK 
+
 
 components:
   securitySchemes:
