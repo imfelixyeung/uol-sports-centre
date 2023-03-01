@@ -12,7 +12,7 @@ app = Flask(__name__,
 
 dotenv_path = Path('../.env')
 load_dotenv(dotenv_path=dotenv_path)
-localDomain = 'http://localhost:5000'
+localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
 stripe.api_key = os.getenv('STRIPE_API')
 #stripe.product.create(
@@ -69,5 +69,5 @@ def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=os.getenv('APP_PORT'))
 
