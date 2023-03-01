@@ -5,6 +5,8 @@ import {User} from '@prisma/client';
 import {db} from '../utils/db';
 import dayjs from 'dayjs';
 
+const TOKEN_EXPIRES_IN = '1h';
+
 export class TokenRegistry {
   static async createTokenForUser(user: User) {
     const tokenId = randomUUID();
@@ -15,7 +17,7 @@ export class TokenRegistry {
       {
         subject: user.id,
         algorithm: 'HS256',
-        expiresIn: '1h',
+        expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
         jwtid: tokenId,
       }
@@ -48,7 +50,7 @@ export class TokenRegistry {
       {
         subject: user.id,
         algorithm: 'HS256',
-        expiresIn: '1h',
+        expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
         jwtid: tokenData.id,
       }
