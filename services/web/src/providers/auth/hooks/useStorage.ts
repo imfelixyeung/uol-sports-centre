@@ -11,7 +11,7 @@ export const useStorage = <T, D = null | T>(
     defaultValue as D extends null ? T | null : T
   );
 
-  const updateData = (data: any) => {
+  const updateData = (data: D extends null ? T | null : T) => {
     setData(data);
     localStorage.setItem(key, JSON.stringify(data));
   };
@@ -19,9 +19,9 @@ export const useStorage = <T, D = null | T>(
   useEffect(() => {
     const storedData = localStorage.getItem(key);
     if (storedData) {
-      setData(JSON.parse(storedData));
+      setData(JSON.parse(storedData) as D extends null ? T | null : T);
     }
-  }, []);
+  }, [key]);
 
   useEffect(() => {
     const onStorageEvent = (event: StorageEvent) => {
@@ -31,7 +31,7 @@ export const useStorage = <T, D = null | T>(
       if (!newValue) return;
       if (newValue === JSON.stringify(data)) return;
 
-      setData(JSON.parse(newValue));
+      setData(JSON.parse(newValue) as D extends null ? T | null : T);
     };
 
     window.addEventListener('storage', onStorageEvent);
