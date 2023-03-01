@@ -8,4 +8,7 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 from app import facilities, models
