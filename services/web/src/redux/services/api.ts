@@ -1,4 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import {StatusReportResponse} from './types/status';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -6,7 +7,11 @@ export const api = createApi({
     baseUrl: '/api',
   }),
   tagTypes: [],
-  endpoints: builder => ({}),
+  endpoints: builder => ({
+    getStatusReport: builder.query<StatusReportResponse, void>({
+      query: () => '/status/report',
+    }),
+  }),
 });
 
-export const {} = api;
+export const {useGetStatusReportQuery} = api;
