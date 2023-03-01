@@ -21,11 +21,35 @@ services:
     environment:
       - PORT=80
       - HOST=auth
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
     volumes:
       - ./services/auth:/app
       - /app/node_modules
+    depends_on:
+      auth-db:
+        condition: service_healthy
+  
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   
   users:
     build:
@@ -61,6 +85,11 @@ services:
       - "${APP_PORT}:80"
     networks:
       - network
+    links:
+      - web
+      - auth
+      - users
+      - status
 
 networks:
   network:

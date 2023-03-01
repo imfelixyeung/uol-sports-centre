@@ -44,6 +44,20 @@ paths:
         "200":
           $ref: "#/components/responses/JWT"
 
+  /auth/token:
+    post:
+      description: "Refreshes a JWT"
+
+      security:
+        - JWT: []
+
+      requestBody:
+        $ref: "#/components/requestBodies/RefreshToken"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
   /auth/session:
     get:
       description: "Validates a JWT, returning it's contents if valid"
@@ -150,6 +164,41 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  schemas:
+    tokenAndRefreshToken:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+
+    DecodedJWT:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User Email
+        type:
+          type: string
+          enum: [access]
+        iat:
+          type: number
+          description: Issued At
+        exp:
+          type: number
+          description: Expires At
+        iss:
+          type: string
+          enum: [auth]
+          description: Issuer
+        sub:
+          type: string
+          description: User Unique ID
+        jti:
+          type: string
+          description: JWT ID
+
   requestBodies:
     Credentials:
       description: "User's credentials (email password)"
@@ -165,6 +214,17 @@ components:
               password:
                 type: string
                 description: "The user's password"
+    RefreshToken:
+      description: "Refresh token"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              refreshToken:
+                type: string
+
   responses:
     JWT:
       description: JSON Web Token
@@ -173,9 +233,11 @@ components:
           schema:
             type: object
             properties:
-              token:
-                type: string
-                description: JWT
+              success:
+                type: boolean
+                description: If the operation was successful
+              data:
+                $ref: "#/components/schemas/tokenAndRefreshToken"
 
     DecodedJWT:
       description: JSON Web Token decoded contents
@@ -184,12 +246,11 @@ components:
           schema:
             type: object
             properties:
-              sub:
-                type: string
-                description: User's unique ID
-              email:
-                type: string
-                description: User's email
+              success:
+                type: boolean
+                description: If the operation was successful
+              data:
+                $ref: "#/components/schemas/DecodedJWT"
 
     HealthCheck:
       description: Health check successful

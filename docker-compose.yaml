@@ -14,9 +14,24 @@ services:
     environment:
       - PORT=80
       - HOST=auth
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
   
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+
   status:
     build: ./services/status
     environment:
