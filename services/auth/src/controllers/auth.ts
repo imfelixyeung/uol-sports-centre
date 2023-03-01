@@ -1,5 +1,5 @@
-import {Request, Response} from 'express';
 import {z} from 'zod';
+import {createController} from '.';
 import {credentialsSchema} from '../schema/credentials';
 import {
   getSessionFromToken,
@@ -8,140 +8,55 @@ import {
   signInWithCredentials,
   signOutToken,
 } from '../services/auth';
-import {getJwtFromRequest} from '../utils/getJwtFromRequest';
 
-const postLogin = async (req: Request, res: Response) => {
-  const credentialsData = credentialsSchema.safeParse(req.body);
+const postLogin = createController({
+  bodySchema: credentialsSchema,
+  authRequired: false,
+  controller: async ({body}) => {
+    const credentials = body;
 
-  if (!credentialsData.success)
-    return res.status(400).json({
-      success: false,
-      error: credentialsData.error,
-    });
-
-  const credentials = credentialsData.data;
-
-  try {
     const token = await signInWithCredentials(credentials);
+    return token;
+  },
+});
 
-    return res.json({
-      success: true,
-      data: token,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(401).json({
-      success: false,
-      error: error instanceof Error ? error.message : error,
-    });
-  }
-};
-
-const postLogout = async (req: Request, res: Response) => {
-  const token = getJwtFromRequest(req);
-
-  if (!token)
-    return res.status(401).json({
-      success: false,
-    });
-
-  try {
+const postLogout = createController({
+  authRequired: true,
+  controller: async ({token}) => {
     await signOutToken(token);
-    return res.json({
-      success: true,
-    });
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      error: error instanceof Error ? error.message : error,
-    });
-  }
-};
+  },
+});
 
-const postRegister = async (req: Request, res: Response) => {
-  const credentialsData = credentialsSchema.safeParse(req.body);
+const postRegister = createController({
+  bodySchema: credentialsSchema,
+  authRequired: false,
+  controller: async ({body}) => {
+    const credentials = body;
 
-  if (!credentialsData.success)
-    return res.status(400).json({
-      success: false,
-      error: credentialsData.error,
-    });
-
-  const credentials = credentialsData.data;
-
-  try {
     const token = await registerWithCredentials(credentials);
+    return token;
+  },
+});
 
-    return res.json({
-      success: true,
-      data: token,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(401).json({
-      success: false,
-      error: error instanceof Error ? error.message : error,
-    });
-  }
-};
-
-const getSession = async (req: Request, res: Response) => {
-  const token = getJwtFromRequest(req);
-
-  if (!token)
-    return res.status(401).json({
-      success: false,
-    });
-
-  try {
+const getSession = createController({
+  authRequired: true,
+  controller: async ({token}) => {
     const session = await getSessionFromToken(token);
+    return session;
+  },
+});
 
-    return res.json({
-      success: true,
-      data: session,
-    });
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      error: error instanceof Error ? error.message : error,
-    });
-  }
-};
-
-const postRefreshToken = async (req: Request, res: Response) => {
-  const token = getJwtFromRequest(req);
-  if (!token)
-    return res.status(401).json({
-      success: false,
-    });
-
-  const parsedBody = z
-    .object({
-      refreshToken: z.string(),
-    })
-    .safeParse(req.body);
-  if (!parsedBody.success) {
-    return res.status(400).json({
-      success: false,
-      error: parsedBody.error,
-    });
-  }
-
-  const {refreshToken} = parsedBody.data;
-
-  try {
+const postRefreshToken = createController({
+  bodySchema: z.object({
+    refreshToken: z.string(),
+  }),
+  authRequired: true,
+  controller: async ({body, token}) => {
+    const {refreshToken} = body;
     const tokens = await refreshAccessToken(token, refreshToken);
-    return res.json({
-      success: true,
-      data: tokens,
-    });
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      error: error instanceof Error ? error.message : error,
-    });
-  }
-};
+    return tokens;
+  },
+});
 
 const authControllers = {
   postLogin,
