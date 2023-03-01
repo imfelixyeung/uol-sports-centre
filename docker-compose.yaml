@@ -2,7 +2,10 @@ version: "3"
 
 services:
   web:
-    build: ./services/web
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+      target: prod
     environment:
       - PORT=80
       - HOST=web
@@ -19,7 +22,7 @@ services:
       - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
     networks:
       - network
-  
+
   auth-db:
     image: postgres
     restart: always
@@ -47,7 +50,7 @@ services:
       - HOST=users
     networks:
       - network
-  
+
   gateway:
     build: ./gateway
     env_file:
