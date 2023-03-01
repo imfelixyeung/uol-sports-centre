@@ -43,11 +43,17 @@ const postLogout = async (req: Request, res: Response) => {
       success: false,
     });
 
-  await signOutToken(token);
-
-  return res.json({
-    success: true,
-  });
+  try {
+    await signOutToken(token);
+    return res.json({
+      success: true,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };
 
 const postRegister = async (req: Request, res: Response) => {

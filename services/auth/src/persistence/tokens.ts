@@ -53,4 +53,27 @@ export class TokenRegistry {
       throw new Error('Malformed token');
     }
   }
+
+  static async invalidateToken(token: string) {
+    await db.$transaction(async tx => {
+      const exist = await tx.token.findUnique({
+        where: {token},
+        include: {refreshTokens: true},
+      });
+
+      if (!exist) throw new Error('Token not found');
+
+      if (exist.refreshTokens)
+        await tx.token.update({
+          where: {token},
+          data: {
+            refreshTokens: {delete: true},
+          },
+        });
+
+      await tx.token.delete({
+        where: {token},
+      });
+    });
+  }
 }

@@ -66,6 +66,5 @@ export const getSessionFromToken = async (token: JsonWebToken) => {
 };
 
 export const signOutToken = async (token: JsonWebToken) => {
-  // todo: invalidate refresh tokens associated with this token
-  return null;
+  await TokenRegistry.invalidateToken(token);
 };
