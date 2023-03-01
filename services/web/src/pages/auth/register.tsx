@@ -9,16 +9,21 @@ const RegisterPage = () => {
     <div>
       <Formik
         initialValues={{
+          firstName: '',
+          lastName: '',
           email: '',
           password: '',
         }}
         onSubmit={(values, actions) => {
-          auth.register(values);
+          const {email, firstName, lastName, password} = values;
+          auth.register({email, password}, {firstName, lastName});
         }}
       >
         <Form>
-          <Field name="email" type="email" />
-          <Field name="password" type="password" />
+          <Field name="firstName" autocomplete="given-name" />
+          <Field name="lastName" autocomplete="family-name" />
+          <Field name="email" type="email" autocomplete="email" />
+          <Field name="password" type="password" autocomplete="new-password" />
           <button type="submit">Submit</button>
         </Form>
       </Formik>

@@ -9,6 +9,7 @@ import {
 import {
   Credentials,
   DecodedJsonWebToken,
+  Names,
   Tokens,
 } from '~/redux/services/types/auth';
 import {AuthContext} from './context';
@@ -60,8 +61,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
     clear();
   };
 
-  const register = async (credentials: Credentials) => {
-    const data = await registerMutation(credentials)
+  const register = async (credentials: Credentials, names: Names) => {
+    const data = await registerMutation({...credentials, ...names})
       .unwrap()
       .catch(error => {
         // TODO: Handle error

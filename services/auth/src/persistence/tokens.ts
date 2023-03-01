@@ -12,7 +12,14 @@ export class TokenRegistry {
     const tokenId = randomUUID();
 
     const token = jwt.sign(
-      {email: user.email, type: 'access'},
+      {
+        user: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        type: 'access',
+      },
       env.JWT_SIGNING_SECRET,
       {
         subject: String(user.id),
@@ -45,7 +52,14 @@ export class TokenRegistry {
     if (!user) throw new Error('User not found');
 
     const newToken = jwt.sign(
-      {email: user.email, type: 'access'},
+      {
+        user: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        type: 'access',
+      },
       env.JWT_SIGNING_SECRET,
       {
         subject: String(user.id),

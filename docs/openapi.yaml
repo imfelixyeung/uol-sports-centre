@@ -38,7 +38,7 @@ paths:
       description: "Registers a user into the system, returning a JWT if successful."
 
       requestBody:
-        $ref: "#/components/requestBodies/Credentials"
+        $ref: "#/components/requestBodies/CredentialsWithName"
 
       responses:
         "200":
@@ -112,9 +112,18 @@ components:
     DecodedJWT:
       type: object
       properties:
-        email:
-          type: string
-          description: User Email
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User Email
+            firstName:
+              type: string
+              description: User First Name
+            lastName:
+              type: string
+              description: User Last Name
         type:
           type: string
           enum: [access]
@@ -150,6 +159,26 @@ components:
               password:
                 type: string
                 description: "The user's password"
+    CredentialsWithName:
+      description: "User's credentials (email password)"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: "The user's email"
+              password:
+                type: string
+                description: "The user's password"
+              firstName:
+                type: string
+                description: "The user's first name"
+              lastName:
+                type: string
+                description: "The user's last name"
     RefreshToken:
       description: "Refresh token"
       required: true
