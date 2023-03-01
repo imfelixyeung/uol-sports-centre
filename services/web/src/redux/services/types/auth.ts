@@ -1,4 +1,4 @@
-interface Credentials {
+export interface Credentials {
   email: string;
   password: string;
 }
@@ -16,7 +16,7 @@ export interface DecodedJsonWebToken {
 type AccessToken = string;
 type RefreshToken = string;
 
-interface Tokens {
+export interface Tokens {
   token: AccessToken;
   refreshToken: RefreshToken;
 }
