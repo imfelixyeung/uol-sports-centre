@@ -12,6 +12,7 @@ app = Flask(__name__,
 
 dotenv_path = Path('../.env')
 load_dotenv(dotenv_path=dotenv_path)
+print(os.getenv('APP_PORT'))
 localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
 stripe.api_key = os.getenv('STRIPE_API')
