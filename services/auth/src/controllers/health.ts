@@ -1,11 +1,12 @@
-import {Request, Response} from 'express';
+import {createController} from '.';
+import {getHealth} from '../services/health';
 
-const get = async (req: Request, res: Response) => {
-  // TODO: implement logic checks to determine service health
-  return res.json({
-    success: true,
-  });
-};
+const get = createController({
+  controller: async () => {
+    const health = await getHealth();
+    return health;
+  },
+});
 
 const healthControllers = {
   get,
