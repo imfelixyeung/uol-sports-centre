@@ -15,10 +15,10 @@ app = Flask(__name__,
 #load_dotenv(dotenv_path=dotenv_path)
 
 # Get absolute path of directory where .env is 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+dirtoenv = os.path.dirname(os.path.abspath(__file__))
 
 # Load .env file from base directory
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(dirtoenv, '.env'))
 
 localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
@@ -77,5 +77,5 @@ def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=os.getenv('APP_PORT'))
+    app.run(host='localhost', port=os.getenv('APP_PORT'))
 
