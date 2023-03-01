@@ -1,10 +1,13 @@
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
+import {useRouter} from 'next/router';
 import React from 'react';
+import {toast} from 'react-hot-toast';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
 const LoginPage = () => {
   const auth = useAuth();
+  const router = useRouter();
 
   return (
     <div>
@@ -13,8 +16,14 @@ const LoginPage = () => {
           email: '',
           password: '',
         }}
-        onSubmit={(values, actions) => {
-          auth.login(values);
+        onSubmit={async (values, actions) => {
+          await toast
+            .promise(auth.login(values), {
+              loading: 'Logging in...',
+              success: 'Logged in!',
+              error: 'Failed to login',
+            })
+            .then(() => router.push('/'));
         }}
       >
         <Form className="bg-gray-200 p-3">

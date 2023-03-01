@@ -1,10 +1,13 @@
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
+import {useRouter} from 'next/router';
 import React from 'react';
+import toast from 'react-hot-toast';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
 const RegisterPage = () => {
   const auth = useAuth();
+  const router = useRouter();
 
   return (
     <div>
@@ -15,9 +18,15 @@ const RegisterPage = () => {
           email: '',
           password: '',
         }}
-        onSubmit={(values, actions) => {
+        onSubmit={async (values, actions) => {
           const {email, firstName, lastName, password} = values;
-          auth.register({email, password}, {firstName, lastName});
+          await toast
+            .promise(auth.register({email, password}, {firstName, lastName}), {
+              loading: 'Registering...',
+              success: 'Register!',
+              error: 'Failed to register',
+            })
+            .then(() => router.push('/'));
         }}
       >
         <Form className="bg-gray-200 p-3">
