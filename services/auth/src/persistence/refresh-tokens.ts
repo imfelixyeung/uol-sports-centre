@@ -16,7 +16,7 @@ export class RefreshTokenRegistry {
       env.JWT_REFRESH_SIGNING_SECRET,
       {
         jwtid: refreshTokenId,
-        subject: tokenData.userId,
+        subject: String(tokenData.userId),
         algorithm: 'HS256',
         expiresIn: '24h',
         issuer: 'auth',

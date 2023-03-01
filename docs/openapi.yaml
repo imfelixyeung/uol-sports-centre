@@ -129,7 +129,7 @@ components:
           enum: [auth]
           description: Issuer
         sub:
-          type: string
+          type: number
           description: User Unique ID
         jti:
           type: string

@@ -15,7 +15,7 @@ export class TokenRegistry {
       {email: user.email, type: 'access'},
       env.JWT_SIGNING_SECRET,
       {
-        subject: user.id,
+        subject: String(user.id),
         algorithm: 'HS256',
         expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
@@ -48,7 +48,7 @@ export class TokenRegistry {
       {email: user.email, type: 'access'},
       env.JWT_SIGNING_SECRET,
       {
-        subject: user.id,
+        subject: String(user.id),
         algorithm: 'HS256',
         expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
