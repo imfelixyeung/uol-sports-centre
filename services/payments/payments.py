@@ -77,7 +77,7 @@ def createCheckout():
         mode = 'subscription',
         line_items=[
         {
-            "price": "price_1MgV8AEFmvAnvjKIvysiJpuy",
+            "price": "price_1MhJ9rK4xeIGYs5l0gg0dDzk",
             "quantity": 1
         },],
     )
