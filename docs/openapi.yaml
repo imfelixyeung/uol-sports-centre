@@ -2,17 +2,28 @@ openapi: "3.0.2"
 info:
   title: API
   version: "1.0"
+
 servers:
   - url: http://localhost/api
-paths:
-  /example:
-    get:
-      responses:
-        "200":
-          description: OK
 
+tags:
+  - name: auth
+    description: Authentication microservice
+
+  - name: users
+    description: User microservice
+
+  - name: booking
+    description: Booking microservice
+
+  - name: status
+    description: status microservice
+
+paths:
   /auth/login:
     post:
+      tags:
+        - auth
       description: "Logs a user into the system, returning a JWT if successful."
 
       requestBody:
@@ -24,6 +35,8 @@ paths:
 
   /auth/logout:
     post:
+      tags:
+        - auth
       description: "Logs a user out of the system, invalidating their JWT"
 
       security:
@@ -35,6 +48,8 @@ paths:
 
   /auth/register:
     post:
+      tags:
+        - auth
       description: "Registers a user into the system, returning a JWT if successful."
 
       requestBody:
@@ -46,6 +61,8 @@ paths:
 
   /auth/token:
     post:
+      tags:
+        - auth
       description: "Refreshes a JWT"
 
       security:
@@ -60,6 +77,8 @@ paths:
 
   /auth/session:
     get:
+      tags:
+        - auth
       description: "Validates a JWT, returning it's contents if valid"
 
       security:
@@ -71,6 +90,8 @@ paths:
 
   /auth/health:
     get:
+      tags:
+        - auth
       description: "Returns the health of the auth service"
 
       responses:
@@ -79,6 +100,8 @@ paths:
 
   /status/report:
     get:
+      tags:
+        - status
       description: "Returns the status report of the system"
 
       responses:
@@ -87,68 +110,86 @@ paths:
 
   /status/health:
     get:
+      tags:
+        - status
       description: "Returns the health of the status service"
 
       responses:
         "200":
           $ref: "#/components/responses/HealthCheck"
-  
+
   /users/login:
     post:
+      tags:
+        - users
       description: "Takes the user through the log in phase"
       responses:
         "200":
           description: OK
-  
+
   /users/accountInfo:
     get:
+      tags:
+        - users
       description: "Returns account info as JSON"
       responses:
         "200":
           description: OK
-          
+
   /users/pricingList:
     get:
+      tags:
+        - users
       description: "Returns pricing list as JSON"
       responses:
         "200":
-          description: OK      
-   
-   /users/bookSession:
+          description: OK
+
+  /users/bookSession:
     post:
+      tags:
+        - users
       description: "Allows the user to book a session"
       responses:
         "200":
-          description: OK    
-   
-   /users/membership:
+          description: OK
+
+  /users/membership:
     post:
+      tags:
+        - users
       description: "Takes the user through the process of signing up for the membership or modifying it"
       responses:
         "200":
-          description: OK  
-   
-   /users/payment:
+          description: OK
+
+  /users/payment:
     post:
+      tags:
+        - users
       description: "Takes the user through the process of payment"
       responses:
         "200":
-          description: OK 
-          
-   /users/bookingHistory:
+          description: OK
+
+  /users/bookingHistory:
     get:
+      tags:
+        - users
       description: "Returns booking history as JSON"
       responses:
         "200":
-          description: OK 
-   
-   /users/upcomingSessions:
+          description: OK
+
+  /users/upcomingSessions:
     get:
+      tags:
+        - users
       description: "Returns upcoming sessions as JSON"
       responses:
         "200":
-          description: OK 
-  
+          description: OK
+
    /users/upcomingSessions:
     get:
       description: "Returns upcoming sessions as JSON"
