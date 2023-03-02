@@ -309,8 +309,8 @@ paths:
     put:
       tags:
         - booking
-      summary: Returns a booking with the specified ID
-      description: Returns a booking with the specified ID
+      summary: Updates a booking with the specified ID
+      description: Updates a booking with the specified ID
       operationId: updateBookingById
       parameters:
         - in: path
