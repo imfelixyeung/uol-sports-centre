@@ -1,4 +1,5 @@
 import logging, json
+from createDictionaries import *
 from flask import Flask, request
 from app import app, db, models, admin
 from .models import Facility, OpenTime, Activity
@@ -24,11 +25,7 @@ def getFacility(id):
         }
 
     else:
-        returnValue = {
-            "id": facilityQuery.id,
-            "name": facilityQuery.name,
-            "capacity": facilityQuery.capacity
-        }
+        returnValue = makeFacility(facilityQuery)
 
     return json.dumps(returnValue)
 
@@ -60,11 +57,7 @@ def addFacility():
     returnValue = {
         "status": "ok",
         "message": "facility added",
-        "facility": {
-            "id": addition.id,
-            "name": addition.name,
-            "capacity": addition.capacity
-        }
+        "facility": makeFacility(addition)
     }
 
     return json.dumps(returnValue)
@@ -72,17 +65,11 @@ def addFacility():
 ################# OPENING TIMES API CALLS #################
 
 # API call to get an opening time by ID
-@app.route('/time/<int:id>', methods=['POST'])
+@app.route('/time/<int:id>', methods=['GET'])
 def getOpeningTime(id):
     openTimeQuery = models.OpenTime.query.get(id)
 
-    returnValue = {
-        "id": openTimeQuery.id,
-        "day": openTimeQuery.openingTime,
-        "openTime": openTimeQuery.day,
-        "closeTime": openTimeQuery.closingTime,
-        "facilityID": openTimeQuery.facility_id
-    }
+    returnValue = makeOpenTime(openTimeQuery)
 
     return json.dumps(returnValue)
 
@@ -107,14 +94,8 @@ def addOpeningTime():
     # Return the status of the addition and the object added to the database
     returnValue = {
         "status": "ok",
-        "message": "facility added",
-        "facility": {
-            "id": addition.id,
-            "day": addition.day,
-            "openTime": addition.openingTime,
-            "closeTime": addition.closingTime,
-            "facilityID": addition.facility_id
-        }
+        "message": "Opening time added",
+        "facility": makeOpenTime(addition)
     }
 
     return json.dumps(returnValue)
@@ -127,11 +108,6 @@ def addOpeningTime():
 def getActivity(id):
     activityQuery = models.Activity.query.get(id)
 
-    returnValue = {
-        "id": activityQuery.id,
-        "duration": activityQuery.duration,
-        "capacity": activityQuery.capacity,
-        "facilityID": activityQuery.facility_id
-    }
+    returnValue = makeActivity(activityQuery)
 
     return json.dumps(returnValue)
