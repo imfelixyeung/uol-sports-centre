@@ -1,6 +1,7 @@
 import os
 import unittest
 import json
+from createDictionaries import *
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app import app, db, models
@@ -85,6 +86,29 @@ class facilitiesTests(unittest.TestCase):
             }
 
             self.assertEqual({"id": 1, "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)}, checkData)
+            
+            responseData = json.loads(response.data)
+            
+            expectedResponse = {
+                "status": "ok",
+                "message": "Opening time added",
+                "facility": checkData
+            }
+
+            self.assertEqual(responseData, expectedResponse)
+
+    def test_add_activity(self):
+        with app.app_context():
+
+            response = self.app.post('/activities', json={
+                "duration": int(30), "capacity": int(20), "facilityID": int(1)
+                })
+
+            checkQuery = models.Activity.query.get(1)
+
+            checkData =  makeActivity(checkQuery)
+
+            self.assertEqual({"id": 1, "duration": int(30), "capacity": int(20), "facilityID": int(1)}, checkData)
             
             responseData = json.loads(response.data)
             

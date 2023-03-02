@@ -111,3 +111,32 @@ def getActivity(id):
     returnValue = makeActivity(activityQuery)
 
     return json.dumps(returnValue)
+
+# API call to add opening time to table
+@app.route('/activities', methods=['POST'])
+def addActivity():
+    # Get data from body of post request
+    data = json.loads(request.data)
+
+    # Check that the supplied foreign key existss
+    if(not models.Facility.query.get(int(data.get("facilityID")))):
+        return json.dumps({"status": "failed", "message": "facility not found"})
+    
+    # Add the supplied object to the data base
+    addition = models.Activity(duration=data.get("duration"),
+                               capacity=data.get("capacity"),
+                               facility_id=data.get("facilityID"))
+    db.session.add(addition)
+    db.session.commit()
+
+    if(not addition):
+        return json.dumps({"status": "failed", "message": "activity not added"})
+
+    # Return the status of the addition and the object added to the database
+    returnValue = {
+        "status": "ok",
+        "message": "Opening time added",
+        "facility": makeActivity(addition)
+    }
+
+    return json.dumps(returnValue)
