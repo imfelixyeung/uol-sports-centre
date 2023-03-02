@@ -6,7 +6,7 @@ import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
-interface AuthFormProps {
+export interface AuthFormProps {
   variant: 'login' | 'register';
 }
 
@@ -44,21 +44,38 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           password: yup.string().required().min(8, 'Password too short!'),
         })}
       >
-        <Form className="bg-gray-200 p-3">
-          <h2 className="font-bold">
-            {variant === 'login' ? 'Login' : 'Register'}
+        <Form className="flex flex-col gap-3 text-center">
+          <h2 className="font-bold text-2xl mb-6">
+            {variant === 'login' ? 'Log In' : 'Register'}
           </h2>
-          <label htmlFor="email">email</label>
-          <Field id="email" name="email" type="email" />
-          <br />
-          <label htmlFor="password">password</label>
-          <Field id="password" name="password" type="password" />
-          <br />
-          <button type="submit">
-            {variant === 'login' ? 'Login' : 'Register'}
+
+          <label htmlFor="email" className="flex flex-col">
+            <span className="sr-only">Email</span>
+            <Field
+              id="email"
+              name="email"
+              type="email"
+              className="bg-white p-2"
+              placeholder="Email"
+            />
+          </label>
+
+          <label htmlFor="password" className="flex flex-col">
+            <span className="sr-only">Password</span>
+            <Field
+              id="password"
+              name="password"
+              type="password"
+              className="bg-white p-2"
+              placeholder="Password"
+            />
+          </label>
+
+          <button type="submit" className="p-3 bg-red-300">
+            {variant === 'login' ? 'Log In' : 'Register'}
           </button>
-          <br />
-          <span>
+
+          <div className="bg-white p-2 text-sm">
             <span>
               {variant === 'register'
                 ? 'Already have an account?'
@@ -68,9 +85,9 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               href={variant === 'register' ? '/auth/login' : '/auth/register'}
               className="underline"
             >
-              {variant === 'register' ? 'Login' : 'Register'}
+              {variant === 'register' ? 'Log In' : 'Register'}
             </Link>
-          </span>
+          </div>
         </Form>
       </Formik>
     </>
