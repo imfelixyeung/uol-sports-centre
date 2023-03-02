@@ -99,7 +99,7 @@ def webhookReceived():
 @app.route('/health')
 def get_health():
     if service_healthy:
-        return 'ok'
+        return 200
     else:
         return 'not ok', 500
 
