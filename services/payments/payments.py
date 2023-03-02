@@ -96,6 +96,13 @@ def redirectCheckout():
 def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
 
+@app.route('/health')
+def get_health():
+    if service_healthy:
+        return 'ok'
+    else:
+        return 'not ok', 500
+
 if __name__ == '__main__':
     app.run(host='localhost', port=os.getenv('APP_PORT'))
 

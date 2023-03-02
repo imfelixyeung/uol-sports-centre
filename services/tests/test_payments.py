@@ -1,5 +1,5 @@
 import unittest
-from payments.payments import app
+from payments import app
 
 #Creating a class in order to test createCheckout()
 class MakePurchasableTest(unittest.TestCase):
