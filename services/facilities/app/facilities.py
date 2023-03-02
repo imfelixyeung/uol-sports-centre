@@ -56,12 +56,14 @@ def getOpeningTime(id):
     Day = openTimeQuery.day
     Open = openTimeQuery.openingTime
     Close = openTimeQuery.closingTime
+    facilityID = openTimeQuery.facility_id
 
     returnValue = {
         "id": openTimeID,
         "Day": Day,
         "Open Time": Open,
-        "Close Time": Close
+        "Close Time": Close,
+        "Facility ID": facilityID
     }
 
     return json.dumps(returnValue)
@@ -71,8 +73,18 @@ def getOpeningTime(id):
 # API call to get an opening time by ID
 @app.route('/facility/activity/<int:id>', methods=['GET', 'POST'])
 def getActivity(id):
-    returnValue = {
+    activityQuery = models.Activity.query.get(id)
 
+    activityID = activityQuery.id
+    duration = activityQuery.duration
+    capacity = activityQuery.capacity
+    facilityID = activityQuery.facility_id
+
+    returnValue = {
+        "id": activityID,
+        "Duration": duration,
+        "Capacity": capacity,
+        "Facility ID": facilityID
     }
 
     return json.dumps(returnValue)
