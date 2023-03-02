@@ -4,7 +4,8 @@ services:
   web:
     build:
       context: ./services/web
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: dev
     environment:
       - PORT=80
       - HOST=web
@@ -12,6 +13,69 @@ services:
       - network
     volumes:
       - ./services/web:/app
+      - /app/node_modules
+
+  auth:
+    build:
+      context: ./services/auth
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=auth
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
+    networks:
+      - network
+    volumes:
+      - ./services/auth:/app
+      - /app/node_modules
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  users:
+    build:
+      context: ./services/users
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=users
+    networks:
+      - network
+    volumes:
+      - ./services/users:/app
+      - /app/node_modules
+
+  status:
+    build:
+      context: ./services/status
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=status
+    networks:
+      - network
+    volumes:
+      - ./services/status:/app
       - /app/node_modules
 
   gateway:
@@ -22,6 +86,11 @@ services:
       - "${APP_PORT}:80"
     networks:
       - network
+    links:
+      - web
+      - auth
+      - users
+      - status
 
 networks:
   network:

@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-alpine as base
 
 WORKDIR /app
 
@@ -9,8 +9,24 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# build app
+# copy source code
 COPY . .
+
+
+
+# Development target
+FROM base as dev
+
+# serve app
+EXPOSE ${PORT}
+CMD [ "pnpm", "dev", "-p", "${PORT}", "-H", "${HOST}" ]
+
+
+
+# Production target
+FROM base as prod
+
+# build app
 RUN pnpm build
 
 # serve app

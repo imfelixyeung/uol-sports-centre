@@ -4,3 +4,6 @@
 # environment files
 .env
 .env.dev
+
+# Persistence
+/persistence
