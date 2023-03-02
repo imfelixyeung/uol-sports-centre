@@ -15,8 +15,7 @@ export class TokenRegistry {
       {
         user: {
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          role: user.role,
         },
         type: 'access',
       },
@@ -55,8 +54,7 @@ export class TokenRegistry {
       {
         user: {
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          role: user.role,
         },
         type: 'access',
       },

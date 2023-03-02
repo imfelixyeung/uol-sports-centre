@@ -2,13 +2,12 @@ import {createContext} from 'react';
 import type {
   Credentials,
   DecodedJsonWebToken,
-  Names,
 } from '~/redux/services/types/auth';
 
 export const AuthContext = createContext<{
   login: (credentials: Credentials) => Promise<void>;
   logout: () => Promise<void>;
-  register: (credentials: Credentials, names: Names) => Promise<void>;
+  register: (credentials: Credentials) => Promise<void>;
   getSession: () => Promise<void>;
   session: DecodedJsonWebToken | null;
   token: string | null;

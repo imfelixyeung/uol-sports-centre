@@ -1,11 +1,10 @@
 import {z} from 'zod';
 import {createController} from '.';
 import {credentialsSchema} from '../schema/credentials';
-import {nameSchema} from '../schema/names';
 import {
   getSessionFromToken,
   refreshAccessToken,
-  registerWithCredentials as registerWithCredentialsAndName,
+  registerWithCredentials as registerWithCredentials,
   signInWithCredentials,
   signOutToken,
 } from '../services/auth';
@@ -29,14 +28,13 @@ const postLogout = createController({
 });
 
 const postRegister = createController({
-  bodySchema: credentialsSchema.merge(nameSchema),
+  bodySchema: credentialsSchema,
   authRequired: false,
   controller: async ({body}) => {
-    const {email, firstName, lastName, password} = body;
+    const {email, password} = body;
     const credentials = {email, password};
-    const name = {firstName, lastName};
 
-    const token = await registerWithCredentialsAndName(credentials, name);
+    const token = await registerWithCredentials(credentials);
     return token;
   },
 });

@@ -12,15 +12,13 @@ const RegisterPage = () => {
     <div>
       <Formik
         initialValues={{
-          firstName: '',
-          lastName: '',
           email: '',
           password: '',
         }}
         onSubmit={async (values, actions) => {
-          const {email, firstName, lastName, password} = values;
+          const {email, password} = values;
           await toast
-            .promise(auth.register({email, password}, {firstName, lastName}), {
+            .promise(auth.register({email, password}), {
               loading: 'Registering...',
               success: 'Register!',
               error: 'Failed to register',
@@ -31,12 +29,6 @@ const RegisterPage = () => {
       >
         <Form className="bg-gray-200 p-3">
           <h2 className="font-bold">Register</h2>
-          <label htmlFor="firstName">firstName</label>
-          <Field id="firstName" name="firstName" autocomplete="given-name" />
-          <br />
-          <label htmlFor="lastName">lastName</label>
-          <Field id="lastName" name="lastName" autocomplete="family-name" />
-          <br />
           <label htmlFor="email">email</label>
           <Field id="email" name="email" type="email" autocomplete="email" />
           <br />
@@ -49,6 +41,7 @@ const RegisterPage = () => {
           />
           <br />
           <button type="submit">Submit</button>
+          <br />
           <span>
             Already have an account?{' '}
             <Link href="/auth/login" className="underline">

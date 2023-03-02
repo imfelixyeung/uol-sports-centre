@@ -1,4 +1,4 @@
-import {Credentials, Name} from '../schema/credentials';
+import {Credentials} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
 import {UserRegistry} from '../persistence/users';
@@ -33,10 +33,7 @@ export const signInWithCredentials = async (credentials: Credentials) => {
   return {token, refreshToken};
 };
 
-export const registerWithCredentials = async (
-  credentials: Credentials,
-  name: Name
-) => {
+export const registerWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
 
   const user = await UserRegistry.getUserByEmail(email);
@@ -49,10 +46,10 @@ export const registerWithCredentials = async (
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // create user
-  const newUser = await UserRegistry.createUser(
-    {email, password: hashedPassword},
-    name
-  );
+  const newUser = await UserRegistry.createUser({
+    email,
+    password: hashedPassword,
+  });
 
   // success, create token
   const token = await TokenRegistry.createTokenForUser(newUser);

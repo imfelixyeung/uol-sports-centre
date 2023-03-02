@@ -3,11 +3,6 @@ export interface Credentials {
   password: string;
 }
 
-export interface Names {
-  firstName: string;
-  lastName: string;
-}
-
 export interface DecodedJsonWebToken {
   email: string;
   type: 'access';
@@ -28,7 +23,7 @@ export interface Tokens {
 
 export type LoginRequest = Credentials;
 
-export type RegisterRequest = Credentials & Names;
+export type RegisterRequest = Credentials;
 
 export interface RefreshTokenRequest {
   refreshToken: string;

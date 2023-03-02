@@ -118,12 +118,9 @@ components:
             email:
               type: string
               description: User Email
-            firstName:
+            role:
               type: string
-              description: User First Name
-            lastName:
-              type: string
-              description: User Last Name
+              description: User's role
         type:
           type: string
           enum: [access]

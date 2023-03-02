@@ -1,4 +1,4 @@
-import {Credentials, Name} from '../schema/credentials';
+import {Credentials} from '../schema/credentials';
 import {db} from '../utils/db';
 
 export class UserRegistry {
@@ -7,11 +7,10 @@ export class UserRegistry {
     return user;
   }
 
-  static async createUser(credentials: Credentials, name: Name) {
+  static async createUser(credentials: Credentials) {
     const {email, password} = credentials;
-    const {firstName, lastName} = name;
     const user = await db.user.create({
-      data: {email, password, firstName, lastName},
+      data: {email, password},
     });
     return user;
   }
