@@ -23,7 +23,7 @@ def getFacility(id):
 
     returnValue = {
         "id": facilityID,
-        "name": facilityID,
+        "name": facilityName,
         "capacity": facilityCapacity
     }
 

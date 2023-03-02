@@ -1,8 +1,8 @@
-"""fixed relationship error between facilities and other tables
+"""Initial migration
 
-Revision ID: d91b52492ed1
-Revises: 1d50fb095d38
-Create Date: 2023-03-01 17:23:28.055308
+Revision ID: ff1f66cb3bf0
+Revises: 
+Create Date: 2023-03-02 09:56:15.653597
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd91b52492ed1'
-down_revision = '1d50fb095d38'
+revision = 'ff1f66cb3bf0'
+down_revision = None
 branch_labels = None
 depends_on = None
 

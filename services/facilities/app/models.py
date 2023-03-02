@@ -7,8 +7,8 @@ class Facility(db.Model):
     capacity = db.Column(db.Integer)
 
     # Foreign Connectors for the Facilities table
-    openTimes = db.relationship('OpenTime', backref='facility', lazy='dynamic')
-    activities = db.relationship('Activity', backref='facility', lazy='dynamic')
+    openTimes = db.relationship('OpenTime', backref='facility')
+    activities = db.relationship('Activity', backref='facility')
 
 # Model for the OpenTime table
 # The openingTime and closingTime fields are stored as minutes after midnight.
@@ -20,7 +20,7 @@ class OpenTime(db.Model):
     closingTime = db.Column(db.Integer)
 
     # Foreign Connectors for the OpenTimes table
-    facility_id = db.Column(db.Integer, db.ForeignKey('facility.id'))
+    facility_id = db.Column(db.ForeignKey(Facility.id))
 
 # Model for the Activity table
 # The duration field is stored as mileseconds to help with communication to other microservices
@@ -30,6 +30,6 @@ class Activity(db.Model):
     capacity = db.Column(db.Integer)
 
     # Foreign Connectors for the Activity table
-    facility_id = db.Column(db.Integer, db.ForeignKey('facility.id'))
+    facility_id = db.Column(db.ForeignKey(Facility.id))
     
 
