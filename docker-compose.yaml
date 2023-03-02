@@ -8,6 +8,14 @@ services:
       - HOST=web
     networks:
       - network
+  
+  facilities:
+    build: ./services/facilities
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+    networks:
+      - network
 
   gateway:
     build: ./gateway
