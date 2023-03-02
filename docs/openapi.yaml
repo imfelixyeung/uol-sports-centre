@@ -190,13 +190,68 @@ paths:
         "200":
           description: OK
 
-   /users/upcomingSessions:
+  /booking/bookings:
     get:
-      description: "Returns upcoming sessions as JSON"
+      tags:
+        - booking
+      summary: Returns all bookings
+      description: Returns all the bookings
+      operationId: getBookings
+
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example: 1
+
       responses:
         "200":
-          description: OK 
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  bookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Booking"
 
+    post:
+      tags:
+        - booking
+      summary: Add a new booking
+      description: Add a new booking
+      operationId: addBooking
+      requestBody:
+        description: Create a new booking
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Booking"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "405":
+          description: Invalid input
 
 components:
   securitySchemes:
@@ -245,6 +300,41 @@ components:
         jti:
           type: string
           description: JWT ID
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Booking ID
+          example: 1
+        transactionId:
+          type: number
+          description: Transaction ID
+          example: 1
+        facilityId:
+          type: number
+          description: Facility ID
+          example: 1
+        userID:
+          type: number
+          description: User ID
+          example: 1
+        starts:
+          type: string
+          description: Start time of the booking
+          example: "2023-03-02T10:00:00.000Z"
+        duration:
+          type: number
+          description: Length of the booking
+        created:
+          type: string
+          description: When the booking was created
+          example: "2023-03-02T10:00:00.000Z"
+        updated:
+          type: string
+          description: When the booking was last updated
+          example: "2023-03-02T10:00:00.000Z"
 
   requestBodies:
     Credentials:
