@@ -4,7 +4,6 @@ import sqlite3
 import stripe
 import os
 from dotenv import load_dotenv
-from pathlib import Path
 from flask import Flask, redirect, render_template
 
 app = Flask(__name__,
@@ -35,19 +34,24 @@ def addProductDatabase(name, priceID, price, type):
 
 def MakePurchasable(productName, productPrice, productType="product"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
-    stripe.product.create(
-        #To Do: create products for bookings and subscriptions
+
+    #Adding product to stripe
+    productStripe = stripe.Product.create(name=productName)
+    price = stripe.Price.create(
+        unit_amount_decimal=productPrice,
+        currency="gbp",
+        product=productStripe.stripe_id
     )
-    addProductDatabase(productName, "pricekey", productPrice, productType)
+
+    #Adding product to database
+    addProductDatabase(productName, price.stripe_id, productPrice, productType)
+
+    #DB Test (will be a part of unit tests)
     con = sqlite3.connect('database.db')
     cur = con.cursor()
     products = cur.execute('SELECT * FROM products').fetchall()
     print(products[0])
     con.close()
-    #stripe.price.create(
-        #To Do: create prices for annual and monthly memberships
-        #and bookings
-    #)
 
 def MakeAPurchase(userID, productName):
     '''redirects user to stripe checkout for chosen product'''
@@ -66,12 +70,6 @@ card = {
     "cvc": "123"
 }
 
-@app.route('/', methods=['GET'])
-def get_index():
-    MakePurchasable("Booking1", "10.99")
-    return render_template('index.html')
-
-@app.route("/checkout-session", methods=['POST'])
 def createCheckout():
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     checkoutSession = stripe.checkout.Session.create(
@@ -83,7 +81,16 @@ def createCheckout():
             "quantity": 1
         },],
     )
-    return redirect(checkoutSession.url, code=303)
+    return checkoutSession.url
+
+@app.route('/', methods=['GET'])
+def get_index():
+    MakePurchasable("Booking1", "10.99")
+    return render_template('index.html')
+
+@app.route("/checkout-session", methods=['POST'])
+def redirectCheckout():
+    return redirect(createCheckout(), code=303)
 
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
@@ -91,4 +98,8 @@ def webhookReceived():
 
 if __name__ == '__main__':
     app.run(host='localhost', port=os.getenv('APP_PORT'))
+
+
+
+
 
