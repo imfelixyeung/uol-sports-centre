@@ -5,17 +5,25 @@ import {User} from '@prisma/client';
 import {db} from '../utils/db';
 import dayjs from 'dayjs';
 
+const TOKEN_EXPIRES_IN = '1h';
+
 export class TokenRegistry {
   static async createTokenForUser(user: User) {
     const tokenId = randomUUID();
 
     const token = jwt.sign(
-      {email: user.email, type: 'access'},
+      {
+        user: {
+          email: user.email,
+          role: user.role,
+        },
+        type: 'access',
+      },
       env.JWT_SIGNING_SECRET,
       {
-        subject: user.id,
+        subject: String(user.id),
         algorithm: 'HS256',
-        expiresIn: '1h',
+        expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
         jwtid: tokenId,
       }
@@ -43,12 +51,18 @@ export class TokenRegistry {
     if (!user) throw new Error('User not found');
 
     const newToken = jwt.sign(
-      {email: user.email, type: 'access'},
+      {
+        user: {
+          email: user.email,
+          role: user.role,
+        },
+        type: 'access',
+      },
       env.JWT_SIGNING_SECRET,
       {
-        subject: user.id,
+        subject: String(user.id),
         algorithm: 'HS256',
-        expiresIn: '1h',
+        expiresIn: TOKEN_EXPIRES_IN,
         issuer: 'auth',
         jwtid: tokenData.id,
       }

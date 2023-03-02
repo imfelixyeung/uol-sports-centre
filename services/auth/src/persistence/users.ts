@@ -9,7 +9,9 @@ export class UserRegistry {
 
   static async createUser(credentials: Credentials) {
     const {email, password} = credentials;
-    const user = await db.user.create({data: {email, password}});
+    const user = await db.user.create({
+      data: {email, password},
+    });
     return user;
   }
 }

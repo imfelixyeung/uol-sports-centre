@@ -9,7 +9,7 @@ export interface DecodedJsonWebToken {
   iat: number;
   exp: number;
   iss: string;
-  sub: string;
+  sub: number;
   jti: string;
 }
 

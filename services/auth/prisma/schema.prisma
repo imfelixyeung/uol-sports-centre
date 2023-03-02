@@ -11,9 +11,10 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
+  role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tokens    Token[]  @relation("userHasTokens")
@@ -24,7 +25,7 @@ model Token {
 
   token         String        @unique
   user          User          @relation("userHasTokens", fields: [userId], references: [id])
-  userId        String
+  userId        Int
   expiresAt     DateTime
   refreshTokens RefreshToken? @relation("tokenHasRefreshTokens")
 

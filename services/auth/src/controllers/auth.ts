@@ -4,7 +4,7 @@ import {credentialsSchema} from '../schema/credentials';
 import {
   getSessionFromToken,
   refreshAccessToken,
-  registerWithCredentials,
+  registerWithCredentials as registerWithCredentials,
   signInWithCredentials,
   signOutToken,
 } from '../services/auth';
@@ -31,7 +31,8 @@ const postRegister = createController({
   bodySchema: credentialsSchema,
   authRequired: false,
   controller: async ({body}) => {
-    const credentials = body;
+    const {email, password} = body;
+    const credentials = {email, password};
 
     const token = await registerWithCredentials(credentials);
     return token;
