@@ -57,6 +57,18 @@ services:
     networks:
       - network
 
+  users-database:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=users
+      - POSTGRES_DB=users-database
+    networks:
+      - network
+    volumes:
+      - ./persistence/users/db:/var/lib/postgresql/data
+
   gateway:
     build: ./gateway
     env_file:
