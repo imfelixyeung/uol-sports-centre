@@ -197,7 +197,6 @@ paths:
       summary: Returns all bookings
       description: Returns all the bookings
       operationId: getBookings
-
       parameters:
         - in: query
           name: limit
@@ -212,10 +211,9 @@ paths:
             type: number
           required: false
           example: 1
-
       responses:
         "200":
-          description: Successful operation
+          description: Successful operation retuns the array of bookings
           content:
             application/json:
               schema:
@@ -238,20 +236,168 @@ paths:
       operationId: addBooking
       requestBody:
         description: Create a new booking
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Booking"
-        required: true
+              type: object
+              properties:
+                userId:
+                  type: number
+                  description: The user the booking relates to
+                facilityId:
+                  type: number
+                  description: The facility that the booking relates to
+                transactionId:
+                  type: number
+                  description: The transaction linked with this booking
+                starts:
+                  type: string
+                  description: the start time of the booking
+                duration:
+                  type: string
+                  description: the length of time of the booking in minutes
+            examples:
+              example:
+                summary: Example
+                value:
+                  userId: 1
+                  facilityId: 1
+                  transactionId: 1
+                  starts: "2023-03-02T10:00:00.000Z"
+                  duration: 60
+
       responses:
         "200":
-          description: Successful operation
+          description: Successful operation returns the new booking
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Booking"
         "405":
           description: Invalid input
+
+  /booking/booking/{bookingId}:
+    get:
+      tags:
+        - booking
+      summary: Returns a booking with the specified ID
+      description: Returns a booking with the specified ID
+      operationId: getBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+    put:
+      tags:
+        - booking
+      summary: Returns a booking with the specified ID
+      description: Returns a booking with the specified ID
+      operationId: updateBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+      requestBody:
+        description: update a booking
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: number
+                  description: The user the booking relates to
+                facilityId:
+                  type: number
+                  description: The facility that the booking relates to
+                transactionId:
+                  type: number
+                  description: The transaction linked with this booking
+                starts:
+                  type: string
+                  description: the start time of the booking
+                duration:
+                  type: string
+                  description: the length of time of the booking in minutes
+            examples:
+              example:
+                summary: Example
+                value:
+                  userId: 1
+                  facilityId: 1
+                  transactionId: 1
+                  starts: "2023-03-02T10:00:00.000Z"
+                  duration: 60
+              twoHourDuration:
+                summary: 120 minute duration
+                description: Update the specified booking with a 120 minute duration
+                value:
+                  duration: 120
+      responses:
+        "200":
+          description: Successful operation returns the updated booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+    delete:
+      tags:
+        - booking
+      summary: Deletes a booking with the specified ID
+      description: Deletes a booking with the specified ID
+      operationId: deleteBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the deleted booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
 
 components:
   securitySchemes:
