@@ -13,19 +13,22 @@ admin.add_view(ModelView(Activity, db.session))
 ################# FACILITIES API CALLS #################
 
 # API call to get a facility from the database based on ID
-@app.route('/facility/<int:id>', methods=['GET', 'POST'])
+@app.route('/facility/<int:id>', methods=['GET'])
 def getFacility(id):    
     facilityQuery = models.Facility.query.get(id)
 
-    facilityID = facilityQuery.id
-    facilityName = facilityQuery.name
-    facilityCapacity = facilityQuery.capacity
+    if(not facilityQuery):
+        returnValue = {
+            "status": "error",
+            "message": "resource not found"
+        }
 
-    returnValue = {
-        "id": facilityID,
-        "name": facilityName,
-        "capacity": facilityCapacity
-    }
+    else:
+        returnValue = {
+            "id": facilityQuery.id,
+            "name": facilityQuery.name,
+            "capacity": facilityQuery.capacity
+        }
 
     return json.dumps(returnValue)
 
@@ -41,58 +44,94 @@ def updateFacility(id):
     return
 
 # API call to add a facility to the database
-@app.route('/addFacility', methods=['POST'])
+@app.route('/facilities', methods=['POST'])
 def addFacility():
+    # Get data from body of post request
     data = json.loads(request.data)
     facilityName = data.get("name")
     facilityCapacity = int(data.get("capacity"))
 
+    # Add the supplied object to the data base
     addition = models.Facility(name=facilityName, capacity=facilityCapacity)
     db.session.add(addition)
     db.session.commit()
 
-    return "yeah"
-
-################# OPENING TIMES API CALLS #################
-
-# API call to get an opening time by ID
-@app.route('/time/<int:id>', methods=['GET', 'POST'])
-def getOpeningTime(id):
-    openTimeQuery = models.OpenTime.query.get(id)
-
-    openTimeID = openTimeQuery.id
-    Day = openTimeQuery.day
-    Open = openTimeQuery.openingTime
-    Close = openTimeQuery.closingTime
-    facilityID = openTimeQuery.facility_id
-
+    # Return the status of the addition and the object added to the database
     returnValue = {
-        "id": openTimeID,
-        "day": Day,
-        "openTime": Open,
-        "closeTime": Close,
-        "facilityID": facilityID
+        "status": "ok",
+        "message": "facility added",
+        "facility": {
+            "id": addition.id,
+            "name": addition.name,
+            "capacity": addition.capacity
+        }
     }
 
     return json.dumps(returnValue)
 
+################# OPENING TIMES API CALLS #################
+
+# API call to get an opening time by ID
+@app.route('/time/<int:id>', methods=['POST'])
+def getOpeningTime(id):
+    openTimeQuery = models.OpenTime.query.get(id)
+
+    returnValue = {
+        "id": openTimeQuery.id,
+        "day": openTimeQuery.openingTime,
+        "openTime": openTimeQuery.day,
+        "closeTime": openTimeQuery.closingTime,
+        "facilityID": openTimeQuery.facility_id
+    }
+
+    return json.dumps(returnValue)
+
+# API call to add opening time to table
+@app.route('/times', methods=['POST'])
+def addOpeningTime():
+    # Get data from body of post request
+    data = json.loads(request.data)
+
+    # Check that the supplied foreign key existss
+    if(not models.Facility.query.get(int(data.get("facilityID")))):
+        return json.dumps({"status": "failed", "message": "facility not found"})
+    
+    # Add the supplied object to the data base
+    addition = models.OpenTime(day=data.get("day"), 
+                               openingTime=data.get("openTime"), 
+                               closingTime=data.get("closeTime"),
+                               facility_id=data.get("facilityID"))
+    db.session.add(addition)
+    db.session.commit()
+
+    # Return the status of the addition and the object added to the database
+    returnValue = {
+        "status": "ok",
+        "message": "facility added",
+        "facility": {
+            "id": addition.id,
+            "day": addition.day,
+            "openTime": addition.openingTime,
+            "closeTime": addition.closingTime,
+            "facilityID": addition.facility_id
+        }
+    }
+
+    return json.dumps(returnValue)
+
+
 ################# ACTIVITY API CALLS #################
 
 # API call to get an opening time by ID
-@app.route('/activity/<int:id>', methods=['GET', 'POST'])
+@app.route('/activity/<int:id>', methods=['GET'])
 def getActivity(id):
     activityQuery = models.Activity.query.get(id)
 
-    activityID = activityQuery.id
-    duration = activityQuery.duration
-    capacity = activityQuery.capacity
-    facilityID = activityQuery.facility_id
-
     returnValue = {
-        "id": activityID,
-        "duration": duration,
-        "capacity": capacity,
-        "facilityID": facilityID
+        "id": activityQuery.id,
+        "duration": activityQuery.duration,
+        "capacity": activityQuery.capacity,
+        "facilityID": activityQuery.facility_id
     }
 
     return json.dumps(returnValue)

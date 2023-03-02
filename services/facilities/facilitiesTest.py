@@ -43,26 +43,58 @@ class facilitiesTests(unittest.TestCase):
     def test_add_facility(self):
         with app.app_context():
 
-            response = self.app.post('/addFacility', json={
+            response = self.app.post('/facilities', json={
                 "name": "Tennis Court", "capacity": int(6)
                 })
 
-            # check = self.app.get('/facility/2')
-
-            # checkData = json.loads(check.data)
-
             checkQuery = models.Facility.query.get(2)
-            facilityID = checkQuery.id
-            facilityName = checkQuery.name
-            facilityCapacity = checkQuery.capacity
 
             checkData =  {
-                "id": facilityID,
-                "name": facilityName,
-                "capacity": facilityCapacity
+                "id": checkQuery.id,
+                "name": checkQuery.name,
+                "capacity": checkQuery.capacity
                 }
 
             self.assertEqual({"id": 2, "name": "Tennis Court", "capacity": 6}, checkData)
+            
+            responseData = json.loads(response.data)
+            
+            expectedResponse = {
+                "status": "ok",
+                "message": "facility added",
+                "facility": checkData
+            }
+
+            self.assertEqual(responseData, expectedResponse)
+
+    def test_add_openTime_success(self):
+        with app.app_context():
+
+            response = self.app.post('/times', json={
+                "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)
+                })
+
+            checkQuery = models.OpenTime.query.get(1)
+
+            checkData =  {
+                "id": checkQuery.id,
+                "day": checkQuery.day,
+                "openTime": checkQuery.openingTime,
+                "closeTime": checkQuery.closingTime,
+                "facilityID": checkQuery.facility_id
+            }
+
+            self.assertEqual({"id": 1, "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)}, checkData)
+            
+            responseData = json.loads(response.data)
+            
+            expectedResponse = {
+                "status": "ok",
+                "message": "facility added",
+                "facility": checkData
+            }
+
+            self.assertEqual(responseData, expectedResponse)
 
 if __name__ == '__main__':
     unittest.main()
