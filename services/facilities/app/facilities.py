@@ -60,10 +60,10 @@ def getOpeningTime(id):
 
     returnValue = {
         "id": openTimeID,
-        "Day": Day,
-        "Open Time": Open,
-        "Close Time": Close,
-        "Facility ID": facilityID
+        "day": Day,
+        "openTime": Open,
+        "closeTime": Close,
+        "facilityID": facilityID
     }
 
     return json.dumps(returnValue)
@@ -82,9 +82,9 @@ def getActivity(id):
 
     returnValue = {
         "id": activityID,
-        "Duration": duration,
-        "Capacity": capacity,
-        "Facility ID": facilityID
+        "duration": duration,
+        "capacity": capacity,
+        "facilityID": facilityID
     }
 
     return json.dumps(returnValue)
