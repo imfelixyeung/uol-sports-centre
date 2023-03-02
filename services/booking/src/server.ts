@@ -1,5 +1,6 @@
 import express from 'express';
 import bookingRouter from './router/booking';
+import healthRouter from './router/health';
 import {notFoundHandler, serverErrorHandler} from './router/error';
 
 export const createServer = (): express.Express => {
@@ -10,6 +11,7 @@ export const createServer = (): express.Express => {
 
   // routers
   app.use('/bookings', bookingRouter);
+  app.use('/health', healthRouter);
 
   // error handling
   // 404 - Not found
