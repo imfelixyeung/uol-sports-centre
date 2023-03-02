@@ -1,10 +1,12 @@
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import {FC, useState} from 'react';
+import type {FC} from 'react';
+import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
+import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
 
 export interface AuthFormProps {
   variant: 'login' | 'register';
@@ -41,8 +43,8 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             )
             .then(() => router.push('/'))
             .catch(res => {
-              if (res?.data?.error && typeof res?.data?.error === 'string')
-                setErrorMessage(res.data.error);
+              const error = getErrorFromAPIResponse(res);
+              if (error) setErrorMessage(error);
             });
           actions.setSubmitting(false);
         }}

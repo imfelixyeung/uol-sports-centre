@@ -1,5 +1,6 @@
-import {FC} from 'react';
-import AuthForm, {AuthFormProps} from '~/components/Auth/AuthForm';
+import type {FC} from 'react';
+import type {AuthFormProps} from '~/components/Auth/AuthForm';
+import AuthForm from '~/components/Auth/AuthForm';
 
 const AuthPage: FC<AuthFormProps> = props => {
   return (
