@@ -1,5 +1,5 @@
 import logging, json
-from flask import Flask
+from flask import Flask, request
 from app import app, db, models, admin
 from .models import Facility, OpenTime, Activity
 from flask_admin.contrib.sqla import ModelView
@@ -41,9 +41,17 @@ def updateFacility(id):
     return
 
 # API call to add a facility to the database
-@app.route('/addFacility', methods=['GET', 'POST'])
+@app.route('/addFacility', methods=['POST'])
 def addFacility():
-    return
+    data = json.loads(request.data)
+    facilityName = data.get("name")
+    facilityCapacity = int(data.get("capacity"))
+
+    addition = models.Facility(name=facilityName, capacity=facilityCapacity)
+    db.session.add(addition)
+    db.session.commit()
+
+    return "yeah"
 
 ################# OPENING TIMES API CALLS #################
 
