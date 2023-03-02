@@ -2,7 +2,10 @@ version: "3"
 
 services:
   web:
-    build: ./services/web
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+      target: prod
     environment:
       - PORT=80
       - HOST=web
@@ -14,6 +17,51 @@ services:
     environment:
       - FLASK_RUN_PORT=80
       - FLASK_RUN_HOST=facilities
+    networks:
+      - network
+
+  auth:
+    build:
+      context: ./services/auth
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=auth
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
+    networks:
+      - network
+
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+
+  status:
+    build:
+      context: ./services/status
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=status
+    networks:
+      - network
+
+  users:
+    build:
+      context: ./services/users
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=users
     networks:
       - network
 
