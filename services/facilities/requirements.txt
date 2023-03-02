@@ -9,3 +9,5 @@ migrate==0.3.8
 SQLAlchemy==2.0.4
 typing_extensions==4.5.0
 Werkzeug==2.2.3
+flask_migrate
+flask_admin

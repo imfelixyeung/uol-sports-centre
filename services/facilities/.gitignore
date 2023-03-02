@@ -1,3 +1,11 @@
+# pycache
 __pycache__
-app.db
+*.pyc
+
+# database
+*.db
+
+# environments
 facilities-env/
+environment/
+
