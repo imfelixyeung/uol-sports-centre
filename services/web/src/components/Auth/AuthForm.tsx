@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {FC} from 'react';
 import {toast} from 'react-hot-toast';
+import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
 interface AuthFormProps {
@@ -38,6 +39,10 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             .then(() => router.push('/'));
           actions.setSubmitting(false);
         }}
+        validationSchema={yup.object({
+          email: yup.string().email().required(),
+          password: yup.string().required().min(8, 'Password too short!'),
+        })}
       >
         <Form className="bg-gray-200 p-3">
           <h2 className="font-bold">
