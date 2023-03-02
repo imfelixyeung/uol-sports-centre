@@ -48,7 +48,7 @@ def addFacility():
 ################# OPENING TIMES API CALLS #################
 
 # API call to get an opening time by ID
-@app.route('/facility/time/<int:id>', methods=['GET', 'POST'])
+@app.route('/time/<int:id>', methods=['GET', 'POST'])
 def getOpeningTime(id):
     openTimeQuery = models.OpenTime.query.get(id)
 
@@ -71,7 +71,7 @@ def getOpeningTime(id):
 ################# ACTIVITY API CALLS #################
 
 # API call to get an opening time by ID
-@app.route('/facility/activity/<int:id>', methods=['GET', 'POST'])
+@app.route('/activity/<int:id>', methods=['GET', 'POST'])
 def getActivity(id):
     activityQuery = models.Activity.query.get(id)
 
