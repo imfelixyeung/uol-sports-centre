@@ -1,7 +1,7 @@
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import {FC} from 'react';
+import {FC, useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
@@ -13,6 +13,8 @@ export interface AuthFormProps {
 const AuthForm: FC<AuthFormProps> = ({variant}) => {
   const auth = useAuth();
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   return (
     <>
       <Formik
@@ -21,6 +23,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           password: '',
         }}
         onSubmit={async (values, actions) => {
+          setErrorMessage(null);
           await toast
             .promise(
               variant === 'login' ? auth.login(values) : auth.register(values),
@@ -36,7 +39,11 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
                     error: 'Failed to register',
                   }
             )
-            .then(() => router.push('/'));
+            .then(() => router.push('/'))
+            .catch(res => {
+              if (res?.data?.error && typeof res?.data?.error === 'string')
+                setErrorMessage(res.data.error);
+            });
           actions.setSubmitting(false);
         }}
         validationSchema={yup.object({
@@ -70,6 +77,8 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               placeholder="Password"
             />
           </label>
+
+          {errorMessage && <div className="text-red-600">{errorMessage}</div>}
 
           <button type="submit" className="p-3 bg-red-300">
             {variant === 'login' ? 'Log In' : 'Register'}
