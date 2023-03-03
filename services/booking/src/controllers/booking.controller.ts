@@ -29,16 +29,16 @@ class BookingController {
     const querySchema = z.object({
       limit: z
         .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
+        .transform(limit => parseInt(limit))
+        .refine(limit => !Number.isNaN(limit), {
+          message: 'Non-numeric limit parameter supplied',
         })
         .optional(),
       page: z
         .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
+        .transform(page => parseInt(page))
+        .refine(page => !Number.isNaN(page), {
+          message: 'Non-numeric page parameter supplied',
         })
         .optional(),
     });
