@@ -1,9 +1,6 @@
 import {Credentials} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
-import {UserRegistry} from '../persistence/users';
-import {TokenRegistry} from '../persistence/tokens';
-import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
 
 export const signInWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
