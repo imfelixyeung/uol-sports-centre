@@ -107,6 +107,15 @@ class facilitiesTests(unittest.TestCase):
 
             self.assertEqual(responseData, expectedResponse)
 
+    def test_add_facility_failed(self):
+        with app.app_context():
+
+            response = self.app.post('/facilities/', json={
+                "name": int(2), "capacity": str("yeah")
+                })
+            
+            self.assertEqual({"status": "Failed", "message": "Object not added"}, json.loads(response.data))
+
     def test_add_openTime_success(self):
         with app.app_context():
 

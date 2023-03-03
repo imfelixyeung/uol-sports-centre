@@ -56,10 +56,17 @@ class FacilitiesRouter:
         # Get data from body of post request
         data = json.loads(request.data)
         name = data.get("name")
-        capacity = int(data.get("capacity"))
+        try:
+            capacity = int(data.get("capacity"))
+        except:
+            return json.dumps({"status": "Failed", "message": "Object not added"})
 
         # Add the supplied object to the data base
         new_facility = Facility(name=name, capacity=capacity)
+
+        if(not new_facility):
+            return json.dumps({"status": "Failed", "message": "Object not added"})
+
         self.db.session.add(new_facility)
         self.db.session.commit()
 
