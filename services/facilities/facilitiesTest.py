@@ -25,7 +25,9 @@ class facilitiesTests(unittest.TestCase):
         with app.app_context():
             db.create_all()
             facilityTestCase = Facility(name="Football", capacity=20)
+            openTimeTestCase = OpenTime(day="Monday", openingTime=660, closingTime=990, facility_id=1)
             db.session.add(facilityTestCase)
+            db.session.add(openTimeTestCase)
             db.session.commit()
 
     # Remove everything from database after tests are complete
@@ -48,7 +50,24 @@ class facilitiesTests(unittest.TestCase):
         
           self.assertEqual(responseData, expectedResponse)
 
-    def test_add_facility(self):
+    def test_get_open_time(self):
+        with app.app_context():
+          response = self.app.get('/times/1')
+
+          expectedResponse = {
+              "id": 1,
+              "day": "Monday",
+              "openTime": 660,
+              "closeTime": 990,
+              "facilityID": 1
+              }
+
+          responseData = json.loads(response.data)
+        
+          self.assertEqual(responseData, expectedResponse)
+
+
+    def test_add_facility_success(self):
         with app.app_context():
 
             response = self.app.post('/facilities/', json={
@@ -57,11 +76,7 @@ class facilitiesTests(unittest.TestCase):
 
             checkQuery = Facility.query.get(2)
 
-            checkData =  {
-                "id": checkQuery.id,
-                "name": checkQuery.name,
-                "capacity": checkQuery.capacity
-                }
+            checkData =  makeFacility(checkQuery)
 
             self.assertEqual({"id": 2, "name": "Tennis Court", "capacity": 6}, checkData)
             
@@ -82,17 +97,11 @@ class facilitiesTests(unittest.TestCase):
                 "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)
                 })
 
-            checkQuery = OpenTime.query.get(1)
+            checkQuery = OpenTime.query.get(2)
 
-            checkData =  {
-                "id": checkQuery.id,
-                "day": checkQuery.day,
-                "openTime": checkQuery.openingTime,
-                "closeTime": checkQuery.closingTime,
-                "facilityID": checkQuery.facility_id
-            }
+            checkData =  makeOpenTime(checkQuery)
 
-            self.assertEqual({"id": 1, "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)}, checkData)
+            self.assertEqual({"id": 2, "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)}, checkData)
             
             responseData = json.loads(response.data)
             
@@ -104,7 +113,7 @@ class facilitiesTests(unittest.TestCase):
 
             self.assertEqual(responseData, expectedResponse)
 
-    def test_add_activity(self):
+    def test_add_activity_success(self):
         with app.app_context():
 
             response = self.app.post('/activities/', json={
@@ -113,12 +122,7 @@ class facilitiesTests(unittest.TestCase):
 
             checkQuery = Activity.query.get(1)
 
-            checkData =  {
-                "id": checkQuery.id,
-                "duration": checkQuery.duration,
-                "capacity": checkQuery.capacity,
-                "facilityID": checkQuery.facility_id
-                }
+            checkData =  makeActivity(checkQuery)
 
             self.assertEqual({"id": 1, "duration": int(30), "capacity": int(20), "facilityID": int(1)}, checkData)
             
