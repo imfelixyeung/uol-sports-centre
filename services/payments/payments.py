@@ -28,30 +28,23 @@ def addProductDatabase(name, priceID, price, type):
     
     cur = connection.cursor()
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
-            (name, priceID, price, type))
+            (priceID, name, price, type))
     connection.commit()
     connection.close()
 
-def MakePurchasable(productName, productPrice, productType="product"):
+def MakePurchasable(productName, productPrice, productType="payment"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
 
     #Adding product to stripe
     productStripe = stripe.Product.create(name=productName)
     price = stripe.Price.create(
-        unit_amount_decimal=productPrice,
+        unit_amount_decimal=str(productPrice * 100),
         currency="gbp",
         product=productStripe.stripe_id
     )
 
     #Adding product to database
     addProductDatabase(productName, price.stripe_id, productPrice, productType)
-
-    #DB Test (will be a part of unit tests)
-    con = sqlite3.connect('database.db')
-    cur = con.cursor()
-    products = cur.execute('SELECT * FROM products').fetchall()
-    print(products[0])
-    con.close()
 
 def MakeAPurchase(userID, productName):
     '''redirects user to stripe checkout for chosen product'''
@@ -75,30 +68,29 @@ def createCheckout(productName):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     con = sqlite3.connect('database.db')
     cur = con.cursor()
-    products = cur.execute('''SELECT priceID, productType FROM 
-    products WHERE productName = ''' + productName).fetchall()
-    con.close()
+    products = cur.execute('''SELECT priceId, productType FROM products WHERE 
+    productName LIKE ?''', [productName]).fetchall()
 
     checkoutSession = stripe.checkout.Session.create(
         success_url=localDomain + '/index.html',
-        mode = products[1],
+        mode = products[0][1],
         line_items=[
         {
-            "price": products[0],
+            "price": products[0][0],
             "quantity": 1
         },],
     )
-    print(products[0])
+    con.close()
     return checkoutSession.url
 
 @app.route('/', methods=['GET'])
 def get_index():
-    MakePurchasable("Booking1", "10.99")
+    MakePurchasable("Sports Centre Membership", 12.99)
     return render_template('index.html')
 
 @app.route("/checkout-session", methods=['POST'])
 def redirectCheckout():
-    return redirect(createCheckout("Booking1"), code=303)
+    return redirect(createCheckout("Sports Centre Membership"), code=303)
 
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
