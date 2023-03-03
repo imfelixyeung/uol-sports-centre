@@ -26,8 +26,10 @@ class facilitiesTests(unittest.TestCase):
             db.create_all()
             facilityTestCase = Facility(name="Football", capacity=20)
             openTimeTestCase = OpenTime(day="Monday", openingTime=660, closingTime=990, facility_id=1)
+            activityTestCase = Activity(duration=30, capacity=20, facility_id=1)
             db.session.add(facilityTestCase)
             db.session.add(openTimeTestCase)
+            db.session.add(activityTestCase)
             db.session.commit()
 
     # Remove everything from database after tests are complete
@@ -61,6 +63,21 @@ class facilitiesTests(unittest.TestCase):
               "closeTime": 990,
               "facilityID": 1
               }
+
+          responseData = json.loads(response.data)
+        
+          self.assertEqual(responseData, expectedResponse)
+
+    def test_get_activity(self):
+        with app.app_context():
+          response = self.app.get('/activities/1')
+
+          expectedResponse = {
+              "id": 1,
+              "duration": 30,
+              "capacity": 20,
+              "facilityID": 1
+            }
 
           responseData = json.loads(response.data)
         
@@ -120,11 +137,11 @@ class facilitiesTests(unittest.TestCase):
                 "duration": int(30), "capacity": int(20), "facilityID": int(1)
                 })
 
-            checkQuery = Activity.query.get(1)
+            checkQuery = Activity.query.get(2)
 
             checkData =  makeActivity(checkQuery)
 
-            self.assertEqual({"id": 1, "duration": int(30), "capacity": int(20), "facilityID": int(1)}, checkData)
+            self.assertEqual({"id": 2, "duration": int(30), "capacity": int(20), "facilityID": int(1)}, checkData)
             
             responseData = json.loads(response.data)
             
