@@ -37,7 +37,7 @@ describe('Test', () => {
         userId: 9999,
         facilityId: 9999,
         transactionId: 9999,
-        startTime: new Date().toUTCString(),
+        startTime: new Date().toISOString(),
         duration: 9999,
       })
       .expect(200)
