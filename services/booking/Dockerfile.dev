@@ -1,4 +1,4 @@
-FROM node:18-alpine as base
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -13,18 +13,6 @@ RUN pnpm install
 # copy app
 COPY . .
 
-
-# Development target
-FROM base as dev
-
-# start app as development mode
+# serve app
 EXPOSE ${PORT}
 CMD [ "pnpm", "dev" ]
-
-
-# Production target
-FROM base as prod
-
-# start app as production mode
-EXPOSE ${PORT}
-CMD [ "pnpm", "start" ]
