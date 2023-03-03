@@ -89,7 +89,12 @@ class BookingController {
 
     // create a schema, outlining what we expect from params
     const paramSchema = z.object({
-      id: z.string().transform(id => parseInt(id)),
+      id: z
+        .string()
+        .transform(id => parseInt(id))
+        .refine(id => !Number.isNaN(id), {
+          message: 'Non-number id supplied',
+        }),
     });
 
     // ensure the request params abide by that schema
@@ -99,15 +104,6 @@ class BookingController {
         status: 'error',
         message: 'malformed parameters',
         error: params.error,
-      });
-
-    // a string can get parsed using `parseInt` in javascript
-    // so we need to check for that case
-    if (Number.isNaN(params.data.id))
-      return res.status(400).json({
-        status: 'error',
-        message: 'Non-number id supplied',
-        error: `parsed ${req.params.id} as ${params.data.id}`,
       });
 
     // try find the booking
@@ -149,7 +145,12 @@ class BookingController {
       duration: z.number().optional(),
     });
     const updateBookingParamsSchema = z.object({
-      id: z.number(),
+      id: z
+        .string()
+        .transform(id => parseInt(id))
+        .refine(id => !Number.isNaN(id), {
+          message: 'Non-number id supplied',
+        }),
     });
 
     // ensure the request params abide by that schema
@@ -169,7 +170,7 @@ class BookingController {
       });
 
     // create the new booking
-    const bookingData: UpdateBookingDTO = {id: 0, ...body.data};
+    const bookingData: UpdateBookingDTO = {id: params.data.id, ...body.data};
     const updatedBooking = await bookingService.update(bookingData);
 
     // check has created
@@ -197,7 +198,12 @@ class BookingController {
     logger.debug('Received deleteBookingById request');
 
     const deleteBookingParamsSchema = z.object({
-      id: z.number(),
+      id: z
+        .string()
+        .transform(id => parseInt(id))
+        .refine(id => !Number.isNaN(id), {
+          message: 'Non-number id supplied',
+        }),
     });
 
     // ensure the request params abide by that schema
