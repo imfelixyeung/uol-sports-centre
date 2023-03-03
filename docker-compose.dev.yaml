@@ -86,6 +86,7 @@ services:
       - PORT=80
       - HOST=booking
       - DATABASE_URL=file:./data/booking.development.db
+      - DEBUG=true
     networks:
       - network
     volumes:

@@ -63,6 +63,7 @@ services:
       - PORT=80
       - HOST=booking
       - DATABASE_URL=file:./data/booking.production.db
+      - DEBUG=false
     networks:
       - network
     volumes:
