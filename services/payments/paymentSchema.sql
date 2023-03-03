@@ -15,3 +15,12 @@ CREATE TABLE orders (
     FOREIGN KEY (priceID) REFERENCES products(priceID),
     PRIMARY KEY (userID, priceID)
 );
+
+DROP TABLE IF EXISTS customers;
+
+CREATE TABLE customers (
+    userID INTEGER NOT NULL, 
+    stripeID INTEGER NOT NULL,
+    FOREIGN KEY (userID) REFERENCES orders(userID),
+    PRIMARY KEY (userID, stripeID)
+)

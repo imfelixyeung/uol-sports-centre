@@ -55,6 +55,7 @@ def MakePurchasable(productName, productPrice, productType="product"):
 
 def MakeAPurchase(userID, productName):
     '''redirects user to stripe checkout for chosen product'''
+    createCheckout(productName)
 
 #Creating a test customer - this will be retrived from user microservice
 customer = stripe.Customer.create(
@@ -70,17 +71,24 @@ card = {
     "cvc": "123"
 }
 
-def createCheckout():
+def createCheckout(productName):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    products = cur.execute('''SELECT priceID, productType FROM 
+    products WHERE productName = ''' + productName).fetchall()
+    con.close()
+
     checkoutSession = stripe.checkout.Session.create(
         success_url=localDomain + '/index.html',
-        mode = 'subscription',
+        mode = products[1],
         line_items=[
         {
-            "price": "price_1MhJ9rK4xeIGYs5l0gg0dDzk",
+            "price": products[0],
             "quantity": 1
         },],
     )
+    print(products[0])
     return checkoutSession.url
 
 @app.route('/', methods=['GET'])
@@ -90,7 +98,7 @@ def get_index():
 
 @app.route("/checkout-session", methods=['POST'])
 def redirectCheckout():
-    return redirect(createCheckout(), code=303)
+    return redirect(createCheckout("Booking1"), code=303)
 
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
