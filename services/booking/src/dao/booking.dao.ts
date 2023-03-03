@@ -56,7 +56,7 @@ class BookingDAO {
   async getBooking(bookingId: number) {
     logger.debug(`Getting booking from database, ${bookingId}`);
 
-    const booking = await prisma.booking.findFirst({
+    const booking = await prisma.booking.findUnique({
       where: {
         id: bookingId,
       },
