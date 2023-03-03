@@ -1,17 +1,36 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_admin import Admin
-
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-
-admin = Admin(app, template_mode='bootstrap4')
-
-migrate = Migrate(app, db)
-
 import logging
-logging.basicConfig(level=logging.DEBUG)
+from flask import Flask
 
-from app import facilities, models
+from app.admin import Admin
+from app.api import ActivitiesRouter, FacilitiesRouter, OpenTimesRouter
+from app.database import setup_migration, db
+
+
+def create_app(testing=False, config={}) -> Flask:
+    logging.basicConfig(level=logging.DEBUG)
+    # Setup flask
+    app = Flask(__name__)
+    app.config.from_object("app.config")
+
+    # if is testing, apply custom config
+    if testing:
+        app.config.update(config)
+
+    # initialise the database with the application
+    db.init_app(app)
+    setup_migration(app)
+
+    # Add flask admin
+    Admin(app, db)
+
+    # Add routers (blueprints) to the flask applicaiton
+    activities_router = ActivitiesRouter(app, db)
+    facilities_router = FacilitiesRouter(app, db)
+    open_times_router = OpenTimesRouter(app, db)
+
+    app.register_blueprint(activities_router.blueprint)
+    app.register_blueprint(facilities_router.blueprint)
+    app.register_blueprint(open_times_router.blueprint)
+
+    # Return the flask application
+    return app

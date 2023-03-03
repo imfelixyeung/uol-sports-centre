@@ -1,11 +1,11 @@
-
 # Function to generate a facilities dictionary for JSON output
 def makeFacility(facility):
     return {
         "id": facility.id,
         "name": facility.name,
         "capacity": facility.capacity
-        }
+    }
+
 
 # Function to generate an OpenTimes dictionary for JSON output
 def makeOpenTime(openTime):
@@ -15,7 +15,8 @@ def makeOpenTime(openTime):
         "openTime": openTime.openingTime,
         "closeTime": openTime.closingTime,
         "facilityID": openTime.facility_id
-        }
+    }
+
 
 # Function to generate an Activity dictionary for JSON output
 def makeActivity(activity):
@@ -24,4 +25,4 @@ def makeActivity(activity):
         "duration": activity.duration,
         "capacity": activity.capacity,
         "facilityID": activity.facility_id
-        }
+    }
