@@ -27,7 +27,37 @@ class BookingController {
   async getBookings(req: express.Request, res: express.Response) {
     logger.debug('Received getBookings request');
 
-    res.status(200).send({status: 'OK', bookings: await bookingService.get()});
+    // create a schema, outlining what we expect from params
+    const querySchema = z.object({
+      limit: z
+        .string()
+        .transform(id => parseInt(id))
+        .refine(id => !Number.isNaN(id), {
+          message: 'Non-number id supplied',
+        })
+        .optional(),
+      page: z
+        .string()
+        .transform(id => parseInt(id))
+        .refine(id => !Number.isNaN(id), {
+          message: 'Non-number id supplied',
+        })
+        .optional(),
+    });
+
+    // ensure the query params abide by that schema
+    const query = querySchema.safeParse(req.query);
+    if (!query.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed query parameters',
+        error: query.error,
+      });
+
+    return res.status(200).send({
+      status: 'OK',
+      bookings: await bookingService.get(query.data.limit, query.data.page),
+    });
   }
 
   /**

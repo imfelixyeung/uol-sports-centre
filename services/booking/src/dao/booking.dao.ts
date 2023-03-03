@@ -72,7 +72,7 @@ class BookingDAO {
 
     // using offset based pagination for simplicity here
     const bookings = await prisma.booking.findMany({
-      skip: page && limit ? page * limit : undefined,
+      skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
       take: limit,
     });
 
