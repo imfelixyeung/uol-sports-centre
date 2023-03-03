@@ -15,8 +15,7 @@ COPY . .
 # build the app and push db
 RUN pnpm build
 RUN pnpm exec prisma generate
-RUN pnpm run db:push
 
 # serve the microservice
 EXPOSE ${PORT}
-CMD [ "node", "build/src/index.js" ]
+CMD [ "pnpm", "run", "serve" ]

@@ -15,7 +15,8 @@
     "postinstall": "prisma generate",
     "build": "tsc",
     "check-types": "tsc --noemit",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "prisma db push --skip-generate",
+    "serve": "pnpm run db:push && node ./build/src/index.js"
   },
   "keywords": [],
   "author": "",
