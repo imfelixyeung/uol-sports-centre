@@ -65,6 +65,17 @@ services:
     networks:
       - network
 
+  booking:
+    build: ./services/booking
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=file:./data/booking.production.db
+    networks:
+      - network
+    volumes:
+      - ./persistence/booking/db:/app/data
+
   gateway:
     build: ./gateway
     env_file:

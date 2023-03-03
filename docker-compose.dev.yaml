@@ -90,6 +90,22 @@ services:
       - ./services/status:/app
       - /app/node_modules
 
+  booking:
+    build:
+      context: ./services/booking
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=file:./data/booking.development.db
+      - DEBUG=true
+    networks:
+      - network
+    volumes:
+      - ./services/booking:/app
+      - /app/node_modules
+      - ./persistence/booking/db:/app/data
+
   gateway:
     build: ./gateway
     env_file:
