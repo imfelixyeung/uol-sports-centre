@@ -62,6 +62,7 @@ services:
     environment:
       - PORT=80
       - HOST=booking
+      - DATABASE_URL=file:./booking.production.db
     networks:
       - network
   gateway:
