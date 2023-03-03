@@ -18,5 +18,5 @@ model User {
   bookingID  Int     @unique
   firstName  String
   lastName   String
-  membership String? @default("None")
+  membership String?
 }
