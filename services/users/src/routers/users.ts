@@ -1,8 +1,8 @@
 import {Router} from 'express';
 import usersControllers from '../controllers/users';
 
-const authRouter: Router = Router();
+const userRouter: Router = Router();
 
 // usersRouter.post('/updateName', usersControllers.postLogin);
 
-export default authRouter;
+export default userRouter;
