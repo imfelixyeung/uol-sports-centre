@@ -27,7 +27,6 @@ class HealthService {
   /**
    * Get the health of the databases connection
    *
-   * @return {*}
    * @memberof HealthService
    */
   async getDatabaseHealth() {

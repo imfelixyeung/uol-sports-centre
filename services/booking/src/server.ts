@@ -3,6 +3,9 @@ import bookingRouter from './router/booking';
 import healthRouter from './router/health';
 import {notFoundHandler, serverErrorHandler} from './router/error';
 
+/**
+ * Creates the express server
+ */
 export const createServer = (): express.Express => {
   const app = express();
 

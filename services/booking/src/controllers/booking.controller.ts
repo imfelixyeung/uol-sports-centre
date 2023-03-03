@@ -20,8 +20,6 @@ class BookingController {
    * Get all bookings
    * Accepts pagination query attributes `limit` and `page`
    *
-   * @param {express.Request} req
-   * @param {express.Response} res
    * @memberof BookingController
    */
   async getBookings(req: express.Request, res: express.Response) {
@@ -63,8 +61,6 @@ class BookingController {
   /**
    * Creates a new booking
    *
-   * @param {express.Request} req
-   * @param {express.Response} res
    * @memberof BookingController
    */
   async createBooking(req: express.Request, res: express.Response) {
@@ -109,9 +105,6 @@ class BookingController {
   /**
    * Gets a specific booking by id
    *
-   * @param {express.Request} req
-   * @param {express.Response} res
-   * @return {*}
    * @memberof BookingController
    */
   async getBookingById(req: express.Request, res: express.Response) {
@@ -156,8 +149,6 @@ class BookingController {
   /**
    * Updates a specific booking
    *
-   * @param {express.Request} req
-   * @param {express.Response} res
    * @memberof BookingController
    */
   async updateBookingById(req: express.Request, res: express.Response) {
@@ -220,8 +211,6 @@ class BookingController {
   /**
    * Deletes a booking
    *
-   * @param {express.Request} req
-   * @param {express.Response} res
    * @memberof BookingController
    */
   async deleteBookingById(req: express.Request, res: express.Response) {

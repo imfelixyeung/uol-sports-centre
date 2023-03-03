@@ -13,6 +13,11 @@ class BookingDAO {
     logger.debug('Created instance of Booking DAO');
   }
 
+  /**
+   * Adds a booking record to the database
+   *
+   * @memberof BookingDAO
+   */
   async addBooking(bookingData: CreateBookingDTO) {
     logger.debug(`Adding booking to database, ${bookingData}`);
 
@@ -23,6 +28,11 @@ class BookingDAO {
     return booking;
   }
 
+  /**
+   * Edits a booking record in the database
+   *
+   * @memberof BookingDAO
+   */
   async editBooking(bookingData: UpdateBookingDTO) {
     logger.debug(
       `Editing booking in database, ${bookingData.id}, ${bookingData}`
@@ -41,6 +51,11 @@ class BookingDAO {
     return booking;
   }
 
+  /**
+   * Deletes a booking record in the database
+   *
+   * @memberof BookingDAO
+   */
   async deleteBooking(bookingId: number) {
     logger.debug(`Deleting booking in database, ${bookingId}`);
 
@@ -53,6 +68,11 @@ class BookingDAO {
     return booking;
   }
 
+  /**
+   * Gets a specific booking from the database by id
+   *
+   * @memberof BookingDAO
+   */
   async getBooking(bookingId: number) {
     logger.debug(`Getting booking from database, ${bookingId}`);
 
@@ -65,6 +85,12 @@ class BookingDAO {
     return booking;
   }
 
+  /**
+   * Gets a list of bookings from the database with optional limit and page
+   * pagination options
+   *
+   * @memberof BookingDAO
+   */
   async getBookings(limit?: number, page?: number) {
     logger.debug(
       `Getting bookings from database, limit: ${limit}, page: ${page}`
