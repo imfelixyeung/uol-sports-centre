@@ -1,4 +1,4 @@
-import React from 'react';
+import clsx from 'clsx';
 import {useGetStatusReportQuery} from '~/redux/services/api';
 
 const StatusPage = () => {
@@ -16,13 +16,14 @@ const StatusPage = () => {
         return (
           <div
             key={service}
-            className={
+            className={clsx(
+              'p-3 bg-white/50',
               status === 'up'
                 ? 'text-green-600'
                 : status === 'down'
                 ? 'text-red-600'
                 : 'text-amber-600'
-            }
+            )}
           >
             <h3>{service}</h3>
             <p>Status: {status}</p>
