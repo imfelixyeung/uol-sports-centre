@@ -1,10 +1,10 @@
 import express, {Router} from 'express';
 import HealthService from '../services/health.service';
 
-const bookingRouter: Router = express.Router();
+const healthRouter: Router = express.Router();
 
 // return health status
-bookingRouter.get('/', async (req, res) => {
+healthRouter.get('/', async (req, res) => {
   const healthStatus = await HealthService.getHealth();
   const isHealthy = healthStatus.database && healthStatus.service;
 
@@ -14,4 +14,4 @@ bookingRouter.get('/', async (req, res) => {
   });
 });
 
-export default bookingRouter;
+export default healthRouter;
