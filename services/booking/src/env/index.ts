@@ -9,7 +9,10 @@ const envSchema = z.object({
     .transform(port => parseInt(port))
     .default('5000'),
   HOST: z.string().default('0.0.0.0'),
-  DEBUG: z.string().transform(debug => debug === 'true'),
+  DEBUG: z
+    .string()
+    .default('false')
+    .transform(debug => debug === 'true'),
 });
 
 export const safeEnv = envSchema.safeParse(process.env);
