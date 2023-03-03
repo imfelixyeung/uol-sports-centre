@@ -1,5 +1,5 @@
 import logging, json
-from createDictionaries import *
+from createDictionaries import makeActivity, makeFacility, makeOpenTime
 from flask import Flask, request
 from app import app, db, models, admin
 from .models import Facility, OpenTime, Activity

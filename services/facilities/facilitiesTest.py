@@ -1,10 +1,11 @@
 import os
 import unittest
 import json
-from createDictionaries import *
+from createDictionaries import makeActivity, makeFacility, makeOpenTime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app import app, db, models
+import os
 
 class facilitiesTests(unittest.TestCase):
     # Set up tests for facilities API
@@ -12,7 +13,9 @@ class facilitiesTests(unittest.TestCase):
         app.config.from_object('config')
         app.config["TESTING"] = True
         app.config['WTF_CSRF_ENABLED'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testing/test.db'
+
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
         self.app = app.test_client()
         
         with app.app_context():
