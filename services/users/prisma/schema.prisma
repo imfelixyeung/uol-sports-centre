@@ -14,7 +14,9 @@ datasource db {
 model User {
   id         Int    @id @default(autoincrement())
   accountID  Int    @unique
-  membership String @default("None")
   paymentID  Int    @unique
   bookingID  Int    @unique
+  firstName  String @default("None")
+  lastName   String @default("None")
+  membership String @default("None")
 }
