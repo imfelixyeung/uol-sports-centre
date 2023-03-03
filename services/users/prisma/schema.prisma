@@ -12,11 +12,11 @@ datasource db {
 
 // User Database Model
 model User {
-  id         Int    @id @default(autoincrement())
-  accountID  Int    @unique
-  paymentID  Int    @unique
-  bookingID  Int    @unique
-  firstName  String @default("None")
-  lastName   String @default("None")
-  membership String @default("None")
+  id         Int     @id @default(autoincrement())
+  accountID  Int     @unique
+  paymentID  Int     @unique
+  bookingID  Int     @unique
+  firstName  String
+  lastName   String
+  membership String? @default("None")
 }
