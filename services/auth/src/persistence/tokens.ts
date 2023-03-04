@@ -2,10 +2,9 @@ import {User} from '@prisma/client';
 import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
+import {ACCESS_JWT_SIGN_OPTIONS} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
-
-const TOKEN_EXPIRES_IN = '1h';
 
 export class TokenRegistry {
   static async createTokenForUser(user: User) {
@@ -21,11 +20,9 @@ export class TokenRegistry {
       },
       env.JWT_SIGNING_SECRET,
       {
-        subject: String(user.id),
-        algorithm: 'HS256',
-        expiresIn: TOKEN_EXPIRES_IN,
-        issuer: 'auth',
         jwtid: tokenId,
+        subject: String(user.id),
+        ...ACCESS_JWT_SIGN_OPTIONS,
       }
     );
 
@@ -60,11 +57,9 @@ export class TokenRegistry {
       },
       env.JWT_SIGNING_SECRET,
       {
-        subject: String(user.id),
-        algorithm: 'HS256',
-        expiresIn: TOKEN_EXPIRES_IN,
-        issuer: 'auth',
         jwtid: tokenData.id,
+        subject: String(user.id),
+        ...ACCESS_JWT_SIGN_OPTIONS,
       }
     );
 

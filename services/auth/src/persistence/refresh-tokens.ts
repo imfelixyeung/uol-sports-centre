@@ -1,6 +1,7 @@
 import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
+import {REFRESH_JWT_SIGN_OPTIONS} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
 import {TokenRegistry} from './tokens';
@@ -17,9 +18,7 @@ export class RefreshTokenRegistry {
       {
         jwtid: refreshTokenId,
         subject: String(tokenData.userId),
-        algorithm: 'HS256',
-        expiresIn: '24h',
-        issuer: 'auth',
+        ...REFRESH_JWT_SIGN_OPTIONS,
       }
     );
 
