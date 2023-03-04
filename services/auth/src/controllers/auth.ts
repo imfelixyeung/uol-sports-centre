@@ -4,7 +4,7 @@ import {credentialsSchema} from '../schema/credentials';
 import {
   getSessionFromToken,
   refreshAccessToken,
-  registerWithCredentials as registerWithCredentials,
+  registerWithCredentials,
   signInWithCredentials,
   signOutToken,
 } from '../services/auth';

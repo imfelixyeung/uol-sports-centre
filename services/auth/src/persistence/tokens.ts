@@ -1,9 +1,9 @@
+import {User} from '@prisma/client';
+import {randomUUID} from 'crypto';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 import {env} from '../env';
-import {randomUUID} from 'crypto';
-import {User} from '@prisma/client';
 import {db} from '../utils/db';
-import dayjs from 'dayjs';
 
 const TOKEN_EXPIRES_IN = '1h';
 

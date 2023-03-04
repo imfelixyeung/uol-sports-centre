@@ -1,9 +1,9 @@
+import {randomUUID} from 'crypto';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 import {env} from '../env';
 import {db} from '../utils/db';
 import {TokenRegistry} from './tokens';
-import dayjs from 'dayjs';
-import {randomUUID} from 'crypto';
 
 export class RefreshTokenRegistry {
   static async createRefreshTokenForToken(token: string) {

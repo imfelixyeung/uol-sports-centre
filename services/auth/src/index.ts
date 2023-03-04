@@ -1,8 +1,8 @@
 import express from 'express';
+import cron from 'node-cron';
 import {env} from './env';
 import authRouter from './routers/auth';
 import healthRouter from './routers/health';
-import cron from 'node-cron';
 import {deleteExpiredTokens} from './services/auth';
 
 const app = express();
