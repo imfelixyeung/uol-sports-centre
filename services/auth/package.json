@@ -11,7 +11,7 @@
     "start": "pnpm db:push && tsx src/index.ts",
     "dev": "pnpm db:push && tsx watch --clear-screen=false src/index.ts",
     "db:push": "prisma db push",
-    "test": "jest",
+    "test": "jest --ci",
     "test-watch": "jest --watch",
     "ci": "pnpm lint && pnpm test"
   },
