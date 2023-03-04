@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
 import {TokenRegistry} from '../persistence/tokens';
 import {UserRegistry} from '../persistence/users';
-import {Credentials} from '../schema/credentials';
+import {Credentials, ResetPassword} from '../schema/credentials';
 import {JsonWebToken} from '../schema/jwt';
 
 export const signInWithCredentials = async (credentials: Credentials) => {
@@ -57,6 +57,31 @@ export const registerWithCredentials = async (credentials: Credentials) => {
     token
   );
   return {token, refreshToken};
+};
+
+export const resetPassword = async (options: ResetPassword) => {
+  const {email, password, newPassword} = options;
+
+  const user = await UserRegistry.getUserByEmail(email);
+
+  if (!user) {
+    // user not found
+    throw new Error('User not found');
+  }
+
+  const hashedPassword = user.password;
+
+  const match = await bcrypt.compare(password, hashedPassword);
+
+  if (!match) {
+    // wrong password
+    throw new Error('Wrong old password');
+  }
+
+  const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // update user
+  await UserRegistry.updatePassword(user.id, newHashedPassword);
 };
 
 export const getSessionFromToken = async (token: JsonWebToken) => {

@@ -1,10 +1,11 @@
 import {z} from 'zod';
 import {createController} from '.';
-import {credentialsSchema} from '../schema/credentials';
+import {credentialsSchema, resetPasswordSchema} from '../schema/credentials';
 import {
   getSessionFromToken,
   refreshAccessToken,
   registerWithCredentials,
+  resetPassword,
   signInWithCredentials,
   signOutToken,
 } from '../services/auth';
@@ -59,12 +60,23 @@ const postRefreshToken = createController({
   },
 });
 
+const putPasswordReset = createController({
+  bodySchema: resetPasswordSchema,
+  controller: async ({body}) => {
+    const {email, password, newPassword} = body;
+    const options = {email, password, newPassword};
+
+    await resetPassword(options);
+  },
+});
+
 const authControllers = {
   postLogin,
   postLogout,
   postRegister,
   getSession,
   postRefreshToken,
+  putPasswordReset,
 };
 
 export default authControllers;
