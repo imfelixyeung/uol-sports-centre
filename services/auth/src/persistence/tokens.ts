@@ -123,4 +123,12 @@ export class TokenRegistry {
       });
     });
   }
+
+  static async deleteExpiredTokens() {
+    // note that we are not deleting by expiresAt
+    // because expired tokens could be renewed by refresh tokens
+    await db.token.deleteMany({
+      where: {refreshTokens: null},
+    });
+  }
 }

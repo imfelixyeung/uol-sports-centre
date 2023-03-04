@@ -52,4 +52,12 @@ export class RefreshTokenRegistry {
       throw new Error('Malformed refresh token');
     }
   }
+
+  static async deleteExpiredRefreshTokens() {
+    await db.refreshToken.deleteMany({
+      where: {
+        expiresAt: {lte: dayjs().toDate()},
+      },
+    });
+  }
 }

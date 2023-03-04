@@ -93,3 +93,16 @@ export const refreshAccessToken = async (
 
   return {token: newToken, refreshToken: newRefreshToken};
 };
+
+/**
+ * Deletes all expired access tokens and refresh tokens
+ */
+export const deleteExpiredTokens = async () => {
+  // cascading delete
+  try {
+    await RefreshTokenRegistry.deleteExpiredRefreshTokens();
+    await TokenRegistry.deleteExpiredTokens();
+  } catch (error) {
+    console.error('Something went wrong while deleting expired tokens', error);
+  }
+};
