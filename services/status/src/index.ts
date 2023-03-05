@@ -5,8 +5,8 @@ import healthRouter from './routers/health.js';
 import cron from 'node-cron';
 import {
   registerServices,
-  removeOldSnapshots,
-  takeServicesStatusSnapshot,
+  removeOldHealthCheckSnapshots,
+  takeServicesHealthCheckSnapshot,
 } from './services/status.js';
 
 const app = express();
@@ -27,8 +27,8 @@ registerServices([
   .then(() => console.log('Services registered'))
   .catch(error => console.error('Error registering services', error));
 
-cron.schedule('* * * * *', takeServicesStatusSnapshot);
-cron.schedule('* * * * *', removeOldSnapshots);
+cron.schedule('* * * * *', takeServicesHealthCheckSnapshot);
+cron.schedule('* * * * *', removeOldHealthCheckSnapshots);
 
 const {PORT, HOST} = env;
 
