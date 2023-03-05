@@ -1,11 +1,11 @@
 import {Request, Response} from 'express';
-import {getReport} from '../services/report';
+import {getStatusReport} from '../services/status';
 
-const get = async (req: Request, res: Response) => {
+const getReport = async (req: Request, res: Response) => {
   try {
     return res.json({
       success: true,
-      data: await getReport(),
+      data: await getStatusReport(),
     });
   } catch (error) {
     return res.json({
@@ -16,8 +16,13 @@ const get = async (req: Request, res: Response) => {
   }
 };
 
-const reportControllers = {
-  get,
+const getHistory = async (req: Request, res: Response) => {
+  res.json({});
 };
 
-export default reportControllers;
+const statusControllers = {
+  getReport: getReport,
+  getHistory,
+};
+
+export default statusControllers;

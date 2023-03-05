@@ -54,7 +54,7 @@ const getServiceReport = async (service: Service): Promise<ServiceReport> => {
   }
 };
 
-export const getReport = async () => {
+export const getStatusReport = async () => {
   // get reports for all services
   const reportPromises = knownServices.map(getServiceReport);
   const reports: Report = await Promise.all(reportPromises);
