@@ -2,7 +2,7 @@ import {User} from '@prisma/client';
 import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
-import {ACCESS_JWT_SIGN_OPTIONS} from '../config';
+import {ACCESS_JWT_EXPIRES_IN_MS, ACCESS_JWT_SIGN_OPTIONS} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
 
@@ -25,7 +25,9 @@ export class TokenRegistry {
       data: {
         id: tokenId,
         token: token,
-        expiresAt: dayjs().add(1, 'hour').toDate(),
+        expiresAt: dayjs()
+          .add(ACCESS_JWT_EXPIRES_IN_MS, 'milliseconds')
+          .toDate(),
         user: {connect: {id: user.id}},
       },
     });
@@ -48,7 +50,9 @@ export class TokenRegistry {
       where: {id: tokenData.id},
       data: {
         token: newToken,
-        expiresAt: dayjs().add(1, 'hour').toDate(),
+        expiresAt: dayjs()
+          .add(ACCESS_JWT_EXPIRES_IN_MS, 'milliseconds')
+          .toDate(),
         refreshTokens: {delete: true},
       },
     });

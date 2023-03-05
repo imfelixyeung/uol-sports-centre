@@ -1,7 +1,7 @@
 import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
-import {REFRESH_JWT_SIGN_OPTIONS} from '../config';
+import {REFRESH_JWT_EXPIRES_IN_MS, REFRESH_JWT_SIGN_OPTIONS} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
 import {TokenRegistry} from './tokens';
@@ -26,7 +26,9 @@ export class RefreshTokenRegistry {
       data: {
         id: refreshTokenId,
         token: {connect: {id: tokenData.id}},
-        expiresAt: dayjs().add(1, 'day').toDate(),
+        expiresAt: dayjs()
+          .add(REFRESH_JWT_EXPIRES_IN_MS, 'milliseconds')
+          .toDate(),
       },
     });
 
