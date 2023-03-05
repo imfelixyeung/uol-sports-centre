@@ -1,38 +1,48 @@
 import unittest
+import sqlite3
+import stripe
+
+import sys
+from pathlib import Path
+sys.path[0] = str(Path(sys.path[0]).parent)
+
+import payments
 from payments import app
+from payments import MakePurchasable
 
-#Creating a class in order to test createCheckout()
-class MakePurchasableTest(unittest.TestCase):
-    
-    def MakePurchasable_test(self):
-        a = 1
+class TestingPaymentsMicroservice(unittest.TestCase):
+    #test createCheckout()    
+    def test_MakePurchasable_test(self):
+        #tests if it can make a test product purchasable
+        payments.MakePurchasable('product-test', 5.0, 'test-type')
 
-#Creating a class in order to test addProductDatabase()
-class AddProductDatabaseTest(unittest.TestCase):
-    
+        #retrieving the added product from Stripe
+        productStripe = stripe.Product.list(limit=1, name='product-test').data[0]
+        price = stripe.Price.list(limit=1, product=productStripe.id).data[0]
+
+        #asserting that the added product matches the expected result
+        self.assertEqual(productStripe.name, 'product-test')
+        self.assertEqual(price.unit_amount_decimal, '500')
+
+    #test addProductDatabase()    
     def addProductDatabase_test(self):
         a = 1
 
-#Creating a class in order to test createCheckout()
-class CreateCheckoutTest(unittest.TestCase):
-    
+    #test createCheckout()
     def createCheckout_test(self):
         a = 1
 
-#Creating a class in order to test get_index()
-class GetIndexTest(unittest.TestCase):
-    
+    #test get_index()
     def get_index_test(self):
         a = 1
 
-#Creating a class in order to test redirectCheckout()
-class RedirectCheckoutTest(unittest.TestCase):
-    
+    #test redirectCheckout()
     def redirectCheckout_test(self):
         a = 1
 
-#Creating a class in order to test webhookReceived()
-class WebhookReceivedTest(unittest.TestCase):
-    
+    #test webhookReceived()       
     def webhookReceived_test(self):
         a = 1
+
+if __name__ == '__main__':
+    unittest.main()
