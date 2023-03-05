@@ -6,25 +6,33 @@ import {ACCESS_JWT_SIGN_OPTIONS} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
 
+interface AccessJWTCustomClaims {
+  user: {
+    id: number;
+    email: string;
+    role: string;
+  };
+  type: 'access';
+}
+
 export class TokenRegistry {
   static async createTokenForUser(user: User) {
     const tokenId = randomUUID();
 
-    const token = jwt.sign(
-      {
-        user: {
-          email: user.email,
-          role: user.role,
-        },
-        type: 'access',
+    const claims: AccessJWTCustomClaims = {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
       },
-      env.JWT_SIGNING_SECRET,
-      {
-        jwtid: tokenId,
-        subject: String(user.id),
-        ...ACCESS_JWT_SIGN_OPTIONS,
-      }
-    );
+      type: 'access',
+    };
+
+    const token = jwt.sign(claims, env.JWT_SIGNING_SECRET, {
+      jwtid: tokenId,
+      subject: String(user.id), // jwt spec requires sub to be string
+      ...ACCESS_JWT_SIGN_OPTIONS,
+    });
 
     await db.token.create({
       data: {
@@ -47,21 +55,20 @@ export class TokenRegistry {
     });
     if (!user) throw new Error('User not found');
 
-    const newToken = jwt.sign(
-      {
-        user: {
-          email: user.email,
-          role: user.role,
-        },
-        type: 'access',
+    const claims: AccessJWTCustomClaims = {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
       },
-      env.JWT_SIGNING_SECRET,
-      {
-        jwtid: tokenData.id,
-        subject: String(user.id),
-        ...ACCESS_JWT_SIGN_OPTIONS,
-      }
-    );
+      type: 'access',
+    };
+
+    const newToken = jwt.sign(claims, env.JWT_SIGNING_SECRET, {
+      jwtid: tokenData.id,
+      subject: String(user.id), // jwt spec requires sub to be string
+      ...ACCESS_JWT_SIGN_OPTIONS,
+    });
 
     await db.token.update({
       where: {id: tokenData.id},
