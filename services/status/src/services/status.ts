@@ -1,38 +1,22 @@
 import axios from 'axios';
+import {HealthCheckRegistry} from '../persistence/health-check';
+import {ServiceRegistry} from '../persistence/service';
+import {ServiceStatusSnapshot} from '../types/status';
 
-const knownServices = [
-  'auth',
-  'booking',
-  'facilities',
-  'management',
-  'payments',
-  'status',
-  'users',
-  'web',
-] as const;
-
-type Service = (typeof knownServices)[number];
-type Status = 'up' | 'down' | 'degraded';
-
-interface ServiceReport {
-  service: Service;
-  status: Status;
-  statusCode: number;
-  timestamp: number;
-}
-
-type Report = ServiceReport[];
+type Report = ServiceStatusSnapshot[];
 
 /**
  * Gets the health check endpoint for a given service
  * @param service service name
  * @returns endpoint
  */
-const getServiceHealthCheckEndpoint = (service: Service) => {
+const getServiceHealthCheckEndpoint = (service: string) => {
   return `http://${service}/health`;
 };
 
-const getServiceReport = async (service: Service): Promise<ServiceReport> => {
+const getServiceReport = async (
+  service: string
+): Promise<ServiceStatusSnapshot> => {
   const serviceHealthCheckEndpoint = getServiceHealthCheckEndpoint(service);
 
   const timestamp = Date.now();
@@ -56,7 +40,39 @@ const getServiceReport = async (service: Service): Promise<ServiceReport> => {
 
 export const getStatusReport = async () => {
   // get reports for all services
-  const reportPromises = knownServices.map(getServiceReport);
+  const services = await ServiceRegistry.getServices();
+  const reportPromises = services.map(getServiceReport);
   const reports: Report = await Promise.all(reportPromises);
   return reports;
+};
+
+export const getLatestReport = async () => {
+  const latest = await HealthCheckRegistry.getLatest();
+  return latest.map(({healthChecks, name}) => {
+    return {
+      service: name,
+      status: healthChecks[0]?.status ?? null,
+      statusCode: healthChecks[0]?.statusCode ?? null,
+      timestamp: healthChecks[0]?.timestamp.getTime() ?? null,
+    };
+  });
+};
+
+export const getStatusHistory = async () => {
+  return await HealthCheckRegistry.getHistory();
+};
+
+export const takeServicesStatusSnapshot = async () => {
+  const report = await getStatusReport();
+  for (const data of report) {
+    await HealthCheckRegistry.addServiceHealthCheck(data);
+  }
+};
+
+export const removeOldSnapshots = async () => {
+  await HealthCheckRegistry.removeOldHealthChecks();
+};
+
+export const registerServices = async (services: string[]) => {
+  for (const service of services) await ServiceRegistry.addService(service);
 };

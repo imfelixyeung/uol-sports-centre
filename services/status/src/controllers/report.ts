@@ -1,11 +1,11 @@
 import {Request, Response} from 'express';
-import {getStatusReport} from '../services/status';
+import {getLatestReport, getStatusHistory} from '../services/status';
 
 const getReport = async (req: Request, res: Response) => {
   try {
     return res.json({
       success: true,
-      data: await getStatusReport(),
+      data: await getLatestReport(),
     });
   } catch (error) {
     return res.json({
@@ -17,7 +17,9 @@ const getReport = async (req: Request, res: Response) => {
 };
 
 const getHistory = async (req: Request, res: Response) => {
-  res.json({});
+  await getStatusHistory()
+    .then(history => res.json({data: history}))
+    .catch(error => res.json({error}));
 };
 
 const statusControllers = {
