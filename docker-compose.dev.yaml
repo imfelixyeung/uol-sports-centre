@@ -72,11 +72,33 @@ services:
     environment:
       - PORT=80
       - HOST=status
+      - DATABASE_URL=postgresql://status:status@status-db:5432/dev
     networks:
       - network
     volumes:
       - ./services/status:/app
       - /app/node_modules
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  status-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=status
+      - POSTGRES_USER=status
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/status/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "status", "-d", "dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   booking:
     build:
