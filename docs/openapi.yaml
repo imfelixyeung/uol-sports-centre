@@ -127,6 +127,85 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/HealthCheck"
+    
+    /users/viewFullRecord:
+    get:
+      tags:
+        - users
+      description: "Returns the record in database for a specified user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/viewFullRecord"
+    
+    /users/updateFirstName:
+    get:
+      tags:
+        - users
+      description: "Updates the first name of a specified user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/updateFirstName"
+    
+    /users/updateSecondName:
+    get:
+      tags:
+        - users
+      description: "Updates the first second of a specified user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/updateSecondName"
+
+    /users/updateAccountID:
+    get:
+      tags:
+        - users
+      description: "Updates the account ID of a specified user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/updateAccountID"
+
+    /users/updatePaymentID:
+    get:
+      tags:
+        - users
+      description: "Updates the Payment ID of a specified user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/updatePaymentID"
+              /users/health:
+    get:
+      tags:
+        - users
+      description: "Returns the health of the users service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+              /users/health:
+    get:
+      tags:
+        - users
+      description: "Returns the health of the users service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+              /users/health:
+    get:
+      tags:
+        - users
+      description: "Returns the health of the users service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+
 
   /booking/bookings:
     get:
