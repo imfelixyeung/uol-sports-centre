@@ -3,6 +3,6 @@ import usersControllers from '../controllers/users';
 
 const userRouter: Router = Router();
 
-// usersRouter.post('/updateName', usersControllers.postLogin);
+userRouter.get('/testing', usersControllers.testing);
 
 export default userRouter;
