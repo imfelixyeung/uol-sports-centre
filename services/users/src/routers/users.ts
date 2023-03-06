@@ -5,5 +5,11 @@ const userRouter: Router = Router();
 
 userRouter.get('/testing', usersControllers.testing);
 userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
+userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
 
 export default userRouter;
