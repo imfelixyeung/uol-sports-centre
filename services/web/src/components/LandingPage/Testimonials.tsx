@@ -1,4 +1,5 @@
 import type {FC} from 'react';
+import ScrollArea from '../ScrollArea';
 import Typography from '../Typography';
 
 const testimonials = [
@@ -54,11 +55,13 @@ const Testimonials = () => {
       <Typography as="h2" styledAs="h3" uppercase>
         {'/// Testimonials'}
       </Typography>
-      <div className="flex max-w-full overflow-y-auto gap-6 pb-3">
-        {testimonials.map((testimonial, index) => (
-          <TestimonialCard testimonial={testimonial} key={index} />
-        ))}
-      </div>
+      <ScrollArea>
+        <div className="flex max-w-full overflow-y-auto gap-6 pb-3">
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard testimonial={testimonial} key={index} />
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };

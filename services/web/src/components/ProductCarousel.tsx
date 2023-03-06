@@ -1,4 +1,5 @@
 import type {FC} from 'react';
+import ScrollArea from './ScrollArea';
 import Typography from './Typography';
 
 interface Product {
@@ -14,11 +15,13 @@ interface ProductCarouselProps {
 
 const ProductCarousel: FC<ProductCarouselProps> = ({products}) => {
   return (
-    <div className="flex max-w-full overflow-x-auto gap-6 pb-3 snap-mandatory snap-x">
-      {products.map((product, index) => (
-        <ProductCard product={product} key={index} />
-      ))}
-    </div>
+    <ScrollArea>
+      <div className="flex max-w-full overflow-x-auto gap-6 pb-3 snap-mandatory snap-x">
+        {products.map((product, index) => (
+          <ProductCard product={product} key={index} />
+        ))}
+      </div>
+    </ScrollArea>
   );
 };
 
