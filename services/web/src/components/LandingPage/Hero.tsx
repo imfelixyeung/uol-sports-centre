@@ -7,7 +7,7 @@ const Hero = () => {
       <div className="bg-gradient-to-r from-base-100 via-base-100/95 to-base-100/50">
         <div className="container grid md:grid-cols-2">
           <div className="flex justify-center flex-col gap-6 py-16">
-            <Typography as="h1" styledAs="display">
+            <Typography as="h1" styledAs="display" uppercase>
               A Sports Centre
             </Typography>
             <Typography as="p">

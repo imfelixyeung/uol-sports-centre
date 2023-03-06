@@ -3,7 +3,9 @@ import Typography from '../Typography';
 const ReachGoals = () => {
   return (
     <div className="py-8 container flex flex-col gap-6">
-      <Typography as="h2">{'/// Reach Your Goals'}</Typography>
+      <Typography as="h2" styledAs="h3" uppercase>
+        {'/// Reach Your Goals'}
+      </Typography>
       <div className="flex gap-8 items-center">
         <img
           className="object-cover max-w-sm"
