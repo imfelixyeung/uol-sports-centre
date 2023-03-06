@@ -49,12 +49,6 @@ def MakeAPurchase(userID, productName):
     '''redirects user to stripe checkout for chosen product'''
     createCheckout(productName)
 
-#Creating a test customer - this will be retrived from user microservice
-customer = stripe.Customer.create(
-    email = "examplecustomer@example.com",
-    name = "Minoru Kishinami"
-)
-
 #Creating a test card for our use
 card = {
     "number": "4242424242424242",
