@@ -1,10 +1,15 @@
-import {Credentials} from '../schema/credentials';
-import {JsonWebToken} from '../schema/jwt';
 import bcrypt from 'bcrypt';
-import {UserRegistry} from '../persistence/users';
-import {TokenRegistry} from '../persistence/tokens';
 import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
+import {TokenRegistry} from '../persistence/tokens';
+import {UserRegistry} from '../persistence/users';
+import {Credentials, ResetPassword} from '../schema/credentials';
+import {JsonWebToken} from '../schema/jwt';
 
+/**
+ * signs a user in with their credentials
+ * @param credentials email password
+ * @returns jwt token and refresh token
+ */
 export const signInWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
 
@@ -33,6 +38,11 @@ export const signInWithCredentials = async (credentials: Credentials) => {
   return {token, refreshToken};
 };
 
+/**
+ * registers a user with their credentials
+ * @param credentials email password
+ * @returns jwt token and refresh token
+ */
 export const registerWithCredentials = async (credentials: Credentials) => {
   const {email, password} = credentials;
 
@@ -59,6 +69,40 @@ export const registerWithCredentials = async (credentials: Credentials) => {
   return {token, refreshToken};
 };
 
+/**
+ * resets a user's password
+ * @param options old credentials and new password
+ */
+export const resetPassword = async (options: ResetPassword) => {
+  const {email, password, newPassword} = options;
+
+  const user = await UserRegistry.getUserByEmail(email);
+
+  if (!user) {
+    // user not found
+    throw new Error('User not found');
+  }
+
+  const hashedPassword = user.password;
+
+  const match = await bcrypt.compare(password, hashedPassword);
+
+  if (!match) {
+    // wrong password
+    throw new Error('Wrong old password');
+  }
+
+  const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // update user
+  await UserRegistry.updatePassword(user.id, newHashedPassword);
+};
+
+/**
+ * gets the jwt payload from a token, throws error if malformed
+ * @param token jwt token
+ * @returns session (decoded jwt payload)
+ */
 export const getSessionFromToken = async (token: JsonWebToken) => {
   try {
     const decoded = TokenRegistry.verifyToken(token);
@@ -68,12 +112,22 @@ export const getSessionFromToken = async (token: JsonWebToken) => {
   }
 };
 
+/**
+ * signs a user out by invalidating all tokens associated with the token
+ * @param token jwt token
+ */
 export const signOutToken = async (token: JsonWebToken) => {
   await TokenRegistry.invalidateToken(token);
 };
 
+/**
+ * refreshes an access token and refresh token
+ * @param token jwt token
+ * @param refreshToken  jwt refresh token
+ * @returns refreshed token and refresh token
+ */
 export const refreshAccessToken = async (
-  token: string,
+  token: JsonWebToken,
   refreshToken: string
 ) => {
   const verified = !!(
@@ -92,4 +146,17 @@ export const refreshAccessToken = async (
   );
 
   return {token: newToken, refreshToken: newRefreshToken};
+};
+
+/**
+ * Deletes all expired access tokens and refresh tokens
+ */
+export const deleteExpiredTokens = async () => {
+  // cascading delete
+  try {
+    await RefreshTokenRegistry.deleteExpiredRefreshTokens();
+    await TokenRegistry.deleteExpiredTokens();
+  } catch (error) {
+    console.error('Something went wrong while deleting expired tokens', error);
+  }
 };

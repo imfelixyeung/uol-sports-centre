@@ -33,7 +33,7 @@ services:
       target: dev
     environment:
       - PORT=80
-      - HOST=auth
+      - HOST=0.0.0.0
       - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
       - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
       - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
@@ -61,7 +61,7 @@ services:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
       test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
       interval: 5s
-      timeout: 5s
+      timeout: 15s
       retries: 5
 
   users:
