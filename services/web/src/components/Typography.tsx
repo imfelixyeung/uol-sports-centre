@@ -31,12 +31,14 @@ const Typography: FC<TypographyProps> = ({
   styledAs,
   uppercase,
   as: is = 'p',
+  className,
   ...props
 }) => {
   const element = createElement(is, {
     className: typographyStyles({
       styledAs: (styledAs ?? is) as TypographyProps['styledAs'],
       uppercase,
+      className,
     }),
     ...props,
   });
