@@ -12,6 +12,7 @@
     "ci": "pnpm lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.16",
     "@radix-ui/react-scroll-area": "^1.0.2",
     "@reduxjs/toolkit": "^1.9.3",
     "@rehooks/local-storage": "^2.4.4",

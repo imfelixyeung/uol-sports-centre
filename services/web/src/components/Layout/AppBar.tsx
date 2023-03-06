@@ -1,3 +1,4 @@
+import {UserCircleIcon} from '@heroicons/react/24/solid';
 import Button from '../Button';
 
 const AppBar = () => {
@@ -18,7 +19,7 @@ const AppBar = () => {
             className="absolute right-0 md:hidden"
             square
           >
-            {'⛄️'}
+            <UserCircleIcon className="h-6" />
           </Button>
         </div>
         <nav>

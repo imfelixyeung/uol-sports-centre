@@ -1,3 +1,4 @@
+import {ChevronDoubleRightIcon} from '@heroicons/react/24/solid';
 import type {FC} from 'react';
 import ScrollArea from './ScrollArea';
 import Typography from './Typography';
@@ -37,9 +38,15 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
       href={url}
     >
       <img src={image} alt={name} className="aspect-video object-cover" />
-      <Typography as="h3" styledAs="h5" uppercase>
-        {name}
-      </Typography>
+      <div className="flex items-center justify-between">
+        <Typography as="h3" styledAs="h5" uppercase>
+          {name}
+        </Typography>
+        <ChevronDoubleRightIcon
+          className="h-6 stroke-[6] text-primary"
+          aria-hidden
+        />
+      </div>
       <Typography>{description}</Typography>
     </a>
   );
