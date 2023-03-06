@@ -177,34 +177,36 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/updatePaymentID"
-              /users/health:
+
+    /users/updateBookingID:
     get:
       tags:
         - users
-      description: "Returns the health of the users service"
+      description: "Updates the Booking ID of a specified user"
 
       responses:
         "200":
-          $ref: "#/components/responses/HealthCheck"
+          $ref: "#/components/responses/updateBookingID"
               /users/health:
+    
+    /users/updateMembership:
     get:
       tags:
         - users
-      description: "Returns the health of the users service"
+      description: "Updates the Membership of a specified user"
 
       responses:
         "200":
-          $ref: "#/components/responses/HealthCheck"
-              /users/health:
+          $ref: "#/components/responses/updateMembership"
+    /users/testing:
     get:
       tags:
         - users
-      description: "Returns the health of the users service"
+      description: "Returns the values of the users microservice used for testing and feature showcase"
 
       responses:
         "200":
-          $ref: "#/components/responses/HealthCheck"
-
+          $ref: "#/components/responses/testing" 
 
 
   /booking/bookings:
