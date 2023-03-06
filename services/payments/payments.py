@@ -42,7 +42,6 @@ def MakePurchasable(productName, productPrice, productType="payment"):
         currency="gbp",
         product=productStripe.stripe_id
     )
-
     #Adding product to database
     addProductDatabase(productName, price.stripe_id, productPrice, productType)
 

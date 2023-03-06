@@ -17,7 +17,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         payments.MakePurchasable('product-test', 5.0, 'test-type')
 
         #retrieving the added product from Stripe
-        productStripe = stripe.Product.list(limit=1, name='product-test').data[0]
+        products = stripe.Product.list()
+        productStripe = next((p for p in products if p.name == 'product-test'), None)
+
         price = stripe.Price.list(limit=1, product=productStripe.id).data[0]
 
         #asserting that the added product matches the expected result
