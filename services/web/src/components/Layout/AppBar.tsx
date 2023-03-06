@@ -1,4 +1,5 @@
 import {UserCircleIcon} from '@heroicons/react/24/solid';
+import AppIcon from '../AppIcon/AppIcon';
 import Button from '../Button';
 
 const AppBar = () => {
@@ -6,14 +7,7 @@ const AppBar = () => {
     <div className="bg-base-100">
       <header className="flex justify-between items-center container py-6 flex-col md:flex-row gap-3">
         <div className="relative flex items-center justify-center w-full md:w-auto">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-base-content"></div>
-            <h1 className="uppercase font-bold leading-6 text-2xl">
-              Sports
-              <br />
-              Centre
-            </h1>
-          </div>
+          <AppIcon />
           <Button
             intent="primary"
             className="absolute right-0 md:hidden"
