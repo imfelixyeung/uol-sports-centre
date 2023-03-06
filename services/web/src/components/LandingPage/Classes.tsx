@@ -11,21 +11,21 @@ const Classes = () => {
         <ProductCarousel
           products={[
             {
-              image: '/assets/images/pexels-chevanon-photography-317155.jpg',
+              image: '/assets/images/pexels-alexy-almond-3756521.jpg',
               name: 'Pilates',
               description:
                 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
               url: '#',
             },
             {
-              image: '/assets/images/pexels-chevanon-photography-317155.jpg',
+              image: '/assets/images/pexels-gustavo-fring-3984337.jpg',
               name: 'Yoga',
               description:
                 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
               url: '#',
             },
             {
-              image: '/assets/images/pexels-chevanon-photography-317155.jpg',
+              image: '/assets/images/pexels-andrea-piacquadio-903171.jpg',
               name: 'Aerobics',
               description:
                 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',

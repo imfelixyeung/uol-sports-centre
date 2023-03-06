@@ -5,21 +5,21 @@ import Typography from '../Typography';
 const testimonials = [
   {
     name: 'Heather Poole',
-    image: 'https://source.unsplash.com/random/?Person,Selfie,0',
+    image: '/assets/images/pexels-andrea-piacquadio-733872.jpg',
     title: '3 Year Member',
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aliquid explicabo quidem nihil soluta rem voluptas impedit deleniti labore. Consectetur amet vero aliquid cum officiis. Architecto maxime vitae explicabo unde?',
   },
   {
     name: 'Shawn Hicks',
-    image: 'https://source.unsplash.com/random/?Person,Selfie,1',
+    image: '/assets/images/pexels-bruno-salvadori-2269872.jpg',
     title: 'Personal Trainer',
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aliquid explicabo quidem nihil soluta rem voluptas impedit deleniti labore. Consectetur amet vero aliquid cum officiis. Architecto maxime vitae explicabo unde?',
   },
   {
     name: 'Jenny Davis',
-    image: 'https://source.unsplash.com/random/?Person,Selfie,2',
+    image: '/assets/images/pexels-pixabay-415829.jpg',
     title: 'Owner',
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aliquid explicabo quidem nihil soluta rem voluptas impedit deleniti labore. Consectetur amet vero aliquid cum officiis. Architecto maxime vitae explicabo unde?',
