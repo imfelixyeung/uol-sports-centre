@@ -51,7 +51,7 @@ def MakeAPurchase(userID, productName):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
     findUser = cur.execute('''SELECT stripeID FROM customers WHERE
-    userID LIKE ?''', [userID]).fetchall()
+    userID = ?''', [userID]).fetchall()
     if len(findUser) == 0:
         newCustomer = stripe.Customer.create(
             #get user details from user microservice
@@ -60,7 +60,7 @@ def MakeAPurchase(userID, productName):
             (userID, newCustomer.stripe_id))
         con.commit()
         findUser = cur.execute('''SELECT stripeID FROM customers WHERE
-        userID LIKE ?''', [userID]).fetchall()
+        userID = ?''', [userID]).fetchall()
         con.close()
     return createCheckout(findUser[0][0], productName)
 
@@ -99,7 +99,7 @@ def get_index():
 
 @app.route("/checkout-session", methods=['POST'])
 def redirectCheckout():
-    return redirect(MakeAPurchase("newUser", "Sports Centre Membership"), code=303)
+    return redirect(MakeAPurchase(467468, "Sports Centre Membership"), code=303)
 
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():

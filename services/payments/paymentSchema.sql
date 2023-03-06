@@ -19,7 +19,7 @@ CREATE TABLE orders (
 DROP TABLE IF EXISTS customers;
 
 CREATE TABLE customers (
-    userID TEXT NOT NULL, 
+    userID INTEGER NOT NULL, 
     stripeID TEXT NOT NULL,
     FOREIGN KEY (userID) REFERENCES orders(userID),
     PRIMARY KEY (userID, stripeID)
