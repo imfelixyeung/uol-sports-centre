@@ -96,11 +96,6 @@ def createCheckout(stripeID, productName):
 
 @app.route('/', methods=['GET'])
 def get_index():
-    con = sqlite3.connect("database.db")
-    cur = con.cursor()
-    findUser = cur.execute('''SELECT stripeID FROM customers WHERE
-    userID LIKE 'newUser\'''').fetchall()
-    print(findUser)
     return render_template('index.html')
 
 @app.route("/checkout-session", methods=['POST'])
