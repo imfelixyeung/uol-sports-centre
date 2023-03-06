@@ -10,10 +10,6 @@ async function testing(req: Request, res: Response) {
   });
 }
 
-const userControllers = {
-  testing,
-};
-
 async function viewFullRecord(req: Request, res: Response) {
   const finishedData: String = await processData(req.query.trtr as string);
   const otherData: String = 'Test';
@@ -77,7 +73,8 @@ async function updateBookingID(req: Request, res: Response) {
   });
 }
 
-const authControllers = {
+const usersControllers = {
+  testing,
   viewFullRecord,
   updateFirstName,
   updateSecondName,
@@ -87,4 +84,4 @@ const authControllers = {
   updateMembership,
 };
 
-export default authControllers;
+export default usersControllers;
