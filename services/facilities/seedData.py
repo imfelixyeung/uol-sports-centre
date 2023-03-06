@@ -76,10 +76,69 @@ def seedOpenTime():
       db.session.commit()
 
 
-# Idea for how to handle events. Give activities table a start time and a day,
-# If an activity is every day it's day field is "everyday".
-# If an activity doesn't have a specific start time then it's hourly?
-# Finish time for an activity with a specific start time can be implied from duration
+def seedActivities():
+  with app.app_context():
+    seed_check = Activity.query.get(1)
+
+    if not seed_check:
+      general_use = Activity(name="Swimming Pool Open Use",
+                             duration=720,
+                             capacity=15,
+                             facility_id=1)
+      lane_swimming = Activity(name="Lane Swimming",
+                               duration=720,
+                               capacity=15,
+                               facility_id=1)
+      lessons = Activity(name="Lessons",
+                         duration=60,
+                         capacity=20,
+                         facility_id=1)
+      team_event_swimming = Activity(name="Swimming Pool Team event",
+                                     duration=120,
+                                     capacity=30,
+                                     facility_id=1)
+      fitness_general = Activity(name="Fitness Room General Use",
+                                 duration=840,
+                                 capacity=35,
+                                 facility_id=2)
+      squash_court_1_session = Activity(name="Squash Court 1 Session",
+                                        duration=60,
+                                        capacity=4,
+                                        facility_id=3)
+      squash_court_2_session = Activity(name="Squash Court 2 Session",
+                                        duration=60,
+                                        capacity=4,
+                                        facility_id=4)
+      sports_hall_session = Activity(name="Sports hall Session",
+                                     duration=840,
+                                     capacity=45,
+                                     facility_id=5)
+      sports_hall_team_event = Activity(name="Sports Hall Team Event",
+                                        duration=120,
+                                        capacity=45,
+                                        facility_id=5)
+      climbing_wall_general = Activity(name="Climbing Wall General Use",
+                                       duration=600,
+                                       capacity=22,
+                                       facility_id=6)
+      exercise_class = Activity(name="Exercise Class",
+                                duration=60,
+                                capacity=25,
+                                facility_id=7)
+      db.session.add(general_use)
+      db.session.add(lane_swimming)
+      db.session.add(lessons)
+      db.session.add(team_event_swimming)
+      db.session.add(fitness_general)
+      db.session.add(squash_court_1_session)
+      db.session.add(squash_court_2_session)
+      db.session.add(sports_hall_session)
+      db.session.add(sports_hall_team_event)
+      db.session.add(climbing_wall_general)
+      db.session.add(exercise_class)
+      db.session.commit()
+
 
 seedFacilities()
 seedOpenTime()
+seedActivities()
