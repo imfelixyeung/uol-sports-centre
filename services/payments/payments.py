@@ -4,7 +4,6 @@ import sqlite3
 import stripe
 import os
 from datetime import datetime
-from datetime import timedelta
 from dotenv import load_dotenv
 from flask import Flask, redirect, render_template
 
