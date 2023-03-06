@@ -14,7 +14,7 @@ interface ProductCarouselProps {
 
 const ProductCarousel: FC<ProductCarouselProps> = ({products}) => {
   return (
-    <div className="flex max-w-full overflow-y-auto gap-6 pb-3">
+    <div className="flex max-w-full overflow-x-auto gap-6 pb-3 snap-mandatory snap-x">
       {products.map((product, index) => (
         <ProductCard product={product} key={index} />
       ))}
@@ -29,7 +29,10 @@ interface ProductCardProps {
 const ProductCard: FC<ProductCardProps> = ({product}) => {
   const {description, image, name, url} = product;
   return (
-    <a className="flex flex-col min-w-[25rem] gap-3" href={url}>
+    <a
+      className="flex flex-col min-w-full md:min-w-[25rem] gap-3 snap-center"
+      href={url}
+    >
       <img src={image} alt={name} className="aspect-video object-cover" />
       <Typography as="h3" styledAs="h5" uppercase>
         {name}
