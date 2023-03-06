@@ -27,7 +27,7 @@ type Membership = (typeof memberships)[0];
 const Memberships = () => {
   return (
     <div className="py-8 container flex flex-col gap-6">
-      <Typography as="h2" styledAs="h3" uppercase>
+      <Typography as="h2" styledAs="h1" uppercase>
         {'/// Memberships'}
       </Typography>
       <div className="grid md:grid-cols-3 gap-3">
@@ -51,22 +51,22 @@ const MembershipCard: FC<MembershipCardProps> = ({membership}) => {
     <div className="flex flex-col h-full">
       <div
         className={clsx(
-          'text-base-100 p-3 h-64 flex items-end relative grow',
-          bestValue ? 'bg-primary' : 'bg-base-content'
+          'text-black p-3 h-64 flex items-end relative grow',
+          bestValue ? 'bg-primary' : 'bg-white'
         )}
       >
-        <Typography as="p" styledAs="h3" uppercase>
+        <Typography as="p" styledAs="h2" uppercase>
           {name}
         </Typography>
         {bestValue && (
-          <div className="absolute top-6 right-0 py-2 px-4 bg-base-content">
-            <Typography as="p" styledAs="h6">
+          <div className="absolute top-6 right-0 py-2 px-4 bg-white">
+            <Typography as="p" styledAs="h2">
               Best Value
             </Typography>
           </div>
         )}
       </div>
-      <div className="bg-neutral-700 p-3 flex items-center justify-between gap-3 text-base-content">
+      <div className="bg-neutral-700 p-3 flex items-center justify-between gap-3 text-white">
         <Typography as="span">{price}</Typography>
         <Button intent="primary">{buttonLabel}</Button>
       </div>

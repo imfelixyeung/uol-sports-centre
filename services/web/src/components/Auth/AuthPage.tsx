@@ -7,7 +7,7 @@ const AuthPage: FC<AuthFormProps> = props => {
   return (
     <div className="from-red-600 bg-gradient-to-br via-purple-600 to-blue-600 grow py-6 flex flex-col">
       <div className="grid md:grid-cols-2 container grow">
-        <div className="bg-base-100 p-10 flex flex-col items-center justify-center gap-8">
+        <div className="bg-black p-10 flex flex-col items-center justify-center gap-8">
           <AppIcon />
           <AuthForm {...props} />
         </div>

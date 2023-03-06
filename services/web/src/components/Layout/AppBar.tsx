@@ -4,7 +4,7 @@ import Button from '../Button';
 
 const AppBar = () => {
   return (
-    <div className="bg-base-100">
+    <div className="bg-black">
       <header className="flex justify-between items-center container py-6 flex-col md:flex-row gap-3">
         <div className="relative flex items-center justify-center w-full md:w-auto">
           <AppIcon />

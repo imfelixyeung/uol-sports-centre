@@ -4,7 +4,7 @@ const quickLinks = ['Home', 'About', 'Facilities', 'Pricing', 'Contact'];
 
 const Footer = () => {
   return (
-    <footer className="border-base-content border-t-[1px] bg-base-100">
+    <footer className="border-white border-t-[1px] bg-black">
       <div className="flex container justify-between my-12 flex-col-reverse md:flex-row">
         <nav className="font-bold text-xl">
           <ul>
@@ -26,7 +26,7 @@ const Footer = () => {
           <span className="underline">back to top</span>
         </div>
       </div>
-      <div className="border-base-content border-t-[1px]">
+      <div className="border-white border-t-[1px]">
         <div className="container py-8 flex justify-between text-sm flex-col md:flex-row items-center">
           <span>{'© Hot tomato dev team 2023'}</span>
           <a href="">Privacy Policy</a>

@@ -39,7 +39,7 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
     >
       <img src={image} alt={name} className="aspect-video object-cover" />
       <div className="flex items-center justify-between">
-        <Typography as="h3" styledAs="h5" uppercase>
+        <Typography as="h3" styledAs="h2" uppercase>
           {name}
         </Typography>
         <ChevronDoubleRightIcon

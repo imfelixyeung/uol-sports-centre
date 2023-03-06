@@ -6,7 +6,7 @@ const socials = ['Instagram', 'Twitter', 'Facebook', 'LinkedIn', 'SocialApp'];
 const Socials = () => {
   return (
     <div className="py-8 container flex flex-col gap-6">
-      <Typography as="h2" styledAs="h3" uppercase>
+      <Typography as="h2" styledAs="h1" uppercase>
         {'/// Socials'}
       </Typography>
       <div className="flex gap-8 md:items-center justify-between flex-col md:flex-row">
@@ -22,7 +22,7 @@ const Socials = () => {
               className="flex items-center justify-between gap-3"
               href=""
             >
-              <Typography as="h3" styledAs="h4" uppercase>
+              <Typography as="h3" styledAs="h2" uppercase>
                 <span>{social}</span>
               </Typography>
               <ChevronDoubleRightIcon

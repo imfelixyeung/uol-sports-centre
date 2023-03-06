@@ -5,8 +5,8 @@ import type {ButtonHTMLAttributes, FC} from 'react';
 const buttonStyles = cva('flex items-center justify-center font-bold', {
   variants: {
     intent: {
-      primary: 'bg-primary text-base-100',
-      secondary: 'bg-secondary text-base-100',
+      primary: 'bg-primary text-black',
+      secondary: 'bg-secondary text-black',
     },
     wide: {
       true: 'min-w-[12rem]',

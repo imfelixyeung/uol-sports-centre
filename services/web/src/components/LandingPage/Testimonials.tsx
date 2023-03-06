@@ -52,7 +52,7 @@ type Testimonial = (typeof testimonials)[0];
 const Testimonials = () => {
   return (
     <div className="py-8 container flex flex-col gap-6">
-      <Typography as="h2" styledAs="h3" uppercase>
+      <Typography as="h2" styledAs="h1" uppercase>
         {'/// Testimonials'}
       </Typography>
       <ScrollArea>
@@ -73,8 +73,8 @@ interface TestimonialCardProps {
 const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
   const {name, image, title, content} = testimonial;
   return (
-    <blockquote className="min-w-[22rem] even:bg-base-content even:text-base-100 p-6 flex flex-col gap-6">
-      <p className="text-justify indent-6">{content}</p>
+    <blockquote className="min-w-[22rem] even:bg-white even:text-black p-6 flex flex-col gap-6">
+      <Typography className="text-justify indent-6">{content}</Typography>
       <cite className="flex items-center gap-5">
         <div className="w-20 aspect-square">
           <img
@@ -84,10 +84,15 @@ const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
           />
         </div>
         <div className="flex flex-col">
-          <Typography as="span" styledAs="h5" className="not-italic" uppercase>
+          <Typography as="span" styledAs="h2" className="not-italic" uppercase>
             {name}
           </Typography>
-          <Typography as="span" className="not-italic text-sm" uppercase>
+          <Typography
+            as="span"
+            styledAs="subtext"
+            className="not-italic"
+            uppercase
+          >
             {title}
           </Typography>
         </div>

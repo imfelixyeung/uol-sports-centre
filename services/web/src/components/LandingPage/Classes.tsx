@@ -3,9 +3,9 @@ import Typography from '../Typography';
 
 const Classes = () => {
   return (
-    <div className="bg-base-content text-base-100">
+    <div className="bg-white text-black">
       <div className="py-8 container flex flex-col gap-6">
-        <Typography as="h2" styledAs="h3" uppercase>
+        <Typography as="h2" styledAs="h1" uppercase>
           {'/// Classes'}
         </Typography>
         <ProductCarousel

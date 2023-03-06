@@ -6,14 +6,14 @@ import {createElement} from 'react';
 const typographyStyles = cva('', {
   variants: {
     styledAs: {
-      display: 'text-8xl font-black tracking-wide font-display',
-      h1: 'text-6xl font-black font-display',
-      h2: 'text-5xl font-black font-display',
-      h3: 'text-4xl font-black font-display',
-      h4: 'text-3xl font-black font-display',
-      h5: 'text-2xl font-black font-display',
-      h6: 'text-xl font-black font-display',
-      p: 'text-base font-normal',
+      display1:
+        'text-[8rem] leading-[6.25rem] font-black tracking-wide font-display',
+      display2:
+        'text-[5rem] leading-[4rem] font-black tracking-wide font-display',
+      subtext: 'text-[1rem] leading-normal tracking-wide',
+      h1: 'text-[3.25rem] leading-[3.125rem] font-black font-display',
+      h2: 'text-[2rem] leading-[2.25rem] font-black font-display',
+      p: 'text-[1.25rem] font-normal',
     },
     uppercase: {
       true: 'uppercase',

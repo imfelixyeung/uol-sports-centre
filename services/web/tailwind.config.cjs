@@ -18,10 +18,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: '#DFFF48',
+        primary: '#E0FE10',
         secondary: '#EEEEEE',
-        'base-100': '#1A1A1A',
-        'base-content': '#EEEEEE',
+        black: '#1A1A1A',
+        white: '#EEEEEE',
       },
       fontFamily: {
         body: ['var(--font-saira)', ...defaultTheme.fontFamily.sans],

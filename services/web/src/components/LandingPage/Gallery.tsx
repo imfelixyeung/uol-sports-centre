@@ -20,9 +20,9 @@ const Gallery = () => {
   ));
 
   return (
-    <div className="text-base-100 bg-base-content">
+    <div className="text-black bg-white">
       <div className="py-8 container flex flex-col gap-6">
-        <Typography as="h2" styledAs="h3" uppercase>
+        <Typography as="h2" styledAs="h1" uppercase>
           {'/// Gallery'}
         </Typography>
         <div className="grid md:grid-cols-3 md:grid-rows-6 gap-3 aspect-square md:max-h-[80vh]">
