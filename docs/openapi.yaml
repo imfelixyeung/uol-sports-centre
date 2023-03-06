@@ -298,7 +298,7 @@ paths:
         "405":
           description: Invalid input
 
-  /booking/booking/{bookingId}:
+  /booking/bookings/{bookingId}:
     get:
       tags:
         - booking
