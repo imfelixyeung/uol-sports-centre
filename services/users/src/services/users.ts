@@ -29,3 +29,7 @@ export function editBookingID(userID: number) {
 export function processData(data: String): String {
   return data;
 }
+
+export function seedDatabase(): undefined {
+  return undefined;
+}
