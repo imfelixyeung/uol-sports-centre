@@ -139,7 +139,7 @@ paths:
           $ref: "#/components/responses/viewFullRecord"
     
     /users/updateFirstName:
-    get:
+    post:
       tags:
         - users
       description: "Updates the first name of a specified user"
@@ -149,7 +149,7 @@ paths:
           $ref: "#/components/responses/updateFirstName"
     
     /users/updateSecondName:
-    get:
+    post:
       tags:
         - users
       description: "Updates the first second of a specified user"
@@ -159,7 +159,7 @@ paths:
           $ref: "#/components/responses/updateSecondName"
 
     /users/updateAccountID:
-    get:
+    post:
       tags:
         - users
       description: "Updates the account ID of a specified user"
@@ -169,7 +169,7 @@ paths:
           $ref: "#/components/responses/updateAccountID"
 
     /users/updatePaymentID:
-    get:
+    post:
       tags:
         - users
       description: "Updates the Payment ID of a specified user"
@@ -179,7 +179,7 @@ paths:
           $ref: "#/components/responses/updatePaymentID"
 
     /users/updateBookingID:
-    get:
+    post:
       tags:
         - users
       description: "Updates the Booking ID of a specified user"
@@ -190,7 +190,7 @@ paths:
               /users/health:
     
     /users/updateMembership:
-    get:
+    post:
       tags:
         - users
       description: "Updates the Membership of a specified user"
