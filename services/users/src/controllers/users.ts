@@ -14,4 +14,13 @@ const userControllers = {
   testing,
 };
 
-export default userControllers;
+async function viewRecord(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+export default {userControllers, viewRecord};
