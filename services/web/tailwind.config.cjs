@@ -1,8 +1,15 @@
+// eslint-disable-next-line node/no-unpublished-require
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#DFFF48',
+        secondary: '#EEEEEE',
+      },
+    },
   },
   plugins: [],
 };
