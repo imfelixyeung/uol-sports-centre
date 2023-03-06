@@ -2,11 +2,11 @@ import Typography from '../Typography';
 
 const ReachGoals = () => {
   return (
-    <div className="p-8">
+    <div className="py-8 container flex flex-col gap-6">
       <Typography as="h2">{'/// Reach Your Goals'}</Typography>
       <div className="flex gap-8 items-center">
         <img
-          className="aspect-video object-cover max-w-md"
+          className="object-cover max-w-sm"
           src="/assets/images/pexels-chevanon-photography-317155.jpg"
           alt="Person reaching goal by handstanding"
         />

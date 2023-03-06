@@ -3,7 +3,7 @@ import Button from '../Button';
 const AppBar = () => {
   return (
     <div className="bg-base-100">
-      <header className="flex justify-between items-center m-3">
+      <header className="flex justify-between items-center container py-3">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 bg-base-content"></div>
           <h1 className="uppercase font-black leading-4">
