@@ -6,4 +6,4 @@ db = SQLAlchemy()
 
 
 def setup_migration(app: Flask):
-    Migrate(app, db)
+  Migrate(app, db)

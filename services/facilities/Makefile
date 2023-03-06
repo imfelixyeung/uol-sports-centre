@@ -9,6 +9,7 @@ help:
 
 
 start:
+	python3 seedData.py
 	python3 -m flask run
 
 setup-dev:

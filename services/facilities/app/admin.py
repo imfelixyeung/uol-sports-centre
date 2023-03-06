@@ -8,16 +8,16 @@ from app.models import Activity, Facility, OpenTime
 
 class Admin:
 
-    def __init__(self, app: Flask, db: SQLAlchemy):
-        # save references to app and db
-        self.app = app
-        self.db = db
+  def __init__(self, app: Flask, db: SQLAlchemy):
+    # save references to app and db
+    self.app = app
+    self.db = db
 
-        # Setup flask admin
-        self.admin = FlaskAdmin(app, template_mode='bootstrap4')
-        self.add_models()
+    # Setup flask admin
+    self.admin = FlaskAdmin(app, template_mode='bootstrap4')
+    self.add_models()
 
-    def add_models(self):
-        self.admin.add_view(ModelView(Facility, self.db.session))
-        self.admin.add_view(ModelView(OpenTime, self.db.session))
-        self.admin.add_view(ModelView(Activity, self.db.session))
+  def add_models(self):
+    self.admin.add_view(ModelView(Facility, self.db.session))
+    self.admin.add_view(ModelView(OpenTime, self.db.session))
+    self.admin.add_view(ModelView(Activity, self.db.session))

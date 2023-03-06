@@ -9,158 +9,192 @@ from app.models.opentime import OpenTime
 from app.createDictionaries import makeActivity, makeFacility, makeOpenTime
 import os
 
-
 basedir = os.path.abspath(os.path.dirname(__file__))
-app = create_app(testing=True, config={
-    "SQLALCHEMY_DATABASE_URI": 'sqlite:///' + os.path.join(basedir, 'test.db'),
-    "TESTING": True,
-    "WTF_CSRF_ENABLED": False
-    })
+app = create_app(testing=True,
+                 config={
+                     "SQLALCHEMY_DATABASE_URI":
+                     'sqlite:///' + os.path.join(basedir, 'test.db'),
+                     "TESTING":
+                     True,
+                     "WTF_CSRF_ENABLED":
+                     False
+                 })
+
 
 class facilitiesTests(unittest.TestCase):
-    # Set up tests for facilities API
-    def setUp(self):
-        self.app = app.test_client()
-        
-        with app.app_context():
-            db.create_all()
-            facilityTestCase = Facility(name="Football", capacity=20)
-            openTimeTestCase = OpenTime(day="Monday", openingTime=660, closingTime=990, facility_id=1)
-            activityTestCase = Activity(duration=30, capacity=20, facility_id=1)
-            db.session.add(facilityTestCase)
-            db.session.add(openTimeTestCase)
-            db.session.add(activityTestCase)
-            db.session.commit()
+  # Set up tests for facilities API
+  def setUp(self):
+    self.app = app.test_client()
 
-    # Remove everything from database after tests are complete
-    def tearDown(self):
-        with app.app_context():
-            db.session.remove()
-            db.drop_all()
+    with app.app_context():
+      db.create_all()
+      facilityTestCase = Facility(name="Football", capacity=20)
+      openTimeTestCase = OpenTime(day="Monday",
+                                  openingTime=660,
+                                  closingTime=990,
+                                  facility_id=1)
+      activityTestCase = Activity(duration=30, capacity=20, facility_id=1)
+      db.session.add(facilityTestCase)
+      db.session.add(openTimeTestCase)
+      db.session.add(activityTestCase)
+      db.session.commit()
 
-    def test_get_facility(self):
-       with app.app_context():
-          response = self.app.get('/facilities/1')
+  # Remove everything from database after tests are complete
+  def tearDown(self):
+    with app.app_context():
+      db.session.remove()
+      db.drop_all()
 
-          expectedResponse = {
-              "id": 1, 
-              "name": "Football", 
-              "capacity": 20
-          }
+  def test_get_facility(self):
+    with app.app_context():
+      response = self.app.get('/facilities/1')
 
-          responseData = json.loads(response.data)
-        
-          self.assertEqual(responseData, expectedResponse)
+      expectedResponse = {"id": 1, "name": "Football", "capacity": 20}
 
-    def test_get_open_time(self):
-        with app.app_context():
-          response = self.app.get('/times/1')
+      responseData = json.loads(response.data)
 
-          expectedResponse = {
-              "id": 1,
-              "day": "Monday",
-              "openTime": 660,
-              "closeTime": 990,
-              "facilityID": 1
-              }
+      self.assertEqual(responseData, expectedResponse)
 
-          responseData = json.loads(response.data)
-        
-          self.assertEqual(responseData, expectedResponse)
+  def test_get_open_time(self):
+    with app.app_context():
+      response = self.app.get('/times/1')
 
-    def test_get_activity(self):
-        with app.app_context():
-          response = self.app.get('/activities/1')
+      expectedResponse = {
+          "id": 1,
+          "day": "Monday",
+          "openTime": 660,
+          "closeTime": 990,
+          "facilityID": 1
+      }
 
-          expectedResponse = {
-              "id": 1,
-              "duration": 30,
-              "capacity": 20,
-              "facilityID": 1
-            }
+      responseData = json.loads(response.data)
 
-          responseData = json.loads(response.data)
-        
-          self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(responseData, expectedResponse)
 
+  def test_get_activity(self):
+    with app.app_context():
+      response = self.app.get('/activities/1')
 
-    def test_add_facility_success(self):
-        with app.app_context():
+      expectedResponse = {
+          "id": 1,
+          "duration": 30,
+          "capacity": 20,
+          "facilityID": 1
+      }
 
-            response = self.app.post('/facilities/', json={
-                "name": "Tennis Court", "capacity": int(6)
-                })
+      responseData = json.loads(response.data)
 
-            checkQuery = Facility.query.get(2)
+      self.assertEqual(responseData, expectedResponse)
 
-            checkData =  makeFacility(checkQuery)
+  def test_add_facility_success(self):
+    with app.app_context():
 
-            self.assertEqual({"id": 2, "name": "Tennis Court", "capacity": 6}, checkData)
-            
-            responseData = json.loads(response.data)
-            
-            expectedResponse = {
-                "status": "ok",
-                "message": "facility added",
-                "facility": checkData
-            }
+      response = self.app.post('/facilities/',
+                               json={
+                                   "name": "Tennis Court",
+                                   "capacity": int(6)
+                               })
 
-            self.assertEqual(responseData, expectedResponse)
+      checkQuery = Facility.query.get(2)
 
-    def test_add_facility_failed(self):
-        with app.app_context():
+      checkData = makeFacility(checkQuery)
 
-            response = self.app.post('/facilities/', json={
-                "name": int(2), "capacity": str("yeah")
-                })
-            
-            self.assertEqual({"status": "Failed", "message": "Object not added"}, json.loads(response.data))
+      self.assertEqual({
+          "id": 2,
+          "name": "Tennis Court",
+          "capacity": 6
+      }, checkData)
 
-    def test_add_openTime_success(self):
-        with app.app_context():
+      responseData = json.loads(response.data)
 
-            response = self.app.post('/times/', json={
-                "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)
-                })
+      expectedResponse = {
+          "status": "ok",
+          "message": "facility added",
+          "facility": checkData
+      }
 
-            checkQuery = OpenTime.query.get(2)
+      self.assertEqual(responseData, expectedResponse)
 
-            checkData =  makeOpenTime(checkQuery)
+  def test_add_facility_failed(self):
+    with app.app_context():
 
-            self.assertEqual({"id": 2, "day": "monday", "openTime": int(660), "closeTime": int(720), "facilityID": int(1)}, checkData)
-            
-            responseData = json.loads(response.data)
-            
-            expectedResponse = {
-                "status": "ok",
-                "message": "Opening time added",
-                "facility": checkData
-            }
+      response = self.app.post('/facilities/',
+                               json={
+                                   "name": int(2),
+                                   "capacity": str("yeah")
+                               })
 
-            self.assertEqual(responseData, expectedResponse)
+      self.assertEqual({
+          "status": "Failed",
+          "message": "Object not added"
+      }, json.loads(response.data))
 
-    def test_add_activity_success(self):
-        with app.app_context():
+  def test_add_openTime_success(self):
+    with app.app_context():
 
-            response = self.app.post('/activities/', json={
-                "duration": int(30), "capacity": int(20), "facilityID": int(1)
-                })
+      response = self.app.post('/times/',
+                               json={
+                                   "day": "monday",
+                                   "openTime": int(660),
+                                   "closeTime": int(720),
+                                   "facilityID": int(1)
+                               })
 
-            checkQuery = Activity.query.get(2)
+      checkQuery = OpenTime.query.get(2)
 
-            checkData =  makeActivity(checkQuery)
+      checkData = makeOpenTime(checkQuery)
 
-            self.assertEqual({"id": 2, "duration": int(30), "capacity": int(20), "facilityID": int(1)}, checkData)
-            
-            responseData = json.loads(response.data)
-            
-            expectedResponse = {
-                "status": "ok",
-                "message": "Opening time added",
-                "facility": checkData
-            }
+      self.assertEqual(
+          {
+              "id": 2,
+              "day": "monday",
+              "openTime": int(660),
+              "closeTime": int(720),
+              "facilityID": int(1)
+          }, checkData)
 
-            self.assertEqual(responseData, expectedResponse)
+      responseData = json.loads(response.data)
+
+      expectedResponse = {
+          "status": "ok",
+          "message": "Opening time added",
+          "facility": checkData
+      }
+
+      self.assertEqual(responseData, expectedResponse)
+
+  def test_add_activity_success(self):
+    with app.app_context():
+
+      response = self.app.post('/activities/',
+                               json={
+                                   "duration": int(30),
+                                   "capacity": int(20),
+                                   "facilityID": int(1)
+                               })
+
+      checkQuery = Activity.query.get(2)
+
+      checkData = makeActivity(checkQuery)
+
+      self.assertEqual(
+          {
+              "id": 2,
+              "duration": int(30),
+              "capacity": int(20),
+              "facilityID": int(1)
+          }, checkData)
+
+      responseData = json.loads(response.data)
+
+      expectedResponse = {
+          "status": "ok",
+          "message": "Opening time added",
+          "facility": checkData
+      }
+
+      self.assertEqual(responseData, expectedResponse)
+
 
 if __name__ == '__main__':
-    unittest.main()
+  unittest.main()
