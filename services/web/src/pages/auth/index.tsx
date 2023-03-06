@@ -5,8 +5,8 @@ import {useAuth} from '~/providers/auth/hooks/useAuth';
 const AuthPage = () => {
   const auth = useAuth();
 
-  const handleLogout = async () => {
-    await toast.promise(auth.logout(), {
+  const handleLogout = () => {
+    void toast.promise(auth.logout(), {
       loading: 'Logging out...',
       success: 'You are now logged out',
       error: 'Something went wrong',
@@ -19,7 +19,7 @@ const AuthPage = () => {
         {auth.session ? (
           <>
             <p>Hello, {auth.session.user.email}</p>
-            <button type="button" onClick={void handleLogout}>
+            <button type="button" onClick={handleLogout}>
               Logout
             </button>
           </>
