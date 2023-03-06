@@ -1,15 +1,18 @@
 import type {FC} from 'react';
 import type {AuthFormProps} from '~/components/Auth/AuthForm';
 import AuthForm from '~/components/Auth/AuthForm';
+import AppIcon from '../AppIcon/AppIcon';
 
 const AuthPage: FC<AuthFormProps> = props => {
   return (
-    <section className="grow flex flex-row-reverse">
-      <main className="md:max-w-lg max-w-none grow bg-gray-200 p-6 flex flex-col justify-center">
-        <AuthForm {...props} />
-      </main>
-      <aside className="grow hidden md:block"></aside>
-    </section>
+    <div className="from-red-600 bg-gradient-to-br via-purple-600 to-blue-600 grow py-6 flex flex-col">
+      <div className="grid md:grid-cols-2 container grow">
+        <div className="bg-base-100 p-10 flex flex-col items-center justify-center gap-8">
+          <AppIcon />
+          <AuthForm {...props} />
+        </div>
+      </div>
+    </div>
   );
 };
 

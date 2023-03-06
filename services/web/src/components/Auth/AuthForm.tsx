@@ -7,6 +7,8 @@ import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
+import Button from '../Button';
+import Typography from '../Typography';
 
 export interface AuthFormProps {
   variant: 'login' | 'register';
@@ -23,6 +25,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
         initialValues={{
           email: '',
           password: '',
+          rememberMe: false,
         }}
         onSubmit={async (values, actions) => {
           setErrorMessage(null);
@@ -53,13 +56,13 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           password: yup.string().required().min(8, 'Password too short!'),
         })}
       >
-        <Form className="flex flex-col gap-3 text-center">
-          <h2 className="font-bold text-2xl mb-6">
-            {variant === 'login' ? 'Log In' : 'Register'}
-          </h2>
+        <Form className="flex flex-col gap-3">
+          <Typography as="h2" uppercase className="text-center">
+            {variant === 'login' ? 'Log Into Account' : 'Register'}
+          </Typography>
 
           <label htmlFor="email" className="flex flex-col">
-            <span className="sr-only">Email</span>
+            <span className="">Email Address</span>
             <Field
               id="email"
               name="email"
@@ -70,7 +73,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           </label>
 
           <label htmlFor="password" className="flex flex-col">
-            <span className="sr-only">Password</span>
+            <span className="">Password</span>
             <Field
               id="password"
               name="password"
@@ -80,13 +83,23 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             />
           </label>
 
+          <div className="flex justify-between flex-wrap">
+            <label className="flex gap-3 items-center">
+              <Field id="rememberMe" name="rememberMe" type="checkbox" />
+              <span>Remember Me</span>
+            </label>
+            <a href="" className="underline">
+              Forgotten Password
+            </a>
+          </div>
+
           {errorMessage && <div className="text-red-600">{errorMessage}</div>}
 
-          <button type="submit" className="p-3 bg-red-300">
-            {variant === 'login' ? 'Log In' : 'Register'}
-          </button>
+          <Button type="submit" intent="primary">
+            {variant === 'login' ? 'Login' : 'Register'}
+          </Button>
 
-          <div className="bg-white p-2 text-sm">
+          <div className="text-sm">
             <span>
               {variant === 'register'
                 ? 'Already have an account?'
