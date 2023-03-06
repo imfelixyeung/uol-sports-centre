@@ -77,8 +77,7 @@ async function updateBookingID(req: Request, res: Response) {
   });
 }
 
-export default {
-  userControllers,
+const authControllers = {
   viewFullRecord,
   updateFirstName,
   updateSecondName,
@@ -87,3 +86,5 @@ export default {
   updateBookingID,
   updateMembership,
 };
+
+export default authControllers;
