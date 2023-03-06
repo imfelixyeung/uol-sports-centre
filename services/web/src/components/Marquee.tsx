@@ -12,7 +12,7 @@ const Marquee: FC<MarqueeProps> = ({statements}) => {
       className="bg-primary text-base-100 font-black text-2xl p-2"
     >
       {statements.map((statement, index) => (
-        <div key={index} className="mr-8 space-x-8">
+        <div key={index} className="mr-6 space-x-6">
           <p className="inline-block uppercase">{statement}</p>
           <span aria-hidden className="select-none">
             {'//'}
