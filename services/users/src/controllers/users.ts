@@ -14,7 +14,7 @@ const userControllers = {
   testing,
 };
 
-async function viewRecord(req: Request, res: Response) {
+async function viewFullRecord(req: Request, res: Response) {
   const finishedData: String = await processData(req.query.trtr as string);
   const otherData: String = 'Test';
   return res.json({
@@ -23,4 +23,36 @@ async function viewRecord(req: Request, res: Response) {
   });
 }
 
-export default {userControllers, viewRecord};
+async function updateMembership(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+async function updateFirstName(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+async function updateSecondName(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+export default {
+  userControllers,
+  viewFullRecord,
+  updateFirstName,
+  updateSecondName,
+};
