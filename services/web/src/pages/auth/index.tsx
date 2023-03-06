@@ -19,7 +19,7 @@ const AuthPage = () => {
         {auth.session ? (
           <>
             <p>Hello, {auth.session.user.email}</p>
-            <button type="button" onClick={handleLogout}>
+            <button type="button" onClick={void handleLogout}>
               Logout
             </button>
           </>
