@@ -85,4 +85,5 @@ export default {
   updateAccountID,
   updatePaymentID,
   updateBookingID,
+  updateMembership,
 };
