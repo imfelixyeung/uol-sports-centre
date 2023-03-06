@@ -13,11 +13,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = create_app(testing=True,
                  config={
                      "SQLALCHEMY_DATABASE_URI":
-                     'sqlite:///' + os.path.join(basedir, 'test.db'),
+                         'sqlite:///' + os.path.join(basedir, 'test.db'),
                      "TESTING":
-                     True,
+                         True,
                      "WTF_CSRF_ENABLED":
-                     False
+                         False
                  })
 
 
@@ -33,7 +33,10 @@ class facilitiesTests(unittest.TestCase):
                                   openingTime=660,
                                   closingTime=990,
                                   facility_id=1)
-      activityTestCase = Activity(duration=30, capacity=20, facility_id=1)
+      activityTestCase = Activity(name="Swimming Lesson",
+                                  duration=30,
+                                  capacity=20,
+                                  facility_id=1)
       db.session.add(facilityTestCase)
       db.session.add(openTimeTestCase)
       db.session.add(activityTestCase)
@@ -64,7 +67,7 @@ class facilitiesTests(unittest.TestCase):
           "day": "Monday",
           "openTime": 660,
           "closeTime": 990,
-          "facilityID": 1
+          "facility_id": 1
       }
 
       responseData = json.loads(response.data)
@@ -77,9 +80,10 @@ class facilitiesTests(unittest.TestCase):
 
       expectedResponse = {
           "id": 1,
+          "name": "Swimming Lesson",
           "duration": 30,
           "capacity": 20,
-          "facilityID": 1
+          "facility_id": 1
       }
 
       responseData = json.loads(response.data)
@@ -137,7 +141,7 @@ class facilitiesTests(unittest.TestCase):
                                    "day": "monday",
                                    "openTime": int(660),
                                    "closeTime": int(720),
-                                   "facilityID": int(1)
+                                   "facility_id": int(1)
                                })
 
       checkQuery = OpenTime.query.get(2)
@@ -150,7 +154,7 @@ class facilitiesTests(unittest.TestCase):
               "day": "monday",
               "openTime": int(660),
               "closeTime": int(720),
-              "facilityID": int(1)
+              "facility_id": int(1)
           }, checkData)
 
       responseData = json.loads(response.data)
@@ -168,9 +172,10 @@ class facilitiesTests(unittest.TestCase):
 
       response = self.app.post('/activities/',
                                json={
+                                   "name": "Football Lesson",
                                    "duration": int(30),
                                    "capacity": int(20),
-                                   "facilityID": int(1)
+                                   "facility_id": int(1)
                                })
 
       checkQuery = Activity.query.get(2)
@@ -180,9 +185,10 @@ class facilitiesTests(unittest.TestCase):
       self.assertEqual(
           {
               "id": 2,
+              "name": "Football Lesson",
               "duration": int(30),
               "capacity": int(20),
-              "facilityID": int(1)
+              "facility_id": int(1)
           }, checkData)
 
       responseData = json.loads(response.data)

@@ -14,7 +14,7 @@ def makeOpenTime(openTime):
       "day": openTime.day,
       "openTime": openTime.openingTime,
       "closeTime": openTime.closingTime,
-      "facilityID": openTime.facility_id
+      "facility_id": openTime.facility_id
   }
 
 
@@ -22,7 +22,8 @@ def makeOpenTime(openTime):
 def makeActivity(activity):
   return {
       "id": activity.id,
+      "name": activity.name,
       "duration": activity.duration,
       "capacity": activity.capacity,
-      "facilityID": activity.facility_id
+      "facility_id": activity.facility_id
   }

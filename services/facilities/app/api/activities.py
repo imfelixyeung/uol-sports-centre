@@ -12,9 +12,7 @@ class ActivitiesRouter:
     self.logger = logging.getLogger("app.activities")
     self.app = app
     self.db = db
-    self.blueprint = Blueprint("activities",
-                               __name__,
-                               url_prefix="/activities")
+    self.blueprint = Blueprint("activities", __name__, url_prefix="/activities")
 
     # setup the routes
     self.setup_routes()
@@ -53,13 +51,14 @@ class ActivitiesRouter:
     data = json.loads(request.data)
 
     # Check that the supplied foreign key existss
-    if (not Facility.query.get(int(data.get("facilityID")))):
+    if (not Facility.query.get(int(data.get("facility_id")))):
       return json.dumps({"status": "failed", "message": "facility not found"})
 
     # Add the supplied object to the data base
-    addition = Activity(duration=data.get("duration"),
+    addition = Activity(name=data.get("name"),
+                        duration=data.get("duration"),
                         capacity=data.get("capacity"),
-                        facility_id=data.get("facilityID"))
+                        facility_id=data.get("facility_id"))
     self.db.session.add(addition)
     self.db.session.commit()
 
@@ -67,20 +66,20 @@ class ActivitiesRouter:
       return json.dumps({"status": "failed", "message": "activity not added"})
 
     # Return the status of the addition and the object added to the database
-    returnValue = {
+    return_value = {
         "status": "ok",
         "message": "Opening time added",
         "facility": makeActivity(addition)
     }
 
-    return json.dumps(returnValue)
+    return json.dumps(return_value)
 
   def get_activity(self, activity_id: int):
-    activityQuery = Activity.query.get(activity_id)
+    activity_query = Activity.query.get(activity_id)
 
-    returnValue = makeActivity(activityQuery)
+    return_value = makeActivity(activity_query)
 
-    return json.dumps(returnValue)
+    return json.dumps(return_value)
 
   def update_activity(self, activity_id: int):
     return {"status": "error", "message": "Not yet implemented"}

@@ -69,14 +69,14 @@ class OpenTimesRouter:
     data = json.loads(request.data)
 
     # Check that the supplied foreign key existss
-    if (not Facility.query.get(int(data.get("facilityID")))):
+    if (not Facility.query.get(int(data.get("facility_id")))):
       return json.dumps({"status": "failed", "message": "facility not found"})
 
     # Add the supplied object to the data base
     addition = OpenTime(day=data.get("day"),
                         openingTime=data.get("openTime"),
                         closingTime=data.get("closeTime"),
-                        facility_id=data.get("facilityID"))
+                        facility_id=data.get("facility_id"))
     self.db.session.add(addition)
     self.db.session.commit()
 
