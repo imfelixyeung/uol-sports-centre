@@ -21,7 +21,8 @@ def create_app(testing=False, config={}) -> Flask:
   setup_migration(app)
 
   # Add flask admin
-  Admin(app, db)
+  if app.debug is True:
+    Admin(app, db)
 
   # Add routers (blueprints) to the flask applicaiton
   activities_router = ActivitiesRouter(app, db)
