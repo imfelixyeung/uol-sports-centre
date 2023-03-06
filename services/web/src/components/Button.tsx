@@ -7,8 +7,8 @@ const buttonStyles = cva(
   {
     variants: {
       intent: {
-        primary: 'bg-primary',
-        secondary: 'bg-secondary',
+        primary: 'bg-primary text-base-100',
+        secondary: 'bg-secondary text-base-100',
       },
       wide: {
         true: 'min-w-[12rem]',
