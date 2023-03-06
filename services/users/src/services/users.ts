@@ -1,32 +1,32 @@
-function editMembership(userID: number) {
+export function editMembership(userID: number) {
   return undefined;
 }
 
-function returnFullRecord(userID: number) {
+export function returnFullRecord(userID: number) {
   return undefined;
 }
 
-function editFirstName(userID: number) {
+export function editFirstName(userID: number) {
   return undefined;
 }
 
-function editSecondName(userID: number) {
+export function editSecondName(userID: number) {
   return undefined;
 }
 
-function editAccountID(userID: number) {
+export function editAccountID(userID: number) {
   return undefined;
 }
 
-function editPaymentID(userID: number) {
+export function editPaymentID(userID: number) {
   return undefined;
 }
 
-function editBookingID(userID: number) {
+export function editBookingID(userID: number) {
   return undefined;
 }
 
-function processData(data: String): String {
+export function processData(data: String): String {
   return data;
 }
 
