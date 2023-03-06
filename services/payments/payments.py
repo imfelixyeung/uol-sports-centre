@@ -3,6 +3,8 @@ Provides functionality for making payments for subscriptions'''
 import sqlite3
 import stripe
 import os
+from datetime import datetime
+from datetime import timedelta
 from dotenv import load_dotenv
 from flask import Flask, redirect, render_template
 
@@ -51,16 +53,17 @@ def MakeAPurchase(userID, productName):
     cur = con.cursor()
     findUser = cur.execute('''SELECT stripeID FROM customers WHERE
     userID LIKE ?''', [userID]).fetchall()
-    if findUser[0].size == 0:
+    if len(findUser) == 0:
         newCustomer = stripe.Customer.create(
             #get user details from user microservice
         )
         cur.execute("INSERT INTO customers VALUES (?, ?)",
             (userID, newCustomer.stripe_id))
         con.commit()
+        findUser = cur.execute('''SELECT stripeID FROM customers WHERE
+        userID LIKE ?''', [userID]).fetchall()
         con.close()
-        findUser[0][0] = newCustomer.stripe_id
-    createCheckout(productName)
+    return createCheckout(findUser[0][0], productName)
 
 #Creating a test card for our use
 card = {
@@ -70,7 +73,7 @@ card = {
     "cvc": "123"
 }
 
-def createCheckout(productName):
+def createCheckout(stripeID, productName):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     con = sqlite3.connect('database.db')
     cur = con.cursor()
@@ -80,6 +83,8 @@ def createCheckout(productName):
     checkoutSession = stripe.checkout.Session.create(
         success_url=localDomain + '/index.html',
         mode = products[0][1],
+        expires_at=int(datetime.timestamp(datetime.now())) + 1800,
+        customer=stripeID,
         line_items=[
         {
             "price": products[0][0],
@@ -91,12 +96,16 @@ def createCheckout(productName):
 
 @app.route('/', methods=['GET'])
 def get_index():
-    MakePurchasable("Sports Centre Membership", 12.99)
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    findUser = cur.execute('''SELECT stripeID FROM customers WHERE
+    userID LIKE 'newUser\'''').fetchall()
+    print(findUser)
     return render_template('index.html')
 
 @app.route("/checkout-session", methods=['POST'])
 def redirectCheckout():
-    return redirect(createCheckout("Sports Centre Membership"), code=303)
+    return redirect(MakeAPurchase("newUser", "Sports Centre Membership"), code=303)
 
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
