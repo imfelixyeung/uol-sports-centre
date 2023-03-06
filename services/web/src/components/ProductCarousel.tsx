@@ -47,7 +47,7 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
           aria-hidden
         />
       </div>
-      <Typography>{description}</Typography>
+      <Typography className="text-justify">{description}</Typography>
     </a>
   );
 };

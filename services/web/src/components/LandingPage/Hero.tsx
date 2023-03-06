@@ -10,7 +10,7 @@ const Hero = () => {
             <Typography as="h1" styledAs="display" uppercase>
               A Sports Centre
             </Typography>
-            <Typography as="p">
+            <Typography as="p" className="text-justify">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo
               optio non veritatis natus necessitatibus iure omnis ratione quae
               unde facilis soluta consequuntur repellendus excepturi, libero
