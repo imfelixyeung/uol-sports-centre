@@ -29,12 +29,3 @@ export function editBookingID(userID: number) {
 export function processData(data: String): String {
   return data;
 }
-
-// testing,
-// viewFullRecord,
-// updateFirstName,
-// updateSecondName,
-// updateAccountID,
-// updatePaymentID,
-// updateBookingID,
-// updateMembership,
