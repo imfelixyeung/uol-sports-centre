@@ -8,9 +8,9 @@ const Socials = () => {
       <Typography as="h2" styledAs="h3" uppercase>
         {'/// Socials'}
       </Typography>
-      <div className="flex gap-8 items-center justify-between">
+      <div className="flex gap-8 md:items-center justify-between flex-col md:flex-row">
         <img
-          className="object-cover max-w-sm aspect aspect-square"
+          className="object-cover md:max-w-sm aspect aspect-square"
           src="/assets/images/pexels-zakaria-boumliha-2827400.jpg"
           alt="Person reaching goal by handstanding"
         />

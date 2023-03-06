@@ -30,7 +30,7 @@ const Memberships = () => {
       <Typography as="h2" styledAs="h3" uppercase>
         {'/// Memberships'}
       </Typography>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid md:grid-cols-3 gap-3">
         {memberships.map((membership, index) => (
           <div key={index} className="grow">
             <MembershipCard membership={membership} />

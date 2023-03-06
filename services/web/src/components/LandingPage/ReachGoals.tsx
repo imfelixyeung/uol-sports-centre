@@ -6,9 +6,9 @@ const ReachGoals = () => {
       <Typography as="h2" styledAs="h3" uppercase>
         {'/// Reach Your Goals'}
       </Typography>
-      <div className="flex gap-8 items-center">
+      <div className="flex gap-8 items-center flex-col md:flex-row">
         <img
-          className="object-cover max-w-sm"
+          className="object-cover md:max-w-sm"
           src="/assets/images/pexels-chevanon-photography-317155.jpg"
           alt="Person reaching goal by handstanding"
         />

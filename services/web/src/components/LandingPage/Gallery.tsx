@@ -14,7 +14,7 @@ const Gallery = () => {
     <img
       src={image}
       alt="Gallery Item"
-      className="absolute inset-0 w-full h-full object-cover"
+      className="md:absolute inset-0 w-full h-full object-cover"
       key={index}
     />
   ));
@@ -25,13 +25,13 @@ const Gallery = () => {
         <Typography as="h2" styledAs="h3" uppercase>
           {'/// Gallery'}
         </Typography>
-        <div className="grid grid-cols-3 grid-rows-6 gap-3 aspect-square max-h-[80vh]">
-          <div className="row-span-4 relative">{imageElements[0]}</div>
-          <div className="row-span-2 relative">{imageElements[1]}</div>
-          <div className="row-span-3 relative">{imageElements[2]}</div>
-          <div className="row-span-4 relative">{imageElements[3]}</div>
-          <div className="row-span-3 relative">{imageElements[4]}</div>
-          <div className="row-span-2 relative">{imageElements[5]}</div>
+        <div className="grid md:grid-cols-3 md:grid-rows-6 gap-3 aspect-square md:max-h-[80vh]">
+          <div className="md:row-span-4 relative">{imageElements[0]}</div>
+          <div className="md:row-span-2 relative">{imageElements[1]}</div>
+          <div className="md:row-span-3 relative">{imageElements[2]}</div>
+          <div className="md:row-span-4 relative">{imageElements[3]}</div>
+          <div className="md:row-span-3 relative">{imageElements[4]}</div>
+          <div className="md:row-span-2 relative">{imageElements[5]}</div>
         </div>
       </div>
     </div>
