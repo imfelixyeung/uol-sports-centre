@@ -1,5 +1,7 @@
 import {ServiceStatusSnapshot} from '../types/status';
 import {db} from '../utils/db';
+import dayjs from 'dayjs';
+import {HISTORY_WITHIN, SNAPSHOT_TTL} from '../config';
 
 export class HealthCheckRegistry {
   static async addServiceHealthCheck(healthCheck: ServiceStatusSnapshot) {
@@ -24,7 +26,7 @@ export class HealthCheckRegistry {
         healthChecks: {
           where: {
             timestamp: {
-              gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+              gte: dayjs().subtract(HISTORY_WITHIN, 'milliseconds').toDate(),
             },
           },
           select: {
@@ -62,7 +64,7 @@ export class HealthCheckRegistry {
     await db.healthCheck.deleteMany({
       where: {
         timestamp: {
-          lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+          lte: dayjs().subtract(SNAPSHOT_TTL, 'milliseconds').toDate(),
         },
       },
     });

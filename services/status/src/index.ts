@@ -8,6 +8,10 @@ import {
   removeOldHealthCheckSnapshots,
   takeServicesHealthCheckSnapshot,
 } from './services/status.js';
+import {
+  CRON_EXPRESSION_PURGE,
+  CRON_EXPRESSION_SNAPSHOT,
+} from './config/index.js';
 
 const app = express();
 
@@ -27,8 +31,8 @@ registerServices([
   .then(() => console.log('Services registered'))
   .catch(error => console.error('Error registering services', error));
 
-cron.schedule('* * * * *', takeServicesHealthCheckSnapshot);
-cron.schedule('* * * * *', removeOldHealthCheckSnapshots);
+cron.schedule(CRON_EXPRESSION_SNAPSHOT, takeServicesHealthCheckSnapshot);
+cron.schedule(CRON_EXPRESSION_PURGE, removeOldHealthCheckSnapshots);
 
 const {PORT, HOST} = env;
 
