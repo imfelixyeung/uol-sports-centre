@@ -44,7 +44,25 @@ class ActivitiesRouter:
                                 methods=["DELETE"])
 
   def get_activities(self):
-    return {"status": "error", "message": "Not yet implemented"}
+    try:
+      page = int(request.args.get("page"))
+      limit = int(request.args.get("limit"))
+    except ValueError:
+      return json.dumps({
+          "status": "Failed",
+          "message": "Incorrect argument type"
+      })
+
+    offset = (page - 1) * limit
+
+    activities_query = Activity.query.limit(limit).offset(offset).all()
+
+    return_array = []
+
+    for activity in activities_query:
+      return_array.append(makeActivity(activity))
+
+    return json.dumps(return_array)
 
   def add_activity(self):
     # Get data from body of post request
