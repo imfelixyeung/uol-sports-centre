@@ -50,9 +50,39 @@ async function updateSecondName(req: Request, res: Response) {
   });
 }
 
+async function updateAccountID(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+async function updatePaymentID(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
+async function updateBookingID(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
 export default {
   userControllers,
   viewFullRecord,
   updateFirstName,
   updateSecondName,
+  updateAccountID,
+  updatePaymentID,
+  updateBookingID,
 };
