@@ -12,9 +12,7 @@ class FacilitiesRouter:
     self.logger = logging.getLogger("app.facilities")
     self.app = app
     self.db = db
-    self.blueprint = Blueprint("facilities",
-                               __name__,
-                               url_prefix="/facilities")
+    self.blueprint = Blueprint("facilities", __name__, url_prefix="/facilities")
 
     # Add all the routes
     self.setup_routes()
@@ -46,11 +44,25 @@ class FacilitiesRouter:
                                 methods=["DELETE"])
 
   def get_facilities(self):
-    return {
-        "status": "error",
-        "message": "Not yet implemented",
-        "notes": "Hell Yeah!"
-    }
+    try:
+      page = int(request.args.get("page"))
+      limit = int(request.args.get("limit"))
+    except ValueError:
+      return json.dumps({
+          "status": "Failed",
+          "message": "Incorrect argument type"
+      })
+
+    offset = (page - 1) * limit
+
+    facilities_query = Facility.query.limit(limit).offset(offset).all()
+
+    return_array = []
+
+    for facility in facilities_query:
+      return_array.append(makeFacility(facility))
+
+    return json.dumps(return_array)
 
   def add_facility(self):
     # Get data from body of post request
@@ -58,36 +70,36 @@ class FacilitiesRouter:
     name = data.get("name")
     try:
       capacity = int(data.get("capacity"))
-    except:
+    except ValueError:
       return json.dumps({"status": "Failed", "message": "Object not added"})
 
     # Add the supplied object to the data base
     new_facility = Facility(name=name, capacity=capacity)
 
-    if (not new_facility):
+    if not new_facility:
       return json.dumps({"status": "Failed", "message": "Object not added"})
 
     self.db.session.add(new_facility)
     self.db.session.commit()
 
     # Return the status of the addition and the object added to the database
-    returnValue = {
+    return_value = {
         "status": "ok",
         "message": "facility added",
         "facility": makeFacility(new_facility)
     }
 
-    return json.dumps(returnValue)
+    return json.dumps(return_value)
 
   def get_facility(self, facility_id: int):
     facility_query = Facility.query.get(facility_id)
 
     if (not facility_query):
-      returnValue = {"status": "error", "message": "resource not found"}
+      return_value = {"status": "error", "message": "resource not found"}
     else:
-      returnValue = makeFacility(facility_query)
+      return_value = makeFacility(facility_query)
 
-    return json.dumps(returnValue)
+    return json.dumps(return_value)
 
   def update_facility(self, facility_id: int):
     return {"status": "error", "message": "Not yet implemented"}
