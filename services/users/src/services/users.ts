@@ -33,3 +33,7 @@ export function processData(data: String): String {
 export function seedDatabase(): undefined {
   return undefined;
 }
+
+export function createNewUser(): undefined {
+  return undefined;
+}

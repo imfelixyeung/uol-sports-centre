@@ -208,6 +208,15 @@ paths:
         "200":
           $ref: "#/components/responses/testing" 
 
+    /users/createUser:
+    post:
+      tags:
+        - users
+      description: "Creates a new users in the users database"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/createUser" 
 
   /booking/bookings:
     get:

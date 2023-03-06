@@ -73,6 +73,15 @@ async function updateBookingID(req: Request, res: Response) {
   });
 }
 
+async function createUser(req: Request, res: Response) {
+  const finishedData: String = await processData(req.query.trtr as string);
+  const otherData: String = 'Test';
+  return res.json({
+    data: finishedData,
+    data2: otherData,
+  });
+}
+
 const usersControllers = {
   testing,
   viewFullRecord,
@@ -82,6 +91,7 @@ const usersControllers = {
   updatePaymentID,
   updateBookingID,
   updateMembership,
+  createUser,
 };
 
 export default usersControllers;

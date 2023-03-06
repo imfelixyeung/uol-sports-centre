@@ -11,5 +11,6 @@ userRouter.get('/updateAccountID', usersControllers.updateAccountID);
 userRouter.get('/updatePaymentID', usersControllers.updatePaymentID);
 userRouter.get('/updateBookingID', usersControllers.updateBookingID);
 userRouter.get('/updateMembership', usersControllers.updateMembership);
+userRouter.get('/createUser', usersControllers.createUser);
 
 export default userRouter;
