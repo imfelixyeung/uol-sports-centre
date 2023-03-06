@@ -79,6 +79,11 @@ def createCheckout(stripeID, productName):
     products = cur.execute('''SELECT priceId, productType FROM products WHERE 
     productName LIKE ?''', [productName]).fetchall()
 
+    if not products:
+        # handle the case where no products were found
+        con.close()
+        return None
+
     checkoutSession = stripe.checkout.Session.create(
         success_url=localDomain + '/index.html',
         mode = products[0][1],
@@ -104,6 +109,25 @@ def redirectCheckout():
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
+
+@app.route('/customer-portal', methods=['GET'])
+def customerPortal():
+    # Get the Stripe customer ID for the current user from the database
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    stripe_customer_id = cur.execute(
+        'SELECT stripeID FROM customers WHERE userID = ?', [467468]
+    ).fetchone()[0]
+    con.close()
+
+    # Generate a Stripe customer portal URL for the current user
+    customer_portal_session = stripe.billing_portal.Session.create(
+        customer=stripe_customer_id,
+        return_url=localDomain + '/index.html'
+    )
+
+    # Redirect the user to the customer portal URL
+    return redirect(customer_portal_session.url, code=303)
 
 @app.route('/health')
 def get_health():

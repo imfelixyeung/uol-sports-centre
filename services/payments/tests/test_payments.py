@@ -26,6 +26,15 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.assertEqual(productStripe.name, 'product-test')
         self.assertEqual(price.unit_amount_decimal, '500')
 
+        prices = stripe.Price.list(limit=100, product=productStripe.id).data
+
+        # Delete all prices for the product
+        #for price in prices:
+            #stripe.Price.delete(price.id)
+
+        # Delete the product
+        #stripe.Product.delete(productStripe.id)
+
     #test addProductDatabase()    
     def addProductDatabase_test(self):
         a = 1
