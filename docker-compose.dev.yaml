@@ -15,6 +15,18 @@ services:
       - ./services/web:/app
       - /app/node_modules
 
+  facilities:
+    build:
+      context: ./services/facilities
+      dockerfile: Dockerfile.dev
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+    networks:
+      - network
+    volumes:
+      - ./services/facilities:/app
+      
   auth:
     build:
       context: ./services/auth
