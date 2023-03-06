@@ -47,6 +47,19 @@ def MakePurchasable(productName, productPrice, productType="payment"):
 
 def MakeAPurchase(userID, productName):
     '''redirects user to stripe checkout for chosen product'''
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    findUser = cur.execute('''SELECT stripeID FROM customers WHERE
+    userID LIKE ?''', [userID]).fetchall()
+    if findUser[0].size == 0:
+        newCustomer = stripe.Customer.create(
+            #get user details from user microservice
+        )
+        cur.execute("INSERT INTO customers VALUES (?, ?)",
+            (userID, newCustomer.stripe_id))
+        con.commit()
+        con.close()
+        findUser[0][0] = newCustomer.stripe_id
     createCheckout(productName)
 
 #Creating a test card for our use
