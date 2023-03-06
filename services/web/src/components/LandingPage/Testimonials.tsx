@@ -56,9 +56,7 @@ const Testimonials = () => {
       </Typography>
       <div className="flex max-w-full overflow-y-auto gap-6 pb-3">
         {testimonials.map((testimonial, index) => (
-          <div key={index} className="grow">
-            <TestimonialCard testimonial={testimonial} />
-          </div>
+          <TestimonialCard testimonial={testimonial} key={index} />
         ))}
       </div>
     </div>
@@ -72,7 +70,7 @@ interface TestimonialCardProps {
 const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
   const {name, image, title, content} = testimonial;
   return (
-    <blockquote className="min-w-[22rem] bg-base-content text-base-100 p-6 flex flex-col gap-6">
+    <blockquote className="min-w-[22rem] even:bg-base-content even:text-base-100 p-6 flex flex-col gap-6">
       <p className="text-justify indent-6">{content}</p>
       <cite className="flex items-center gap-5">
         <div className="w-20 aspect-square">
