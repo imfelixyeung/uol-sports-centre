@@ -28,7 +28,7 @@ class UserDBA {
     });
     return user;
   }
-  async getBooking(userID: number) {
+  async getUser(userID: number) {
     const user = await db.user.findUnique({
       where: {
         id: userID,
