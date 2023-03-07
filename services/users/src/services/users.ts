@@ -1,4 +1,5 @@
 import userDBA from '../services/dba';
+import {CreateUserDBA} from './dbRequests';
 
 export function editMembership(userID: number) {
   return userID;
@@ -36,6 +37,6 @@ export function seedDatabase(): undefined {
   return undefined;
 }
 
-export function createNewUser(): undefined {
-  return undefined;
+export async function createNewUser(userData: CreateUserDBA) {
+  return await userDBA.createUser(userData);
 }
