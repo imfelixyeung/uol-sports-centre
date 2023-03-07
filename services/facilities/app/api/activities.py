@@ -53,7 +53,7 @@ class ActivitiesRouter:
           "status": "Failed",
           "message": "Invalid input"
       })
-      return_value.status_code = 405
+      return_value.status_code = 400
       return return_value
 
     offset = (page - 1) * limit
@@ -83,7 +83,7 @@ class ActivitiesRouter:
           "status": "Failed",
           "message": "Invalid input"
       })
-      return_value.status_code = 405
+      return_value.status_code = 400
       return return_value
 
     # Add the supplied object to the data base
