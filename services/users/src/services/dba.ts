@@ -1,4 +1,4 @@
-// Database management class
+// Database management/access class
 import {db} from '../utils/db';
 import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
 
