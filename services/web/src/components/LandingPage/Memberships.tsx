@@ -52,7 +52,8 @@ const MembershipCard: FC<MembershipCardProps> = ({membership}) => {
       <div
         className={clsx(
           'text-black p-3 h-64 flex items-end relative grow',
-          bestValue ? 'bg-primary' : 'bg-white'
+          bestValue ? 'bg-card-alt' : 'bg-card',
+          'bg-cover bg-center'
         )}
       >
         <Typography as="p" styledAs="h2" uppercase>

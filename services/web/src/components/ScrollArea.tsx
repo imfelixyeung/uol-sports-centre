@@ -5,10 +5,10 @@ const ScrollArea: FC<PropsWithChildren> = ({children}) => (
   <Root type="always">
     <Viewport>{children}</Viewport>
     <Scrollbar
-      className="h-1 flex items-center bg-black/30"
+      className="h-1.5 flex items-center bg-black"
       orientation="horizontal"
     >
-      <Thumb className="!h-2 bg-primary" />
+      <Thumb className="!h-4 bg-primary border-4 border-black" />
     </Scrollbar>
   </Root>
 );

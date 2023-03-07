@@ -7,13 +7,13 @@ import AppIcon from '../AppIcon/AppIcon';
 
 const AuthPage: FC<AuthFormProps> = props => {
   return (
-    <div className="from-red-600 bg-gradient-to-br via-purple-600 to-blue-600 grow py-6 flex flex-col">
+    <div className="bg-auth grow py-6 bg-cover bg-center flex flex-col">
       <div className="grid md:grid-cols-2 container grow">
         <motion.div
           layoutId="auth-page"
           className={clsx(
-            'bg-black p-10 flex flex-col items-center justify-center gap-8',
-            props.variant === 'login' ? 'col-start-1' : 'col-start-2'
+            'bg-black p-10 flex flex-col items-center justify-center gap-8 ring-2 ring-primary/25',
+            props.variant === 'login' ? 'md:col-start-1' : 'md:col-start-2'
           )}
         >
           <AppIcon />

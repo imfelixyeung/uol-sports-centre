@@ -30,6 +30,12 @@ module.exports = {
           ...defaultTheme.fontFamily.sans,
         ],
       },
+      backgroundImage: {
+        auth: "url('/assets/images/patterns/auth.svg')",
+        'card-alt': "url('/assets/images/patterns/card-alt.svg')",
+        'card-red': "url('/assets/images/patterns/card-red.svg')",
+        card: "url('/assets/images/patterns/card.svg')",
+      },
     },
   },
   plugins: [],

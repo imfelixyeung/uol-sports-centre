@@ -56,9 +56,9 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           password: yup.string().required().min(8, 'Password too short!'),
         })}
       >
-        <Form className="flex flex-col gap-3">
-          <Typography as="h2" uppercase className="text-center">
-            {variant === 'login' ? 'Log Into Account' : 'Register'}
+        <Form className="flex flex-col gap-3 w-full">
+          <Typography as="h2" styledAs="h1" uppercase className="text-center">
+            {variant === 'login' ? 'Log Into Account' : 'Register Account'}
           </Typography>
 
           <label htmlFor="email" className="flex flex-col">
@@ -83,7 +83,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             />
           </label>
 
-          <div className="flex justify-between flex-wrap">
+          <div className="flex justify-between flex-wrap gap-3">
             <label className="flex gap-3 items-center">
               <Field id="rememberMe" name="rememberMe" type="checkbox" />
               <span>Remember Me</span>
