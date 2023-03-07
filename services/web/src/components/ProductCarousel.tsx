@@ -17,7 +17,7 @@ interface ProductCarouselProps {
 const ProductCarousel: FC<ProductCarouselProps> = ({products}) => {
   return (
     <ScrollArea>
-      <div className="flex max-w-full overflow-x-auto gap-6 pb-3 snap-mandatory snap-x">
+      <div className="flex gap-6 pb-3">
         {products.map((product, index) => (
           <ProductCard product={product} key={index} />
         ))}

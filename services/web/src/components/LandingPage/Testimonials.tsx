@@ -56,7 +56,7 @@ const Testimonials = () => {
         {'/// Testimonials'}
       </Typography>
       <ScrollArea>
-        <div className="flex max-w-full overflow-y-auto gap-6 pb-3">
+        <div className="flex gap-6 pb-3">
           {testimonials.map((testimonial, index) => (
             <TestimonialCard testimonial={testimonial} key={index} />
           ))}
@@ -73,7 +73,7 @@ interface TestimonialCardProps {
 const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
   const {name, image, title, content} = testimonial;
   return (
-    <blockquote className="min-w-[22rem] even:bg-white even:text-black p-6 flex flex-col gap-6">
+    <blockquote className="min-w-[22rem] even:bg-white even:text-black p-6 flex flex-col gap-6 snap-center">
       <Typography className="text-justify indent-6">{content}</Typography>
       <cite className="flex items-center gap-5">
         <div className="w-20 aspect-square">
