@@ -64,12 +64,12 @@ const UserDashboardPage = () => {
       </header>
       <main className="bg-white text-black">
         {/* Desktop */}
-        <div className="container py-8 gap-3 hidden lg:flex">
-          <div>
+        <div className="container py-8 gap-3 hidden lg:grid grid-cols-12">
+          <div className="col-span-8">
             {navSection}
             {availableClassesSection}
           </div>
-          {upcomingSection}
+          <div className="col-span-4">{upcomingSection}</div>
         </div>
 
         {/* Mobile */}
