@@ -11,6 +11,9 @@ const buttonStyles = cva('flex items-center justify-center font-bold', {
     wide: {
       true: 'min-w-[12rem]',
     },
+    outline: {
+      true: 'border-4 border-black',
+    },
     square: {
       true: 'p-2',
       false: 'px-6 py-2',
@@ -18,6 +21,7 @@ const buttonStyles = cva('flex items-center justify-center font-bold', {
   },
   defaultVariants: {
     square: false,
+    outline: false,
   },
 });
 
@@ -29,11 +33,12 @@ const Button: FC<ButtonProps> = ({
   wide,
   className,
   square,
+  outline,
   ...props
 }) => {
   return (
     <button
-      className={buttonStyles({intent, wide, className, square})}
+      className={buttonStyles({intent, wide, className, square, outline})}
       {...props}
     />
   );

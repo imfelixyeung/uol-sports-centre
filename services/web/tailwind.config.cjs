@@ -15,6 +15,7 @@ module.exports = {
       sm: '640px',
       md: '720px',
       lg: '1024px',
+      xl: '1280px',
     },
     extend: {
       colors: {
@@ -35,6 +36,9 @@ module.exports = {
         'card-alt': "url('/assets/images/patterns/card-alt.svg')",
         'card-red': "url('/assets/images/patterns/card-red.svg')",
         card: "url('/assets/images/patterns/card.svg')",
+      },
+      boxShadow: {
+        card: '0px 1px 6px 0px #00000040',
       },
     },
   },
