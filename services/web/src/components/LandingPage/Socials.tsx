@@ -1,4 +1,4 @@
-import {ChevronDoubleRightIcon} from '@heroicons/react/24/solid';
+import ChevronTripleRightIcon from '../Icons/ChevronTripleRightIcon';
 import Typography from '../Typography';
 
 const socials = ['Instagram', 'Twitter', 'Facebook', 'LinkedIn', 'SocialApp'];
@@ -25,8 +25,8 @@ const Socials = () => {
               <Typography as="h3" styledAs="h2" uppercase>
                 <span>{social}</span>
               </Typography>
-              <ChevronDoubleRightIcon
-                className="h-8 stroke-[6] text-primary"
+              <ChevronTripleRightIcon
+                className="h-8 text-primary"
                 aria-hidden
               />
             </a>

@@ -1,5 +1,5 @@
-import {ChevronDoubleRightIcon} from '@heroicons/react/24/solid';
 import type {FC} from 'react';
+import ChevronDoubleRightBorderedIcon from './Icons/ChevronTripleRightBorderedIcon';
 import ScrollArea from './ScrollArea';
 import Typography from './Typography';
 
@@ -42,7 +42,7 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
         <Typography as="h3" styledAs="h2" uppercase>
           {name}
         </Typography>
-        <ChevronDoubleRightIcon
+        <ChevronDoubleRightBorderedIcon
           className="h-6 stroke-[6] text-primary"
           aria-hidden
         />
