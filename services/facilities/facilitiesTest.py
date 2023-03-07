@@ -130,7 +130,7 @@ class facilitiesTests(unittest.TestCase):
 
       self.assertEqual({
           "status": "Failed",
-          "message": "Object not added"
+          "message": "Invalid input"
       }, json.loads(response.data))
 
   def test_add_openTime_success(self):

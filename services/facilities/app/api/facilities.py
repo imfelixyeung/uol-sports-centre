@@ -1,6 +1,6 @@
 import logging
 import json
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
 from app.createDictionaries import makeFacility
@@ -48,10 +48,13 @@ class FacilitiesRouter:
       page = int(request.args.get("page"))
       limit = int(request.args.get("limit"))
     except ValueError:
-      return json.dumps({
+      # Catch value error and return a failed response code before continuing
+      return_value = make_response({
           "status": "Failed",
-          "message": "Incorrect argument type"
+          "message": "Invalid input"
       })
+      return_value.status_code = 405
+      return return_value
 
     offset = (page - 1) * limit
 
@@ -62,7 +65,10 @@ class FacilitiesRouter:
     for facility in facilities_query:
       return_array.append(makeFacility(facility))
 
-    return json.dumps(return_array)
+    return_value = make_response(return_array)
+    return_value.status_code = 200
+
+    return return_value
 
   def add_facility(self):
     # Get data from body of post request
@@ -71,38 +77,71 @@ class FacilitiesRouter:
     try:
       capacity = int(data.get("capacity"))
     except ValueError:
-      return json.dumps({"status": "Failed", "message": "Object not added"})
+      # Catch value error and return a failed response code before continuing
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Invalid input"
+      })
+      return_value.status_code = 405
+      return return_value
 
     # Add the supplied object to the data base
     new_facility = Facility(name=name, capacity=capacity)
 
+    # If facility not added for any reason respond failed
     if not new_facility:
-      return json.dumps({"status": "Failed", "message": "Object not added"})
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not added"
+      })
+      return_value.status_code = 400
 
-    self.db.session.add(new_facility)
-    self.db.session.commit()
+    else:
+      self.db.session.add(new_facility)
+      self.db.session.commit()
 
-    # Return the status of the addition and the object added to the database
-    return_value = {
-        "status": "ok",
-        "message": "facility added",
-        "facility": makeFacility(new_facility)
-    }
+      # Return the status of the addition and the object added to the database
+      return_value = make_response({
+          "status": "ok",
+          "message": "facility added",
+          "facility": makeFacility(new_facility)
+      })
+      return_value.status_code = 200
 
-    return json.dumps(return_value)
+    return return_value
 
   def get_facility(self, facility_id: int):
     facility_query = Facility.query.get(facility_id)
 
+    # If the facility is not found within the table respond with an error and error code 404
     if (not facility_query):
-      return_value = {"status": "error", "message": "resource not found"}
-    else:
-      return_value = makeFacility(facility_query)
+      return_value = make_response({
+          "status": "error",
+          "message": "resource not found"
+      })
+      return_value.status_code = 404
 
-    return json.dumps(return_value)
+    # Else, facility is found so make it into a dictionary and then a response with the code 200 for success
+    else:
+      return_value = make_response(makeFacility(facility_query))
+      return_value.status_code = 200
+
+    return return_value
 
   def update_facility(self, facility_id: int):
+    data = json.loads(request.data)
+
+    # Get item to be updated
+    to_update = Facility.query.get(facility_id)
+
+    # Check that the facility has been found
+    if not to_update:
+      return {"status": "error", "message": "resource not found"}
+
     return {"status": "error", "message": "Not yet implemented"}
+
+
+# Database constraint in flask in order to delete items from database
 
   def delete_facility(self, facility_id: int):
     return {"status": "error", "message": "Not yet implemented"}
