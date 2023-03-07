@@ -1,6 +1,6 @@
 import logging
 import json
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Activity, Facility
 from app.createDictionaries import makeActivity
@@ -48,10 +48,13 @@ class ActivitiesRouter:
       page = int(request.args.get("page"))
       limit = int(request.args.get("limit"))
     except ValueError:
-      return json.dumps({
+      # Catch value error and return a failed response code before continuing
+      return_value = make_response({
           "status": "Failed",
-          "message": "Incorrect argument type"
+          "message": "Invalid input"
       })
+      return_value.status_code = 405
+      return return_value
 
     offset = (page - 1) * limit
 
@@ -59,10 +62,15 @@ class ActivitiesRouter:
 
     return_array = []
 
+    # Add every activity found in the query to the array as a dictionary
     for activity in activities_query:
       return_array.append(makeActivity(activity))
 
-    return json.dumps(return_array)
+    # Turn array into a flask response
+    return_value = make_response(return_array)
+    return_value.status_code = 200
+
+    return return_value
 
   def add_activity(self):
     # Get data from body of post request
@@ -70,34 +78,60 @@ class ActivitiesRouter:
 
     # Check that the supplied foreign key existss
     if (not Facility.query.get(int(data.get("facility_id")))):
-      return json.dumps({"status": "failed", "message": "facility not found"})
+      # Catch value error and return a failed response code before continuing
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Invalid input"
+      })
+      return_value.status_code = 405
+      return return_value
 
     # Add the supplied object to the data base
     addition = Activity(name=data.get("name"),
                         duration=data.get("duration"),
                         capacity=data.get("capacity"),
                         facility_id=data.get("facility_id"))
-    self.db.session.add(addition)
-    self.db.session.commit()
 
-    if (not addition):
-      return json.dumps({"status": "failed", "message": "activity not added"})
+    if not addition:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not added"
+      })
+      return_value.status_code = 400
 
-    # Return the status of the addition and the object added to the database
-    return_value = {
-        "status": "ok",
-        "message": "Opening time added",
-        "facility": makeActivity(addition)
-    }
+    else:
+      self.db.session.add(addition)
+      self.db.session.commit()
 
-    return json.dumps(return_value)
+      # Return the status of the addition and the object added to the database
+      return_value = make_response({
+          "status": "ok",
+          "message": "Activity added",
+          "facility": makeActivity(addition)
+      })
+      return_value.status_code = 200
+
+    return return_value
 
   def get_activity(self, activity_id: int):
     activity_query = Activity.query.get(activity_id)
 
-    return_value = makeActivity(activity_query)
+    # If the activity is not found within the table
+    # respond with an error and error code 404
+    if not activity_query:
+      return_value = make_response({
+          "status": "error",
+          "message": "resource not found"
+      })
+      return_value.status_code = 404
 
-    return json.dumps(return_value)
+    # Else, facility is found so make it into a dictionary
+    # then a response with the code 200 for success
+    else:
+      return_value = make_response(makeActivity(activity_query))
+      return_value.status_code = 200
+
+    return return_value
 
   def update_activity(self, activity_id: int):
     return {"status": "error", "message": "Not yet implemented"}

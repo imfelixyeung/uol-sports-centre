@@ -195,7 +195,7 @@ class facilitiesTests(unittest.TestCase):
 
       expectedResponse = {
           "status": "ok",
-          "message": "Opening time added",
+          "message": "Activity added",
           "facility": checkData
       }
 

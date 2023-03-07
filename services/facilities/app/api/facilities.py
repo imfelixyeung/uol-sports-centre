@@ -62,9 +62,11 @@ class FacilitiesRouter:
 
     return_array = []
 
+    # Add every facility found in the query to the array as a dictionary
     for facility in facilities_query:
       return_array.append(makeFacility(facility))
 
+    # Convert array into flask response
     return_value = make_response(return_array)
     return_value.status_code = 200
 
@@ -113,15 +115,17 @@ class FacilitiesRouter:
   def get_facility(self, facility_id: int):
     facility_query = Facility.query.get(facility_id)
 
-    # If the facility is not found within the table respond with an error and error code 404
-    if (not facility_query):
+    # If the facility is not found within the table
+    # respond with an error and error code 404
+    if not facility_query:
       return_value = make_response({
           "status": "error",
           "message": "resource not found"
       })
       return_value.status_code = 404
 
-    # Else, facility is found so make it into a dictionary and then a response with the code 200 for success
+    # Else, facility is found so make it into a dictionary
+    # then a response with the code 200 for success
     else:
       return_value = make_response(makeFacility(facility_query))
       return_value.status_code = 200
