@@ -25,7 +25,7 @@ const UserDashboardPage = () => {
               </div>
             </section>
             <section className="my-16">
-              <Typography as="h2" styledAs="h1" uppercase>
+              <Typography as="h2" styledAs="h1" uppercase className="mb-8">
                 {'/// Available Classes'}
               </Typography>
               <div className="flex flex-wrap gap-3">
