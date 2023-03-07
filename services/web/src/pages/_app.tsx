@@ -1,3 +1,5 @@
+// Adapted some logic from https://nextjs.org/docs/basic-features/layouts
+
 import clsx from 'clsx';
 import {type AppType} from 'next/dist/shared/lib/utils';
 import {Saira, Saira_Condensed} from 'next/font/google';
@@ -8,6 +10,7 @@ import {AuthProvider} from '~/providers/auth';
 import {store} from '~/redux/store';
 
 import '~/styles/globals.css';
+import type {NextComponentTypeWithLayout} from '~/types/NextPage';
 
 const saira = Saira({
   variable: '--font-saira',
@@ -21,17 +24,17 @@ const sairaCondensed = Saira_Condensed({
 });
 
 const MyApp: AppType = ({Component, pageProps}) => {
+  const getLayout =
+    (Component as NextComponentTypeWithLayout).getLayout ??
+    (page => <Layout>{page}</Layout>);
+
   return (
     <div
       className={clsx(saira.variable, sairaCondensed.variable, 'font-body')}
       id="app"
     >
       <Provider store={store}>
-        <AuthProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </AuthProvider>
+        <AuthProvider>{getLayout(<Component {...pageProps} />)}</AuthProvider>
       </Provider>
       <Toaster />
     </div>

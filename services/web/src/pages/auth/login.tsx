@@ -1,7 +1,8 @@
 import AuthPage from '~/components/Auth/AuthPage';
 
-const LoginPage = () => {
-  return <AuthPage variant="login" />;
+const LoginPage = AuthPage;
+LoginPage.defaultProps = {
+  variant: 'login',
 };
 
 export default LoginPage;

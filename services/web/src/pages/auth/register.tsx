@@ -1,7 +1,8 @@
 import AuthPage from '~/components/Auth/AuthPage';
 
-const RegisterPage = () => {
-  return <AuthPage variant="register" />;
+const RegisterPage = AuthPage;
+RegisterPage.defaultProps = {
+  variant: 'register',
 };
 
 export default RegisterPage;
