@@ -13,9 +13,9 @@ datasource db {
 // User Database Model
 model User {
   id         Int     @id @default(autoincrement())
-  accountID  Int     @unique
-  paymentID  Int     @unique
-  bookingID  Int     @unique
+  accountID  Int?    @unique
+  paymentID  Int?    @unique
+  bookingID  Int?    @unique
   firstName  String
   lastName   String
   membership String?
