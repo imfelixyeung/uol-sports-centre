@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
@@ -26,6 +27,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           email: '',
           password: '',
           rememberMe: false,
+          acceptTerms: false,
         }}
         onSubmit={async (values, actions) => {
           setErrorMessage(null);
@@ -69,6 +71,8 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               type="email"
               className="bg-white p-2"
               placeholder="Email"
+              inputMode="email"
+              autoComplete="email"
             />
           </label>
 
@@ -80,17 +84,36 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               type="password"
               className="bg-white p-2"
               placeholder="Password"
+              inputMode="password"
+              autoComplete={
+                variant === 'login' ? 'current-password' : 'new-password'
+              }
             />
           </label>
 
-          <div className="flex justify-between flex-wrap gap-3">
+          <div
+            className={clsx(
+              'flex justify-between flex-wrap gap-3',
+              variant === 'login' ? 'flex-row' : 'flex-col'
+            )}
+          >
             <label className="flex gap-3 items-center">
               <Field id="rememberMe" name="rememberMe" type="checkbox" />
               <span>Remember Me</span>
             </label>
-            <a href="" className="underline">
-              Forgotten Password
-            </a>
+            {variant === 'login' ? (
+              <a href="" className="underline">
+                Forgotten Password
+              </a>
+            ) : (
+              <label className="flex gap-3 items-center">
+                <Field id="acceptTerms" name="acceptTerms" type="checkbox" />
+                <span>
+                  I Agree to the <a href="">Terms of Conditions</a> and the{' '}
+                  <a href="">Privacy Policy</a>
+                </span>
+              </label>
+            )}
           </div>
 
           {errorMessage && <div className="text-red-600">{errorMessage}</div>}
@@ -103,13 +126,13 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             <span>
               {variant === 'register'
                 ? 'Already have an account?'
-                : 'Dont have an account yet?'}
+                : 'Dont have an account?'}
             </span>{' '}
             <Link
               href={variant === 'register' ? '/auth/login' : '/auth/register'}
               className="underline"
             >
-              {variant === 'register' ? 'Log In' : 'Register'}
+              {variant === 'register' ? 'Log In' : 'Create Account'}
             </Link>
           </div>
         </Form>
