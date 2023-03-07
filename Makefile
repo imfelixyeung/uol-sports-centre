@@ -11,6 +11,10 @@ dev:
 	docker compose -f docker-compose.dev.yaml build
 	docker compose -f docker-compose.dev.yaml --env-file .env.dev up
 
+ci:
+	docker compose -f docker-compose.ci.yaml build
+	docker compose -f docker-compose.ci.yaml up
+
 clean:
 	docker compose down
 	docker compose -f docker-compose.dev.yaml down
