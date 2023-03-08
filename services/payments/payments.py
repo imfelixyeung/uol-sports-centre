@@ -73,7 +73,7 @@ def MakeAPurchase(userID, productName):
     productID = product[0]
     
     # Creates a new row in the purchased products table
-    cur.execute("INSERT INTO purchased_products (customerID, productID, purchaseDate) VALUES (?, ?, ?)",
+    cur.execute("INSERT INTO orders (customerID, productID, purchaseDate) VALUES (?, ?, ?)",
                 (findUser[0][0], productID, datetime.now()))
     con.commit()
     con.close()
