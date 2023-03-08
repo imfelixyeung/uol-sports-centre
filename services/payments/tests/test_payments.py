@@ -10,6 +10,7 @@ sys.path[0] = str(Path(sys.path[0]).parent)
 import payments
 from payments import app
 from payments import MakePurchasable
+from payments import addProductDatabase
 
 def create_testDatabase():
     connection = sqlite3.connect("database.db")
@@ -58,6 +59,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     cur = connection.cursor()
     cur.execute("SELECT name FROM products WHERE priceId LIKE 'price_1MifK7K4xeIGYs5lQ5BUqPfD'")
     self.assertEqual()
+    
   #test createCheckout()
   def createCheckout_test(self):
     a = 1
