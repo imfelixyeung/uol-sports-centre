@@ -1,4 +1,5 @@
 import Button from '../Button';
+import Typography from '../Typography';
 
 const quickLinks = ['Home', 'About', 'Facilities', 'Pricing', 'Contact'];
 
@@ -6,11 +7,15 @@ const Footer = () => {
   return (
     <footer className="border-white border-t-[1px] bg-black">
       <div className="flex container justify-between my-12 flex-col-reverse md:flex-row">
-        <nav className="font-bold text-xl">
+        <nav>
           <ul>
             {quickLinks.map((link, index) => (
               <li key={index}>
-                <a href="">{link}</a>
+                <a href="">
+                  <Typography as="span" styledAs="navLink">
+                    {link}
+                  </Typography>
+                </a>
               </li>
             ))}
           </ul>

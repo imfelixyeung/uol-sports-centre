@@ -1,29 +1,33 @@
 import type {VariantProps} from 'class-variance-authority';
 import {cva} from 'class-variance-authority';
 import type {ButtonHTMLAttributes, FC} from 'react';
+import {typographyStyles} from './Typography';
 
-export const buttonStyles = cva('flex items-center justify-center font-bold', {
-  variants: {
-    intent: {
-      primary: 'bg-primary text-black',
-      secondary: 'bg-secondary text-black',
+export const buttonStyles = cva(
+  ['flex items-center justify-center', typographyStyles({styledAs: 'button'})],
+  {
+    variants: {
+      intent: {
+        primary: 'bg-primary text-black',
+        secondary: 'bg-secondary text-black',
+      },
+      wide: {
+        true: 'min-w-[12rem]',
+      },
+      outline: {
+        true: 'border-4 border-black',
+      },
+      square: {
+        true: 'p-2',
+        false: 'px-6 py-2',
+      },
     },
-    wide: {
-      true: 'min-w-[12rem]',
+    defaultVariants: {
+      square: false,
+      outline: false,
     },
-    outline: {
-      true: 'border-4 border-black',
-    },
-    square: {
-      true: 'p-2',
-      false: 'px-6 py-2',
-    },
-  },
-  defaultVariants: {
-    square: false,
-    outline: false,
-  },
-});
+  }
+);
 
 export type ButtonProps = VariantProps<typeof buttonStyles> &
   ButtonHTMLAttributes<HTMLButtonElement>;
