@@ -53,11 +53,32 @@ paths:
       description: "Registers a user into the system, returning a JWT if successful."
 
       requestBody:
-        $ref: "#/components/requestBodies/CredentialsWithName"
+        $ref: "#/components/requestBodies/Credentials"
 
       responses:
         "200":
           $ref: "#/components/responses/JWT"
+
+  /auth/password-reset:
+    put:
+      tags:
+        - auth
+      description: "Resets a user's password."
+
+      requestBody:
+        $ref: "#/components/requestBodies/PasswordReset"
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
 
   /auth/token:
     post:
@@ -277,7 +298,7 @@ paths:
         "405":
           description: Invalid input
 
-  /booking/booking/{bookingId}:
+  /booking/bookings/{bookingId}:
     get:
       tags:
         - booking
@@ -497,8 +518,9 @@ components:
               password:
                 type: string
                 description: "The user's password"
-    CredentialsWithName:
-      description: "User's credentials (email password)"
+
+    PasswordReset:
+      description: "Password reset (email old new password)"
       required: true
       content:
         application/json:
@@ -510,13 +532,11 @@ components:
                 description: "The user's email"
               password:
                 type: string
-                description: "The user's password"
-              firstName:
+                description: "The user's old password"
+              newPassword:
                 type: string
-                description: "The user's first name"
-              lastName:
-                type: string
-                description: "The user's last name"
+                description: "The user's new password"
+
     RefreshToken:
       description: "Refresh token"
       required: true

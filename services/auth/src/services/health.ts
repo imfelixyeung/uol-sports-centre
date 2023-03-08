@@ -1,5 +1,9 @@
 import {db} from '../utils/db';
 
+/**
+ * evaluates the health of the service
+ * @returns health status of the service
+ */
 export const getHealth = async () => {
   const databaseHealth = await getDatabaseHealth();
   return {
