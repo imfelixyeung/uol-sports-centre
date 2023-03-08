@@ -169,7 +169,3 @@ def get_health():
 if __name__ == '__main__':
     app.run(host='localhost', port=os.getenv('APP_PORT'))
 
-
-
-
-
