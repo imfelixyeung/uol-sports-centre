@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, redirect, render_template
+from flask import jsonify
 
 app = Flask(__name__,
             static_url_path='',
@@ -133,9 +134,9 @@ def get_purchased_products(userID):
     '''Retrieve all purchased products for a given user'''
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    purchased_products = cur.execute('''SELECT * FROM purchased_products
-                                        JOIN products ON purchased_products.productID = products.productID
-                                        WHERE purchased_products.customerID = ?''',
+    purchased_products = cur.execute('''SELECT * FROM orders
+                                        JOIN products ON orders.productID = products.productID
+                                        WHERE orders.customerID = ?''',
                                      [userID]).fetchall()
     con.close()
     return jsonify(purchased_products)
