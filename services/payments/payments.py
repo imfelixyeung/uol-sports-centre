@@ -21,12 +21,16 @@ localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
 stripe.api_key = os.getenv('STRIPE_API')
 
-def addProductDatabase(name, priceID, price, type):
-    '''Adds a new product to the database'''
+def initDatabase():
+    '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
     with open('services/payments/paymentSchema.sql') as schema:
         connection.executescript(schema.read())
-    
+    connection.close()
+
+def addProductDatabase(name, priceID, price, type):
+    '''Adds a new product to the database'''
+    connection = sqlite3.connect('database.db')
     cur = connection.cursor()
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
             (priceID, name, price, type))
@@ -100,6 +104,7 @@ def createCheckout(stripeID, productName):
 
 @app.route('/', methods=['GET'])
 def get_index():
+    initDatabase()
     return render_template('index.html')
 
 @app.route("/checkout-session", methods=['POST'])
