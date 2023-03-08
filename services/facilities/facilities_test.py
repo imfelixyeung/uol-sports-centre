@@ -7,13 +7,12 @@ from app.models.activity import Activity
 from app.models.facility import Facility
 from app.models.opentime import OpenTime
 from app.createDictionaries import makeActivity, makeFacility, makeOpenTime
-import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = create_app(testing=True,
                  config={
                      "SQLALCHEMY_DATABASE_URI":
-                         'sqlite:///' + os.path.join(basedir, 'test.db'),
+                         "sqlite:///" + os.path.join(basedir, "test.db"),
                      "TESTING":
                          True,
                      "WTF_CSRF_ENABLED":
@@ -28,18 +27,18 @@ class facilitiesTests(unittest.TestCase):
 
     with app.app_context():
       db.create_all()
-      facilityTestCase = Facility(name="Football", capacity=20)
-      openTimeTestCase = OpenTime(day="Monday",
-                                  openingTime=660,
-                                  closingTime=990,
-                                  facility_id=1)
-      activityTestCase = Activity(name="Swimming Lesson",
-                                  duration=30,
-                                  capacity=20,
-                                  facility_id=1)
-      db.session.add(facilityTestCase)
-      db.session.add(openTimeTestCase)
-      db.session.add(activityTestCase)
+      facility_test_case = Facility(name="Football", capacity=20)
+      open_time_test_case = OpenTime(day="Monday",
+                                     openingTime=660,
+                                     closingTime=990,
+                                     facility_id=1)
+      activity_test_case = Activity(name="Swimming Lesson",
+                                    duration=30,
+                                    capacity=20,
+                                    facility_id=1)
+      db.session.add(facility_test_case)
+      db.session.add(open_time_test_case)
+      db.session.add(activity_test_case)
       db.session.commit()
 
   # Remove everything from database after tests are complete
@@ -50,19 +49,19 @@ class facilitiesTests(unittest.TestCase):
 
   def test_get_facility(self):
     with app.app_context():
-      response = self.app.get('/facilities/1')
+      response = self.app.get("/facilities/1")
 
-      expectedResponse = {"id": 1, "name": "Football", "capacity": 20}
+      expected_response = {"id": 1, "name": "Football", "capacity": 20}
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
   def test_get_open_time(self):
     with app.app_context():
-      response = self.app.get('/times/1')
+      response = self.app.get("/times/1")
 
-      expectedResponse = {
+      expected_response = {
           "id": 1,
           "day": "Monday",
           "openTime": 660,
@@ -70,15 +69,15 @@ class facilitiesTests(unittest.TestCase):
           "facility_id": 1
       }
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
   def test_get_activity(self):
     with app.app_context():
-      response = self.app.get('/activities/1')
+      response = self.app.get("/activities/1")
 
-      expectedResponse = {
+      expected_response = {
           "id": 1,
           "name": "Swimming Lesson",
           "duration": 30,
@@ -86,14 +85,14 @@ class facilitiesTests(unittest.TestCase):
           "facility_id": 1
       }
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
   def test_add_facility_success(self):
     with app.app_context():
 
-      response = self.app.post('/facilities/',
+      response = self.app.post("/facilities/",
                                json={
                                    "name": "Tennis Court",
                                    "capacity": int(6)
@@ -109,20 +108,20 @@ class facilitiesTests(unittest.TestCase):
           "capacity": 6
       }, checkData)
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      expectedResponse = {
+      expected_response = {
           "status": "ok",
           "message": "facility added",
           "facility": checkData
       }
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
   def test_add_facility_failed(self):
     with app.app_context():
 
-      response = self.app.post('/facilities/',
+      response = self.app.post("/facilities/",
                                json={
                                    "name": int(2),
                                    "capacity": str("yeah")
@@ -136,7 +135,7 @@ class facilitiesTests(unittest.TestCase):
   def test_add_openTime_success(self):
     with app.app_context():
 
-      response = self.app.post('/times/',
+      response = self.app.post("/times/",
                                json={
                                    "day": "monday",
                                    "openTime": int(660),
@@ -157,20 +156,20 @@ class facilitiesTests(unittest.TestCase):
               "facility_id": int(1)
           }, checkData)
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      expectedResponse = {
+      expected_response = {
           "status": "ok",
           "message": "Opening time added",
           "facility": checkData
       }
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
   def test_add_activity_success(self):
     with app.app_context():
 
-      response = self.app.post('/activities/',
+      response = self.app.post("/activities/",
                                json={
                                    "name": "Football Lesson",
                                    "duration": int(30),
@@ -191,16 +190,16 @@ class facilitiesTests(unittest.TestCase):
               "facility_id": int(1)
           }, checkData)
 
-      responseData = json.loads(response.data)
+      response_data = json.loads(response.data)
 
-      expectedResponse = {
+      expected_response = {
           "status": "ok",
           "message": "Activity added",
           "facility": checkData
       }
 
-      self.assertEqual(responseData, expectedResponse)
+      self.assertEqual(response_data, expected_response)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   unittest.main()
