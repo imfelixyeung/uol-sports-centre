@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import Seo from '~/components/Seo';
 import {useGetStatusReportQuery} from '~/redux/services/api';
 
 const StatusPage = () => {
@@ -10,29 +11,32 @@ const StatusPage = () => {
   const report = statusReportData.data.data;
 
   return (
-    <div className="space-y-3">
-      {report.map(serviceStatus => {
-        const {service, status, statusCode, timestamp} = serviceStatus;
-        return (
-          <div
-            key={service}
-            className={clsx(
-              'p-3 bg-white/50',
-              status === 'up'
-                ? 'text-green-600'
-                : status === 'down'
-                ? 'text-red-600'
-                : 'text-amber-600'
-            )}
-          >
-            <h3>{service}</h3>
-            <p>Status: {status}</p>
-            <p>Code: {statusCode}</p>
-            <p>Last checked: {new Date(timestamp).toLocaleString()}</p>
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <Seo title="Status" />
+      <div className="space-y-3">
+        {report.map(serviceStatus => {
+          const {service, status, statusCode, timestamp} = serviceStatus;
+          return (
+            <div
+              key={service}
+              className={clsx(
+                'p-3 bg-white/50',
+                status === 'up'
+                  ? 'text-green-600'
+                  : status === 'down'
+                  ? 'text-red-600'
+                  : 'text-amber-600'
+              )}
+            >
+              <h3>{service}</h3>
+              <p>Status: {status}</p>
+              <p>Code: {statusCode}</p>
+              <p>Last checked: {new Date(timestamp).toLocaleString()}</p>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 
