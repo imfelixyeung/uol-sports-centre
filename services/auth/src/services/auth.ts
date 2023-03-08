@@ -10,8 +10,12 @@ import {JsonWebToken} from '../schema/jwt';
  * @param credentials email password
  * @returns jwt token and refresh token
  */
-export const signInWithCredentials = async (credentials: Credentials) => {
+export const signInWithCredentials = async (
+  credentials: Credentials,
+  options: {rememberMe: boolean}
+) => {
   const {email, password} = credentials;
+  const {rememberMe} = options;
 
   const user = await UserRegistry.getUserByEmail(email);
 
@@ -32,7 +36,8 @@ export const signInWithCredentials = async (credentials: Credentials) => {
   // success, create token
   const token = await TokenRegistry.createTokenForUser(user);
   const refreshToken = await RefreshTokenRegistry.createRefreshTokenForToken(
-    token
+    token,
+    {shortLived: !rememberMe}
   );
 
   return {token, refreshToken};
@@ -43,8 +48,12 @@ export const signInWithCredentials = async (credentials: Credentials) => {
  * @param credentials email password
  * @returns jwt token and refresh token
  */
-export const registerWithCredentials = async (credentials: Credentials) => {
+export const registerWithCredentials = async (
+  credentials: Credentials,
+  options: {rememberMe: boolean}
+) => {
   const {email, password} = credentials;
+  const {rememberMe} = options;
 
   const user = await UserRegistry.getUserByEmail(email);
 
@@ -64,7 +73,8 @@ export const registerWithCredentials = async (credentials: Credentials) => {
   // success, create token
   const token = await TokenRegistry.createTokenForUser(newUser);
   const refreshToken = await RefreshTokenRegistry.createRefreshTokenForToken(
-    token
+    token,
+    {shortLived: !rememberMe}
   );
   return {token, refreshToken};
 };

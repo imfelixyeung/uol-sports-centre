@@ -6,6 +6,11 @@ services:
       context: ./services/auth
       target: ci
 
+  status:
+    build:
+      context: ./services/status
+      target: ci
+
   docs:
     build:
       context: ./docs

@@ -1,11 +1,10 @@
 import {Request, Response} from 'express';
+import {getHealth} from '../services/health';
 
 const get = async (req: Request, res: Response) => {
-  // always good for now
-  // TODO: add logic checks when database is added
-  return res.json({
-    success: true,
-  });
+  await getHealth()
+    .then(health => res.json({success: true, health}))
+    .catch(error => res.status(500).json({success: false, error}));
 };
 
 const healthControllers = {
