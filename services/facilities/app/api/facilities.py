@@ -147,6 +147,7 @@ class FacilitiesRouter:
       return_value.status_code = 404
       return
 
+    # Check which fields need to be updated
     if "name" in data:
       to_update.name = data.get("name")
 

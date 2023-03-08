@@ -134,7 +134,52 @@ class ActivitiesRouter:
     return return_value
 
   def update_activity(self, activity_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    data = json.loads(request.data)
+
+    # Get item to be updated
+    to_update = Activity.query.get(activity_id)
+
+    # Check that the facility has been found
+    if not to_update:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not found"
+      })
+      return_value.status_code = 404
+      return return_value
+
+    # Check which fields need to be updated
+    if "name" in data:
+      to_update.name = data.get("name")
+
+    if "capacity" in data:
+      to_update.capacity = int(data.get("capacity"))
+
+    if "duration" in data:
+      to_update.duration = int(data.get("duration"))
+
+    if "facility_id" in data:
+      if not Facility.query.get(data.get("facility_id")):
+        return_value = make_response({
+            "status": "Failed",
+            "message": "Object not found"
+        })
+        return_value.status_code = 404
+        return return_value
+
+      else:
+        to_update.facility_id = data.get("facility_id")
+
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "facility updated",
+        "facility": makeActivity(to_update)
+    })
+
+    return_value.status_code = 200
+    return return_value
 
   def delete_activity(self, activity_id: int):
     return {"status": "error", "message": "Not yet implemented"}
