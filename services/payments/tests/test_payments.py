@@ -15,18 +15,13 @@ def create_testDatabase():
     connection = sqlite3.connect("database.db")
     with open('services/payments/paymentSchema.sql') as schema:
       connection.executescript(schema.read())
-    
-    cur = connection.cursor()
-    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
-            ("price_1MifK7K4xeIGYs5lQ5BUqPfD", "product-test", "5", "payment"))
-    connection.commit()
     connection.close()
 
 class TestingPaymentsMicroservice(unittest.TestCase):
   #test createCheckout()
   def test_MakePurchasable_test(self):
     #tests if it can make a test product purchasable
-    payments.MakePurchasable('product-test', 5.0, 'test-type')
+    #payments.MakePurchasable('product-test', 5.0, 'test-type')
 
     #retrieving the added product from Stripe
     products = stripe.Product.list()
@@ -49,15 +44,27 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #stripe.Product.delete(productStripe.id)
 
   #test addProductDatabase()
-  def addProductDatabase_test(self):
-    create_testDatabase()
-    payments.addProductDatabase("test-product",
-                                "price_1MifK7K4xeIGYs5lQ5BUqPfD", "5",
-                                "payment")
+  def test_addProductDatabase(self):
+    
+    #Add products using payments
+    payments.addProductDatabase("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
+                                "5", "payment")
+    payments.addProductDatabase("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
+                                "15", "subscription")
+    
     connection = sqlite3.connect('database.db')
     cur = connection.cursor()
-    cur.execute("SELECT name FROM products WHERE priceId LIKE 'price_1MifK7K4xeIGYs5lQ5BUqPfD'")
-    self.assertEqual()
+
+    #Fetch products from database
+    t1 = cur.execute('''SELECT productName FROM products 
+      WHERE priceId LIKE ?''', ['price_1MifK7K4xeIGYs5lQ5BUqPfD']).fetchall()
+    t2 = cur.execute('''SELECT productName FROM products
+      WHERE priceId LIKE ?''', ['price_1MjOq1K4xeIGYs5lvqNSB9l5']).fetchall()
+    
+    #Assert correct products
+    self.assertEqual(t1, "product-test")
+    self.assertEqual(t2, "subscription-test")
+
   #test createCheckout()
   def createCheckout_test(self):
     a = 1
