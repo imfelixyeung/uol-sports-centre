@@ -136,8 +136,9 @@ def get_purchased_products(userID):
     cur = con.cursor()
     purchased_products = cur.execute('''SELECT * FROM orders
                                         JOIN products ON orders.productID = products.productID
-                                        WHERE orders.customerID = ?''',
+                                        WHERE orders.userID = ?''',
                                      [userID]).fetchall()
+    
     con.close()
     return jsonify(purchased_products)
 

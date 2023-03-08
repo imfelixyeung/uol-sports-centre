@@ -24,7 +24,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def setUp(self):
      app.testing = True
      self.client = app.test_client()
-     self.product_name = "Sports Centre Membership"
+     self.product_name = "product-test"
      self.product_price = 50.00
      self.user_id = 467468
 
@@ -56,7 +56,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #test addProductDatabase()
 
   def test_addProductDatabase(self):
-    
+    payments.initDatabase()
+
     #Add products using payments
     payments.addProductDatabase("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
                                 "5", "payment")
@@ -68,20 +69,25 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Fetch products from database
     t1 = cur.execute('''SELECT productName FROM products 
-      WHERE priceId LIKE ?''', ['price_1MifK7K4xeIGYs5lQ5BUqPfD']).fetchall()
+      WHERE priceId LIKE ?''', ['price_1MjOpSK4xeIGYs5lrzHsvy8N']).fetchall()
     t2 = cur.execute('''SELECT productName FROM products
       WHERE priceId LIKE ?''', ['price_1MjOq1K4xeIGYs5lvqNSB9l5']).fetchall()
+    connection.close()
     
     #Assert correct products
-    self.assertEqual(t1, "product-test")
-    self.assertEqual(t2, "subscription-test")
+    self.assertEqual(t1[0][0], "product-test")
+    self.assertEqual(t2[0][0], "subscription-test")
 
   #test createCheckout()
   @patch("stripe.checkout.Session.create")
   def test_create_checkout_success(self, mock_checkout_session_create):
+    payments.initDatabase()
+    newCustomer = stripe.Customer.create()
+    payments.addProductDatabase("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
     mock_checkout_session_create.return_value = Mock(url='http://localhost:5000/checkout-session')
-    session_url = createCheckout('stripe_customer_id', self.product_name)
+    session_url = createCheckout(newCustomer.stripe_id, "product-test")
     self.assertEqual(session_url, 'http://localhost:5000/checkout-session')
+    stripe.Customer.delete(newCustomer.stripe_id)
 
   #test get_index()
   def get_index_test(self):
