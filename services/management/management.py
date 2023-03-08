@@ -3,6 +3,13 @@ Provides functionality for management-level access
 to the booking system"""
 import stripe
 from flask import Flask
+import os
+import sys
+from pathlib import Path
+
+sys.path[0] = str(Path(sys.path[0]).parent)
+
+import payments.payments
 
 app = Flask(__name__,
             static_url_path='',

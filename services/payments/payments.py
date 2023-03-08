@@ -34,8 +34,10 @@ def addProductDatabase(name, priceID, price, type):
     cur = connection.cursor()
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
             (priceID, name, price, type))
+    productID = cur.lastrowid
     connection.commit()
     connection.close()
+    return productID
 
 def MakePurchasable(productName, productPrice, productType="payment"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
@@ -65,7 +67,17 @@ def MakeAPurchase(userID, productName):
         con.commit()
         findUser = cur.execute('''SELECT stripeID FROM customers WHERE
         userID = ?''', [userID]).fetchall()
-        con.close()
+        
+    # Gets the product ID from the products table
+    product = cur.execute('SELECT * FROM products WHERE productName=?', [productName]).fetchone()   
+    productID = product[0]
+    
+    # Creates a new row in the purchased products table
+    cur.execute("INSERT INTO purchased_products (customerID, productID, purchaseDate) VALUES (?, ?, ?)",
+                (findUser[0][0], productID, datetime.now()))
+    con.commit()
+    con.close()
+
     return createCheckout(findUser[0][0], productName)
 
 #Creating a test card for our use
@@ -114,6 +126,19 @@ def redirectCheckout():
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
+
+# Endpoint to retreieve purchased products for a customer
+@app.route('/purchased-products/<int:userID>', methods=['GET'])
+def get_purchased_products(userID):
+    '''Retrieve all purchased products for a given user'''
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    purchased_products = cur.execute('''SELECT * FROM purchased_products
+                                        JOIN products ON purchased_products.productID = products.productID
+                                        WHERE purchased_products.customerID = ?''',
+                                     [userID]).fetchall()
+    con.close()
+    return jsonify(purchased_products)
 
 @app.route('/customer-portal', methods=['GET'])
 def customerPortal():

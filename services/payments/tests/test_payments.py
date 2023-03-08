@@ -10,6 +10,7 @@ sys.path[0] = str(Path(sys.path[0]).parent)
 import payments
 from payments import app
 from payments import MakePurchasable
+from payments import addProductDatabase
 
 def create_testDatabase():
     connection = sqlite3.connect("database.db")
