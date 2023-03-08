@@ -62,8 +62,21 @@ services:
     environment:
       - PORT=80
       - HOST=status
+      - DATABASE_URL=postgresql://status:status@status-db:5432/prod
     networks:
       - network
+
+  status-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=status
+      - POSTGRES_USER=status
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/status/db:/var/lib/postgresql/data
 
   users:
     build:
