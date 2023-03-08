@@ -1,6 +1,7 @@
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Card from '~/components/Card';
+import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
 
@@ -57,14 +58,10 @@ const UserDashboardPage = () => {
     <>
       <Seo title="Dashboard" />
       <div>
-        <header className="container my-16">
-          <Typography as="h1" styledAs="display2" uppercase className="mb-3">
-            {'Hello {first_name}!'}
-          </Typography>
-          <Typography as="p" styledAs="subtext" uppercase>
-            Welcome to a sports centre
-          </Typography>
-        </header>
+        <PageHero
+          title="Hello {first_name}!"
+          subtitle="Welcome to a sports centre"
+        />
         <main className="bg-white text-black">
           {/* Desktop */}
           <div className="container py-8 gap-3 hidden lg:grid grid-cols-12">

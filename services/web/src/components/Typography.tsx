@@ -25,8 +25,10 @@ export const typographyStyles = cva('', {
   },
 });
 
+export type TypographyStyleProps = VariantProps<typeof typographyStyles>;
+
 export interface TypographyProps
-  extends VariantProps<typeof typographyStyles>,
+  extends TypographyStyleProps,
     HTMLAttributes<HTMLHeadingElement> {
   as?: keyof ReactHTML;
 }
