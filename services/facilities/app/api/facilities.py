@@ -140,9 +140,29 @@ class FacilitiesRouter:
 
     # Check that the facility has been found
     if not to_update:
-      return {"status": "error", "message": "resource not found"}
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not found"
+      })
+      return_value.status_code = 404
+      return
 
-    return {"status": "error", "message": "Not yet implemented"}
+    if "name" in data:
+      to_update.name = data.get("name")
+
+    if "capacity" in data:
+      to_update.capacity = int(data.get("capacity"))
+
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "facility updated",
+        "facility": makeFacility(to_update)
+    })
+
+    return_value.status_code = 200
+    return return_value
 
 
 # Database constraint in flask in order to delete items from database

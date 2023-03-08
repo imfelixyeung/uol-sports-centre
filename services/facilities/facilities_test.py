@@ -21,7 +21,7 @@ app = create_app(testing=True,
 
 
 class facilitiesTests(unittest.TestCase):
-  # Set up tests for facilities API
+
   def setUp(self):
     self.app = app.test_client()
 
@@ -98,22 +98,22 @@ class facilitiesTests(unittest.TestCase):
                                    "capacity": int(6)
                                })
 
-      checkQuery = Facility.query.get(2)
+      check_query = Facility.query.get(2)
 
-      checkData = makeFacility(checkQuery)
+      check_data = makeFacility(check_query)
 
       self.assertEqual({
           "id": 2,
           "name": "Tennis Court",
           "capacity": 6
-      }, checkData)
+      }, check_data)
 
       response_data = json.loads(response.data)
 
       expected_response = {
           "status": "ok",
           "message": "facility added",
-          "facility": checkData
+          "facility": check_data
       }
 
       self.assertEqual(response_data, expected_response)
@@ -143,9 +143,9 @@ class facilitiesTests(unittest.TestCase):
                                    "facility_id": int(1)
                                })
 
-      checkQuery = OpenTime.query.get(2)
+      check_query = OpenTime.query.get(2)
 
-      checkData = makeOpenTime(checkQuery)
+      check_data = makeOpenTime(check_query)
 
       self.assertEqual(
           {
@@ -154,14 +154,14 @@ class facilitiesTests(unittest.TestCase):
               "openTime": int(660),
               "closeTime": int(720),
               "facility_id": int(1)
-          }, checkData)
+          }, check_data)
 
       response_data = json.loads(response.data)
 
       expected_response = {
           "status": "ok",
           "message": "Opening time added",
-          "facility": checkData
+          "facility": check_data
       }
 
       self.assertEqual(response_data, expected_response)
@@ -177,9 +177,9 @@ class facilitiesTests(unittest.TestCase):
                                    "facility_id": int(1)
                                })
 
-      checkQuery = Activity.query.get(2)
+      check_query = Activity.query.get(2)
 
-      checkData = makeActivity(checkQuery)
+      check_data = makeActivity(check_query)
 
       self.assertEqual(
           {
@@ -188,17 +188,45 @@ class facilitiesTests(unittest.TestCase):
               "duration": int(30),
               "capacity": int(20),
               "facility_id": int(1)
-          }, checkData)
+          }, check_data)
 
       response_data = json.loads(response.data)
 
       expected_response = {
           "status": "ok",
           "message": "Activity added",
-          "facility": checkData
+          "facility": check_data
       }
 
       self.assertEqual(response_data, expected_response)
+
+  def test_update_facility(self):
+    with app.app_context():
+      response = self.app.put("/facilities/1",
+                              json={
+                                  "name": "Football Pitch",
+                                  "capacity": 25
+                              })
+
+      check_query = Facility.query.get(1)
+
+      check_data = makeFacility(check_query)
+
+      self.assertEqual({
+          "id": 1,
+          "name": "Football Pitch",
+          "capacity": 25
+      }, check_data)
+
+      response_data = json.loads(response.data)
+
+      expected_response = {
+          "status": "ok",
+          "message": "facility updated",
+          "facility": check_data
+      }
+
+      self.assertEqual(expected_response, response_data)
 
 
 if __name__ == "__main__":
