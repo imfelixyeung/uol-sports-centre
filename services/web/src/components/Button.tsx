@@ -2,7 +2,7 @@ import type {VariantProps} from 'class-variance-authority';
 import {cva} from 'class-variance-authority';
 import type {ButtonHTMLAttributes, FC} from 'react';
 
-const buttonStyles = cva('flex items-center justify-center font-bold', {
+export const buttonStyles = cva('flex items-center justify-center font-bold', {
   variants: {
     intent: {
       primary: 'bg-primary text-black',
