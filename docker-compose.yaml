@@ -2,12 +2,114 @@ version: "3"
 
 services:
   web:
-    build: ./services/web
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+      target: prod
     environment:
       - PORT=80
       - HOST=web
     networks:
       - network
+  
+  facilities:
+    build: ./services/facilities
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+    networks:
+      - network
+
+  auth:
+    restart: always
+    build:
+      context: ./services/auth
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=0.0.0.0
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/prod
+    networks:
+      - network
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
+
+  status:
+    build:
+      context: ./services/status
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=status
+      - DATABASE_URL=postgresql://status:status@status-db:5432/prod
+    networks:
+      - network
+
+  status-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=status
+      - POSTGRES_USER=status
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/status/db:/var/lib/postgresql/data
+
+  users:
+    build:
+      context: ./services/users
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=users
+    networks:
+      - network
+
+  booking:
+    build: ./services/booking
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=file:./data/booking.production.db
+    networks:
+      - network
+    volumes:
+      - ./persistence/booking/db:/app/data
+
+  users-database:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=users
+      - POSTGRES_DB=users-database
+    networks:
+      - network
+    volumes:
+      - ./persistence/users/db:/var/lib/postgresql/data
 
   gateway:
     build: ./gateway
@@ -17,6 +119,11 @@ services:
       - "${APP_PORT}:80"
     networks:
       - network
+    links:
+      - web
+      - auth
+      - status
+      - users
 
 networks:
   network:

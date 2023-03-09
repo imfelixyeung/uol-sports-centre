@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  auth:
+    build:
+      context: ./services/auth
+      target: ci
+
+  status:
+    build:
+      context: ./services/status
+      target: ci
+
+  docs:
+    build:
+      context: ./docs
+      target: ci

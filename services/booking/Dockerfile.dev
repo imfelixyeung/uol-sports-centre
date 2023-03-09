@@ -7,11 +7,12 @@ RUN npm install -g pnpm
 
 # install dependencies
 COPY package.json pnpm-lock.yaml ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN pnpm install
 
-# copy source code
+# copy app
 COPY . .
 
 # serve app
 EXPOSE ${PORT}
-CMD [ "pnpm", "dev", "-p", "${PORT}", "-H", "${HOST}" ]
+CMD [ "pnpm", "dev" ]

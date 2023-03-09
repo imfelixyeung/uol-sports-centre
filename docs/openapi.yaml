@@ -1,0 +1,616 @@
+openapi: "3.0.2"
+info:
+  title: API
+  version: "1.0"
+
+servers:
+  - url: http://localhost/api
+
+tags:
+  - name: auth
+    description: Authentication microservice
+
+  - name: users
+    description: User microservice
+
+  - name: booking
+    description: Booking microservice
+
+  - name: status
+    description: status microservice
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      description: "Logs a user into the system, returning a JWT if successful."
+
+      requestBody:
+        $ref: "#/components/requestBodies/Credentials"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      description: "Logs a user out of the system, invalidating their JWT"
+
+      security:
+        - JWT: []
+
+      responses:
+        "200":
+          description: "OK"
+
+  /auth/register:
+    post:
+      tags:
+        - auth
+      description: "Registers a user into the system, returning a JWT if successful."
+
+      requestBody:
+        $ref: "#/components/requestBodies/Credentials"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
+  /auth/password-reset:
+    put:
+      tags:
+        - auth
+      description: "Resets a user's password."
+
+      requestBody:
+        $ref: "#/components/requestBodies/PasswordReset"
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
+
+  /auth/token:
+    post:
+      tags:
+        - auth
+      description: "Refreshes a JWT"
+
+      security:
+        - JWT: []
+
+      requestBody:
+        $ref: "#/components/requestBodies/RefreshToken"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/JWT"
+
+  /auth/session:
+    get:
+      tags:
+        - auth
+      description: "Validates a JWT, returning it's contents if valid"
+
+      security:
+        - JWT: []
+
+      responses:
+        "200":
+          $ref: "#/components/responses/DecodedJWT"
+
+  /auth/health:
+    get:
+      tags:
+        - auth
+      description: "Returns the health of the auth service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+  /status/report:
+    get:
+      tags:
+        - status
+      description: "Returns the status report of the system"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/ServiceStatusReport"
+
+  /status/health:
+    get:
+      tags:
+        - status
+      description: "Returns the health of the status service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+  /users/login:
+    post:
+      tags:
+        - users
+      description: "Takes the user through the log in phase"
+      responses:
+        "200":
+          description: OK
+
+  /users/accountInfo:
+    get:
+      tags:
+        - users
+      description: "Returns account info as JSON"
+      responses:
+        "200":
+          description: OK
+
+  /users/pricingList:
+    get:
+      tags:
+        - users
+      description: "Returns pricing list as JSON"
+      responses:
+        "200":
+          description: OK
+
+  /users/bookSession:
+    post:
+      tags:
+        - users
+      description: "Allows the user to book a session"
+      responses:
+        "200":
+          description: OK
+
+  /users/membership:
+    post:
+      tags:
+        - users
+      description: "Takes the user through the process of signing up for the membership or modifying it"
+      responses:
+        "200":
+          description: OK
+
+  /users/payment:
+    post:
+      tags:
+        - users
+      description: "Takes the user through the process of payment"
+      responses:
+        "200":
+          description: OK
+
+  /users/bookingHistory:
+    get:
+      tags:
+        - users
+      description: "Returns booking history as JSON"
+      responses:
+        "200":
+          description: OK
+
+  /users/upcomingSessions:
+    get:
+      tags:
+        - users
+      description: "Returns upcoming sessions as JSON"
+      responses:
+        "200":
+          description: OK
+
+  /booking/bookings:
+    get:
+      tags:
+        - booking
+      summary: Returns all bookings
+      description: Returns all the bookings
+      operationId: getBookings
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example: 1
+      responses:
+        "200":
+          description: Successful operation retuns the array of bookings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  bookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Booking"
+
+    post:
+      tags:
+        - booking
+      summary: Add a new booking
+      description: Add a new booking
+      operationId: addBooking
+      requestBody:
+        description: Create a new booking
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: number
+                  description: The user the booking relates to
+                facilityId:
+                  type: number
+                  description: The facility that the booking relates to
+                transactionId:
+                  type: number
+                  description: The transaction linked with this booking
+                starts:
+                  type: string
+                  description: the start time of the booking
+                duration:
+                  type: string
+                  description: the length of time of the booking in minutes
+            examples:
+              example:
+                summary: Example
+                value:
+                  userId: 1
+                  facilityId: 1
+                  transactionId: 1
+                  starts: "2023-03-02T10:00:00.000Z"
+                  duration: 60
+
+      responses:
+        "200":
+          description: Successful operation returns the new booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "405":
+          description: Invalid input
+
+  /booking/bookings/{bookingId}:
+    get:
+      tags:
+        - booking
+      summary: Returns a booking with the specified ID
+      description: Returns a booking with the specified ID
+      operationId: getBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+    put:
+      tags:
+        - booking
+      summary: Updates a booking with the specified ID
+      description: Updates a booking with the specified ID
+      operationId: updateBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+      requestBody:
+        description: update a booking
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: number
+                  description: The user the booking relates to
+                facilityId:
+                  type: number
+                  description: The facility that the booking relates to
+                transactionId:
+                  type: number
+                  description: The transaction linked with this booking
+                starts:
+                  type: string
+                  description: the start time of the booking
+                duration:
+                  type: string
+                  description: the length of time of the booking in minutes
+            examples:
+              example:
+                summary: Example
+                value:
+                  userId: 1
+                  facilityId: 1
+                  transactionId: 1
+                  starts: "2023-03-02T10:00:00.000Z"
+                  duration: 60
+              twoHourDuration:
+                summary: 120 minute duration
+                description: Update the specified booking with a 120 minute duration
+                value:
+                  duration: 120
+      responses:
+        "200":
+          description: Successful operation returns the updated booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+    delete:
+      tags:
+        - booking
+      summary: Deletes a booking with the specified ID
+      description: Deletes a booking with the specified ID
+      operationId: deleteBookingById
+      parameters:
+        - in: path
+          name: bookingId
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the deleted booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    tokenAndRefreshToken:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+
+    DecodedJWT:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User Email
+            role:
+              type: string
+              description: User's role
+        type:
+          type: string
+          enum: [access]
+        iat:
+          type: number
+          description: Issued At
+        exp:
+          type: number
+          description: Expires At
+        iss:
+          type: string
+          enum: [auth]
+          description: Issuer
+        sub:
+          type: number
+          description: User Unique ID
+        jti:
+          type: string
+          description: JWT ID
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Booking ID
+          example: 1
+        transactionId:
+          type: number
+          description: Transaction ID
+          example: 1
+        facilityId:
+          type: number
+          description: Facility ID
+          example: 1
+        userID:
+          type: number
+          description: User ID
+          example: 1
+        starts:
+          type: string
+          description: Start time of the booking
+          example: "2023-03-02T10:00:00.000Z"
+        duration:
+          type: number
+          description: Length of the booking
+        created:
+          type: string
+          description: When the booking was created
+          example: "2023-03-02T10:00:00.000Z"
+        updated:
+          type: string
+          description: When the booking was last updated
+          example: "2023-03-02T10:00:00.000Z"
+
+  requestBodies:
+    Credentials:
+      description: "User's credentials (email password)"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: "The user's email"
+              password:
+                type: string
+                description: "The user's password"
+
+    PasswordReset:
+      description: "Password reset (email old new password)"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: "The user's email"
+              password:
+                type: string
+                description: "The user's old password"
+              newPassword:
+                type: string
+                description: "The user's new password"
+
+    RefreshToken:
+      description: "Refresh token"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              refreshToken:
+                type: string
+
+  responses:
+    JWT:
+      description: JSON Web Token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: If the operation was successful
+              data:
+                $ref: "#/components/schemas/tokenAndRefreshToken"
+
+    DecodedJWT:
+      description: JSON Web Token decoded contents
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: If the operation was successful
+              data:
+                $ref: "#/components/schemas/DecodedJWT"
+
+    HealthCheck:
+      description: Health check successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The health status of the service"
+                enum:
+                  - "up"
+                  - "down"
+                  - "degraded"
+
+    ServiceStatusReport:
+      description: Status report of the system
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service:
+                  type: string
+                  description: "The id of the service"
+                  example: "auth"
+                status:
+                  type: string
+                  description: "The status of the system"
+                  enum:
+                    - "up"
+                    - "down"
+                    - "degraded"
+                timestamp:
+                  type: number
+                  description: "The milliseconds since epoch"
+                  example: 1680307200000
