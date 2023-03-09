@@ -105,7 +105,7 @@ class OpenTimesRouter:
       return_value = make_response({
           "status": "ok",
           "message": "Opening time added",
-          "facility": makeOpenTime(addition)
+          "open_time": makeOpenTime(addition)
       })
       return_value.status_code = 200
 
@@ -190,7 +190,7 @@ class OpenTimesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "facility updated",
-        "facility": makeOpenTime(to_update)
+        "open_time": makeOpenTime(to_update)
     })
 
     return_value.status_code = 200
@@ -215,6 +215,6 @@ class OpenTimesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "opening time deleted",
-        "facility": makeOpenTime(to_delete)
+        "open_time": makeOpenTime(to_delete)
     })
     return return_value

@@ -107,7 +107,7 @@ class ActivitiesRouter:
       return_value = make_response({
           "status": "ok",
           "message": "Activity added",
-          "facility": makeActivity(addition)
+          "activity": makeActivity(addition)
       })
       return_value.status_code = 200
 
@@ -192,11 +192,31 @@ class ActivitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "facility updated",
-        "facility": makeActivity(to_update)
+        "activity": makeActivity(to_update)
     })
 
     return_value.status_code = 200
     return return_value
 
   def delete_activity(self, activity_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    to_delete = Activity.query.get(activity_id)
+
+    # If the requested
+    if not to_delete:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not found"
+      })
+      return_value.status_code = 404
+      return return_value
+
+    # Since to_delete is in the database delete it
+    self.db.session.delete(to_delete)
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "activity deleted",
+        "activity": makeActivity(to_delete)
+    })
+    return return_value

@@ -27,7 +27,7 @@ class facilitiesTests(unittest.TestCase):
 
     with app.app_context():
       db.create_all()
-      print("yeah")
+
       facility_test_case = Facility(name="Football", capacity=20)
       open_time_test_case = OpenTime(day="Monday",
                                      opening_time=660,
@@ -143,8 +143,6 @@ class facilitiesTests(unittest.TestCase):
           "facility": makeFacility(to_delete)
       }
 
-      delete_check = Facility.query.get(1)
-
       self.assertEqual(expected_response, json.loads(response.data))
 
   ################## OPEN TIME TESTS ##################
@@ -193,7 +191,7 @@ class facilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "Opening time added",
-          "facility": check_data
+          "open_time": check_data
       }
 
       self.assertEqual(response_data, expected_response)
@@ -208,7 +206,7 @@ class facilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "opening time deleted",
-          "facility": makeOpenTime(to_delete)
+          "open_time": makeOpenTime(to_delete)
       }
 
       self.assertEqual(expected_response, json.loads(response.data))
@@ -259,10 +257,25 @@ class facilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "Activity added",
-          "facility": check_data
+          "activity": check_data
       }
 
       self.assertEqual(response_data, expected_response)
+
+  def test_delete_activity(self):
+    with app.app_context():
+      # Get facility before deletion so we can check response later
+      to_delete = Activity.query.get(1)
+
+      response = self.app.delete("/activities/1")
+
+      expected_response = {
+          "status": "ok",
+          "message": "activity deleted",
+          "activity": makeActivity(to_delete)
+      }
+
+      self.assertEqual(expected_response, json.loads(response.data))
 
 
 if __name__ == "__main__":
