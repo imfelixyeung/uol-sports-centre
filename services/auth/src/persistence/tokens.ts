@@ -1,39 +1,33 @@
-import jwt from 'jsonwebtoken';
-import {env} from '../env';
-import {randomUUID} from 'crypto';
 import {User} from '@prisma/client';
-import {db} from '../utils/db';
+import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
+import jwt from 'jsonwebtoken';
+import {ACCESS_JWT_EXPIRES_IN_MS, ACCESS_JWT_SIGN_OPTIONS} from '../config';
+import {env} from '../env';
+import {db} from '../utils/db';
 
-const TOKEN_EXPIRES_IN = '1h';
+interface AccessJWTCustomClaims {
+  user: {
+    id: number;
+    email: string;
+    role: string;
+  };
+  type: 'access';
+}
 
 export class TokenRegistry {
   static async createTokenForUser(user: User) {
     const tokenId = randomUUID();
 
-    const token = jwt.sign(
-      {
-        user: {
-          email: user.email,
-          role: user.role,
-        },
-        type: 'access',
-      },
-      env.JWT_SIGNING_SECRET,
-      {
-        subject: String(user.id),
-        algorithm: 'HS256',
-        expiresIn: TOKEN_EXPIRES_IN,
-        issuer: 'auth',
-        jwtid: tokenId,
-      }
-    );
+    const token = this.signTokenForUser(tokenId, user);
 
     await db.token.create({
       data: {
         id: tokenId,
         token: token,
-        expiresAt: dayjs().add(1, 'hour').toDate(),
+        expiresAt: dayjs()
+          .add(ACCESS_JWT_EXPIRES_IN_MS, 'milliseconds')
+          .toDate(),
         user: {connect: {id: user.id}},
       },
     });
@@ -50,29 +44,15 @@ export class TokenRegistry {
     });
     if (!user) throw new Error('User not found');
 
-    const newToken = jwt.sign(
-      {
-        user: {
-          email: user.email,
-          role: user.role,
-        },
-        type: 'access',
-      },
-      env.JWT_SIGNING_SECRET,
-      {
-        subject: String(user.id),
-        algorithm: 'HS256',
-        expiresIn: TOKEN_EXPIRES_IN,
-        issuer: 'auth',
-        jwtid: tokenData.id,
-      }
-    );
+    const newToken = this.signTokenForUser(tokenData.id, user);
 
     await db.token.update({
       where: {id: tokenData.id},
       data: {
         token: newToken,
-        expiresAt: dayjs().add(1, 'hour').toDate(),
+        expiresAt: dayjs()
+          .add(ACCESS_JWT_EXPIRES_IN_MS, 'milliseconds')
+          .toDate(),
         refreshTokens: {delete: true},
       },
     });
@@ -122,5 +102,32 @@ export class TokenRegistry {
         where: {token},
       });
     });
+  }
+
+  static async deleteExpiredTokens() {
+    // note that we are not deleting by expiresAt
+    // because expired tokens could be renewed by refresh tokens
+    await db.token.deleteMany({
+      where: {refreshTokens: null},
+    });
+  }
+
+  private static signTokenForUser(tokenId: string, user: User) {
+    const claims: AccessJWTCustomClaims = {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      type: 'access',
+    };
+
+    const token = jwt.sign(claims, env.JWT_SIGNING_SECRET, {
+      jwtid: tokenId,
+      subject: String(user.id), // jwt spec requires sub to be string
+      ...ACCESS_JWT_SIGN_OPTIONS,
+    });
+
+    return token;
   }
 }

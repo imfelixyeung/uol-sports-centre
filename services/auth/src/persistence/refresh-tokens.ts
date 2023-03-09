@@ -1,12 +1,21 @@
+import {randomUUID} from 'crypto';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
+import {
+  LONG_REFRESH_JWT_EXPIRES_IN_MS,
+  REFRESH_JWT_SIGN_OPTIONS,
+  SHORT_REFRESH_JWT_EXPIRES_IN_MS,
+} from '../config';
 import {env} from '../env';
 import {db} from '../utils/db';
 import {TokenRegistry} from './tokens';
-import dayjs from 'dayjs';
-import {randomUUID} from 'crypto';
 
 export class RefreshTokenRegistry {
-  static async createRefreshTokenForToken(token: string) {
+  static async createRefreshTokenForToken(
+    token: string,
+    options: {shortLived?: boolean} = {}
+  ) {
+    const {shortLived = false} = options;
     const tokenData = await TokenRegistry.getTokenDataByToken(token);
     const refreshTokenId = randomUUID();
     if (!tokenData) throw new Error('Token not found');
@@ -17,9 +26,10 @@ export class RefreshTokenRegistry {
       {
         jwtid: refreshTokenId,
         subject: String(tokenData.userId),
-        algorithm: 'HS256',
-        expiresIn: '24h',
-        issuer: 'auth',
+        ...REFRESH_JWT_SIGN_OPTIONS,
+        expiresIn: shortLived
+          ? SHORT_REFRESH_JWT_EXPIRES_IN_MS
+          : LONG_REFRESH_JWT_EXPIRES_IN_MS,
       }
     );
 
@@ -27,7 +37,14 @@ export class RefreshTokenRegistry {
       data: {
         id: refreshTokenId,
         token: {connect: {id: tokenData.id}},
-        expiresAt: dayjs().add(1, 'day').toDate(),
+        expiresAt: dayjs()
+          .add(
+            shortLived
+              ? SHORT_REFRESH_JWT_EXPIRES_IN_MS
+              : LONG_REFRESH_JWT_EXPIRES_IN_MS,
+            'milliseconds'
+          )
+          .toDate(),
       },
     });
 
@@ -51,5 +68,13 @@ export class RefreshTokenRegistry {
     } catch (error) {
       throw new Error('Malformed refresh token');
     }
+  }
+
+  static async deleteExpiredRefreshTokens() {
+    await db.refreshToken.deleteMany({
+      where: {
+        expiresAt: {lte: dayjs().toDate()},
+      },
+    });
   }
 }

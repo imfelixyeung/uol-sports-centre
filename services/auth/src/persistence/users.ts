@@ -7,6 +7,14 @@ export class UserRegistry {
     return user;
   }
 
+  static async updatePassword(id: number, password: string) {
+    const user = await db.user.update({
+      where: {id},
+      data: {password},
+    });
+    return user;
+  }
+
   static async createUser(credentials: Credentials) {
     const {email, password} = credentials;
     const user = await db.user.create({

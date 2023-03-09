@@ -5,21 +5,24 @@ import {getJwtFromRequest} from '../utils/getJwtFromRequest';
 // inspired by https://github.com/colinhacks/zod/discussions/2032#discussioncomment-4943969
 // and inspired by https://trpc.io/
 export const createController = <
-  J extends boolean,
-  Z extends z.ZodTypeAny = z.ZodNever
+  AuthRequired extends boolean,
+  ZodSchema extends z.ZodTypeAny = z.ZodNever
 >({
   bodySchema,
   authRequired,
   controller,
 }: {
-  bodySchema?: Z | undefined;
-  authRequired?: J;
-  controller: (opts: {
-    body: Z extends z.ZodTypeAny ? z.infer<Z> : never | undefined;
-    token: J extends true ? string : null;
+  bodySchema?: ZodSchema | undefined;
+  authRequired?: AuthRequired;
+  controller: (options: {
+    body: ZodSchema extends z.ZodTypeAny
+      ? z.infer<ZodSchema>
+      : never | undefined;
+    token: AuthRequired extends true ? string : null;
   }) => Promise<unknown>;
 }): Handler => {
   return async (req: Request, res: Response) => {
+    // parses the jwt token from authorisation header, if needed
     let token: string | null = null;
     if (authRequired) {
       token = getJwtFromRequest(req);
@@ -29,8 +32,8 @@ export const createController = <
         });
     }
 
+    // parses the body with given schema, if needed
     let body = null;
-
     if (bodySchema) {
       const parsedBody = bodySchema.safeParse(req.body);
       if (!parsedBody.success) {
@@ -43,9 +46,10 @@ export const createController = <
       body = parsedBody.data;
     }
 
+    // dumps the parsed data to the handler
     return controller({
       body,
-      token: token as J extends true ? string : null,
+      token: token as AuthRequired extends true ? string : null,
     })
       .then(data =>
         res.json({

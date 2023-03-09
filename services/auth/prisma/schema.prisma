@@ -36,9 +36,10 @@ model Token {
 model RefreshToken {
   id String @id
 
-  token     Token    @relation("tokenHasRefreshTokens", fields: [tokenId], references: [id])
-  tokenId   String   @unique
-  expiresAt DateTime
+  token      Token    @relation("tokenHasRefreshTokens", fields: [tokenId], references: [id])
+  tokenId    String   @unique
+  expiresAt  DateTime
+  shortLived Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
