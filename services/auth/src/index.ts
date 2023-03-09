@@ -9,6 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use('/', authRouter);
+app.use('/users', usersRouter);
 app.use('/health', healthRouter);
 
 // start cron jobs
