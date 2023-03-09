@@ -15,3 +15,8 @@ services:
     build:
       context: ./services/status
       target: ci
+
+  docs:
+    build:
+      context: ./docs
+      target: ci
