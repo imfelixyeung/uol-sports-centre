@@ -103,13 +103,13 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_get_index(self):
     """Test if the get_index() function returns a 200 status code"""
     
-    file_path = os.path.abspath("test_index.html")
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_index.html"))
 
     with open(file_path) as file:
       html = file.read()
     response = self.client.get('/')
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(response.content_type, 'text/html')
+    self.assertIn('text/html', response.content_type)
     self.assertEqual(response.data.decode('utf-8'), html)
 
   #test redirectCheckout()
