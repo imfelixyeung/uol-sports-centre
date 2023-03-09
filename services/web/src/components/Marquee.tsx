@@ -9,7 +9,7 @@ const Marquee: FC<MarqueeProps> = ({statements}) => {
   return (
     <FastMarquee
       gradient={false}
-      className="bg-primary text-black font-black text-2xl p-2"
+      className="bg-primary p-2 text-2xl font-black text-black"
     >
       {statements.map((statement, index) => (
         <div key={index} className="mr-6 space-x-6">

@@ -58,7 +58,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           password: yup.string().required().min(8, 'Password too short!'),
         })}
       >
-        <Form className="flex flex-col gap-3 w-full">
+        <Form className="flex w-full flex-col gap-3">
           <Typography as="h2" styledAs="h1" uppercase className="text-center">
             {variant === 'login' ? 'Log Into Account' : 'Register Account'}
           </Typography>
@@ -93,11 +93,11 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
 
           <div
             className={clsx(
-              'flex justify-between flex-wrap gap-3',
+              'flex flex-wrap justify-between gap-3',
               variant === 'login' ? 'flex-row' : 'flex-col'
             )}
           >
-            <label className="flex gap-3 items-center">
+            <label className="flex items-center gap-3">
               <Field id="rememberMe" name="rememberMe" type="checkbox" />
               <span>Remember Me</span>
             </label>
@@ -106,7 +106,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
                 Forgotten Password
               </a>
             ) : (
-              <label className="flex gap-3 items-center">
+              <label className="flex items-center gap-3">
                 <Field id="acceptTerms" name="acceptTerms" type="checkbox" />
                 <span>
                   I Agree to the <a href="">Terms of Conditions</a> and the{' '}

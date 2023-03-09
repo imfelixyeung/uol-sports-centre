@@ -51,7 +51,7 @@ type Testimonial = (typeof testimonials)[0];
 
 const Testimonials = () => {
   return (
-    <div className="py-8 container flex flex-col gap-6">
+    <div className="container flex flex-col gap-6 py-8">
       <Typography as="h2" styledAs="h1" uppercase>
         {'/// Testimonials'}
       </Typography>
@@ -73,14 +73,14 @@ interface TestimonialCardProps {
 const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
   const {name, image, title, content} = testimonial;
   return (
-    <blockquote className="min-w-[22rem] even:bg-white even:text-black p-6 flex flex-col gap-6 snap-center">
+    <blockquote className="flex min-w-[22rem] snap-center flex-col gap-6 p-6 even:bg-white even:text-black">
       <Typography className="text-justify indent-6">{content}</Typography>
       <cite className="flex items-center gap-5">
-        <div className="w-20 aspect-square">
+        <div className="aspect-square w-20">
           <img
             src={image}
             alt={`${name} Profile Picture`}
-            className="object-cover w-full h-full rounded-full"
+            className="h-full w-full rounded-full object-cover"
           />
         </div>
         <div className="flex flex-col">

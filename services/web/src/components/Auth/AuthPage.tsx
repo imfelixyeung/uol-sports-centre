@@ -11,16 +11,16 @@ const AuthPage: NextPageWithLayout<AuthFormProps> = props => {
   return (
     <>
       <Seo title={props.variant === 'login' ? 'Login' : 'Register'} />
-      <div className="bg-auth grow py-6 bg-cover bg-center flex flex-col">
+      <div className="flex grow flex-col bg-auth bg-cover bg-center py-6">
         <div
           className={clsx(
-            'container grow flex items-center justify-center',
+            'container flex grow items-center justify-center',
             props.variant === 'login' ? 'lg:justify-start' : 'lg:justify-end'
           )}
         >
           <motion.div
             layoutId="auth-form-wrapper"
-            className="bg-black p-10 flex flex-col items-center justify-around gap-8 ring-2 ring-primary/25 max-w-xl grow min-h-[75vh]"
+            className="flex min-h-[75vh] max-w-xl grow flex-col items-center justify-around gap-8 bg-black p-10 ring-2 ring-primary/25"
           >
             <Link href="/">
               <AppIcon />
@@ -34,7 +34,7 @@ const AuthPage: NextPageWithLayout<AuthFormProps> = props => {
 };
 
 AuthPage.getLayout = page => (
-  <main className="min-h-screen flex flex-col">{page}</main>
+  <main className="flex min-h-screen flex-col">{page}</main>
 );
 
 export default AuthPage;

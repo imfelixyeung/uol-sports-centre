@@ -9,7 +9,7 @@ import Typography from '~/components/Typography';
 const UserDashboardPage = () => {
   const navSection = (
     <section className="my-16">
-      <div className="flex gap-3 justify-between flex-wrap">
+      <div className="flex flex-wrap justify-between gap-3">
         <Link href="/dashboard/bookings">
           <Card variant="default" title="Booking" grow />
         </Link>
@@ -77,7 +77,7 @@ const UserDashboardPage = () => {
         />
         <main className="bg-white text-black">
           {/* Desktop */}
-          <div className="container py-8 gap-3 hidden lg:grid grid-cols-12">
+          <div className="container hidden grid-cols-12 gap-3 py-8 lg:grid">
             <div className="col-span-8">
               {navSection}
               {availableClassesSection}
@@ -85,7 +85,7 @@ const UserDashboardPage = () => {
             <div className="col-span-4">{upcomingSection}</div>
           </div>
           {/* Mobile */}
-          <div className="container py-8 flex-col gap-3 lg:hidden">
+          <div className="container flex-col gap-3 py-8 lg:hidden">
             {navSection}
             {upcomingSection}
             {availableClassesSection}

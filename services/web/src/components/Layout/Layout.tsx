@@ -5,9 +5,9 @@ import Footer from './Footer';
 const Layout: FC<PropsWithChildren> = ({children}) => {
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <AppBar />
-        <main className="grow flex flex-col">{children}</main>
+        <main className="flex grow flex-col">{children}</main>
         <Footer />
       </div>
     </>

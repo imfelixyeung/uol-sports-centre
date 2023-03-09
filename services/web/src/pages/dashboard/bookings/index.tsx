@@ -9,7 +9,7 @@ const DashboardBookingsPage = () => {
   return (
     <>
       <Seo title="Dashboard" />
-      <div className="grow flex flex-col">
+      <div className="flex grow flex-col">
         <PageHero
           title="Bookings"
           subtitle="View, manage, and create new bookings"
@@ -22,7 +22,7 @@ const DashboardBookingsPage = () => {
             </Link>
           }
         />
-        <main className="bg-white text-black grow">
+        <main className="grow bg-white text-black">
           <div className="container py-8">
             <Bookings
               title={

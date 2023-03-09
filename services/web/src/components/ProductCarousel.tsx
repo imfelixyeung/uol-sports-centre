@@ -34,7 +34,7 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
   const {description, image, name, url} = product;
   return (
     <a
-      className="flex flex-col min-w-full md:min-w-[25rem] gap-3 snap-center"
+      className="flex min-w-full snap-center flex-col gap-3 md:min-w-[25rem]"
       href={url}
     >
       <img src={image} alt={name} className="aspect-video object-cover" />

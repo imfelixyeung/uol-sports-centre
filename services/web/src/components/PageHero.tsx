@@ -29,7 +29,7 @@ const PageHero: FC<PageHeroProps> = ({
     <div className="relative">
       <div className="bg-gradient-to-r from-black via-black/95 to-black/50">
         <div className="container grid md:grid-cols-2">
-          <div className="flex justify-center flex-col gap-6 py-16">
+          <div className="flex flex-col justify-center gap-6 py-16">
             <Typography as="h1" {...titleStyles} className="mb-3">
               {title}
             </Typography>
@@ -39,14 +39,14 @@ const PageHero: FC<PageHeroProps> = ({
               </Typography>
             )}
             {actions && (
-              <div className="flex gap-3 flex-col md:flex-row">{actions}</div>
+              <div className="flex flex-col gap-3 md:flex-row">{actions}</div>
             )}
           </div>
         </div>
       </div>
       {backgroundImage && (
         <img
-          className="absolute h-full w-full inset-0 -z-10 object-cover object-center bg-black"
+          className="absolute inset-0 -z-10 h-full w-full bg-black object-cover object-center"
           src={backgroundImage}
           alt="Hero Section Background"
           loading="lazy"

@@ -15,8 +15,8 @@ const ViewBookingPage = () => {
       <div className="grow bg-white text-black">
         <div className="container my-8">
           <div className="bg-black text-white">
-            <div className="bg-hero bg-center bg-cover h-32"></div>
-            <div className="p-6 flex flex-col gap-3">
+            <div className="h-32 bg-hero bg-cover bg-center"></div>
+            <div className="flex flex-col gap-3 p-6">
               <BookingActivity
                 variant="page"
                 datetime={new Date('2023-01-01')}

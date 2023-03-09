@@ -20,7 +20,7 @@ const StatusPage = () => {
             <div
               key={service}
               className={clsx(
-                'p-3 bg-white/50',
+                'bg-white/50 p-3',
                 status === 'up'
                   ? 'text-green-600'
                   : status === 'down'

@@ -3,12 +3,12 @@ import type {FC, PropsWithChildren} from 'react';
 
 const ScrollArea: FC<PropsWithChildren> = ({children}) => (
   <Root type="auto">
-    <Viewport className="snap-mandatory snap-both">{children}</Viewport>
+    <Viewport className="snap-both snap-mandatory">{children}</Viewport>
     <Scrollbar
-      className="h-1.5 flex items-center bg-black"
+      className="flex h-1.5 items-center bg-black"
       orientation="horizontal"
     >
-      <Thumb className="!h-4 bg-primary border-4 border-black" />
+      <Thumb className="!h-4 border-4 border-black bg-primary" />
     </Scrollbar>
   </Root>
 );

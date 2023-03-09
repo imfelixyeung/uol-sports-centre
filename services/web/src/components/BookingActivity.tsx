@@ -22,7 +22,7 @@ const BookingActivity: FC<BookingActivityProps> = ({
   const metadata = (
     <div
       className={clsx(
-        'flex gap-x-3 gap-y-2 flex-wrap',
+        'flex flex-wrap gap-x-3 gap-y-2',
         (variant === 'card' || variant === 'page') && 'flex-col'
       )}
     >
@@ -58,11 +58,11 @@ const BookingActivity: FC<BookingActivityProps> = ({
   return (
     <div
       className={clsx(
-        'bg-black text-white py-3 px-6 shadow-card',
+        'bg-black py-3 px-6 text-white shadow-card',
         variant && action && 'relative'
       )}
     >
-      <div className="flex gap-6 justify-between">
+      <div className="flex justify-between gap-6">
         <div className={clsx('flex gap-6', variant === 'card' && 'flex-col')}>
           <div>
             <Typography as="h3" uppercase>
@@ -78,7 +78,7 @@ const BookingActivity: FC<BookingActivityProps> = ({
           <div
             className={clsx(
               'flex items-center gap-3',
-              variant === 'card' && 'bottom-3 right-6 absolute'
+              variant === 'card' && 'absolute bottom-3 right-6'
             )}
           >
             {action}

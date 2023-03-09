@@ -4,7 +4,7 @@ import Typography from '../Typography';
 const Facilities = () => {
   return (
     <div className="bg-white text-black">
-      <div className="py-8 container flex flex-col gap-6">
+      <div className="container flex flex-col gap-6 py-8">
         <Typography as="h2" styledAs="h1" uppercase>
           {'/// Facilities'}
         </Typography>

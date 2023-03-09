@@ -14,8 +14,8 @@ const navLinks = [
 const AppBar = () => {
   return (
     <div className="bg-black">
-      <header className="flex justify-between items-center container py-6 flex-col md:flex-row gap-3">
-        <div className="relative flex items-center justify-center w-full md:w-auto">
+      <header className="container flex flex-col items-center justify-between gap-3 py-6 md:flex-row">
+        <div className="relative flex w-full items-center justify-center md:w-auto">
           <Link href="/">
             <AppIcon />
           </Link>

@@ -26,19 +26,19 @@ const Bookings: FC<BookingsProps> = ({title}) => {
     <>
       <div className="flex flex-wrap justify-between">
         <div>{title}</div>
-        <div className="bg-black p-2 flex gap-2 items-center">
+        <div className="flex items-center gap-2 bg-black p-2">
           {availableViews.map((view, index) => (
             <button
               key={index}
               className={clsx(
-                'aspect-square h-8 grid place-items-center cursor-pointer',
+                'grid aspect-square h-8 cursor-pointer place-items-center',
                 currentView === view.id ? 'bg-primary' : 'bg-white'
               )}
               aria-label={`Switch to ${view.name}`}
               title={`Switch to ${view.name}`}
               onClick={() => setCurrentView(view.id)}
             >
-              <view.Icon className="h-5 aspect-square" />
+              <view.Icon className="aspect-square h-5" />
             </button>
           ))}
         </div>
@@ -46,7 +46,7 @@ const Bookings: FC<BookingsProps> = ({title}) => {
       <div
         className={clsx(
           'mt-3',
-          currentView === 'grid' && 'grid gap-3 grid-cols-2 xl:grid-cols-3',
+          currentView === 'grid' && 'grid grid-cols-2 gap-3 xl:grid-cols-3',
           currentView === 'list' && 'grid gap-3',
           currentView === 'calendar' && 'hidden'
         )}
@@ -95,7 +95,7 @@ const Bookings: FC<BookingsProps> = ({title}) => {
         />
       </div>
       {currentView === 'calendar' && (
-        <div className="min-h-[16rem] bg-black mt-3" />
+        <div className="mt-3 min-h-[16rem] bg-black" />
       )}
     </>
   );

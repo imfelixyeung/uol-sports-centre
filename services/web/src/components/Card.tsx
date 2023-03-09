@@ -32,7 +32,7 @@ export interface CardProps
 const Card: FC<CardProps> = ({variant, title, grow, ...props}) => {
   return (
     <div className={cardStyles({variant, grow})} {...props}>
-      <div className="flex justify-between items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
         <Typography styledAs="h2" uppercase>
           {title}
         </Typography>

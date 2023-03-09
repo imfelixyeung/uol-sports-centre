@@ -7,45 +7,45 @@ const DashboardBookingsPage = () => {
   return (
     <>
       <Seo title="Dashboard" />
-      <div className="grow flex flex-col">
+      <div className="flex grow flex-col">
         <PageHero
           title="New Booking"
           subtitle="View, manage, and create new bookings"
         />
-        <main className="bg-white text-black grow">
+        <main className="grow bg-white text-black">
           <div className="container py-8">
-            <div className="bg-black p-8 mb-8 text-white grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              <label className="flex flex-col grow">
+            <div className="mb-8 grid grid-cols-2 gap-3 bg-black p-8 text-white md:grid-cols-3 lg:grid-cols-6">
+              <label className="flex grow flex-col">
                 <span>Date</span>
-                <input type="date" className="text-black p-2" />
+                <input type="date" className="p-2 text-black" />
               </label>
-              <label className="flex flex-col grow">
+              <label className="flex grow flex-col">
                 <span>From</span>
-                <input type="time" className="text-black p-2" />
+                <input type="time" className="p-2 text-black" />
               </label>
-              <label className="flex flex-col grow">
+              <label className="flex grow flex-col">
                 <span>To</span>
-                <input type="time" className="text-black p-2" />
+                <input type="time" className="p-2 text-black" />
               </label>
-              <label className="flex flex-col grow">
+              <label className="flex grow flex-col">
                 <span>Activity</span>
-                <select className="text-black p-2" defaultValue="">
+                <select className="p-2 text-black" defaultValue="">
                   <option value="" hidden>
                     ------
                   </option>
                 </select>
               </label>
-              <label className="flex flex-col grow">
+              <label className="flex grow flex-col">
                 <span>Facility</span>
-                <select className="text-black p-2" defaultValue="">
+                <select className="p-2 text-black" defaultValue="">
                   <option value="" hidden>
                     ------
                   </option>
                 </select>
               </label>
-              <label className="flex flex-col grow">
+              <label className="flex grow flex-col">
                 <span>Places</span>
-                <select className="text-black p-2" defaultValue="">
+                <select className="p-2 text-black" defaultValue="">
                   <option value="" hidden>
                     ------
                   </option>

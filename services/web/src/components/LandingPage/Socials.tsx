@@ -5,13 +5,13 @@ const socials = ['Instagram', 'Twitter', 'Facebook', 'LinkedIn', 'SocialApp'];
 
 const Socials = () => {
   return (
-    <div className="py-8 container flex flex-col gap-6">
+    <div className="container flex flex-col gap-6 py-8">
       <Typography as="h2" styledAs="h1" uppercase>
         {'/// Socials'}
       </Typography>
-      <div className="flex gap-8 md:items-center justify-between flex-col md:flex-row">
+      <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
         <img
-          className="object-cover md:max-w-sm aspect aspect-square"
+          className="aspect aspect-square object-cover md:max-w-sm"
           src="/assets/images/pexels-zakaria-boumliha-2827400.jpg"
           alt="Person reaching goal by handstanding"
         />

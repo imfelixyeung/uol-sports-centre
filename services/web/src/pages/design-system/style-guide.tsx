@@ -81,7 +81,7 @@ const StyleGuidePage = () => {
   return (
     <>
       <Seo title="Style Guide" />
-      <div className="bg-white text-black grow">
+      <div className="grow bg-white text-black">
         <div className="container my-16">
           <Typography as="h1" styledAs="display1" uppercase>
             Style Guide
@@ -90,8 +90,8 @@ const StyleGuidePage = () => {
             <Typography as="h2" styledAs="display2" uppercase>
               Typography
             </Typography>
-            <div className="flex gap-8 flex-wrap mt-8">
-              <div className="flex flex-col gap-3 grow">
+            <div className="mt-8 flex flex-wrap gap-8">
+              <div className="flex grow flex-col gap-3">
                 {typographies.map((typography, index) => (
                   <TypographyShowcase
                     key={index}
@@ -100,7 +100,7 @@ const StyleGuidePage = () => {
                   />
                 ))}
               </div>
-              <div className="flex flex-col gap-3 grow">
+              <div className="flex grow flex-col gap-3">
                 {typographies.map((typography, index) => (
                   <TypographyShowcase
                     key={index}
@@ -115,11 +115,11 @@ const StyleGuidePage = () => {
             <Typography as="h2" styledAs="display2" uppercase>
               Colours
             </Typography>
-            <div className="flex gap-3 flex-wrap mt-8">
+            <div className="mt-8 flex flex-wrap gap-3">
               {colours.map((colour, index) => (
                 <div
                   key={index}
-                  className={clsx('p-6 text-center grow', colour.class)}
+                  className={clsx('grow p-6 text-center', colour.class)}
                 >
                   <Typography styledAs="h1" uppercase>
                     {colour.name}
@@ -143,7 +143,7 @@ const TypographyShowcase: FC<{
 }> = ({typography, variant}) => (
   <div
     className={clsx(
-      'p-3 space-y-3',
+      'space-y-3 p-3',
       variant === 'light' ? 'bg-white text-black' : 'bg-black text-white'
     )}
   >
