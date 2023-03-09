@@ -196,6 +196,38 @@ class facilitiesTests(unittest.TestCase):
 
       self.assertEqual(response_data, expected_response)
 
+  def test_update_open_time(self):
+    with app.app_context():
+      response = self.app.put("/times/1",
+                              json={
+                                  "day": "Tuesday",
+                                  "opening_time": 600,
+                                  "closing_time": 930
+                              })
+
+      check_query = OpenTime.query.get(1)
+
+      check_data = makeOpenTime(check_query)
+
+      self.assertEqual(
+          {
+              "id": 1,
+              "day": "Tuesday",
+              "opening_time": 600,
+              "closing_time": 930,
+              "facility_id": 1
+          }, check_data)
+
+      response_data = json.loads(response.data)
+
+      expected_response = {
+          "status": "ok",
+          "message": "opening time updated",
+          "open_time": check_data
+      }
+
+      self.assertEqual(expected_response, response_data)
+
   def test_delete_open_time(self):
     with app.app_context():
       # Get facility before deletion so we can check response later

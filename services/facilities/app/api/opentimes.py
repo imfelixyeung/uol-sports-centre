@@ -150,9 +150,10 @@ class OpenTimesRouter:
     update_check = False
 
     # Check which fields need to be updated
-    if "name" in data:
+    if "day" in data:
+      print("yeah")
       update_check = True
-      to_update.name = data.get("name")
+      to_update.day = data.get("day")
 
     if "opening_time" in data:
       update_check = True
@@ -160,7 +161,7 @@ class OpenTimesRouter:
 
     if "closing_time" in data:
       update_check = True
-      to_update.duration = int(data.get("closing_time"))
+      to_update.closing_time = int(data.get("closing_time"))
 
     if "facility_id" in data:
       if not Facility.query.get(data.get("facility_id")):
@@ -189,8 +190,8 @@ class OpenTimesRouter:
 
     return_value = make_response({
         "status": "ok",
-        "message": "facility updated",
-        "open_time": makeOpenTime(to_update)
+        "message": "opening time updated",
+        "open_time": makeOpenTime(OpenTime.query.get(time_id))
     })
 
     return_value.status_code = 200
