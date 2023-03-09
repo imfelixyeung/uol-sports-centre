@@ -1,4 +1,5 @@
 import {User} from '@prisma/client';
+import {UserRole} from '../config';
 import {UserRegistry} from '../persistence/users';
 
 const userWithoutPassword = (user: User | null) => {
@@ -27,7 +28,7 @@ export const getUserById = async (userId: number) => {
 
 export const updateUserById = async (
   userId: number,
-  data: {role?: 'user' | 'employee' | 'admin'}
+  data: {role?: UserRole}
 ) => {
   const newUser = await UserRegistry.updateUserById(userId, data);
   return userWithoutPassword(newUser);

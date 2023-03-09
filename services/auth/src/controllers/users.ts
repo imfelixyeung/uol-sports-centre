@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {createController} from '.';
+import {USER_ROLES} from '../config';
 import {getUserById, getUsers, updateUserById} from '../services/users';
 
 const usersControllers = {
@@ -27,7 +28,7 @@ const usersControllers = {
   patchUser: createController({
     querySchema: z.object({userId: z.coerce.number()}),
     bodySchema: z.object({
-      role: z.enum(['user', 'employee', 'admin']),
+      role: z.enum(USER_ROLES),
     }),
     authRequired: true,
     controller: async ({query, body}) => {
