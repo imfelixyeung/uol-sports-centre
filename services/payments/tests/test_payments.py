@@ -17,6 +17,9 @@ from payments import addProductDatabase
 from payments import createCheckout
 from payments import get_index
 from payments import render_template
+from payments import customerPortal
+from payments import webhookReceived
+from payments import redirectCheckout
 
 def create_testDatabase():
     connection = sqlite3.connect("database.db")
@@ -119,6 +122,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #test webhookReceived()
   def webhookReceived_test(self):
     a = 1
+
+  #test customerPortal
+  def customerPortal_test():
+    a=1
 
   @classmethod
   def tearDownClass(cls):
