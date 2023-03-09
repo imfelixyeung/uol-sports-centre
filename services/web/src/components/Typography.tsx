@@ -15,7 +15,7 @@ export const typographyStyles = cva('', {
       h2: 'text-[2rem] leading-[2.25rem] font-black font-display',
       h3: 'text-[1.5rem] leading-[1.75rem] font-black font-display',
       p: 'text-[1.25rem] font-normal',
-      navLink: 'text-[1.25rem] leading-normal font-black font-display',
+      navLink: 'text-[1.25rem] leading-normal font-bold font-display',
       button: 'text-[1.25rem] leading-[1.875rem] font-bold font-display',
       data: 'text-[0.875rem] leading-normal font-bold font-display',
     },

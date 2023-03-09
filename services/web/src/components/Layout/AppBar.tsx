@@ -2,6 +2,7 @@ import {UserCircleIcon} from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import AppIcon from '../AppIcon/AppIcon';
 import Button, {buttonStyles} from '../Button';
+import Typography from '../Typography';
 
 const navLinks = [
   {label: 'About', href: '/about'},
@@ -30,7 +31,11 @@ const AppBar = () => {
           <ul className="flex gap-6 font-bold">
             {navLinks.map((link, index) => (
               <li key={index}>
-                <Link href={link.href}>{link.label}</Link>
+                <Link href={link.href}>
+                  <Typography as="span" styledAs="navLink">
+                    {link.label}
+                  </Typography>
+                </Link>
               </li>
             ))}
           </ul>
