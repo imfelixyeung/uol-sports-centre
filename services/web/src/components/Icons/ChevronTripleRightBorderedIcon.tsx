@@ -1,8 +1,6 @@
-import type {FC, HTMLAttributes} from 'react';
+import type {IconType} from './types';
 
-type IconProps = HTMLAttributes<SVGElement>;
-
-const ChevronDoubleRightBorderedIcon: FC<IconProps> = props => {
+const ChevronDoubleRightBorderedIcon: IconType = props => {
   return (
     <svg
       width="48"
