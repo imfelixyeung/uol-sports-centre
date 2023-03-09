@@ -2,14 +2,23 @@ import clsx from 'clsx';
 import {useState} from 'react';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
+import CalendarIcon from '~/components/Icons/CalendarIcon';
+import GridIcon from '~/components/Icons/GridIcon';
+import ListIcon from '~/components/Icons/ListIcon';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
 
+const availableViews = [
+  {id: 'grid', name: 'Grid View', Icon: GridIcon},
+  {id: 'list', name: 'List View', Icon: ListIcon},
+  {id: 'calendar', name: 'Calendar View', Icon: CalendarIcon},
+] as const;
+const defaultView: View = 'grid';
+type View = (typeof availableViews)[number]['id'];
+
 const DashboardBookingsPage = () => {
-  const [currentView, setCurrentView] = useState<'grid' | 'list' | 'calendar'>(
-    'grid'
-  );
+  const [currentView, setCurrentView] = useState<View>(defaultView);
 
   return (
     <>
@@ -27,33 +36,20 @@ const DashboardBookingsPage = () => {
                 Your Bookings
               </Typography>
               <div className="bg-black p-2 flex gap-2 items-center">
-                <button
-                  className={clsx(
-                    'aspect-square h-8 grid place-items-center cursor-pointer',
-                    currentView === 'grid' ? 'bg-primary' : 'bg-white'
-                  )}
-                  onClick={() => setCurrentView('grid')}
-                >
-                  G
-                </button>
-                <button
-                  className={clsx(
-                    'aspect-square h-8 grid place-items-center cursor-pointer',
-                    currentView === 'list' ? 'bg-primary' : 'bg-white'
-                  )}
-                  onClick={() => setCurrentView('list')}
-                >
-                  L
-                </button>
-                <button
-                  className={clsx(
-                    'aspect-square h-8 grid place-items-center cursor-pointer',
-                    currentView === 'calendar' ? 'bg-primary' : 'bg-white'
-                  )}
-                  onClick={() => setCurrentView('calendar')}
-                >
-                  C
-                </button>
+                {availableViews.map((view, index) => (
+                  <button
+                    key={index}
+                    className={clsx(
+                      'aspect-square h-8 grid place-items-center cursor-pointer',
+                      currentView === view.id ? 'bg-primary' : 'bg-white'
+                    )}
+                    aria-label={`Switch to ${view.name}`}
+                    title={`Switch to ${view.name}`}
+                    onClick={() => setCurrentView(view.id)}
+                  >
+                    <view.Icon className="h-16" />
+                  </button>
+                ))}
               </div>
             </div>
             <div
