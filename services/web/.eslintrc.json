@@ -34,7 +34,12 @@
     "@typescript-eslint/consistent-type-imports": "warn",
 
     // GTS Code style: https://github.com/google/gts/blob/main/.eslintrc.json
-    "prettier/prettier": "error",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
     "block-scoped-var": "error",
     "eqeqeq": "error",
     "no-var": "error",
