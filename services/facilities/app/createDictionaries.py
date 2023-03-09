@@ -12,8 +12,8 @@ def makeOpenTime(openTime):
   return {
       "id": openTime.id,
       "day": openTime.day,
-      "openTime": openTime.openingTime,
-      "closeTime": openTime.closingTime,
+      "open_time": openTime.opening_time,
+      "close_time": openTime.closing_time,
       "facility_id": openTime.facility_id
   }
 

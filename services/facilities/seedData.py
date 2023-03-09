@@ -39,32 +39,32 @@ def seedOpenTime():
     if (not seedCheck):
       for day in days:
         swimmingTime = OpenTime(day=day,
-                                openingTime=480,
-                                closingTime=1200,
+                                opening_time=480,
+                                closing_time=1200,
                                 facility_id=1)
         fitnessRoomTime = OpenTime(day=day,
-                                   openingTime=480,
-                                   closingTime=1320,
+                                   opening_time=480,
+                                   closing_time=1320,
                                    facility_id=2)
         squashCourt1Time = OpenTime(day=day,
-                                    openingTime=480,
-                                    closingTime=1320,
+                                    opening_time=480,
+                                    closing_time=1320,
                                     facility_id=3)
         squashCourt2Time = OpenTime(day=day,
-                                    openingTime=480,
-                                    closingTime=1320,
+                                    opening_time=480,
+                                    closing_time=1320,
                                     facility_id=4)
         sportsHallTime = OpenTime(day=day,
-                                  openingTime=480,
-                                  closingTime=1320,
+                                  opening_time=480,
+                                  closing_time=1320,
                                   facility_id=5)
         climbingWallTime = OpenTime(day=day,
-                                    openingTime=600,
-                                    closingTime=1200,
+                                    opening_time=600,
+                                    closing_time=1200,
                                     facility_id=6)
         studioTime = OpenTime(day=day,
-                              openingTime=480,
-                              closingTime=1320,
+                              opening_time=480,
+                              closing_time=1320,
                               facility_id=7)
         db.session.add(swimmingTime)
         db.session.add(fitnessRoomTime)

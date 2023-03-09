@@ -87,8 +87,8 @@ class OpenTimesRouter:
 
     # Add the supplied object to the data base
     addition = OpenTime(day=data.get("day"),
-                        openingTime=data.get("openTime"),
-                        closingTime=data.get("closeTime"),
+                        opening_time=data.get("open_time"),
+                        closing_time=data.get("close_time"),
                         facility_id=data.get("facility_id"))
     if not addition:
       return_value = make_response({
