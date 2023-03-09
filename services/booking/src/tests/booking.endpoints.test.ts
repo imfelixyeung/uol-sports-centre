@@ -3,7 +3,6 @@ import supertest from 'supertest';
 import {Booking} from '@prisma/client';
 
 import {createServer} from '@/server';
-import bookingService from '@/services/booking.service';
 import {CreateBookingDTO} from '@/dto/booking.dto';
 
 import {prismaMock} from './mock/prisma';
@@ -13,33 +12,6 @@ let app: express.Express;
 beforeAll(done => {
   app = createServer();
   done();
-});
-
-describe('Test BookingService', () => {
-  test('get bookings', async () => {
-    // create list of mock bookings
-    const date = new Date();
-    const bookings: Booking[] = [
-      {
-        id: 1,
-        userId: 1,
-        facilityId: 1,
-        transactionId: 1,
-        duration: 100,
-        starts: date,
-        created: date,
-        updated: date,
-      },
-    ];
-
-    // mock the prisma client
-    prismaMock.booking.findMany.mockResolvedValue(bookings);
-
-    // test if the returned value from the booking service equals the mocked data
-    await expect(bookingService.get()).resolves.toEqual(bookings);
-  });
-
-  test('create booking', async () => {});
 });
 
 describe('Test API Endpoints', () => {
