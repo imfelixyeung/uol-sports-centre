@@ -197,4 +197,24 @@ class OpenTimesRouter:
     return return_value
 
   def delete_open_time(self, time_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    to_delete = OpenTime.query.get(time_id)
+
+    # If the requested
+    if not to_delete:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not found"
+      })
+      return_value.status_code = 404
+      return return_value
+
+    # Since to_delete is in the database delete it
+    self.db.session.delete(to_delete)
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "opening time deleted",
+        "facility": makeOpenTime(to_delete)
+    })
+    return return_value

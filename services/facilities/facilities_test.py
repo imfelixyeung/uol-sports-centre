@@ -27,6 +27,7 @@ class facilitiesTests(unittest.TestCase):
 
     with app.app_context():
       db.create_all()
+      print("yeah")
       facility_test_case = Facility(name="Football", capacity=20)
       open_time_test_case = OpenTime(day="Monday",
                                      opening_time=660,
@@ -47,43 +48,12 @@ class facilitiesTests(unittest.TestCase):
       db.session.remove()
       db.drop_all()
 
+  ################## FACILITIES TESTS ##################
   def test_get_facility(self):
     with app.app_context():
       response = self.app.get("/facilities/1")
 
       expected_response = {"id": 1, "name": "Football", "capacity": 20}
-
-      response_data = json.loads(response.data)
-
-      self.assertEqual(response_data, expected_response)
-
-  def test_get_open_time(self):
-    with app.app_context():
-      response = self.app.get("/times/1")
-
-      expected_response = {
-          "id": 1,
-          "day": "Monday",
-          "opening_time": 660,
-          "closing_time": 990,
-          "facility_id": 1
-      }
-
-      response_data = json.loads(response.data)
-
-      self.assertEqual(response_data, expected_response)
-
-  def test_get_activity(self):
-    with app.app_context():
-      response = self.app.get("/activities/1")
-
-      expected_response = {
-          "id": 1,
-          "name": "Swimming Lesson",
-          "duration": 30,
-          "capacity": 20,
-          "facility_id": 1
-      }
 
       response_data = json.loads(response.data)
 
@@ -132,7 +102,69 @@ class facilitiesTests(unittest.TestCase):
           "message": "Invalid input"
       }, json.loads(response.data))
 
-  def test_add_openTime_success(self):
+  def test_update_facility(self):
+    with app.app_context():
+      response = self.app.put("/facilities/1",
+                              json={
+                                  "name": "Football Pitch",
+                                  "capacity": 25
+                              })
+
+      check_query = Facility.query.get(1)
+
+      check_data = makeFacility(check_query)
+
+      self.assertEqual({
+          "id": 1,
+          "name": "Football Pitch",
+          "capacity": 25
+      }, check_data)
+
+      response_data = json.loads(response.data)
+
+      expected_response = {
+          "status": "ok",
+          "message": "facility updated",
+          "facility": check_data
+      }
+
+      self.assertEqual(expected_response, response_data)
+
+  def test_delete_facility(self):
+    with app.app_context():
+      # Get facility before deletion so we can check response later
+      to_delete = Facility.query.get(1)
+
+      response = self.app.delete("/facilities/1")
+
+      expected_response = {
+          "status": "ok",
+          "message": "facility deleted",
+          "facility": makeFacility(to_delete)
+      }
+
+      delete_check = Facility.query.get(1)
+
+      self.assertEqual(expected_response, json.loads(response.data))
+
+  ################## OPEN TIME TESTS ##################
+  def test_get_open_time(self):
+    with app.app_context():
+      response = self.app.get("/times/1")
+
+      expected_response = {
+          "id": 1,
+          "day": "Monday",
+          "opening_time": 660,
+          "closing_time": 990,
+          "facility_id": 1
+      }
+
+      response_data = json.loads(response.data)
+
+      self.assertEqual(response_data, expected_response)
+
+  def test_add_open_time_success(self):
     with app.app_context():
 
       response = self.app.post("/times/",
@@ -163,6 +195,38 @@ class facilitiesTests(unittest.TestCase):
           "message": "Opening time added",
           "facility": check_data
       }
+
+      self.assertEqual(response_data, expected_response)
+
+  def test_delete_open_time(self):
+    with app.app_context():
+      # Get facility before deletion so we can check response later
+      to_delete = OpenTime.query.get(1)
+
+      response = self.app.delete("/times/1")
+
+      expected_response = {
+          "status": "ok",
+          "message": "opening time deleted",
+          "facility": makeOpenTime(to_delete)
+      }
+
+      self.assertEqual(expected_response, json.loads(response.data))
+
+  ################## ACTIVITY TESTS ##################
+  def test_get_activity(self):
+    with app.app_context():
+      response = self.app.get("/activities/1")
+
+      expected_response = {
+          "id": 1,
+          "name": "Swimming Lesson",
+          "duration": 30,
+          "capacity": 20,
+          "facility_id": 1
+      }
+
+      response_data = json.loads(response.data)
 
       self.assertEqual(response_data, expected_response)
 
@@ -199,34 +263,6 @@ class facilitiesTests(unittest.TestCase):
       }
 
       self.assertEqual(response_data, expected_response)
-
-  def test_update_facility(self):
-    with app.app_context():
-      response = self.app.put("/facilities/1",
-                              json={
-                                  "name": "Football Pitch",
-                                  "capacity": 25
-                              })
-
-      check_query = Facility.query.get(1)
-
-      check_data = makeFacility(check_query)
-
-      self.assertEqual({
-          "id": 1,
-          "name": "Football Pitch",
-          "capacity": 25
-      }, check_data)
-
-      response_data = json.loads(response.data)
-
-      expected_response = {
-          "status": "ok",
-          "message": "facility updated",
-          "facility": check_data
-      }
-
-      self.assertEqual(expected_response, response_data)
 
 
 if __name__ == "__main__":
