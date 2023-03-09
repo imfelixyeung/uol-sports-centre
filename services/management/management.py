@@ -5,15 +5,26 @@ import stripe
 from flask import Flask
 import os
 import sys
-from pathlib import Path
+import sqlite3
 
-sys.path[0] = str(Path(sys.path[0]).parent)
+fileDir = os.path.dirname( __file__ )
+paymentsDir = os.path.join( fileDir, '..', 'payments')
+sys.path.append( paymentsDir )
+import payments
 
-import payments.payments
+from payments import addProductDatabase
+from payments import MakePurchasable
 
 app = Flask(__name__,
             static_url_path='',
             static_folder='public')
+
+def initDatabase():
+    '''Initialise database from schema'''
+    connection = sqlite3.connect('database.db')
+    with open('services/management/managementSchema.sql') as schema:
+        connection.executescript(schema.read())
+    connection.close()
 
 def setDiscount(discountAmount):
     '''Sets specified discount for subscriptions
@@ -47,6 +58,27 @@ def manageStaff(staffId, action, name=''):
     '''Amends details of chosen staff member
     staffId: id for staff member to be amended
     action: operation to be performed (promote, rename, etc.)'''
+
+    # Connect to the database
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    # Perform the requested action
+    if action == 'promote':
+        c.execute('UPDATE staff SET staffRole = "Manager" WHERE id = ?', (staffId,))
+        conn.commit()
+
+    elif action == 'rename':
+        c.execute('UPDATE staff SET staffName = ? WHERE id = ?', (name, staffId))
+        conn.commit()
+
+    # ERROR handling
+    else:
+        a = 1
+        
+
+    # Close the database connection
+    conn.close()
 
 @app.route('/health')
 def get_health():
