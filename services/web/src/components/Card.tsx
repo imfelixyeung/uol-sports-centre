@@ -36,7 +36,7 @@ const Card: FC<CardProps> = ({variant, title, grow, ...props}) => {
         <Typography styledAs="h2" uppercase>
           {title}
         </Typography>
-        <ChevronTripleRightIcon />
+        <ChevronTripleRightIcon className="h-6" />
       </div>
     </div>
   );
