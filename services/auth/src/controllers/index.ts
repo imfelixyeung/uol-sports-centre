@@ -80,13 +80,32 @@ export const createController = <
           data,
         })
       )
-      .catch(error =>
-        res.status(400).json({
+      .catch(error => {
+        if (error instanceof APIError) {
+          return res.status(error.status).json({
+            success: false,
+            error: error.message,
+          });
+        }
+
+        return res.status(400).json({
           success: false,
           error: error instanceof Error ? error.message : error,
-        })
-      );
+        });
+      });
   };
 };
 
 export type Handler = (req: Request, res: Response) => unknown;
+
+// APIError inspired by https://trpc.io/docs/error-handling
+export class APIError extends Error {
+  public status: number;
+  public cause?: unknown;
+  constructor(error: {message: string; status: number; cause?: unknown}) {
+    const {message} = error;
+    super(message);
+    this.status = error.status;
+    this.cause = error.cause;
+  }
+}
