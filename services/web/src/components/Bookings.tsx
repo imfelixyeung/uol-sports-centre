@@ -5,6 +5,7 @@ import BookingActivity from '~/components/BookingActivity';
 import CalendarIcon from '~/components/Icons/CalendarIcon';
 import GridIcon from '~/components/Icons/GridIcon';
 import ListIcon from '~/components/Icons/ListIcon';
+import Button from './Button';
 
 const availableViews = [
   {id: 'grid', name: 'Grid View', Icon: GridIcon},
@@ -52,39 +53,45 @@ const Bookings: FC<BookingsProps> = ({title}) => {
       >
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
         <BookingActivity
           datetime={new Date('2023-01-01 00:00')}
-          title="Booking Facility"
+          name="Facility Name"
+          facility="Facility"
           variant={currentView === 'grid' ? 'card' : 'tile'}
-          edit
+          action={<Button intent="secondary">Edit</Button>}
         />
       </div>
       {currentView === 'calendar' && (

@@ -36,6 +36,7 @@ module.exports = {
         'card-alt': "url('/assets/images/patterns/card-alt.svg')",
         'card-red': "url('/assets/images/patterns/card-red.svg')",
         card: "url('/assets/images/patterns/card.svg')",
+        hero: "url('/assets/images/patterns/hero.svg')",
       },
       boxShadow: {
         card: '0px 1px 6px 0px #00000040',

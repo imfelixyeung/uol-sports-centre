@@ -41,15 +41,18 @@ const UserDashboardPage = () => {
       </Typography>
       <BookingActivity
         datetime={new Date('2023-01-01 00:00')}
-        title="Booking Facility"
+        name="Booking Facility"
+        facility="Facility Name"
       />
       <BookingActivity
         datetime={new Date('2023-01-01 00:00')}
-        title="Booking Facility"
+        name="Booking Facility"
+        facility="Facility Name"
       />
       <BookingActivity
         datetime={new Date('2023-01-01 00:00')}
-        title="Booking Facility"
+        name="Booking Facility"
+        facility="Facility Name"
       />
 
       <Link
