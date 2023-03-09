@@ -9,6 +9,7 @@ help:
 
 
 start:
+	python3 -m flask db upgrade
 	python3 seedData.py
 	python3 -m flask run
 
