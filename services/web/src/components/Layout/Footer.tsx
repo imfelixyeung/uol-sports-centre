@@ -1,9 +1,23 @@
+import Link from 'next/link';
 import Button from '../Button';
 import Typography from '../Typography';
 
-const quickLinks = ['Home', 'About', 'Facilities', 'Pricing', 'Contact'];
+const quickLinks: [string, string][] = [
+  ['Home', '/'],
+  ['About', '/about'],
+  ['Facilities', '/facilities'],
+  ['Pricing', '/pricing'],
+  ['Contact', '/contact'],
+];
 
 const Footer = () => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <footer className="border-white border-t-[1px] bg-black">
       <div className="flex container justify-between my-12 flex-col-reverse md:flex-row">
@@ -11,11 +25,11 @@ const Footer = () => {
           <ul>
             {quickLinks.map((link, index) => (
               <li key={index}>
-                <a href="">
+                <Link href={link[1]}>
                   <Typography as="span" styledAs="navLink">
-                    {link}
+                    {link[0]}
                   </Typography>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -28,13 +42,15 @@ const Footer = () => {
               <Button intent="primary">Submit</Button>
             </div>
           </label>
-          <span className="underline">back to top</span>
+          <span className="underline cursor-pointer" onClick={scrollToTop}>
+            back to top
+          </span>
         </div>
       </div>
       <div className="border-white border-t-[1px]">
         <div className="container py-8 flex justify-between text-sm flex-col md:flex-row items-center">
           <span>{'© Hot tomato dev team 2023'}</span>
-          <a href="">Privacy Policy</a>
+          <Link href="/privacy-policy">Privacy Policy</Link>
         </div>
       </div>
     </footer>

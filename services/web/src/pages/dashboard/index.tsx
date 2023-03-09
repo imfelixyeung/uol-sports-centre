@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Card from '~/components/Card';
@@ -9,7 +10,9 @@ const UserDashboardPage = () => {
   const navSection = (
     <section className="my-16">
       <div className="flex gap-3 justify-between flex-wrap">
-        <Card variant="default" title="Booking" grow />
+        <Link href="/dashboard/bookings">
+          <Card variant="default" title="Booking" grow />
+        </Link>
         <Card variant="alt" title="Memberships" grow />
         <Card variant="red" title="Profile" grow />
       </div>
@@ -48,9 +51,12 @@ const UserDashboardPage = () => {
         datetime={new Date('2023-01-01 00:00')}
         title="Booking Facility"
       />
-      <Button intent="primary" outline>
-        Button
-      </Button>
+
+      <Link href="/dashboard/bookings">
+        <Button intent="primary" outline>
+          More Bookings
+        </Button>
+      </Link>
     </section>
   );
 

@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import {motion} from 'framer-motion';
+import Link from 'next/link';
 import type {AuthFormProps} from '~/components/Auth/AuthForm';
 import AuthForm from '~/components/Auth/AuthForm';
 import type {NextPageWithLayout} from '~/types/NextPage';
@@ -21,7 +22,9 @@ const AuthPage: NextPageWithLayout<AuthFormProps> = props => {
             layoutId="auth-form-wrapper"
             className="bg-black p-10 flex flex-col items-center justify-around gap-8 ring-2 ring-primary/25 max-w-xl grow min-h-[75vh]"
           >
-            <AppIcon />
+            <Link href="/">
+              <AppIcon />
+            </Link>
             <AuthForm {...props} />
           </motion.div>
         </div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Button from '../Button';
 import PageHero from '../PageHero';
 
@@ -19,12 +20,16 @@ const Hero = () => {
       }}
       actions={
         <>
-          <Button intent="primary" className="w-full md:w-auto">
-            Primary CTA
-          </Button>
-          <Button intent="secondary" className="w-full md:w-auto">
-            Secondary CTA
-          </Button>
+          <Link href="/auth/register">
+            <Button intent="primary" className="w-full md:w-auto">
+              Join Us
+            </Button>
+          </Link>
+          <Link href="/facilities">
+            <Button intent="secondary" className="w-full md:w-auto">
+              Facilities
+            </Button>
+          </Link>
         </>
       }
       backgroundImage="/assets/images/pexels-max-rahubovskiy-7031705.jpg"
