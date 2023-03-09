@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Button from '../Button';
+import {buttonStyles} from '../Button';
 import PageHero from '../PageHero';
 
 const Hero = () => {
@@ -20,15 +20,23 @@ const Hero = () => {
       }}
       actions={
         <>
-          <Link href="/auth/register">
-            <Button intent="primary" className="w-full md:w-auto">
-              Join Us
-            </Button>
+          <Link
+            href="/auth/register"
+            className={buttonStyles({
+              intent: 'primary',
+              className: 'w-full md:w-auto',
+            })}
+          >
+            Join Us
           </Link>
-          <Link href="/facilities">
-            <Button intent="secondary" className="w-full md:w-auto">
-              Facilities
-            </Button>
+          <Link
+            href="/facilities"
+            className={buttonStyles({
+              intent: 'secondary',
+              className: 'w-full md:w-auto',
+            })}
+          >
+            Facilities
           </Link>
         </>
       }

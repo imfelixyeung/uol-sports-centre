@@ -1,7 +1,7 @@
 import {UserCircleIcon} from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import AppIcon from '../AppIcon/AppIcon';
-import Button from '../Button';
+import Button, {buttonStyles} from '../Button';
 
 const navLinks = [
   {label: 'About', href: '/about'},
@@ -35,10 +35,14 @@ const AppBar = () => {
             ))}
           </ul>
         </nav>
-        <Link href="/dashboard">
-          <Button intent="primary" className="hidden md:block">
-            Account
-          </Button>
+        <Link
+          href="/dashboard"
+          className={buttonStyles({
+            intent: 'primary',
+            className: 'hidden md:block',
+          })}
+        >
+          Account
         </Link>
       </header>
     </div>

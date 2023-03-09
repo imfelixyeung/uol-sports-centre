@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import BookingActivity from '~/components/BookingActivity';
-import Button from '~/components/Button';
+import {buttonStyles} from '~/components/Button';
 import Card from '~/components/Card';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
@@ -52,10 +52,14 @@ const UserDashboardPage = () => {
         title="Booking Facility"
       />
 
-      <Link href="/dashboard/bookings">
-        <Button intent="primary" outline>
-          More Bookings
-        </Button>
+      <Link
+        href="/dashboard/bookings"
+        className={buttonStyles({
+          intent: 'primary',
+          outline: true,
+        })}
+      >
+        More Bookings
       </Link>
     </section>
   );
