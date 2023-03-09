@@ -6,17 +6,23 @@ import {getJwtFromRequest} from '../utils/getJwtFromRequest';
 // and inspired by https://trpc.io/
 export const createController = <
   AuthRequired extends boolean,
-  ZodSchema extends z.ZodTypeAny = z.ZodNever
+  ZodSchemaQuery extends z.ZodTypeAny = z.ZodNever,
+  ZodSchemaBody extends z.ZodTypeAny = z.ZodNever
 >({
   bodySchema,
+  querySchema,
   authRequired,
   controller,
 }: {
-  bodySchema?: ZodSchema | undefined;
+  querySchema?: ZodSchemaQuery | undefined;
+  bodySchema?: ZodSchemaBody | undefined;
   authRequired?: AuthRequired;
   controller: (options: {
-    body: ZodSchema extends z.ZodTypeAny
-      ? z.infer<ZodSchema>
+    query: ZodSchemaQuery extends z.ZodTypeAny
+      ? z.infer<ZodSchemaQuery>
+      : never | undefined;
+    body: ZodSchemaBody extends z.ZodTypeAny
+      ? z.infer<ZodSchemaBody>
       : never | undefined;
     token: AuthRequired extends true ? string : null;
   }) => Promise<unknown>;
@@ -46,9 +52,26 @@ export const createController = <
       body = parsedBody.data;
     }
 
+    let query = null;
+    if (querySchema) {
+      const parsedQuery = querySchema.safeParse({
+        ...req.query,
+        ...req.params,
+      });
+      if (!parsedQuery.success) {
+        return res.status(400).json({
+          success: false,
+          error: parsedQuery.error,
+        });
+      }
+
+      query = parsedQuery.data;
+    }
+
     // dumps the parsed data to the handler
     return controller({
       body,
+      query,
       token: token as AuthRequired extends true ? string : null,
     })
       .then(data =>

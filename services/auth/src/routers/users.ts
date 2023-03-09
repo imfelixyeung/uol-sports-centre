@@ -1,12 +1,10 @@
 import {Router} from 'express';
+import usersControllers from '../controllers/users';
 
 const usersRouter: Router = Router();
 
-// TODO: add controllers
-const usersControllers: Record<string, any> = {};
-
 usersRouter.get('/', usersControllers.getUsers);
-usersRouter.get('/:id', usersControllers.getUser);
-usersRouter.patch('/:id', usersControllers.patchUser);
+usersRouter.get('/:userId', usersControllers.getUser);
+usersRouter.patch('/:userId', usersControllers.patchUser);
 
 export default usersRouter;
