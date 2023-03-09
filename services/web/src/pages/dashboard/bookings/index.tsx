@@ -47,7 +47,7 @@ const DashboardBookingsPage = () => {
                     title={`Switch to ${view.name}`}
                     onClick={() => setCurrentView(view.id)}
                   >
-                    <view.Icon className="h-16" />
+                    <view.Icon className="h-5 aspect-square" />
                   </button>
                 ))}
               </div>

@@ -3,8 +3,6 @@ import type {IconType} from './types';
 const ChevronTripleRightIcon: IconType = props => {
   return (
     <svg
-      width="55"
-      height="33"
       viewBox="0 0 55 33"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"

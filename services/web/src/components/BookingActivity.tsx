@@ -42,15 +42,15 @@ const BookingActivity: FC<BookingActivityProps> = ({
             )}
           >
             <Typography styledAs="subtext" className="flex items-center gap-2">
-              <ClockIcon />
+              <ClockIcon className="h-5" />
               {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
             </Typography>
             <Typography styledAs="subtext" className="flex items-center gap-2">
-              <ClockIcon />
+              <ClockIcon className="h-5" />
               {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
             </Typography>
             <Typography styledAs="subtext" className="flex items-center gap-2">
-              <ClockIcon />
+              <ClockIcon className="h-5" />
               {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
             </Typography>
           </div>

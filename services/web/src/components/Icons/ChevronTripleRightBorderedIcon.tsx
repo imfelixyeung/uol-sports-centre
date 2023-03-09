@@ -3,8 +3,6 @@ import type {IconType} from './types';
 const ChevronDoubleRightBorderedIcon: IconType = props => {
   return (
     <svg
-      width="48"
-      height="37"
       viewBox="0 0 48 37"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
