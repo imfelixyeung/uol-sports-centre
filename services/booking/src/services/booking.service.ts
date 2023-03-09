@@ -1,6 +1,6 @@
-import bookingDao from '../dao/booking.dao';
-import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
-import logger from '../lib/logger';
+import bookingDao from '@/dao/booking.dao';
+import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import logger from '@/lib/logger';
 
 /**
  * The Booking Service performs any required business logic before updating the

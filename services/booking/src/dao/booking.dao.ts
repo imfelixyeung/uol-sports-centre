@@ -1,6 +1,6 @@
-import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
-import logger from '../lib/logger';
-import prisma from '../lib/prisma';
+import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import logger from '@/lib/logger';
+import prisma from '@/lib/prisma';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying

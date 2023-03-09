@@ -1,8 +1,8 @@
 import express from 'express';
 import {z} from 'zod';
-import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
-import logger from '../lib/logger';
-import bookingService from '../services/booking.service';
+import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import logger from '@/lib/logger';
+import bookingService from '@/services/booking.service';
 
 /**
  * The Booking Controller handles the incomming network requests and validates

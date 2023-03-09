@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 
-import BookingController from '../controllers/booking.controller';
+import BookingController from '@/controllers/booking.controller';
 
 const bookingRouter: Router = express.Router();
 
