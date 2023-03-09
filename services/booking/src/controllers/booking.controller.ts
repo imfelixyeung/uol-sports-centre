@@ -71,7 +71,7 @@ class BookingController {
       userId: z.number(),
       facilityId: z.number(),
       transactionId: z.number(),
-      startTime: z.string().transform(time => new Date(time)),
+      starts: z.string().transform(time => new Date(time)),
       duration: z.number(),
     });
 
@@ -159,7 +159,7 @@ class BookingController {
       userId: z.number().optional(),
       facilityId: z.number().optional(),
       transactionId: z.number().optional(),
-      startTime: z
+      starts: z
         .string()
         .transform(time => new Date(time))
         .optional(),

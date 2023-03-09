@@ -3,7 +3,7 @@ export interface BookingDTO {
   userId: number;
   facilityId: number;
   transactionId: number;
-  startTime: Date;
+  starts: string;
   duration: number;
 }
 
@@ -11,7 +11,7 @@ export interface CreateBookingDTO {
   userId: number;
   facilityId: number;
   transactionId: number;
-  startTime: Date;
+  starts: Date;
   duration: number;
 }
 
@@ -20,6 +20,6 @@ export interface UpdateBookingDTO {
   userId?: number;
   facilityId?: number;
   transactionId?: number;
-  startTime?: Date;
+  starts?: Date;
   duration?: number;
 }

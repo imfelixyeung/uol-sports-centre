@@ -22,7 +22,7 @@ class BookingDAO {
     logger.debug(`Adding booking to database, ${bookingData}`);
 
     const booking = await prisma.booking.create({
-      data: bookingData,
+      data: {...bookingData, created: new Date(), updated: new Date()},
     });
 
     return booking;
