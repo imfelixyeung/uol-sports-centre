@@ -1,6 +1,8 @@
 import unittest
 import sqlite3
 import stripe
+import requests
+import os
 
 import sys
 from pathlib import Path
@@ -13,6 +15,8 @@ from payments import app
 from payments import MakePurchasable
 from payments import addProductDatabase
 from payments import createCheckout
+from payments import get_index
+from payments import render_template
 
 def create_testDatabase():
     connection = sqlite3.connect("database.db")
@@ -89,9 +93,24 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     self.assertEqual(session_url, 'http://localhost:5000/checkout-session')
     stripe.Customer.delete(newCustomer.stripe_id)
 
+  @classmethod
+  def setUpClass(self):
+    """Create a new app instance and set up a test client"""
+    self.app = app.test_client()
+    self.app.testing = True
+
   #test get_index()
-  def get_index_test(self):
-    a = 1
+  def test_get_index(self):
+    """Test if the get_index() function returns a 200 status code"""
+    
+    file_path = os.path.abspath("test_index.html")
+
+    with open(file_path) as file:
+      html = file.read()
+    response = self.client.get('/')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.content_type, 'text/html')
+    self.assertEqual(response.data.decode('utf-8'), html)
 
   #test redirectCheckout()
   def redirectCheckout_test(self):
@@ -101,6 +120,15 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def webhookReceived_test(self):
     a = 1
 
+  @classmethod
+  def tearDownClass(cls):
+      """Remove the database file after running all tests"""
+      conn = sqlite3.connect('database.db')
+      conn.execute("DROP TABLE IF EXISTS orders")
+      conn.execute("DROP TABLE IF EXISTS products")
+      conn.execute("DROP TABLE IF EXISTS customers")
+      conn.commit()
+      conn.close()
 
 if __name__ == '__main__':
   unittest.main()
