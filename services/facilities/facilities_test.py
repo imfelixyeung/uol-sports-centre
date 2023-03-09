@@ -294,6 +294,38 @@ class facilitiesTests(unittest.TestCase):
 
       self.assertEqual(response_data, expected_response)
 
+  def test_update_activity(self):
+    with app.app_context():
+      response = self.app.put("/activities/1",
+                              json={
+                                  "name": "Football Lesson",
+                                  "capacity": 10,
+                                  "duration": 30
+                              })
+
+      check_query = Activity.query.get(1)
+
+      check_data = makeActivity(check_query)
+
+      self.assertEqual(
+          {
+              "id": 1,
+              "name": "Football Lesson",
+              "capacity": 10,
+              "duration": 30,
+              "facility_id": 1
+          }, check_data)
+
+      response_data = json.loads(response.data)
+
+      expected_response = {
+          "status": "ok",
+          "message": "activity updated",
+          "activity": check_data
+      }
+
+      self.assertEqual(expected_response, response_data)
+
   def test_delete_activity(self):
     with app.app_context():
       # Get facility before deletion so we can check response later

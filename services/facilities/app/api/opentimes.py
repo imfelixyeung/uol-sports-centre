@@ -151,7 +151,6 @@ class OpenTimesRouter:
 
     # Check which fields need to be updated
     if "day" in data:
-      print("yeah")
       update_check = True
       to_update.day = data.get("day")
 

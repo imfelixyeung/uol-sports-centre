@@ -191,7 +191,7 @@ class ActivitiesRouter:
 
     return_value = make_response({
         "status": "ok",
-        "message": "facility updated",
+        "message": "activity updated",
         "activity": makeActivity(to_update)
     })
 
