@@ -21,12 +21,12 @@ class ActivitiesRouter:
     self.blueprint.add_url_rule("/",
                                 "get_activities",
                                 self.get_activities,
-                                methods=['GET'])
+                                methods=["GET"])
 
     self.blueprint.add_url_rule("/",
                                 "add_activity",
                                 self.add_activity,
-                                methods=['POST'])
+                                methods=["POST"])
 
     self.blueprint.add_url_rule("/<activity_id>",
                                 "get_activity",
@@ -77,7 +77,7 @@ class ActivitiesRouter:
     data = json.loads(request.data)
 
     # Check that the supplied foreign key existss
-    if (not Facility.query.get(int(data.get("facility_id")))):
+    if not Facility.query.get(int(data.get("facility_id"))):
       # Catch value error and return a failed response code before continuing
       return_value = make_response({
           "status": "Failed",

@@ -21,12 +21,12 @@ class OpenTimesRouter:
     self.blueprint.add_url_rule("/",
                                 "get_open_times",
                                 self.get_open_times,
-                                methods=['GET'])
+                                methods=["GET"])
 
     self.blueprint.add_url_rule("/",
                                 "add_open_time",
                                 self.add_open_time,
-                                methods=['POST'])
+                                methods=["POST"])
 
     self.blueprint.add_url_rule("/<time_id>",
                                 "get_open_time",
@@ -76,7 +76,7 @@ class OpenTimesRouter:
     data = json.loads(request.data)
 
     # Check that the supplied foreign key existss
-    if (not Facility.query.get(int(data.get("facility_id")))):
+    if not Facility.query.get(int(data.get("facility_id"))):
       # Catch value error and return a failed response code before continuing
       return_value = make_response({
           "status": "Failed",
@@ -87,8 +87,8 @@ class OpenTimesRouter:
 
     # Add the supplied object to the data base
     addition = OpenTime(day=data.get("day"),
-                        opening_time=data.get("open_time"),
-                        closing_time=data.get("close_time"),
+                        opening_time=data.get("opening_time"),
+                        closing_time=data.get("closing_time"),
                         facility_id=data.get("facility_id"))
     if not addition:
       return_value = make_response({
@@ -132,7 +132,69 @@ class OpenTimesRouter:
     return return_value
 
   def update_open_time(self, time_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    data = json.loads(request.data)
+
+    # Get item to be updated
+    to_update = OpenTime.query.get(time_id)
+
+    # Check that the facility has been found
+    if not to_update:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Object not found"
+      })
+      return_value.status_code = 404
+      return return_value
+
+    # Value to check if something has been updated
+    update_check = False
+
+    # Check which fields need to be updated
+    if "name" in data:
+      update_check = True
+      to_update.name = data.get("name")
+
+    if "opening_time" in data:
+      update_check = True
+      to_update.opening_time = int(data.get("opening_time"))
+
+    if "closing_time" in data:
+      update_check = True
+      to_update.duration = int(data.get("closing_time"))
+
+    if "facility_id" in data:
+      if not Facility.query.get(data.get("facility_id")):
+        return_value = make_response({
+            "status": "Failed",
+            "message": "Object not found"
+        })
+        return_value.status_code = 404
+        return return_value
+
+      else:
+        update_check = True
+        to_update.facility_id = data.get("facility_id")
+
+    # If the update check is still false return error as
+    # user input is incorrect
+    if not update_check:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Incorrect input"
+      })
+      return_value.status_code = 400
+      return return_value
+
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "facility updated",
+        "facility": makeOpenTime(to_update)
+    })
+
+    return_value.status_code = 200
+    return return_value
 
   def delete_open_time(self, time_id: int):
     return {"status": "error", "message": "Not yet implemented"}

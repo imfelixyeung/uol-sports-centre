@@ -5,78 +5,78 @@ from app.database import db
 app = create_app()
 
 
-def seedFacilities():
+def seed_facilities():
   with app.app_context():
-    seedCheck = Facility.query.get(1)
+    seed_check = Facility.query.get(1)
 
-    if (not seedCheck):
-      swimmingPool = Facility(name="Swimming Pool", capacity=30)
-      fitnessRoom = Facility(name="Fitness Room", capacity=35)
-      squashCourt1 = Facility(name="Squash Court 1", capacity=4)
-      squashCourt2 = Facility(name="Squash Court 2", capacity=4)
-      sportsHall = Facility(name="Sports Hall", capacity=45)
-      climbingWall = Facility(name="Climbing Wall", capacity=22)
+    if (not seed_check):
+      swimming_pool = Facility(name="Swimming Pool", capacity=30)
+      fitness_room = Facility(name="Fitness Room", capacity=35)
+      squash_court1 = Facility(name="Squash Court 1", capacity=4)
+      squash_court2 = Facility(name="Squash Court 2", capacity=4)
+      sports_hall = Facility(name="Sports Hall", capacity=45)
+      climbing_hall = Facility(name="Climbing Wall", capacity=22)
       studio = Facility(name="Studio", capacity=25)
-      db.session.add(swimmingPool)
-      db.session.add(fitnessRoom)
-      db.session.add(squashCourt1)
-      db.session.add(squashCourt2)
-      db.session.add(sportsHall)
-      db.session.add(climbingWall)
+      db.session.add(swimming_pool)
+      db.session.add(fitness_room)
+      db.session.add(squash_court1)
+      db.session.add(squash_court2)
+      db.session.add(sports_hall)
+      db.session.add(climbing_hall)
       db.session.add(studio)
       db.session.commit()
 
 
-def seedOpenTime():
+def seed_open_time():
   with app.app_context():
-    seedCheck = OpenTime.query.get(1)
+    seed_check = OpenTime.query.get(1)
 
     days = [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
         "Sunday"
     ]
 
-    if (not seedCheck):
+    if not seed_check:
       for day in days:
-        swimmingTime = OpenTime(day=day,
-                                opening_time=480,
-                                closing_time=1200,
-                                facility_id=1)
-        fitnessRoomTime = OpenTime(day=day,
-                                   opening_time=480,
-                                   closing_time=1320,
-                                   facility_id=2)
-        squashCourt1Time = OpenTime(day=day,
+        swimming_time = OpenTime(day=day,
+                                 opening_time=480,
+                                 closing_time=1200,
+                                 facility_id=1)
+        fitness_room_time = OpenTime(day=day,
+                                     opening_time=480,
+                                     closing_time=1320,
+                                     facility_id=2)
+        squash_court_1_time = OpenTime(day=day,
+                                       opening_time=480,
+                                       closing_time=1320,
+                                       facility_id=3)
+        squash_court_2_time = OpenTime(day=day,
+                                       opening_time=480,
+                                       closing_time=1320,
+                                       facility_id=4)
+        sports_hall_time = OpenTime(day=day,
                                     opening_time=480,
                                     closing_time=1320,
-                                    facility_id=3)
-        squashCourt2Time = OpenTime(day=day,
-                                    opening_time=480,
-                                    closing_time=1320,
-                                    facility_id=4)
-        sportsHallTime = OpenTime(day=day,
-                                  opening_time=480,
-                                  closing_time=1320,
-                                  facility_id=5)
-        climbingWallTime = OpenTime(day=day,
-                                    opening_time=600,
-                                    closing_time=1200,
-                                    facility_id=6)
-        studioTime = OpenTime(day=day,
-                              opening_time=480,
-                              closing_time=1320,
-                              facility_id=7)
-        db.session.add(swimmingTime)
-        db.session.add(fitnessRoomTime)
-        db.session.add(squashCourt1Time)
-        db.session.add(squashCourt2Time)
-        db.session.add(sportsHallTime)
-        db.session.add(climbingWallTime)
-        db.session.add(studioTime)
+                                    facility_id=5)
+        climbing_wall_time = OpenTime(day=day,
+                                      opening_time=600,
+                                      closing_time=1200,
+                                      facility_id=6)
+        studio_time = OpenTime(day=day,
+                               opening_time=480,
+                               closing_time=1320,
+                               facility_id=7)
+        db.session.add(swimming_time)
+        db.session.add(fitness_room_time)
+        db.session.add(squash_court_1_time)
+        db.session.add(squash_court_2_time)
+        db.session.add(sports_hall_time)
+        db.session.add(climbing_wall_time)
+        db.session.add(studio_time)
       db.session.commit()
 
 
-def seedActivities():
+def seed_activities():
   with app.app_context():
     seed_check = Activity.query.get(1)
 
@@ -139,6 +139,6 @@ def seedActivities():
       db.session.commit()
 
 
-seedFacilities()
-seedOpenTime()
-seedActivities()
+seed_facilities()
+seed_open_time()
+seed_activities()

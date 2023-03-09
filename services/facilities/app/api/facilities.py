@@ -21,12 +21,12 @@ class FacilitiesRouter:
     self.blueprint.add_url_rule("/",
                                 "get_facilities",
                                 self.get_facilities,
-                                methods=['GET'])
+                                methods=["GET"])
 
     self.blueprint.add_url_rule("/",
                                 "add_facility",
                                 self.add_facility,
-                                methods=['POST'])
+                                methods=["POST"])
 
     self.blueprint.add_url_rule("/<facility_id>",
                                 "get_facility",

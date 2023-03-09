@@ -64,8 +64,8 @@ class facilitiesTests(unittest.TestCase):
       expected_response = {
           "id": 1,
           "day": "Monday",
-          "open_time": 660,
-          "close_time": 990,
+          "opening_time": 660,
+          "closing_time": 990,
           "facility_id": 1
       }
 
@@ -138,8 +138,8 @@ class facilitiesTests(unittest.TestCase):
       response = self.app.post("/times/",
                                json={
                                    "day": "monday",
-                                   "open_time": int(660),
-                                   "close_time": int(720),
+                                   "opening_time": int(660),
+                                   "closing_time": int(720),
                                    "facility_id": int(1)
                                })
 
@@ -151,8 +151,8 @@ class facilitiesTests(unittest.TestCase):
           {
               "id": 2,
               "day": "monday",
-              "open_time": int(660),
-              "close_time": int(720),
+              "opening_time": int(660),
+              "closing_time": int(720),
               "facility_id": int(1)
           }, check_data)
 
