@@ -3,6 +3,13 @@ import Link from 'next/link';
 import AppIcon from '../AppIcon/AppIcon';
 import Button from '../Button';
 
+const navLinks = [
+  {label: 'About', href: '/about'},
+  {label: 'Facilities', href: '/facilities'},
+  {label: 'Pricing', href: '/pricing'},
+  {label: 'Contact', href: '/contact'},
+];
+
 const AppBar = () => {
   return (
     <div className="bg-black">
@@ -21,18 +28,11 @@ const AppBar = () => {
         </div>
         <nav>
           <ul className="flex gap-6 font-bold">
-            <li>
-              <Link href="/about">About</Link>
-            </li>
-            <li>
-              <Link href="/facilities">Facilities</Link>
-            </li>
-            <li>
-              <Link href="/pricing">Pricing</Link>
-            </li>
-            <li>
-              <Link href="/contact">Contact</Link>
-            </li>
+            {navLinks.map((link, index) => (
+              <li key={index}>
+                <Link href={link.href}>{link.label}</Link>
+              </li>
+            ))}
           </ul>
         </nav>
         <Link href="/dashboard">

@@ -2,12 +2,12 @@ import Link from 'next/link';
 import Button from '../Button';
 import Typography from '../Typography';
 
-const quickLinks: [string, string][] = [
-  ['Home', '/'],
-  ['About', '/about'],
-  ['Facilities', '/facilities'],
-  ['Pricing', '/pricing'],
-  ['Contact', '/contact'],
+const quickLinks = [
+  {label: 'Home', href: '/'},
+  {label: 'About', href: '/about'},
+  {label: 'Facilities', href: '/facilities'},
+  {label: 'Pricing', href: '/pricing'},
+  {label: 'Contact', href: '/contact'},
 ];
 
 const Footer = () => {
@@ -25,9 +25,9 @@ const Footer = () => {
           <ul>
             {quickLinks.map((link, index) => (
               <li key={index}>
-                <Link href={link[1]}>
+                <Link href={link.href}>
                   <Typography as="span" styledAs="navLink">
-                    {link[0]}
+                    {link.label}
                   </Typography>
                 </Link>
               </li>
