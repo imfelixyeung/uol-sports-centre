@@ -34,16 +34,6 @@ def setPrice(newPrice, productId):
     '''Sets a price for memberships
     newPrice: price to be set'''
 
-def addActivity(facilityId, newActivity):
-    '''Adds a new activity to a chosen facility
-    facilityId: Id for facility to be amended
-    newActivity: activity to be added to facility'''
-
-def removeActivity(facilityId, activityId):
-    '''Removes an activity from a chosen facility
-    facilityId: id for facility to be amended
-    activityId: activity to be removed'''
-
 #To be coupled with Facility microservice-----------------
 def addFacility(facilityName):                           # 
     '''Adds a facility to be booked from                 #
@@ -70,6 +60,10 @@ def manageStaff(staffId, action, name=''):
 
     elif action == 'rename':
         c.execute('UPDATE staff SET staffName = ? WHERE id = ?', (name, staffId))
+        conn.commit()
+
+    elif action == 'delete':
+        c.execute('DELETE FROM staff WHERE id = ?', (staffId,))
         conn.commit()
 
     # ERROR handling

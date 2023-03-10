@@ -1,7 +1,12 @@
 import stripe
 import os
+from dotenv import load_dotenv
 from database import *
 from datetime import datetime
+
+# Get absolute path of directory where .env is 
+dirtoenv = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(dirtoenv, '.env'))
 
 localDomain = 'http://localhost:' + os.getenv('APP_PORT')
 
