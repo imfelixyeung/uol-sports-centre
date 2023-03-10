@@ -14,7 +14,7 @@ bookingRouter.post('/', BookingController.createBooking);
 bookingRouter.get('/:id', BookingController.getBookingById);
 
 // update specific booking
-bookingRouter.post('/:id', BookingController.updateBookingById);
+bookingRouter.put('/:id', BookingController.updateBookingById);
 
 // delete specific booking
 bookingRouter.delete('/:id', BookingController.deleteBookingById);

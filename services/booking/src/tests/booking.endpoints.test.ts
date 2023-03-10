@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import {Booking} from '@prisma/client';
 
 import {createServer} from '@/server';
-import {CreateBookingDTO} from '@/dto/booking.dto';
+import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
 
 import {prismaMock} from './mock/prisma';
 
@@ -166,6 +166,46 @@ describe('Test API Endpoints', () => {
     await supertest(app)
       .post('/bookings')
       .send(newBooking)
+      .expect(200)
+      .then(response => {
+        expect(response.body).toStrictEqual(expectedResponseBody);
+      });
+  });
+
+  test('PUT /bookings/10', async () => {
+    const existingBooking: Booking = {
+      id: 10,
+      userId: 1,
+      facilityId: 1,
+      transactionId: 1,
+      starts: new Date(),
+      duration: 60,
+      created: new Date(),
+      updated: new Date(),
+    };
+    const update: UpdateBookingDTO = {
+      id: 10,
+      duration: 100000,
+    };
+    const expectedUpdate: Booking = {...existingBooking, ...update};
+
+    const expectedResponseBody = {
+      status: 'OK',
+      booking: {
+        ...expectedUpdate,
+        starts: new Date().toISOString(),
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+      },
+    };
+
+    // mock the prisma client
+    prismaMock.booking.update.mockResolvedValue(expectedUpdate);
+
+    // create a new booking
+    await supertest(app)
+      .put('/bookings/10')
+      .send(update)
       .expect(200)
       .then(response => {
         expect(response.body).toStrictEqual(expectedResponseBody);
