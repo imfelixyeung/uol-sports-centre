@@ -1,7 +1,6 @@
 import unittest
 import sqlite3
 import stripe
-import requests
 import os
 
 import sys
@@ -10,16 +9,9 @@ from unittest.mock import Mock, patch
 
 sys.path[0] = str(Path(sys.path[0]).parent)
 
-import payments
-from payments import app
-from payments import MakePurchasable
-from payments import addProductDatabase
+from server import app
 from payments import createCheckout
-from payments import get_index
-from payments import render_template
-from payments import customerPortal
-from payments import webhookReceived
-from payments import redirectCheckout
+from database import *
 
 def create_testDatabase():
     connection = sqlite3.connect("database.db")
@@ -63,12 +55,12 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #test addProductDatabase()
 
   def test_addProductDatabase(self):
-    payments.initDatabase()
+    initDatabase()
 
     #Add products using payments
-    payments.addProductDatabase("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
+    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
                                 "5", "payment")
-    payments.addProductDatabase("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
+    addProduct("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
                                 "15", "subscription")
     
     connection = sqlite3.connect('database.db')
@@ -88,9 +80,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #test createCheckout()
   @patch("stripe.checkout.Session.create")
   def test_create_checkout_success(self, mock_checkout_session_create):
-    payments.initDatabase()
+    initDatabase()
     newCustomer = stripe.Customer.create()
-    payments.addProductDatabase("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
+    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
     mock_checkout_session_create.return_value = Mock(url='http://localhost:5000/checkout-session')
     session_url = createCheckout(newCustomer.stripe_id, "product-test")
     self.assertEqual(session_url, 'http://localhost:5000/checkout-session')
