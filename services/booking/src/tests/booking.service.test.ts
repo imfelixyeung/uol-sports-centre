@@ -1,7 +1,12 @@
 import {Booking} from '@prisma/client';
 import bookingService from '@/services/booking.service';
 import {prismaMock} from './mock/prisma';
-import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import {
+  bookingToDTO,
+  CreateBookingDTO,
+  UpdateBookingDTO,
+} from '@/dto/booking.dto';
+import {PaginatedBookings} from '@/types/responses';
 
 describe('Test BookingService', () => {
   test('get bookings', async () => {
@@ -19,11 +24,22 @@ describe('Test BookingService', () => {
       },
     ];
 
-    // mock the prisma client
-    prismaMock.booking.findMany.mockResolvedValue(bookings);
+    const expectedResult: PaginatedBookings = {
+      bookings: bookings.map(b => bookingToDTO(b)),
+      metadata: {
+        count: bookings.length,
+        limit: 0,
+        page: 1,
+        pageCount: 1,
+      },
+    };
+
+    // mock the prisma transaction
+    prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
 
     // test if the returned value from the booking service equals the mocked data
-    await expect(bookingService.get()).resolves.toEqual(bookings);
+    const returnedBookings = await bookingService.get();
+    await expect(returnedBookings).toEqual(expectedResult);
   });
 
   test('get booking for specific user', async () => {
@@ -41,11 +57,23 @@ describe('Test BookingService', () => {
       },
     ];
 
+    const expectedResult: PaginatedBookings = {
+      bookings: bookings.map(b => bookingToDTO(b)),
+      metadata: {
+        count: bookings.length,
+        limit: 0,
+        page: 1,
+        pageCount: 1,
+      },
+    };
+
     // mock the prisma client
-    prismaMock.booking.findMany.mockResolvedValue(bookings);
+    prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
 
     // test if the returned value from the booking service equals the mocked data
-    await expect(bookingService.getUserBookings(1)).resolves.toEqual(bookings);
+    await expect(bookingService.getUserBookings(1)).resolves.toEqual(
+      expectedResult
+    );
   });
 
   test('get booking by id', async () => {

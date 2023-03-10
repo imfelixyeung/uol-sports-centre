@@ -72,7 +72,7 @@ class BookingController {
 
     return res.status(200).send({
       status: 'OK',
-      bookings: bookings,
+      ...bookings,
     });
   }
 

@@ -3,9 +3,15 @@ import supertest from 'supertest';
 import {Booking} from '@prisma/client';
 
 import {createServer} from '@/server';
-import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import {
+  bookingToDTO,
+  CreateBookingDTO,
+  UpdateBookingDTO,
+} from '@/dto/booking.dto';
 
 import {prismaMock} from './mock/prisma';
+import {PaginatedBookings} from '@/types/responses';
+import {Status} from '@/types';
 
 let app: express.Express;
 
@@ -17,7 +23,7 @@ beforeAll(done => {
 describe('Test API Endpoints', () => {
   test('GET /bookings', async () => {
     // create list of mock bookings
-    const bookingsMock: Booking[] = [
+    const bookings: Booking[] = [
       {
         id: 1,
         transactionId: 1,
@@ -30,20 +36,19 @@ describe('Test API Endpoints', () => {
       },
     ];
 
-    const expectedResponseBody = {
+    const expectedResponseBody: PaginatedBookings & Status = {
       status: 'OK',
-      bookings: bookingsMock.map(booking => {
-        return {
-          ...booking,
-          starts: booking.starts.toISOString(),
-          created: booking.created.toISOString(),
-          updated: booking.updated.toISOString(),
-        };
-      }),
+      bookings: bookings.map(b => bookingToDTO(b)),
+      metadata: {
+        count: bookings.length,
+        limit: 0,
+        page: 1,
+        pageCount: 1,
+      },
     };
 
     // mock the prisma client
-    prismaMock.booking.findMany.mockResolvedValue(bookingsMock);
+    prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
 
     // perform test to see if it is there
     await supertest(app)
@@ -57,7 +62,7 @@ describe('Test API Endpoints', () => {
 
   test('GET /bookings?user=2', async () => {
     // create list of mock bookings
-    const bookingsMock: Booking[] = [
+    const bookings: Booking[] = [
       {
         id: 1,
         transactionId: 1,
@@ -70,20 +75,19 @@ describe('Test API Endpoints', () => {
       },
     ];
 
-    const expectedResponseBody = {
+    const expectedResponseBody: PaginatedBookings & Status = {
       status: 'OK',
-      bookings: bookingsMock.map(booking => {
-        return {
-          ...booking,
-          starts: booking.starts.toISOString(),
-          created: booking.created.toISOString(),
-          updated: booking.updated.toISOString(),
-        };
-      }),
+      bookings: bookings.map(b => bookingToDTO(b)),
+      metadata: {
+        count: bookings.length,
+        limit: 0,
+        page: 1,
+        pageCount: 1,
+      },
     };
 
     // mock the prisma client
-    prismaMock.booking.findMany.mockResolvedValue(bookingsMock);
+    prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
 
     // perform test to see if it is there
     await supertest(app)
@@ -110,12 +114,7 @@ describe('Test API Endpoints', () => {
     };
     const expectedResponseBody = {
       status: 'OK',
-      booking: {
-        ...bookingMock,
-        starts: bookingMock.starts.toISOString(),
-        created: bookingMock.created.toISOString(),
-        updated: bookingMock.updated.toISOString(),
-      },
+      booking: bookingToDTO(bookingMock),
     };
 
     // mock the prisma client
@@ -147,16 +146,7 @@ describe('Test API Endpoints', () => {
     };
     const expectedResponseBody = {
       status: 'OK',
-      booking: {
-        id: 1,
-        userId: 1,
-        facilityId: 1,
-        transactionId: 1,
-        duration: 60,
-        starts: new Date().toISOString(),
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      },
+      booking: bookingToDTO(mockBooking),
     };
 
     // mock the prisma client
@@ -191,12 +181,7 @@ describe('Test API Endpoints', () => {
 
     const expectedResponseBody = {
       status: 'OK',
-      booking: {
-        ...expectedUpdate,
-        starts: new Date().toISOString(),
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      },
+      booking: bookingToDTO(expectedUpdate),
     };
 
     // mock the prisma client

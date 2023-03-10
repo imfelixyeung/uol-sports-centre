@@ -1,6 +1,7 @@
 import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import {PaginatedBookings} from '@/types/responses';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying
@@ -91,18 +92,39 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async getBookings(limit?: number, page?: number) {
+  async getBookings(limit?: number, page?: number): Promise<PaginatedBookings> {
     logger.debug(
       `Getting bookings from database, limit: ${limit}, page: ${page}`
     );
 
     // using offset based pagination for simplicity here
-    const bookings = await prisma.booking.findMany({
-      skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
-      take: limit,
+    const bookingsData = await prisma.$transaction([
+      prisma.booking.count(),
+      prisma.booking.findMany({
+        skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
+        take: limit,
+      }),
+    ]);
+
+    // map Booking to BookingDTO
+    const bookings = bookingsData[1].map(booking => {
+      return {
+        ...booking,
+        starts: booking.starts.toISOString(),
+        created: booking.created.toISOString(),
+        updated: booking.updated.toISOString(),
+      };
     });
 
-    return bookings;
+    return {
+      bookings,
+      metadata: {
+        count: bookingsData[0],
+        limit: limit || 0,
+        page: page || 1,
+        pageCount: bookingsData[0] / (limit || bookingsData[0]) || 0,
+      },
+    };
   }
 
   /**
@@ -111,20 +133,45 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async getBookingsForUser(userId: number, limit?: number, page?: number) {
+  async getBookingsForUser(
+    userId: number,
+    limit?: number,
+    page?: number
+  ): Promise<PaginatedBookings> {
     logger.debug(
       `Getting bookings for user ${userId}, limit: ${limit}, page: ${page}`
     );
 
-    const userBookings = await prisma.booking.findMany({
-      where: {
-        userId: userId,
-      },
-      skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
-      take: limit,
+    const userBookings = await prisma.$transaction([
+      prisma.booking.count({where: {userId: userId}}),
+      prisma.booking.findMany({
+        where: {
+          userId: userId,
+        },
+        skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
+        take: limit,
+      }),
+    ]);
+
+    // map Booking to BookingDTO
+    const bookings = userBookings[1].map(booking => {
+      return {
+        ...booking,
+        starts: booking.starts.toISOString(),
+        created: booking.created.toISOString(),
+        updated: booking.updated.toISOString(),
+      };
     });
 
-    return userBookings;
+    return {
+      bookings,
+      metadata: {
+        count: userBookings[0],
+        limit: limit || 0,
+        page: page || 1,
+        pageCount: userBookings[0] / (limit || userBookings[0]) || 0,
+      },
+    };
   }
 }
 
