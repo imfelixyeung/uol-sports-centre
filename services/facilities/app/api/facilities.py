@@ -127,10 +127,10 @@ class FacilitiesRouter:
     # Else, facility is found so make it into a dictionary
     # then a response with the code 200 for success
     else:
-      return_value = {
+      return_value = make_response({
           "status": "ok",
-          "facility": make_response(makeFacility(facility_query))
-      }
+          "facility": makeFacility(facility_query)
+      })
       return_value.status_code = 200
 
     return return_value

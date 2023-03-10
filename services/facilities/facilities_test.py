@@ -53,7 +53,14 @@ class facilitiesTests(unittest.TestCase):
     with app.app_context():
       response = self.app.get("/facilities/1")
 
-      expected_response = {"id": 1, "name": "Football", "capacity": 20}
+      expected_response = {
+          "status": "ok",
+          "facility": {
+              "id": 1,
+              "name": "Football",
+              "capacity": 20
+          }
+      }
 
       response_data = json.loads(response.data)
 
