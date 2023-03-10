@@ -3,6 +3,7 @@ import {z} from 'zod';
 import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
 import logger from '@/lib/logger';
 import bookingService from '@/services/booking.service';
+import {PaginatedBookings} from '@/types/responses';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -59,15 +60,30 @@ class BookingController {
         error: query.error,
       });
 
-    let bookings;
+    let bookings: PaginatedBookings | Error;
     if (query.data.user) {
-      bookings = await bookingService.getUserBookings(
-        query.data.user,
-        query.data.limit,
-        query.data.page
-      );
+      bookings = await bookingService
+        .getUserBookings(query.data.user, query.data.limit, query.data.page)
+        .catch(err => {
+          logger.error(
+            `Error getting bookings from user ${query.data.user}: ${err}`
+          );
+          return new Error(err);
+        });
     } else {
-      bookings = await bookingService.get(query.data.limit, query.data.page);
+      bookings = await bookingService
+        .get(query.data.limit, query.data.page)
+        .catch(err => {
+          logger.error(`Error getting bookings: ${err}`);
+          return new Error(err);
+        });
+    }
+
+    if (bookings instanceof Error) {
+      return res.status(500).json({
+        status: 'error',
+        error: bookings,
+      });
     }
 
     return res.status(200).send({
@@ -104,15 +120,17 @@ class BookingController {
 
     // create the new booking
     const bookingData: CreateBookingDTO = body.data;
-    const newBooking = await bookingService.create(bookingData);
+    const newBooking = await bookingService.create(bookingData).catch(err => {
+      logger.error(`Unable to create booking: ${err}`);
+      return new Error(err);
+    });
 
-    // check has created
-    if (newBooking === null)
+    if (newBooking instanceof Error) {
       return res.status(500).send({
         status: 'error',
-        message: 'Unable to create booking',
+        error: 'Unable to create booking',
       });
-
+    }
     // after passing all the above checks, the booking should be okay
     return res.status(200).send({
       status: 'OK',
@@ -148,12 +166,21 @@ class BookingController {
       });
 
     // try find the booking
-    const booking = await bookingService.getById(params.data.id);
+    const booking = await bookingService.getById(params.data.id).catch(err => {
+      logger.error(`Unable to get booking ${params.data.id}: ${err}`);
+      return new Error(err);
+    });
+
     if (booking === null) {
       // if it is null, it was not found in the database
       return res.status(404).json({
         status: 'error',
-        message: 'Booking not found',
+        error: 'Booking not found',
+      });
+    } else if (booking instanceof Error) {
+      return res.status(500).json({
+        status: 'error',
+        error: booking,
       });
     }
 
@@ -210,13 +237,18 @@ class BookingController {
 
     // create the new booking
     const bookingData: UpdateBookingDTO = {id: params.data.id, ...body.data};
-    const updatedBooking = await bookingService.update(bookingData);
+    const updatedBooking = await bookingService
+      .update(bookingData)
+      .catch(err => {
+        logger.error(`Error updating booking ${params.data.id}: ${err}`);
+        return new Error(err);
+      });
 
     // check has created
-    if (updatedBooking === null)
+    if (updatedBooking instanceof Error)
       return res.status(500).send({
         status: 'error',
-        message: 'Unable to create booking',
+        error: 'Unable to update booking',
       });
 
     // after passing all the above checks, the booking should be okay
@@ -252,9 +284,23 @@ class BookingController {
         error: params.error,
       });
 
+    const booking = await bookingService
+      .deleteById(params.data.id)
+      .catch(err => {
+        logger.error(`Error deleting booking ${params.data.id}: ${err}`);
+        return new Error(err);
+      });
+
+    if (booking instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: booking,
+      });
+    }
+
     return res.status(200).send({
       status: 'OK',
-      booking: await bookingService.deleteById(params.data.id),
+      booking,
     });
   }
 }
