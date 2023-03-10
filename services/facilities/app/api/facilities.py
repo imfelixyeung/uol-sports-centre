@@ -150,12 +150,27 @@ class FacilitiesRouter:
       return_value.status_code = 404
       return return_value
 
+    # Value to check if something has been updated
+    update_check = False
+
     # Check which fields need to be updated
     if "name" in data:
+      update_check = True
       to_update.name = data.get("name")
 
     if "capacity" in data:
+      update_check = True
       to_update.capacity = int(data.get("capacity"))
+
+    # If the update check is still false return error as
+    # user input is incorrect
+    if not update_check:
+      return_value = make_response({
+          "status": "Failed",
+          "message": "Incorrect input"
+      })
+      return_value.status_code = 400
+      return return_value
 
     self.db.session.commit()
 
