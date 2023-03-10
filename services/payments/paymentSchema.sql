@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     userID INTEGER NOT NULL,
     productID TEXT NOT NULL,
-    priceID TEXT NOT NULL,
+    priceID TEXT,
     purchaseDate TEXT NOT NULL, 
     FOREIGN KEY (priceID) REFERENCES products(priceID),
     FOREIGN KEY (productID) REFERENCES products(productID),
