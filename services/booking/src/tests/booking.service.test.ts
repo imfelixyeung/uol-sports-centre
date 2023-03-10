@@ -151,4 +151,20 @@ describe('Test BookingService', () => {
       expectedUpdate
     );
   });
+
+  test('delete booking by id', async () => {
+    const booking: Booking = {
+      id: 100,
+      userId: 1,
+      facilityId: 1,
+      transactionId: 1,
+      duration: 60,
+      starts: new Date(),
+      created: new Date(),
+      updated: new Date(),
+    };
+    prismaMock.booking.delete.mockResolvedValue(booking);
+
+    await expect(bookingService.deleteById(100)).resolves.toEqual(booking);
+  });
 });

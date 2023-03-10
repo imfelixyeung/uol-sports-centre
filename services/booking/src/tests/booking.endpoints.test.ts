@@ -196,4 +196,33 @@ describe('Test API Endpoints', () => {
         expect(response.body).toStrictEqual(expectedResponseBody);
       });
   });
+
+  test('DELETE /bookings/10', async () => {
+    const booking: Booking = {
+      id: 10,
+      userId: 1,
+      facilityId: 1,
+      transactionId: 1,
+      starts: new Date(),
+      duration: 60,
+      created: new Date(),
+      updated: new Date(),
+    };
+
+    const expectedResponseBody = {
+      status: 'OK',
+      booking: bookingToDTO(booking),
+    };
+
+    // mock the prisma client
+    prismaMock.booking.delete.mockResolvedValue(booking);
+
+    // create a new booking
+    await supertest(app)
+      .delete('/bookings/10')
+      .expect(200)
+      .then(response => {
+        expect(response.body).toStrictEqual(expectedResponseBody);
+      });
+  });
 });

@@ -254,7 +254,6 @@ class BookingController {
 
     return res.status(200).send({
       status: 'OK',
-      message: 'Deleted booking',
       booking: await bookingService.deleteById(params.data.id),
     });
   }
