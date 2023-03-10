@@ -13,8 +13,11 @@ dev:
 
 ci:
 	docker compose -f docker-compose.ci.yaml build
-	docker compose -f docker-compose.ci.yaml up
+	docker compose -f docker-compose.ci.yaml run auth
+	docker compose -f docker-compose.ci.yaml run docs
+	docker compose -f docker-compose.ci.yaml run status
 
 clean:
 	docker compose down
 	docker compose -f docker-compose.dev.yaml down
+	docker compose -f docker-compose.ci.yaml down
