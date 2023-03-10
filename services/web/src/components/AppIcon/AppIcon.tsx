@@ -4,7 +4,7 @@ const AppIcon = () => {
   return (
     <div className="flex items-center gap-3">
       <GymIcon />
-      <span className="text-2xl font-bold uppercase leading-6">
+      <span className="text-[2.25rem] font-[700] uppercase leading-[1.875rem]">
         Sports
         <br />
         Centre
