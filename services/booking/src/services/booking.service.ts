@@ -36,6 +36,16 @@ class BookingService {
   }
 
   /**
+   * Get paginatable list of bookings for the user
+   *
+   * @memberof BookingService
+   */
+  async getUserBookings(user: number, limit?: number, page?: number) {
+    logger.debug(`Get user ${user} bookings, limit: ${limit}, page: ${page}`);
+    return await bookingDao.getBookingsForUser(user, limit, page);
+  }
+
+  /**
    * Get a single booking by id
    *
    * @memberof BookingService

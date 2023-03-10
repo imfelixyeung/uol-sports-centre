@@ -104,6 +104,28 @@ class BookingDAO {
 
     return bookings;
   }
+
+  /**
+   * Gets a list of bookings for a specific user with optional pagination
+   * options
+   *
+   * @memberof BookingDAO
+   */
+  async getBookingsForUser(userId: number, limit?: number, page?: number) {
+    logger.debug(
+      `Getting bookings for user ${userId}, limit: ${limit}, page: ${page}`
+    );
+
+    const userBookings = await prisma.booking.findMany({
+      where: {
+        userId: userId,
+      },
+      skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
+      take: limit,
+    });
+
+    return userBookings;
+  }
 }
 
 export default new BookingDAO();

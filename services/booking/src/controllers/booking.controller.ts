@@ -41,6 +41,13 @@ class BookingController {
           message: 'Non-numeric page parameter supplied',
         })
         .optional(),
+      user: z
+        .string()
+        .transform(uid => parseInt(uid))
+        .refine(uid => !Number.isNaN(uid), {
+          message: 'Non-numeric user id supplied',
+        })
+        .optional(),
     });
 
     // ensure the query params abide by that schema
@@ -52,9 +59,20 @@ class BookingController {
         error: query.error,
       });
 
+    let bookings;
+    if (query.data.user) {
+      bookings = await bookingService.getUserBookings(
+        query.data.user,
+        query.data.limit,
+        query.data.page
+      );
+    } else {
+      bookings = await bookingService.get(query.data.limit, query.data.page);
+    }
+
     return res.status(200).send({
       status: 'OK',
-      bookings: await bookingService.get(query.data.limit, query.data.page),
+      bookings: bookings,
     });
   }
 

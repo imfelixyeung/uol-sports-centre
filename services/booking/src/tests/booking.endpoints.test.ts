@@ -17,7 +17,6 @@ beforeAll(done => {
 describe('Test API Endpoints', () => {
   test('GET /bookings', async () => {
     // create list of mock bookings
-    const date = new Date();
     const bookingsMock: Booking[] = [
       {
         id: 1,
@@ -25,26 +24,22 @@ describe('Test API Endpoints', () => {
         facilityId: 1,
         userId: 1,
         duration: 60,
-        starts: date,
-        created: date,
-        updated: date,
+        starts: new Date(),
+        created: new Date(),
+        updated: new Date(),
       },
     ];
 
     const expectedResponseBody = {
       status: 'OK',
-      bookings: [
-        {
-          id: 1,
-          transactionId: 1,
-          facilityId: 1,
-          userId: 1,
-          duration: 60,
-          starts: date.toISOString(),
-          created: date.toISOString(),
-          updated: date.toISOString(),
-        },
-      ],
+      bookings: bookingsMock.map(booking => {
+        return {
+          ...booking,
+          starts: booking.starts.toISOString(),
+          created: booking.starts.toISOString(),
+          updated: booking.starts.toISOString(),
+        };
+      }),
     };
 
     // mock the prisma client
@@ -60,20 +55,60 @@ describe('Test API Endpoints', () => {
       });
   });
 
+  test('GET /bookings?user=2', async () => {
+    // create list of mock bookings
+    const bookingsMock: Booking[] = [
+      {
+        id: 1,
+        transactionId: 1,
+        facilityId: 1,
+        userId: 2,
+        duration: 60,
+        starts: new Date(),
+        created: new Date(),
+        updated: new Date(),
+      },
+    ];
+
+    const expectedResponseBody = {
+      status: 'OK',
+      bookings: bookingsMock.map(booking => {
+        return {
+          ...booking,
+          starts: booking.starts.toISOString(),
+          created: booking.starts.toISOString(),
+          updated: booking.starts.toISOString(),
+        };
+      }),
+    };
+
+    // mock the prisma client
+    prismaMock.booking.findMany.mockResolvedValue(bookingsMock);
+
+    // perform test to see if it is there
+    await supertest(app)
+      .get('/bookings')
+      .query({user: 2})
+      .expect(200)
+      .then(response => {
+        // check it returns what it should
+        expect(response.body).toStrictEqual(expectedResponseBody);
+      });
+  });
+
   test('POST /bookings', async () => {
-    const date = new Date();
     const newBooking: CreateBookingDTO = {
       userId: 1,
       facilityId: 1,
       transactionId: 1,
-      starts: date,
+      starts: new Date(),
       duration: 60,
     };
     const mockBooking: Booking = {
       ...newBooking,
       id: 1,
-      created: date,
-      updated: date,
+      created: new Date(),
+      updated: new Date(),
     };
     const expectedResponseBody = {
       status: 'OK',
@@ -83,9 +118,9 @@ describe('Test API Endpoints', () => {
         facilityId: 1,
         transactionId: 1,
         duration: 60,
-        starts: date.toISOString(),
-        created: date.toISOString(),
-        updated: date.toISOString(),
+        starts: new Date().toISOString(),
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
       },
     };
 
