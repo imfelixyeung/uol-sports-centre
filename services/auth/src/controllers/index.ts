@@ -1,5 +1,8 @@
 import {Request, Response} from 'express';
 import {z} from 'zod';
+import {UserRole} from '../config';
+import {TokenRegistry} from '../persistence/tokens';
+import {JsonWebTokenPayload, jsonWebTokenPayloadSchema} from '../schema/jwt';
 import {getJwtFromRequest} from '../utils/getJwtFromRequest';
 
 // inspired by https://github.com/colinhacks/zod/discussions/2032#discussioncomment-4943969
@@ -12,11 +15,13 @@ export const createController = <
   bodySchema,
   querySchema,
   authRequired,
+  roleRequired,
   controller,
 }: {
   querySchema?: ZodSchemaQuery | undefined;
   bodySchema?: ZodSchemaBody | undefined;
   authRequired?: AuthRequired;
+  roleRequired?: UserRole[];
   controller: (options: {
     query: ZodSchemaQuery extends z.ZodTypeAny
       ? z.infer<ZodSchemaQuery>
@@ -25,16 +30,35 @@ export const createController = <
       ? z.infer<ZodSchemaBody>
       : never | undefined;
     token: AuthRequired extends true ? string : null;
+    session: AuthRequired extends true ? JsonWebTokenPayload | null : null;
   }) => Promise<unknown>;
 }): Handler => {
   return async (req: Request, res: Response) => {
     // parses the jwt token from authorisation header, if needed
     let token: string | null = null;
-    if (authRequired) {
+    let session: JsonWebTokenPayload | null = null;
+    if (authRequired || roleRequired) {
       token = getJwtFromRequest(req);
       if (!token)
         return res.status(401).json({
           success: false,
+        });
+
+      const payload = await TokenRegistry.verifyToken(token).catch(() => null);
+      const parsedPayload = jsonWebTokenPayloadSchema.safeParse(payload);
+      if (!parsedPayload.success) {
+        return res.status(401).json({
+          success: false,
+          message: 'Malformed token',
+        });
+      }
+      session = parsedPayload.data;
+
+      const userRole = session.user.role;
+      if (roleRequired && !roleRequired.includes(userRole))
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions',
         });
     }
 
@@ -73,6 +97,9 @@ export const createController = <
       body,
       query,
       token: token as AuthRequired extends true ? string : null,
+      session: session as AuthRequired extends true
+        ? JsonWebTokenPayload | null
+        : null,
     })
       .then(data =>
         res.json({

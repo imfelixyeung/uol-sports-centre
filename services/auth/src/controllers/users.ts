@@ -10,6 +10,7 @@ const usersControllers = {
       pageSize: z.coerce.number().int().gte(1).default(20),
     }),
     authRequired: true,
+    roleRequired: ['admin'],
     controller: async ({query}) => {
       const {pageIndex, pageSize} = query;
       const users = await getUsers({pageIndex, pageSize});
@@ -19,6 +20,7 @@ const usersControllers = {
   getUser: createController({
     querySchema: z.object({userId: z.coerce.number()}),
     authRequired: true,
+    roleRequired: ['admin'],
     controller: async ({query}) => {
       const {userId} = query;
       const user = await getUserById(userId);
@@ -31,6 +33,7 @@ const usersControllers = {
       role: z.enum(USER_ROLES),
     }),
     authRequired: true,
+    roleRequired: ['admin'],
     controller: async ({query, body}) => {
       const {userId} = query;
 
