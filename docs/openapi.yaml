@@ -847,7 +847,7 @@ paths:
       operationId: get_activity
       parameters:
         - in: path
-          name: time_id
+          name: activity_id
           schema:
             type: number
           required: true
@@ -876,7 +876,7 @@ paths:
       operationId: update_activity
       parameters:
         - in: path
-          name: time_id
+          name: activity_id
           schema:
             type: number
           required: true
@@ -909,7 +909,7 @@ paths:
       operationId: delete_activity
       parameters:
       - in: path
-        name: time_id
+        name: activity_id
         schema:
           type: number
         required: true
