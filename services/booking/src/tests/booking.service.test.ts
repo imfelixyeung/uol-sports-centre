@@ -48,6 +48,25 @@ describe('Test BookingService', () => {
     await expect(bookingService.getUserBookings(1)).resolves.toEqual(bookings);
   });
 
+  test('get booking by id', async () => {
+    // create list of mock bookings
+    const booking: Booking = {
+      id: 1,
+      userId: 1,
+      facilityId: 1,
+      transactionId: 1,
+      duration: 100,
+      starts: new Date(),
+      created: new Date(),
+      updated: new Date(),
+    };
+    // mock the prisma client
+    prismaMock.booking.findUnique.mockResolvedValue(booking);
+
+    // test if the returned value from the booking service equals the mocked data
+    await expect(bookingService.getById(1)).resolves.toEqual(booking);
+  });
+
   test('create booking', async () => {
     // test data
     const newBooking: CreateBookingDTO = {

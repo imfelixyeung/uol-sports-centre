@@ -36,8 +36,8 @@ describe('Test API Endpoints', () => {
         return {
           ...booking,
           starts: booking.starts.toISOString(),
-          created: booking.starts.toISOString(),
-          updated: booking.starts.toISOString(),
+          created: booking.created.toISOString(),
+          updated: booking.updated.toISOString(),
         };
       }),
     };
@@ -76,8 +76,8 @@ describe('Test API Endpoints', () => {
         return {
           ...booking,
           starts: booking.starts.toISOString(),
-          created: booking.starts.toISOString(),
-          updated: booking.starts.toISOString(),
+          created: booking.created.toISOString(),
+          updated: booking.updated.toISOString(),
         };
       }),
     };
@@ -89,6 +89,41 @@ describe('Test API Endpoints', () => {
     await supertest(app)
       .get('/bookings')
       .query({user: 2})
+      .expect(200)
+      .then(response => {
+        // check it returns what it should
+        expect(response.body).toStrictEqual(expectedResponseBody);
+      });
+  });
+
+  test('GET /bookings/1', async () => {
+    // create list of mock bookings
+    const bookingMock: Booking = {
+      id: 1,
+      transactionId: 1,
+      facilityId: 1,
+      userId: 1,
+      duration: 60,
+      starts: new Date(),
+      created: new Date(),
+      updated: new Date(),
+    };
+    const expectedResponseBody = {
+      status: 'OK',
+      booking: {
+        ...bookingMock,
+        starts: bookingMock.starts.toISOString(),
+        created: bookingMock.created.toISOString(),
+        updated: bookingMock.updated.toISOString(),
+      },
+    };
+
+    // mock the prisma client
+    prismaMock.booking.findUnique.mockResolvedValue(bookingMock);
+
+    // perform test to see if it is there
+    await supertest(app)
+      .get('/bookings/1')
       .expect(200)
       .then(response => {
         // check it returns what it should
