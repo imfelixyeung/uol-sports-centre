@@ -5,9 +5,9 @@ const Facilities = () => {
   return (
     <div className="bg-white text-black">
       <div className="container flex flex-col gap-6 py-8">
-        <Typography as="h2" styledAs="h1" uppercase>
+        <Typography.h2 styledAs="h1" uppercase>
           {'/// Facilities'}
-        </Typography>
+        </Typography.h2>
         <ProductCarousel
           products={[
             {

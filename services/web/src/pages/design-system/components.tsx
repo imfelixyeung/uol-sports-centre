@@ -6,7 +6,7 @@ const ComponentsPage = () => {
     <>
       <Seo title="Components" />
       <div className="container">
-        <Typography as="h1">Components</Typography>
+        <Typography.h1>Components</Typography.h1>
       </div>
     </>
   );

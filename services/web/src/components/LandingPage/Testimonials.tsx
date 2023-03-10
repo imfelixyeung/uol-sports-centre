@@ -52,9 +52,9 @@ type Testimonial = (typeof testimonials)[0];
 const Testimonials = () => {
   return (
     <div className="container flex flex-col gap-6 py-8">
-      <Typography as="h2" styledAs="h1" uppercase>
+      <Typography.h2 styledAs="h1" uppercase>
         {'/// Testimonials'}
-      </Typography>
+      </Typography.h2>
       <ScrollArea>
         <div className="flex gap-6 pb-3">
           {testimonials.map((testimonial, index) => (
@@ -84,17 +84,12 @@ const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
           />
         </div>
         <div className="flex flex-col">
-          <Typography as="span" styledAs="h2" className="not-italic" uppercase>
+          <Typography.span styledAs="h2" className="not-italic" uppercase>
             {name}
-          </Typography>
-          <Typography
-            as="span"
-            styledAs="subtext"
-            className="not-italic"
-            uppercase
-          >
+          </Typography.span>
+          <Typography.span styledAs="subtext" className="not-italic" uppercase>
             {title}
-          </Typography>
+          </Typography.span>
         </div>
       </cite>
     </blockquote>

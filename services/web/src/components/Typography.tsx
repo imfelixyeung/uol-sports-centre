@@ -32,8 +32,18 @@ export interface TypographyProps
     HTMLAttributes<HTMLHeadingElement> {
   as?: keyof ReactHTML;
 }
+export type TypographyTags = {
+  h1: FC<Omit<TypographyProps, 'as'>>;
+  h2: FC<Omit<TypographyProps, 'as'>>;
+  h3: FC<Omit<TypographyProps, 'as'>>;
+  h4: FC<Omit<TypographyProps, 'as'>>;
+  h5: FC<Omit<TypographyProps, 'as'>>;
+  h6: FC<Omit<TypographyProps, 'as'>>;
+  p: FC<Omit<TypographyProps, 'as'>>;
+  span: FC<Omit<TypographyProps, 'as'>>;
+};
 
-const Typography: FC<TypographyProps> = ({
+const Typography: FC<TypographyProps> & TypographyTags = ({
   styledAs,
   uppercase,
   as: is = 'p',
@@ -50,5 +60,14 @@ const Typography: FC<TypographyProps> = ({
   });
   return element;
 };
+
+Typography.h1 = props => <Typography as="h1" {...props} />;
+Typography.h2 = props => <Typography as="h2" {...props} />;
+Typography.h3 = props => <Typography as="h3" {...props} />;
+Typography.h4 = props => <Typography as="h4" {...props} />;
+Typography.h5 = props => <Typography as="h5" {...props} />;
+Typography.h6 = props => <Typography as="h6" {...props} />;
+Typography.p = props => <Typography as="p" {...props} />;
+Typography.span = props => <Typography as="span" {...props} />;
 
 export default Typography;

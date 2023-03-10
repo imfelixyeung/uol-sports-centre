@@ -26,9 +26,9 @@ const DashboardBookingsPage = () => {
           <div className="container py-8">
             <Bookings
               title={
-                <Typography as="h2" styledAs="h1" uppercase>
+                <Typography.h2 styledAs="h1" uppercase>
                   Your Bookings
-                </Typography>
+                </Typography.h2>
               }
             />
           </div>

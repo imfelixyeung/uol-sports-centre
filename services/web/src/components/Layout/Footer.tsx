@@ -26,9 +26,9 @@ const Footer = () => {
             {quickLinks.map((link, index) => (
               <li key={index}>
                 <Link href={link.href}>
-                  <Typography as="span" styledAs="navLink">
+                  <Typography.span styledAs="navLink">
                     {link.label}
-                  </Typography>
+                  </Typography.span>
                 </Link>
               </li>
             ))}

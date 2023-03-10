@@ -59,9 +59,9 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
         })}
       >
         <Form className="flex w-full flex-col gap-3">
-          <Typography as="h2" styledAs="h1" uppercase className="text-center">
+          <Typography.h2 styledAs="h1" uppercase className="text-center">
             {variant === 'login' ? 'Log Into Account' : 'Register Account'}
-          </Typography>
+          </Typography.h2>
 
           <label htmlFor="email" className="flex flex-col">
             <span className="">Email Address</span>

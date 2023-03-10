@@ -54,9 +54,9 @@ const DashboardBookingsPage = () => {
             </div>
             <Bookings
               title={
-                <Typography as="h2" styledAs="h1" uppercase>
+                <Typography.h2 styledAs="h1" uppercase>
                   Available Sessions
-                </Typography>
+                </Typography.h2>
               }
             />
           </div>

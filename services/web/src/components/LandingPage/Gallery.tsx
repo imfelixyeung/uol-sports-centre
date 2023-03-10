@@ -22,9 +22,9 @@ const Gallery = () => {
   return (
     <div className="bg-white text-black">
       <div className="container flex flex-col gap-6 py-8">
-        <Typography as="h2" styledAs="h1" uppercase>
+        <Typography.h2 styledAs="h1" uppercase>
           {'/// Gallery'}
-        </Typography>
+        </Typography.h2>
         <div className="grid aspect-square gap-3 md:max-h-[80vh] md:grid-cols-3 md:grid-rows-6">
           <div className="relative md:row-span-4">{imageElements[0]}</div>
           <div className="relative md:row-span-2">{imageElements[1]}</div>

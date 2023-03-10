@@ -44,12 +44,8 @@ const BookingActivity: FC<BookingActivityProps> = ({
   if (variant === 'page')
     return (
       <>
-        <Typography as="h1" uppercase>
-          Booking Activity
-        </Typography>
-        <Typography as="h2" uppercase>
-          {name}
-        </Typography>
+        <Typography.h1 uppercase>Booking Activity</Typography.h1>
+        <Typography.h2 uppercase>{name}</Typography.h2>
         {metadata}
         <div>{action}</div>
       </>
@@ -65,12 +61,10 @@ const BookingActivity: FC<BookingActivityProps> = ({
       <div className="flex justify-between gap-6">
         <div className={clsx('flex gap-6', variant === 'card' && 'flex-col')}>
           <div>
-            <Typography as="h3" uppercase>
-              {name}
-            </Typography>
-            <Typography as="h4" styledAs="subtext" uppercase>
+            <Typography.h3 uppercase>{name}</Typography.h3>
+            <Typography.h4 styledAs="subtext" uppercase>
               {facility}
-            </Typography>
+            </Typography.h4>
           </div>
           {metadata}
         </div>

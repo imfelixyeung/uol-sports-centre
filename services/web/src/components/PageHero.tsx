@@ -30,13 +30,11 @@ const PageHero: FC<PageHeroProps> = ({
       <div className="bg-gradient-to-r from-black via-black/95 to-black/50">
         <div className="container grid md:grid-cols-2">
           <div className="flex flex-col justify-center gap-6 py-16">
-            <Typography as="h1" {...titleStyles} className="mb-3">
+            <Typography.h1 {...titleStyles} className="mb-3">
               {title}
-            </Typography>
+            </Typography.h1>
             {subtitle && (
-              <Typography as="p" {...subtitleStyles}>
-                {subtitle}
-              </Typography>
+              <Typography.p {...subtitleStyles}>{subtitle}</Typography.p>
             )}
             {actions && (
               <div className="flex flex-col gap-3 md:flex-row">{actions}</div>

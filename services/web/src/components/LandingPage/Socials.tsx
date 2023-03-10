@@ -6,9 +6,9 @@ const socials = ['Instagram', 'Twitter', 'Facebook', 'LinkedIn', 'SocialApp'];
 const Socials = () => {
   return (
     <div className="container flex flex-col gap-6 py-8">
-      <Typography as="h2" styledAs="h1" uppercase>
+      <Typography.h2 styledAs="h1" uppercase>
         {'/// Socials'}
-      </Typography>
+      </Typography.h2>
       <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
         <img
           className="aspect aspect-square object-cover md:max-w-sm"
@@ -22,9 +22,9 @@ const Socials = () => {
               className="flex items-center justify-between gap-3"
               href=""
             >
-              <Typography as="h3" styledAs="h2" uppercase>
+              <Typography.h3 styledAs="h2" uppercase>
                 <span>{social}</span>
-              </Typography>
+              </Typography.h3>
               <ChevronTripleRightIcon
                 className="h-8 text-primary"
                 aria-hidden

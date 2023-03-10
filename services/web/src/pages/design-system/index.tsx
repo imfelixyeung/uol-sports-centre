@@ -8,7 +8,7 @@ const DesignSystemPage = () => {
     <>
       <Seo title="Design System" />
       <div className="container my-16 grid gap-3 text-center">
-        <Typography as="h1">Design System</Typography>
+        <Typography.h1>Design System</Typography.h1>
         <Link
           className={buttonStyles({intent: 'primary'})}
           href="/design-system/components"

@@ -83,13 +83,13 @@ const StyleGuidePage = () => {
       <Seo title="Style Guide" />
       <div className="grow bg-white text-black">
         <div className="container my-16">
-          <Typography as="h1" styledAs="display1" uppercase>
+          <Typography.h1 styledAs="display1" uppercase>
             Style Guide
-          </Typography>
+          </Typography.h1>
           <section className="mt-8">
-            <Typography as="h2" styledAs="display2" uppercase>
+            <Typography.h2 styledAs="display2" uppercase>
               Typography
-            </Typography>
+            </Typography.h2>
             <div className="mt-8 flex flex-wrap gap-8">
               <div className="flex grow flex-col gap-3">
                 {typographies.map((typography, index) => (
@@ -112,9 +112,9 @@ const StyleGuidePage = () => {
             </div>
           </section>
           <section className="mt-8">
-            <Typography as="h2" styledAs="display2" uppercase>
+            <Typography.h2 styledAs="display2" uppercase>
               Colours
-            </Typography>
+            </Typography.h2>
             <div className="mt-8 flex flex-wrap gap-3">
               {colours.map((colour, index) => (
                 <div

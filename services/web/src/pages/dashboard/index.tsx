@@ -21,9 +21,9 @@ const UserDashboardPage = () => {
 
   const availableClassesSection = (
     <section className="my-16">
-      <Typography as="h2" styledAs="h1" uppercase className="mb-8">
+      <Typography.h2 styledAs="h1" uppercase className="mb-8">
         {'/// Available Classes'}
-      </Typography>
+      </Typography.h2>
       <div className="flex flex-wrap gap-3">
         <Card variant="default" title="Card Title" grow />
         <Card variant="default" title="Card Title" grow />
@@ -36,9 +36,9 @@ const UserDashboardPage = () => {
 
   const upcomingSection = (
     <section className="my-16 flex flex-col gap-3">
-      <Typography as="h2" styledAs="h1" uppercase>
+      <Typography.h2 styledAs="h1" uppercase>
         {'/// Upcoming'}
-      </Typography>
+      </Typography.h2>
       <BookingActivity
         datetime={new Date('2023-01-01 00:00')}
         name="Booking Facility"
