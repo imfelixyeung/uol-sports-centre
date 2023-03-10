@@ -121,12 +121,12 @@ const StyleGuidePage = () => {
                   key={index}
                   className={clsx('grow p-6 text-center', colour.class)}
                 >
-                  <Typography styledAs="h1" uppercase>
+                  <Typography.p styledAs="h1" uppercase>
                     {colour.name}
-                  </Typography>
-                  <Typography styledAs="h2" uppercase>
+                  </Typography.p>
+                  <Typography.p styledAs="h2" uppercase>
                     {colour.hex}
-                  </Typography>
+                  </Typography.p>
                 </div>
               ))}
             </div>
@@ -147,11 +147,11 @@ const TypographyShowcase: FC<{
       variant === 'light' ? 'bg-white text-black' : 'bg-black text-white'
     )}
   >
-    <Typography styledAs={typography.styledAs} uppercase>
+    <Typography.p styledAs={typography.styledAs} uppercase>
       {typography.name}
-    </Typography>
-    <Typography styledAs="subtext">{typography.font}</Typography>
-    <Typography styledAs="subtext">{`${typography.fontSize}/${typography.lineHeight}`}</Typography>
+    </Typography.p>
+    <Typography.p styledAs="subtext">{typography.font}</Typography.p>
+    <Typography.p styledAs="subtext">{`${typography.fontSize}/${typography.lineHeight}`}</Typography.p>
   </div>
 );
 

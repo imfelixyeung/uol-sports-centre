@@ -26,18 +26,18 @@ const BookingActivity: FC<BookingActivityProps> = ({
         (variant === 'card' || variant === 'page') && 'flex-col'
       )}
     >
-      <Typography styledAs="subtext" className="flex items-center gap-2">
+      <Typography.p styledAs="subtext" className="flex items-center gap-2">
         <ClockIcon className="h-5" />
         {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
-      </Typography>
-      <Typography styledAs="subtext" className="flex items-center gap-2">
+      </Typography.p>
+      <Typography.p styledAs="subtext" className="flex items-center gap-2">
         <ClockIcon className="h-5" />
         {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
-      </Typography>
-      <Typography styledAs="subtext" className="flex items-center gap-2">
+      </Typography.p>
+      <Typography.p styledAs="subtext" className="flex items-center gap-2">
         <ClockIcon className="h-5" />
         {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
-      </Typography>
+      </Typography.p>
     </div>
   );
 

@@ -33,9 +33,9 @@ const Card: FC<CardProps> = ({variant, title, grow, ...props}) => {
   return (
     <div className={cardStyles({variant, grow})} {...props}>
       <div className="flex items-center justify-between gap-3">
-        <Typography styledAs="h2" uppercase>
+        <Typography.span styledAs="h2" uppercase>
           {title}
-        </Typography>
+        </Typography.span>
         <ChevronTripleRightIcon className="h-6" />
       </div>
     </div>

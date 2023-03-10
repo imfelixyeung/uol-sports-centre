@@ -74,7 +74,7 @@ const TestimonialCard: FC<TestimonialCardProps> = ({testimonial}) => {
   const {name, image, title, content} = testimonial;
   return (
     <blockquote className="flex min-w-[22rem] snap-center flex-col gap-6 p-6 even:bg-white even:text-black">
-      <Typography className="text-justify indent-6">{content}</Typography>
+      <Typography.p className="text-justify indent-6">{content}</Typography.p>
       <cite className="flex items-center gap-5">
         <div className="aspect-square w-20">
           <img
