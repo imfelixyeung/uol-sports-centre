@@ -9,7 +9,7 @@
     "start": "next start",
     "clean": "gts clean",
     "fix": "gts fix",
-    "ci": "pnpm lint"
+    "ci": "pnpm lint && pnpm build"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",
