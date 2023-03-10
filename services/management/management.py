@@ -76,7 +76,6 @@ def manageStaff(staffId, action, name=''):
     else:
         a = 1
         
-
     # Close the database connection
     conn.close()
 
