@@ -1,7 +1,14 @@
-import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import {
+  BookingDTO,
+  bookingToDTO,
+  CreateBookingDTO,
+  UpdateBookingDTO,
+} from '@/dto/booking.dto';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import {BookingsFilter} from '@/types/bookings';
 import {PaginatedBookings} from '@/types/responses';
+import {Prisma} from '@prisma/client';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying
@@ -87,89 +94,65 @@ class BookingDAO {
   }
 
   /**
-   * Gets a list of bookings from the database with optional limit and page
-   * pagination options
+   * Gets a list of bookings from the database based on a filter
    *
    * @memberof BookingDAO
    */
-  async getBookings(limit?: number, page?: number): Promise<PaginatedBookings> {
+  async getBookings(
+    filter: BookingsFilter
+  ): Promise<PaginatedBookings | Error> {
     logger.debug(
-      `Getting bookings from database, limit: ${limit}, page: ${page}`
+      `Getting bookings with the following filter: ${JSON.stringify(filter)}`
     );
 
-    // using offset based pagination for simplicity here
-    const bookingsData = await prisma.$transaction([
-      prisma.booking.count(),
-      prisma.booking.findMany({
-        skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
-        take: limit,
-      }),
-    ]);
-
-    // map Booking to BookingDTO
-    const bookings = bookingsData[1].map(booking => {
-      return {
-        ...booking,
-        starts: booking.starts.toISOString(),
-        created: booking.created.toISOString(),
-        updated: booking.updated.toISOString(),
-      };
-    });
-
-    return {
-      bookings,
-      metadata: {
-        count: bookingsData[0],
-        limit: limit || 0,
-        page: page || 1,
-        pageCount: bookingsData[0] / (limit || bookingsData[0]) || 0,
+    const queryWhere: Prisma.BookingWhereInput = {
+      userId: filter.user,
+      facilityId: filter.facility,
+      activityId: filter.activity,
+      starts: {
+        ...(filter.start && {gte: new Date(filter.start)}),
+        ...(filter.end && {lte: new Date(filter.end)}),
       },
     };
-  }
 
-  /**
-   * Gets a list of bookings for a specific user with optional pagination
-   * options
-   *
-   * @memberof BookingDAO
-   */
-  async getBookingsForUser(
-    userId: number,
-    limit?: number,
-    page?: number
-  ): Promise<PaginatedBookings> {
-    logger.debug(
-      `Getting bookings for user ${userId}, limit: ${limit}, page: ${page}`
-    );
+    // TODO: Implement `filter.sort`
+    const queryOrderBy: Prisma.Enumerable<Prisma.BookingOrderByWithRelationInput> =
+      {};
 
-    const userBookings = await prisma.$transaction([
-      prisma.booking.count({where: {userId: userId}}),
-      prisma.booking.findMany({
-        where: {
-          userId: userId,
-        },
-        skip: page && limit && page > 1 ? (page - 1) * limit : undefined,
-        take: limit,
-      }),
-    ]);
+    const bookings = await prisma
+      .$transaction([
+        prisma.booking.count({where: queryWhere}),
+        prisma.booking.findMany({
+          where: queryWhere,
+          skip:
+            filter.page && filter.limit && filter.page > 1
+              ? (filter.page - 1) * filter.limit
+              : undefined,
+          take: filter.limit,
+          orderBy: queryOrderBy,
+        }),
+      ])
+      .then(response => {
+        return [response[0], response[1].map(b => bookingToDTO(b))];
+      })
+      .catch(err => {
+        logger.error(`Error getting bookings: ${err}`);
+        return new Error(err);
+      });
 
-    // map Booking to BookingDTO
-    const bookings = userBookings[1].map(booking => {
-      return {
-        ...booking,
-        starts: booking.starts.toISOString(),
-        created: booking.created.toISOString(),
-        updated: booking.updated.toISOString(),
-      };
-    });
+    // return the error if it is one
+    if (bookings instanceof Error) return bookings;
 
+    // if not, return in paginated form
     return {
-      bookings,
+      bookings: bookings[1] as BookingDTO[],
       metadata: {
-        count: userBookings[0],
-        limit: limit || 0,
-        page: page || 1,
-        pageCount: userBookings[0] / (limit || userBookings[0]) || 0,
+        count: bookings[0] as number,
+        limit: filter.limit || 0,
+        page: filter.page || 1,
+        pageCount:
+          (bookings[0] as number) / (filter.limit || (bookings[0] as number)) ||
+          0,
       },
     };
   }

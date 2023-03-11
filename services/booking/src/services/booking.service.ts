@@ -32,7 +32,7 @@ class BookingService {
   async get(limit?: number, page?: number) {
     logger.debug(`Get bookings, limit: ${limit}, page: ${page}`);
 
-    return await bookingDao.getBookings(limit, page);
+    return await bookingDao.getBookings({limit, page});
   }
 
   /**
@@ -42,7 +42,7 @@ class BookingService {
    */
   async getUserBookings(user: number, limit?: number, page?: number) {
     logger.debug(`Get user ${user} bookings, limit: ${limit}, page: ${page}`);
-    return await bookingDao.getBookingsForUser(user, limit, page);
+    return await bookingDao.getBookings({user, limit, page});
   }
 
   /**
@@ -105,7 +105,15 @@ class BookingService {
     if (!start) start = new Date().setHours(0, 0, 0);
     if (!end) end = new Date().setHours(23, 59, 59);
 
-    // check if available events has been generated for that time range
+    // get all existing booking for the range specified
+    const currentBookings = await bookingDao.getBookings({
+      facility,
+      activity,
+      limit,
+      page,
+      start,
+      end,
+    });
   }
 }
 
