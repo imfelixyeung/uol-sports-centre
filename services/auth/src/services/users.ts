@@ -1,6 +1,6 @@
 import {User} from '@prisma/client';
-import {UserRole} from '../config';
-import {UserRegistry} from '../persistence/users';
+import {UserRole} from '~/config';
+import {UserRegistry} from '~/persistence/users';
 
 const userWithoutPassword = (user: User | null) => {
   if (!user) return null;

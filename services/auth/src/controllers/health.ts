@@ -1,5 +1,5 @@
 import {createController} from '.';
-import {getHealth} from '../services/health';
+import {getHealth} from '~/services/health';
 
 const get = createController({
   controller: async () => {

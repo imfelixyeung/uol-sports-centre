@@ -5,9 +5,9 @@ import {
   LONG_REFRESH_JWT_EXPIRES_IN_MS,
   REFRESH_JWT_SIGN_OPTIONS,
   SHORT_REFRESH_JWT_EXPIRES_IN_MS,
-} from '../config';
-import {env} from '../env';
-import {db} from '../utils/db';
+} from '~/config';
+import {env} from '~/env';
+import {db} from '~/utils/db';
 import {TokenRegistry} from './tokens';
 
 export class RefreshTokenRegistry {

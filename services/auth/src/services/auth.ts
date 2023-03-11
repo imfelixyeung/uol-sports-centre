@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
-import {TokenRegistry} from '../persistence/tokens';
-import {UserRegistry} from '../persistence/users';
-import {Credentials, ResetPassword} from '../schema/credentials';
-import {JsonWebToken} from '../schema/jwt';
+import {RefreshTokenRegistry} from '~/persistence/refresh-tokens';
+import {TokenRegistry} from '~/persistence/tokens';
+import {UserRegistry} from '~/persistence/users';
+import {Credentials, ResetPassword} from '~/schema/credentials';
+import {JsonWebToken} from '~/schema/jwt';
 
 /**
  * signs a user in with their credentials
