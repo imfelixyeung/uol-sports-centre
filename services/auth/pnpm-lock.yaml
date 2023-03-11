@@ -15,6 +15,7 @@ specifiers:
   express: ^4.18.2
   gts: ^3.1.1
   jest: ^29.4.3
+  jest-mock-extended: ^3.0.3
   jsonwebtoken: ^9.0.0
   ms: ^2.1.3
   node-cron: ^3.0.2
@@ -45,6 +46,7 @@ devDependencies:
   esbuild: 0.17.11
   gts: 3.1.1_typescript@4.7.4
   jest: 29.4.3_@types+node@14.18.36
+  jest-mock-extended: 3.0.3_yyqnsx2vrdlefrxgmjofh3qqxi
   prisma: 4.11.0
   ts-jest: 29.0.5_7maeemlyaadxcj7yo7ni6yma5m
   tsx: 3.12.3
@@ -2875,6 +2877,17 @@ packages:
       stack-utils: 2.0.6
     dev: true
 
+  /jest-mock-extended/3.0.3_yyqnsx2vrdlefrxgmjofh3qqxi:
+    resolution: {integrity: sha512-yqpzvwFr2JWFArj4sPco4hPSanYH3erFgdkv7ahP8EMiAbVH+Rgjc8/cpAHJVG7+sZnQgl0AuTkxofD7eLJN+g==}
+    peerDependencies:
+      jest: ^24.0.0 || ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0
+      typescript: ^3.0.0 || ^4.0.0
+    dependencies:
+      jest: 29.4.3_@types+node@14.18.36
+      ts-essentials: 7.0.3_typescript@4.7.4
+      typescript: 4.7.4
+    dev: true
+
   /jest-mock/29.4.3:
     resolution: {integrity: sha512-LjFgMg+xed9BdkPMyIJh+r3KeHt1klXPJYBULXVVAkbTaaKjPX1o1uVCAZADMEp/kOxGTwy/Ot8XbvgItOrHEg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -4131,6 +4144,14 @@ packages:
   /trim-newlines/3.0.1:
     resolution: {integrity: sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==}
     engines: {node: '>=8'}
+    dev: true
+
+  /ts-essentials/7.0.3_typescript@4.7.4:
+    resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
+    peerDependencies:
+      typescript: '>=3.7.0'
+    dependencies:
+      typescript: 4.7.4
     dev: true
 
   /ts-jest/29.0.5_7maeemlyaadxcj7yo7ni6yma5m:
