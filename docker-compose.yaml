@@ -104,7 +104,9 @@ services:
       - ./persistence/users/db:/var/lib/postgresql/data
 
   booking:
-    build: ./services/booking
+    build:
+      context: ./services/booking
+      target: prod
     environment:
       - PORT=80
       - HOST=booking
