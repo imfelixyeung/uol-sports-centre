@@ -21,3 +21,24 @@ model Booking {
   created       DateTime
   updated       DateTime
 }
+
+enum EventType {
+  // Open use means many people can book seperately to use the facility
+  OPEN_USE
+
+  // Session means that one person books out that facility
+  SESSION
+
+  // Team event means that the facility is unavailable for use within that time
+  TEAM_EVENT
+}
+
+model Event {
+  id         Int       @id @default(autoincrement())
+  name       String
+  activityId Int
+  day        Int
+  time       Int
+  duration   Int
+  type       EventType
+}

@@ -6,17 +6,20 @@
   "scripts": {
     "test": "jest",
     "posttest": "pnpm lint",
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "prisma generate",
     "lint": "pnpm check-types && gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
-    "start": "tsx src/index.ts",
-    "dev": "pnpm db:push && tsx watch --clear-screen=false src/index.ts",
-    "preinstall": "npx only-allow pnpm",
-    "postinstall": "prisma generate",
-    "build": "swc ./src -d build",
     "check-types": "tsc --noemit",
     "db:push": "prisma db push --skip-generate",
-    "serve": "pnpm db:push && node ./build/src/index.js"
+    "seed": "prisma db seed",
+    "dev": "pnpm db:push && pnpm seed && tsx watch --clear-screen=false src/index.ts",
+    "build": "swc ./src -d build",
+    "serve": "pnpm db:push && pnpm seed && node ./build/src/index.js"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

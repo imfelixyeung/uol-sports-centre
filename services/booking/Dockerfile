@@ -13,7 +13,7 @@ RUN pnpm install
 # copy app
 COPY . .
 
-# build the app and push db
+# build the app and generate prisma client
 RUN pnpm build
 RUN pnpm exec prisma generate
 

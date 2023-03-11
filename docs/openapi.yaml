@@ -534,6 +534,30 @@ paths:
                   booking:
                     $ref: "#/components/schemas/Booking"
 
+  /booking/events:
+    get:
+      tags:
+        - booking
+      summary: Returns all events
+      description: Returns all the events
+      operationId: getEvents
+      responses:
+        "200":
+          description: Successful operation retuns the array of events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+
 components:
   securitySchemes:
     JWT:
@@ -641,6 +665,39 @@ components:
           type: string
           description: When the booking was last updated
           example: "2023-03-02T10:00:00.000Z"
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Event ID
+          example: 1
+        name:
+          type: string
+          description: Name of the event
+          example: 1
+        activityId:
+          type: number
+          description: Activity ID
+          example: 1
+        day:
+          type: number
+          description: The Day with 0 being Monday and 6 being Sunday
+          example: 1
+        time:
+          type: number
+          description: Start time of the event as minutes since 00:00
+          example: 480
+        duration:
+          type: number
+          description: Length of the booking in minutes
+          example: 60
+        type:
+          type: string
+          enum: ["OPEN_USE", "TEAM_EVENT", "SESSION"]
+          description: Type of event
+          example: "OPEN_USE"
 
   requestBodies:
     Credentials:
