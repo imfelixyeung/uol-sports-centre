@@ -4,11 +4,12 @@ import {
   CreateBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
+import NotFoundError from '@/errors/notFound';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {BookingsFilter} from '@/types/bookings';
 import {PaginatedBookings} from '@/types/responses';
-import {Prisma} from '@prisma/client';
+import {Booking, Prisma} from '@prisma/client';
 
 /**
  * The Booking DAO (Data Access Object) is used to abstract the underlying
@@ -26,12 +27,17 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async addBooking(bookingData: CreateBookingDTO) {
+  async addBooking(bookingData: CreateBookingDTO): Promise<Booking | Error> {
     logger.debug(`Adding booking to database, ${bookingData}`);
 
-    const booking = await prisma.booking.create({
-      data: {...bookingData, created: new Date(), updated: new Date()},
-    });
+    const booking = await prisma.booking
+      .create({
+        data: {...bookingData, created: new Date(), updated: new Date()},
+      })
+      .catch(err => {
+        logger.error(`Error creating booking ${err}`);
+        return new Error(err);
+      });
 
     return booking;
   }
@@ -41,7 +47,7 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async editBooking(bookingData: UpdateBookingDTO) {
+  async editBooking(bookingData: UpdateBookingDTO): Promise<Booking | Error> {
     logger.debug(
       `Editing booking in database, ${bookingData.id}, ${bookingData}`
     );
@@ -49,12 +55,17 @@ class BookingDAO {
     // split id and the rest of the data
     const {id, ...updateData} = bookingData;
 
-    const booking = await prisma.booking.update({
-      where: {
-        id: id,
-      },
-      data: updateData,
-    });
+    const booking = await prisma.booking
+      .update({
+        where: {
+          id: id,
+        },
+        data: updateData,
+      })
+      .catch(err => {
+        logger.error(`Error updating booking booking ${err}`);
+        return new Error(err);
+      });
 
     return booking;
   }
@@ -64,14 +75,19 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async deleteBooking(bookingId: number) {
+  async deleteBooking(bookingId: number): Promise<Booking | Error> {
     logger.debug(`Deleting booking in database, ${bookingId}`);
 
-    const booking = await prisma.booking.delete({
-      where: {
-        id: bookingId,
-      },
-    });
+    const booking = await prisma.booking
+      .delete({
+        where: {
+          id: bookingId,
+        },
+      })
+      .catch(err => {
+        logger.error(`Error deleting booking ${err}`);
+        return new Error(err);
+      });
 
     return booking;
   }
@@ -81,14 +97,22 @@ class BookingDAO {
    *
    * @memberof BookingDAO
    */
-  async getBooking(bookingId: number) {
+  async getBooking(bookingId: number): Promise<Booking | Error> {
     logger.debug(`Getting booking from database, ${bookingId}`);
 
-    const booking = await prisma.booking.findUnique({
-      where: {
-        id: bookingId,
-      },
-    });
+    const booking = await prisma.booking
+      .findUnique({
+        where: {
+          id: bookingId,
+        },
+      })
+      .then(value =>
+        value === null ? new NotFoundError(`Booking ${bookingId} found`) : value
+      )
+      .catch(err => {
+        logger.error(`Error getting booking ${err}`);
+        return new Error(err);
+      });
 
     return booking;
   }

@@ -114,6 +114,8 @@ class BookingService {
       start,
       end,
     });
+
+    return currentBookings;
   }
 }
 

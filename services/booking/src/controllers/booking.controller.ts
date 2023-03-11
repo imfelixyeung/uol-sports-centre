@@ -6,6 +6,7 @@ import bookingService from '@/services/booking.service';
 import {PaginatedBookings} from '@/types/responses';
 import paginationSchema from '@/schema/pagination';
 import {id, timestamp} from '@/schema';
+import NotFoundError from '@/errors/notFound';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -150,17 +151,19 @@ class BookingController {
       return new Error(err);
     });
 
-    if (booking === null) {
-      // if it is null, it was not found in the database
-      return res.status(404).json({
-        status: 'error',
-        error: 'Booking not found',
-      });
-    } else if (booking instanceof Error) {
-      return res.status(500).json({
-        status: 'error',
-        error: booking,
-      });
+    if (booking instanceof Error) {
+      if (booking instanceof NotFoundError) {
+        // if it is null, it was not found in the database
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).json({
+          status: 'error',
+          error: booking,
+        });
+      }
     }
 
     // after passing all the above checks, the booking should be okay
