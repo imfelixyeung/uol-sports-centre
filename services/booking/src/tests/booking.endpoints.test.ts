@@ -364,6 +364,7 @@ describe('Test /bookings', () => {
         userId: 1,
         duration: 60,
         facilityId: 1,
+        activityId: 1,
         starts: new Date(),
         transactionId: 1,
       } as CreateBookingDTO)
