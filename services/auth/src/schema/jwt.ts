@@ -1,7 +1,10 @@
 import {z} from 'zod';
 import {USER_ROLES} from '../config';
 
-export const jsonWebTokenSchema = z.string();
+export const jsonWebTokenSchema = z
+  .string()
+  .refine(token => token.split('.').length === 3);
+
 export const jsonWebTokenPayloadSchema = z.object({
   user: z.object({
     id: z.number(),
