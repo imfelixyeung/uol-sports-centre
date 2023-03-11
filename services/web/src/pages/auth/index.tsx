@@ -1,5 +1,9 @@
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import AppIcon from '~/components/AppIcon/AppIcon';
+import Button, {buttonStyles} from '~/components/Button';
+import ScrollArea from '~/components/ScrollArea';
+import Typography from '~/components/Typography';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
 const AuthPage = () => {
@@ -13,23 +17,65 @@ const AuthPage = () => {
     });
   };
   return (
-    <div>
-      <pre>
-        <code>{JSON.stringify(auth, null, 2)}</code>
+    <div className="container">
+      <div className="mx-auto flex max-w-[16rem] flex-col justify-center gap-3">
+        <div className="flex justify-center">
+          <AppIcon />
+        </div>
         {auth.session ? (
           <>
-            <p>Hello, {auth.session.user.email}</p>
-            <button type="button" onClick={handleLogout}>
+            <Button intent="primary" type="button" onClick={handleLogout}>
               Logout
-            </button>
+            </Button>
           </>
         ) : (
           <>
-            <Link href="/auth/login">Login</Link>
-            <Link href="/auth/register">Register</Link>
+            <Link
+              href="/auth/login"
+              className={buttonStyles({intent: 'primary'})}
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth/register"
+              className={buttonStyles({intent: 'primary'})}
+            >
+              Register
+            </Link>
           </>
         )}
-      </pre>
+      </div>
+      {auth.session && (
+        <div className="my-8 bg-white p-8 text-black">
+          <Typography.h2>This is you!</Typography.h2>
+          <Typography.p styledAs="subtext">For demo only</Typography.p>
+          <ScrollArea>
+            <pre className="mb-3 bg-black p-3 text-white">
+              <code className="break-words">
+                {JSON.stringify(auth.session, null, 2)}
+              </code>
+            </pre>
+          </ScrollArea>
+          <Typography.h3 className="mt-6">Your Tokens</Typography.h3>
+          <Typography.p styledAs="subtext">
+            For demo only, refresh tokens should be kept securely
+          </Typography.p>
+          <ScrollArea>
+            <pre className="mb-3 bg-black p-3 text-white">
+              <code className="break-words">
+                {JSON.stringify(
+                  {
+                    accessToken: auth.token,
+                    refreshToken: auth.refreshToken,
+                  },
+                  null,
+                  2
+                )}
+              </code>
+            </pre>
+          </ScrollArea>
+        </div>
+      )}
     </div>
   );
 };
