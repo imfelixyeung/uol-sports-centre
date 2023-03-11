@@ -5,7 +5,7 @@ import logger from '@/lib/logger';
 import bookingService from '@/services/booking.service';
 import {PaginatedBookings} from '@/types/responses';
 import paginationSchema from '@/schema/pagination';
-import {date, id, timestamp} from '@/schema';
+import {id, timestamp} from '@/schema';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -87,6 +87,7 @@ class BookingController {
     const createBookingBodySchema = z.object({
       userId: z.number(),
       facilityId: z.number(),
+      activityId: z.number(),
       transactionId: z.number(),
       starts: z.string().transform(time => new Date(time)),
       duration: z.number(),

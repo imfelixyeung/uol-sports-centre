@@ -4,6 +4,7 @@ export interface BookingDTO {
   id: number;
   userId: number;
   facilityId: number;
+  activityId: number;
   transactionId: number;
   duration: number;
   starts: string;
@@ -23,6 +24,7 @@ export const bookingToDTO = (booking: Booking): BookingDTO => {
 export interface CreateBookingDTO {
   userId: number;
   facilityId: number;
+  activityId: number;
   transactionId: number;
   duration: number;
   starts: Date;
@@ -32,6 +34,7 @@ export interface UpdateBookingDTO {
   id: number;
   userId?: number;
   facilityId?: number;
+  activityId?: number;
   transactionId?: number;
   duration?: number;
   starts?: Date;
