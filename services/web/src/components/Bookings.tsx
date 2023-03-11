@@ -6,6 +6,7 @@ import CalendarIcon from '~/components/Icons/CalendarIcon';
 import GridIcon from '~/components/Icons/GridIcon';
 import ListIcon from '~/components/Icons/ListIcon';
 import Button from './Button';
+import IconToggleGroup from './IconToggleGroup';
 
 const availableViews = [
   {id: 'grid', name: 'Grid View', Icon: GridIcon},
@@ -26,22 +27,15 @@ const Bookings: FC<BookingsProps> = ({title}) => {
     <>
       <div className="flex flex-wrap justify-between">
         <div>{title}</div>
-        <div className="flex items-center gap-2 bg-black p-2">
-          {availableViews.map((view, index) => (
-            <button
-              key={index}
-              className={clsx(
-                'grid aspect-square h-8 cursor-pointer place-items-center',
-                currentView === view.id ? 'bg-primary' : 'bg-white'
-              )}
-              aria-label={`Switch to ${view.name}`}
-              title={`Switch to ${view.name}`}
-              onClick={() => setCurrentView(view.id)}
-            >
-              <view.Icon className="aspect-square h-5" />
-            </button>
-          ))}
-        </div>
+        <IconToggleGroup
+          items={availableViews.map(view => ({
+            Icon: view.Icon,
+            value: view.id,
+            label: `Switch to ${view.name}`,
+          }))}
+          value={currentView}
+          onValueChange={setCurrentView}
+        />
       </div>
       <div
         className={clsx(
