@@ -556,7 +556,7 @@ paths:
                   events:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Event'
+                      $ref: "#/components/schemas/Event"
 
 components:
   securitySchemes:
