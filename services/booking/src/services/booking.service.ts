@@ -77,6 +77,36 @@ class BookingService {
 
     return await bookingDao.deleteBooking(id);
   }
+
+  /**
+   * Get a list of available bookings given the current filters. All of the
+   * filters are optional which means that there are a number of fallback
+   * filters to use if unspecified. They are:
+   *
+   * - start: 00:00 of the current day
+   * - end: 23:59 of the current day
+   * - facility: all facilities searched
+   * - activity: all activities searched
+   *
+   * pagination (the limits will likely be changed to enforce the use of pagination)
+   * - limit: no limit (all returned)
+   * - page: will default to 1
+   *
+   * @memberof BookingService
+   */
+  async getAvailableBookings(
+    start?: number,
+    end?: number,
+    facility?: number,
+    activity?: number,
+    limit?: number,
+    page?: number
+  ) {
+    if (!start) start = new Date().setHours(0, 0, 0);
+    if (!end) end = new Date().setHours(23, 59, 59);
+
+    // check if available events has been generated for that time range
+  }
 }
 
 export default new BookingService();

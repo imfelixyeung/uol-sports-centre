@@ -10,6 +10,9 @@ bookingRouter.get('/', BookingController.getBookings);
 // create new booking
 bookingRouter.post('/', BookingController.createBooking);
 
+// get available booking slots
+bookingRouter.get('/availability', BookingController.getAvailableBookings);
+
 // get specific booking
 bookingRouter.get('/:id', BookingController.getBookingById);
 

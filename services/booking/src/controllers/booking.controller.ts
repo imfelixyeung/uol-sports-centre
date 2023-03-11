@@ -4,6 +4,8 @@ import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
 import logger from '@/lib/logger';
 import bookingService from '@/services/booking.service';
 import {PaginatedBookings} from '@/types/responses';
+import paginationSchema from '@/schema/pagination';
+import {date, id, timestamp} from '@/schema';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -28,27 +30,8 @@ class BookingController {
 
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
-      limit: z
-        .string()
-        .transform(limit => parseInt(limit))
-        .refine(limit => !Number.isNaN(limit), {
-          message: 'Non-numeric limit parameter supplied',
-        })
-        .optional(),
-      page: z
-        .string()
-        .transform(page => parseInt(page))
-        .refine(page => !Number.isNaN(page), {
-          message: 'Non-numeric page parameter supplied',
-        })
-        .optional(),
-      user: z
-        .string()
-        .transform(uid => parseInt(uid))
-        .refine(uid => !Number.isNaN(uid), {
-          message: 'Non-numeric user id supplied',
-        })
-        .optional(),
+      ...paginationSchema,
+      user: id('user id').optional(),
     });
 
     // ensure the query params abide by that schema
@@ -148,12 +131,7 @@ class BookingController {
 
     // create a schema, outlining what we expect from params
     const paramSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -211,12 +189,7 @@ class BookingController {
       duration: z.number().optional(),
     });
     const updateBookingParamsSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -267,12 +240,7 @@ class BookingController {
     logger.debug('Received deleteBookingById request');
 
     const deleteBookingParamsSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -301,6 +269,48 @@ class BookingController {
     return res.status(200).send({
       status: 'OK',
       booking,
+    });
+  }
+
+  /**
+   * Get available booking slots based on filter variables
+   *
+   * @memberof BookingController
+   */
+  async getAvailableBookings(req: express.Request, res: express.Response) {
+    const availableBookingParamsSchema = z.object({
+      ...paginationSchema,
+      start: timestamp.optional(),
+      end: timestamp.optional(),
+      facility: id('facility id').optional(),
+      activity: id('activity id').optional(),
+    });
+
+    const params = availableBookingParamsSchema.safeParse(req.params);
+    if (!params.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: params.error,
+      });
+
+    const availableBookings = await bookingService
+      .getAvailableBookings()
+      .catch(err => {
+        logger.error(`Error getting available bookings: ${err}`);
+        return new Error(err);
+      });
+
+    if (availableBookings instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: availableBookings,
+      });
+    }
+
+    return res.status(200).send({
+      status: 'OK',
+      availableBookings,
     });
   }
 }
