@@ -65,6 +65,9 @@ services:
       - DATABASE_URL=postgresql://status:status@status-db:5432/prod
     networks:
       - network
+    depends_on:
+      status-db:
+        condition: service_healthy
 
   status-db:
     image: postgres
