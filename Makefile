@@ -13,6 +13,10 @@ dev:
 
 ci: ci-auth ci-docs ci-status
 
+ci-web:
+	docker compose -f docker-compose.ci.yaml build web
+	docker compose -f docker-compose.ci.yaml run web
+
 ci-auth:
 	docker compose -f docker-compose.ci.yaml build auth
 	docker compose -f docker-compose.ci.yaml run auth
