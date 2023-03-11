@@ -42,3 +42,11 @@ describe('getUsers', () => {
     ).resolves.toEqual(users.map(userWithoutPassword));
   });
 });
+
+describe('getUserById', () => {
+  it.todo('should return user without password');
+});
+
+describe('updateUserById', () => {
+  it.todo('should update user');
+});

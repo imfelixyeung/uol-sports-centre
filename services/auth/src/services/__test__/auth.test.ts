@@ -59,3 +59,27 @@ describe('registerWithCredentials', () => {
     ).toBeTruthy();
   });
 });
+
+describe('deleteExpiredTokens', () => {
+  it.todo('implement tests');
+});
+
+describe('getSessionFromToken', () => {
+  it.todo('implement tests');
+});
+
+describe('refreshAccessToken', () => {
+  it.todo('implement tests');
+});
+
+describe('resetPassword', () => {
+  it.todo('implement tests');
+});
+
+describe('signInWithCredentials', () => {
+  it.todo('implement tests');
+});
+
+describe('signOutToken', () => {
+  it.todo('implement tests');
+});
