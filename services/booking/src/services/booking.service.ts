@@ -1,7 +1,13 @@
 import bookingDao from '@/dao/booking.dao';
 import eventDao from '@/dao/event.dao';
-import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import {
+  BookingDTO,
+  CreateBookingDTO,
+  UpdateBookingDTO,
+} from '@/dto/booking.dto';
+import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
+import {ActivitiesResponse} from '@/types/external';
 
 /**
  * The Booking Service performs any required business logic before updating the
@@ -114,6 +120,62 @@ class BookingService {
       end,
     });
 
+    // return the error if occurs
+    if (validEvents instanceof Error) return validEvents;
+
+    // next we need to get a list of activities to access information on how
+    // long each instance of an activity will be
+    const activities = await httpClient
+      .get<ActivitiesResponse>(
+        'http://gateway/api/facilities/activities?page=1&limit=1000'
+      )
+      .catch(err => {
+        console.error(`Error fetching activities ${err}`);
+        return new Error(err);
+      });
+
+    // return the error if occured
+    if (activities instanceof Error) return activities;
+
+    const possibleBookings: BookingDTO[] = [];
+
+    // for each event, generate a list of possible bookings
+    validEvents.forEach(event => {
+      const activity = activities.find(a => a.id === event.activityId);
+      if (!activity) {
+        logger.error(
+          `Unable to find activity id ${event.activityId} in activities`
+        );
+        return; // continue
+      }
+
+      const timeSlots = event.duration / activity.duration;
+      logger.debug(`${timeSlots} ${activity.duration}m slots in ${event.name}`);
+
+      // for each timeslot, generate a possible booking
+      for (let i = 0; i < timeSlots; i++) {
+        const booking: BookingDTO = {
+          starts: new Date(
+            new Date(start || new Date()).setMinutes(
+              event.time + i * activity.duration
+            )
+          ).toISOString(),
+          duration: activity.duration,
+          eventId: event.id,
+
+          // TODO: create new type for possible booking
+          id: 0,
+          transactionId: 0,
+          userId: 0,
+          created: new Date().toISOString(),
+          updated: new Date().toISOString(),
+        };
+
+        possibleBookings.push(booking);
+        logger.debug(booking);
+      }
+    });
+
     // get all existing booking for the range specified
     const currentBookings = await bookingDao.getBookings({
       facility,
@@ -124,7 +186,11 @@ class BookingService {
       end,
     });
 
-    return currentBookings;
+    // check capacity of open_use events
+    // check availability based on sessions and team events
+    // remove them from the list of possible bookings
+
+    return possibleBookings;
   }
 }
 
