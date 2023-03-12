@@ -3,7 +3,15 @@ import {dbMock} from '../../singleton';
 import {User} from '@prisma/client';
 import {z} from 'zod';
 import {jsonWebTokenSchema} from '~/schema/jwt';
-import {registerWithCredentials} from '../auth';
+import {
+  deleteExpiredTokens,
+  getSessionFromToken,
+  refreshAccessToken,
+  registerWithCredentials,
+  resetPassword,
+  signInWithCredentials,
+  signOutToken,
+} from '../auth';
 
 const user: User = {
   id: 0,
@@ -15,6 +23,7 @@ const user: User = {
 };
 
 describe('registerWithCredentials', () => {
+  registerWithCredentials;
   it('should throw error if already user exists', async () => {
     dbMock.user.findUnique.mockResolvedValue(user);
 
@@ -60,26 +69,40 @@ describe('registerWithCredentials', () => {
   });
 });
 
+describe('signInWithCredentials', () => {
+  signInWithCredentials;
+  it.todo('throws error if user does not exist');
+  it.todo('throws error if user exists with incorrect credentials');
+  it.todo('returns tokens if user exists with correct credentials');
+});
+
 describe('deleteExpiredTokens', () => {
-  it.todo('implement tests');
+  deleteExpiredTokens;
+  it.todo('deletes expired tokens');
 });
 
 describe('getSessionFromToken', () => {
-  it.todo('implement tests');
+  getSessionFromToken;
+  it.todo('throws error if token is invalid');
+  it.todo('returns token if it is valid');
 });
 
 describe('refreshAccessToken', () => {
-  it.todo('implement tests');
+  refreshAccessToken;
+  it.todo('throws error if access token is invalid');
+  it.todo('throws error if refresh token is invalid');
+  it.todo('returns tokens if success');
 });
 
 describe('resetPassword', () => {
-  it.todo('implement tests');
-});
-
-describe('signInWithCredentials', () => {
-  it.todo('implement tests');
+  resetPassword;
+  it.todo('throws error if user does not exist');
+  it.todo('throws error if wrong password is supplied');
+  it.todo('updates user password with new password if success');
 });
 
 describe('signOutToken', () => {
-  it.todo('implement tests');
+  signOutToken;
+  it.todo('deletes refresh token associated with the token');
+  it.todo('deletes the token');
 });
