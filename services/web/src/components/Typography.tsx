@@ -6,19 +6,17 @@ import {createElement} from 'react';
 export const typographyStyles = cva('', {
   variants: {
     styledAs: {
-      display1:
-        'text-[8rem] leading-[6.25rem] font-black tracking-wide font-display',
-      display2:
-        'text-[5rem] leading-[4rem] font-black tracking-wide font-display',
-      subtext: 'text-[1rem] leading-normal tracking-wide',
-      h1: 'text-[3.25rem] leading-[3.125rem] font-black font-display',
-      h2: 'text-[2rem] leading-[2.25rem] font-black font-display',
-      h3: 'text-[1.5rem] leading-[1.75rem] font-black font-display',
-      p: 'text-[1.25rem] font-normal',
-      navLink: 'text-[1.25rem] leading-normal font-bold font-display',
-      footerLink: 'text-[2.25rem] leading-[2.25rem] font-bold font-display',
-      button: 'text-[1.25rem] leading-[1.875rem] font-bold font-display',
-      data: 'text-[0.875rem] leading-normal font-bold font-display',
+      display1: 'typography-display1',
+      display2: 'typography-display2',
+      subtext: 'typography-subtext',
+      h1: 'typography-h1',
+      h2: 'typography-h2',
+      h3: 'typography-h3',
+      p: 'typography-p',
+      navLink: 'typography-link-nav',
+      footerLink: 'typography-link-footer',
+      button: 'typography-button',
+      data: 'typography-data',
     },
     uppercase: {
       true: 'uppercase',
