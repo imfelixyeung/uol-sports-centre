@@ -10,9 +10,8 @@ RUN npm install -g pnpm
 COPY pnpm-lock.yaml package.json ./
 COPY prisma/schema.prisma ./prisma/schema.prisma
 
-# install packages from lockfile
-RUN pnpm fetch
-RUN pnpm install -r --offline
+# install packages
+RUN pnpm install
 
 #######
 # Dev #
