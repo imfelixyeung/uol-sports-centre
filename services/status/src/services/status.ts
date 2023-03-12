@@ -1,7 +1,7 @@
 import axios from 'axios';
-import {HealthCheckRegistry} from '../persistence/health-check';
-import {ServiceRegistry} from '../persistence/service';
-import {ServiceStatusSnapshot} from '../types/status';
+import {HealthCheckRegistry} from '~/persistence/health-check';
+import {ServiceRegistry} from '~/persistence/service';
+import {ServiceStatusSnapshot} from '~/types/status';
 
 const getServiceHealthCheck = async (
   service: string

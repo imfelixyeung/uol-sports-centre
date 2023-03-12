@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {getHealth} from '../services/health';
+import {getHealth} from '~/services/health';
 
 const get = async (req: Request, res: Response) => {
   await getHealth()

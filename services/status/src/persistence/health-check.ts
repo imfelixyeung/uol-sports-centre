@@ -1,7 +1,7 @@
-import {ServiceStatusSnapshot} from '../types/status';
-import {db} from '../utils/db';
+import {ServiceStatusSnapshot} from '~/types/status';
+import {db} from '~/utils/db';
 import dayjs from 'dayjs';
-import {HISTORY_WITHIN, SNAPSHOT_TTL} from '../config';
+import {HISTORY_WITHIN, SNAPSHOT_TTL} from '~/config';
 
 export class HealthCheckRegistry {
   static async addServiceHealthCheck(healthCheck: ServiceStatusSnapshot) {
