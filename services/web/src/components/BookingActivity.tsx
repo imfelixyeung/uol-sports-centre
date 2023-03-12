@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import type {FC, ReactNode} from 'react';
+import CalendarIcon from './Icons/CalendarIcon';
 import ClockIcon from './Icons/ClockIcon';
+import CounterIcon from './Icons/CounterIcon';
 import Typography from './Typography';
 
 interface BookingActivityProps {
@@ -27,16 +29,16 @@ const BookingActivity: FC<BookingActivityProps> = ({
       )}
     >
       <Typography.p styledAs="subtext" className="flex items-center gap-2">
-        <ClockIcon className="h-5" />
+        <CalendarIcon className="h-5" />
         {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
       </Typography.p>
       <Typography.p styledAs="subtext" className="flex items-center gap-2">
-        <ClockIcon className="h-5" />
-        {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
+        <CounterIcon className="h-5" />
+        {'12/156 slots available'}
       </Typography.p>
       <Typography.p styledAs="subtext" className="flex items-center gap-2">
         <ClockIcon className="h-5" />
-        {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
+        {'-- minutes'}
       </Typography.p>
     </div>
   );
