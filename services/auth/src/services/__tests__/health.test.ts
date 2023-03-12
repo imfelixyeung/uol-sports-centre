@@ -1,4 +1,4 @@
-import {dbMock} from '../../singleton';
+import {dbMock} from '~/utils/__mocks__/db.mock';
 
 import {getDatabaseHealth, getHealth} from '../health';
 

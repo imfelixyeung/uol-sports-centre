@@ -1,4 +1,5 @@
-import {dbMock} from '../../singleton';
+import '~/env/__mocks__/index.mock';
+import {dbMock} from '~/utils/__mocks__/db.mock';
 
 import {RefreshToken, Token, User} from '@prisma/client';
 import bcrypt from 'bcrypt';
