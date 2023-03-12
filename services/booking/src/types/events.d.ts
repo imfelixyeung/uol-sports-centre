@@ -3,4 +3,5 @@ export interface EventsFilter {
   end?: number;
   facility?: number;
   activity?: number;
+  type?: 'SESSION' | 'OPEN_USE' | 'TEAM_EVENT';
 }

@@ -30,6 +30,7 @@ class EventController {
       end: timestamp.optional(),
       facility: id('facility id').optional(),
       activity: id('activity id').optional(),
+      type: z.enum(['SESSION', 'OPEN_USE', 'TEAM_EVENT']).optional(),
     });
 
     // ensure the query params abide by that schema

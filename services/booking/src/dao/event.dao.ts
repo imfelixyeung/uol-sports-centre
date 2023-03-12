@@ -42,6 +42,7 @@ class EventDAO {
         where: {
           activityId: filter.activity,
           day: days.length > 0 ? {in: days} : undefined,
+          type: filter.type,
         },
       })
       .catch(err => {
