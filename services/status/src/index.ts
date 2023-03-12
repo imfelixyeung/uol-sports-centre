@@ -1,7 +1,4 @@
-import express from 'express';
 import {env} from './env/index.js';
-import statusRouter from './routers/status.js';
-import healthRouter from './routers/health.js';
 import cron from 'node-cron';
 import {
   registerServices,
@@ -12,11 +9,9 @@ import {
   CRON_EXPRESSION_PURGE,
   CRON_EXPRESSION_SNAPSHOT,
 } from './config/index.js';
+import {createApp} from './app';
 
-const app = express();
-
-app.use('/', statusRouter);
-app.use('/health', healthRouter);
+const app = createApp();
 
 registerServices([
   'auth',
