@@ -3,6 +3,11 @@ import {HealthCheckRegistry} from '~/persistence/health-check';
 import {ServiceRegistry} from '~/persistence/service';
 import {ServiceStatusSnapshot} from '~/types/status';
 
+/**
+ * attempts to query the service's health check endpoint
+ * @param service id of the service to check
+ * @returns information about the service's health
+ */
 export const getServiceHealthCheck = async (
   service: string
 ): Promise<ServiceStatusSnapshot> => {
@@ -11,8 +16,7 @@ export const getServiceHealthCheck = async (
   const timestamp = Date.now();
   try {
     const {status} = await axios(serviceHealthCheckEndpoint, {
-      // only throw errors if connection fails
-      validateStatus: () => true,
+      validateStatus: () => true, // ensures errors are thrown only if connection fails
     });
 
     // service is running phenomenally
@@ -27,6 +31,10 @@ export const getServiceHealthCheck = async (
   }
 };
 
+/**
+ * queries all registered services' health check endpoint
+ * @returns health check info for all registered services
+ */
 export const getServicesHealthCheck = async () => {
   // get reports for all services
   const services = await ServiceRegistry.getServices();
