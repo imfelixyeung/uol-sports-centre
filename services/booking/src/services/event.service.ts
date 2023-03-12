@@ -1,5 +1,6 @@
 import eventDao from '@/dao/event.dao';
 import logger from '@/lib/logger';
+import {EventsFilter} from '@/types/events';
 
 /**
  * The Event Service performs any required business logic before updating the
@@ -17,9 +18,9 @@ class EventService {
    *
    * @memberof EventService
    */
-  async get() {
+  async get(filter: EventsFilter) {
     logger.debug('Get events');
-    return await eventDao.getEvents();
+    return await eventDao.getEvents(filter);
   }
 }
 

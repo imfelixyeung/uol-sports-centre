@@ -1,6 +1,8 @@
 import express from 'express';
 import logger from '@/lib/logger';
 import eventService from '@/services/event.service';
+import {z} from 'zod';
+import {id, timestamp} from '@/schema';
 
 /**
  * The Event Controller handles the incomming network requests and validates
@@ -22,7 +24,24 @@ class EventController {
   async getEvents(req: express.Request, res: express.Response) {
     logger.debug('Received getEvents request');
 
-    const events = await eventService.get().catch(err => {
+    // create a schema, outlining what we expect from params
+    const querySchema = z.object({
+      start: timestamp.optional(),
+      end: timestamp.optional(),
+      facility: id('facility id').optional(),
+      activity: id('activity id').optional(),
+    });
+
+    // ensure the query params abide by that schema
+    const query = querySchema.safeParse(req.query);
+    if (!query.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed query parameters',
+        error: query.error,
+      });
+
+    const events = await eventService.get(query.data).catch(err => {
       logger.error(`Error getting events: ${err}`);
       return new Error(err);
     });

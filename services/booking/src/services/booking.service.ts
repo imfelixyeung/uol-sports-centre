@@ -1,4 +1,5 @@
 import bookingDao from '@/dao/booking.dao';
+import eventDao from '@/dao/event.dao';
 import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
 import logger from '@/lib/logger';
 
@@ -104,6 +105,14 @@ class BookingService {
   ) {
     if (!start) start = new Date().setHours(0, 0, 0);
     if (!end) end = new Date().setHours(23, 59, 59);
+
+    // first we will get the events that fit within the specified filters
+    const validEvents = await eventDao.getEvents({
+      facility,
+      activity,
+      start,
+      end,
+    });
 
     // get all existing booking for the range specified
     const currentBookings = await bookingDao.getBookings({
