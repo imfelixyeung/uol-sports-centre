@@ -1,3 +1,4 @@
+import {Service} from '@prisma/client';
 import {axiosMock} from '~/lib/__mocks__/axios.mock';
 import {dbMock} from '~/utils/__mocks__/db.mock';
 import {
@@ -101,25 +102,137 @@ describe('getLatestReport', () => {
 
 describe('getServicesHealthCheck', () => {
   getServicesHealthCheck;
-  it.todo('returns formatted health check report for all registered services');
+
+  it('returns formatted health check report for all registered services', async () => {
+    axiosMock.get.mockResolvedValue({status: 200});
+    dbMock.service.findMany.mockResolvedValue([
+      {name: 'service1'},
+      {name: 'service2'},
+      {name: 'service3'},
+    ] as Service[]);
+
+    const result = await getServicesHealthCheck();
+    expect(result).toEqual([
+      expect.objectContaining({
+        service: 'service1',
+        status: 'up',
+        statusCode: 200,
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        service: 'service2',
+        status: 'up',
+        statusCode: 200,
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        service: 'service3',
+        status: 'up',
+        statusCode: 200,
+        timestamp: expect.any(Number),
+      }),
+    ]);
+  });
 });
 
 describe('getStatusHistory', () => {
   getStatusHistory;
-  it.todo('returns the status history for all registered services');
+
+  it('returns empty list if not history', () => {
+    dbMock.service.findMany.mockResolvedValue([]);
+    expect(getStatusHistory()).resolves.toEqual([]);
+    expect(dbMock.service.findMany).toBeCalled();
+  });
+
+  it('returns the status history for all registered services', () => {
+    const servicesWithHealthChecks = [
+      {
+        name: 'service1',
+        healthChecks: [
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+        ],
+      },
+      {
+        name: 'service2',
+        healthChecks: [
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+          {
+            timestamp: new Date(),
+            status: 'up',
+            statusCode: 200,
+          },
+        ],
+      },
+    ];
+    dbMock.service.findMany.mockResolvedValue(servicesWithHealthChecks as any);
+    expect(getStatusHistory()).resolves.toEqual(servicesWithHealthChecks);
+  });
 });
 
 describe('registerServices', () => {
   registerServices;
-  it.todo('upsert the service to database');
+
+  it('upsert the service to database', async () => {
+    dbMock.service.upsert.mockResolvedValue({
+      id: 1,
+      name: 'service',
+      createdAt: new Date(),
+    });
+
+    const services = ['service', 'service', 'service'];
+    await registerServices(services);
+
+    expect(dbMock.service.upsert).toBeCalledTimes(services.length);
+  });
 });
 
 describe('removeOldHealthCheckSnapshots', () => {
   removeOldHealthCheckSnapshots;
-  it.todo('removes old status snapshots');
+
+  it('removes old status snapshots', async () => {
+    await removeOldHealthCheckSnapshots();
+    expect(dbMock.healthCheck.deleteMany).toBeCalled();
+  });
 });
 
 describe('takeServicesHealthCheckSnapshot', () => {
   takeServicesHealthCheckSnapshot;
-  it.todo('should take a snapshot of all registered services and store it');
+
+  it('should take a snapshot of all registered services and store it', async () => {
+    const services = [
+      {name: 'service1'},
+      {name: 'service2'},
+      {name: 'service3'},
+    ] as Service[];
+
+    axiosMock.get.mockResolvedValue({status: 200});
+    dbMock.service.findMany.mockResolvedValue(services);
+
+    await takeServicesHealthCheckSnapshot();
+
+    expect(dbMock.service.update).toBeCalledTimes(services.length);
+  });
 });
