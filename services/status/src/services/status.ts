@@ -3,7 +3,7 @@ import {HealthCheckRegistry} from '~/persistence/health-check';
 import {ServiceRegistry} from '~/persistence/service';
 import {ServiceStatusSnapshot} from '~/types/status';
 
-const getServiceHealthCheck = async (
+export const getServiceHealthCheck = async (
   service: string
 ): Promise<ServiceStatusSnapshot> => {
   const serviceHealthCheckEndpoint = `http://${service}/health`;
