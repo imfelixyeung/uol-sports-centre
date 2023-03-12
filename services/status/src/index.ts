@@ -1,15 +1,15 @@
-import {env} from './env/index.js';
 import cron from 'node-cron';
+import {createApp} from './app';
+import {
+  CRON_EXPRESSION_PURGE,
+  CRON_EXPRESSION_SNAPSHOT,
+} from './config/index.js';
+import {env} from './env/index.js';
 import {
   registerServices,
   removeOldHealthCheckSnapshots,
   takeServicesHealthCheckSnapshot,
 } from './services/status.js';
-import {
-  CRON_EXPRESSION_PURGE,
-  CRON_EXPRESSION_SNAPSHOT,
-} from './config/index.js';
-import {createApp} from './app';
 
 const app = createApp();
 
