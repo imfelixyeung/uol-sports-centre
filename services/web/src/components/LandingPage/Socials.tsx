@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import ChevronTripleRightIcon from '../Icons/ChevronTripleRightIcon';
 import Typography from '../Typography';
 
@@ -11,7 +12,7 @@ const Socials = () => {
       </Typography.h2>
       <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
         <img
-          className="aspect aspect-square object-cover md:max-w-sm"
+          className="aspect aspect-[4/5] object-cover object-top md:max-w-sm"
           src="/assets/images/pexels-zakaria-boumliha-2827400.jpg"
           alt="Person reaching goal by handstanding"
         />
