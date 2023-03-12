@@ -2,6 +2,7 @@ import CalendarIcon from '~/components/Icons/CalendarIcon';
 import ChevronDoubleRightBorderedIcon from '~/components/Icons/ChevronTripleRightBorderedIcon';
 import ChevronTripleRightIcon from '~/components/Icons/ChevronTripleRightIcon';
 import ClockIcon from '~/components/Icons/ClockIcon';
+import CounterIcon from '~/components/Icons/CounterIcon';
 import GridIcon from '~/components/Icons/GridIcon';
 import ListIcon from '~/components/Icons/ListIcon';
 import Typography from '~/components/Typography';
@@ -16,6 +17,7 @@ const icons = [
   {name: 'Clock', icon: ClockIcon},
   {name: 'Grid', icon: GridIcon},
   {name: 'List', icon: ListIcon},
+  {name: 'Counter', icon: CounterIcon},
 ];
 
 const IconsPage = () => {
