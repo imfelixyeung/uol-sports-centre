@@ -3,8 +3,7 @@ import {Booking} from '@prisma/client';
 export interface BookingDTO {
   id: number;
   userId: number;
-  facilityId: number;
-  activityId: number;
+  eventId: number;
   transactionId: number;
   duration: number;
   starts: string;
@@ -23,8 +22,7 @@ export const bookingToDTO = (booking: Booking): BookingDTO => {
 
 export interface CreateBookingDTO {
   userId: number;
-  facilityId: number;
-  activityId: number;
+  eventId: number;
   transactionId: number;
   duration: number;
   starts: Date;
@@ -33,8 +31,7 @@ export interface CreateBookingDTO {
 export interface UpdateBookingDTO {
   id: number;
   userId?: number;
-  facilityId?: number;
-  activityId?: number;
+  eventId?: number;
   transactionId?: number;
   duration?: number;
   starts?: Date;

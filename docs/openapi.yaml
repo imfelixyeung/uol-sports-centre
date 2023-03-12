@@ -337,6 +337,9 @@ paths:
           name: limit
           schema:
             type: number
+            maximum: 256
+            minimum: 1
+            format: int32
           required: false
           example: 10
 
@@ -344,6 +347,8 @@ paths:
           name: page
           schema:
             type: number
+            minimum: 1
+            format: int32
           required: false
           example: 1
       responses:
@@ -380,9 +385,9 @@ paths:
                 userId:
                   type: number
                   description: The user the booking relates to
-                facilityId:
+                eventId:
                   type: number
-                  description: The facility that the booking relates to
+                  description: The event that the booking relates to
                 transactionId:
                   type: number
                   description: The transaction linked with this booking
@@ -397,18 +402,25 @@ paths:
                 summary: Example
                 value:
                   userId: 1
-                  facilityId: 1
+                  eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
                   duration: 60
 
       responses:
         "200":
-          description: Successful operation returns the new booking
+          description: Successful operation retuns the new booking
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Booking"
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
         "405":
           description: Invalid input
 
@@ -465,9 +477,9 @@ paths:
                 userId:
                   type: number
                   description: The user the booking relates to
-                facilityId:
+                eventId:
                   type: number
-                  description: The facility that the booking relates to
+                  description: The event that the booking relates to
                 transactionId:
                   type: number
                   description: The transaction linked with this booking
@@ -482,7 +494,7 @@ paths:
                 summary: Example
                 value:
                   userId: 1
-                  facilityId: 1
+                  eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
                   duration: 60
@@ -638,25 +650,25 @@ components:
           type: number
           description: Booking ID
           example: 1
+        userId:
+          type: number
+          description: User ID
+          example: 1
+        eventId:
+          type: number
+          description: Event ID
+          example: 1
         transactionId:
           type: number
           description: Transaction ID
           example: 1
-        facilityId:
+        duration:
           type: number
-          description: Facility ID
-          example: 1
-        userID:
-          type: number
-          description: User ID
-          example: 1
+          description: Length of the booking
         starts:
           type: string
           description: Start time of the booking
           example: "2023-03-02T10:00:00.000Z"
-        duration:
-          type: number
-          description: Length of the booking
         created:
           type: string
           description: When the booking was created

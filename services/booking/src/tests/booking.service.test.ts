@@ -15,8 +15,7 @@ describe('Test BookingService', () => {
       {
         id: 1,
         userId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         transactionId: 1,
         duration: 100,
         starts: new Date(),
@@ -49,8 +48,7 @@ describe('Test BookingService', () => {
       {
         id: 1,
         userId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         transactionId: 1,
         duration: 100,
         starts: new Date(),
@@ -83,8 +81,7 @@ describe('Test BookingService', () => {
     const booking: Booking = {
       id: 1,
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       duration: 100,
       starts: new Date(),
@@ -102,8 +99,7 @@ describe('Test BookingService', () => {
     // test data
     const newBooking: CreateBookingDTO = {
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       starts: new Date(),
       duration: 60,
@@ -136,8 +132,7 @@ describe('Test BookingService', () => {
     const existingBooking: Booking = {
       id: 10,
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       starts: new Date(),
       duration: 60,
@@ -161,8 +156,7 @@ describe('Test BookingService', () => {
     const booking: Booking = {
       id: 100,
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       duration: 60,
       starts: new Date(),

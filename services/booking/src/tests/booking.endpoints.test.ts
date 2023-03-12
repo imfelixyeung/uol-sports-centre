@@ -27,8 +27,7 @@ describe('Test /bookings', () => {
       {
         id: 1,
         transactionId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         userId: 1,
         duration: 60,
         starts: new Date(),
@@ -67,8 +66,7 @@ describe('Test /bookings', () => {
       {
         id: 1,
         transactionId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         userId: 1,
         duration: 60,
         starts: new Date(),
@@ -107,8 +105,7 @@ describe('Test /bookings', () => {
       {
         id: 6,
         transactionId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         userId: 2,
         duration: 60,
         starts: new Date(),
@@ -118,8 +115,7 @@ describe('Test /bookings', () => {
       {
         id: 7,
         transactionId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         userId: 2,
         duration: 60,
         starts: new Date(),
@@ -129,8 +125,7 @@ describe('Test /bookings', () => {
       {
         id: 8,
         transactionId: 1,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         userId: 2,
         duration: 60,
         starts: new Date(),
@@ -170,8 +165,7 @@ describe('Test /bookings', () => {
     const bookingMock: Booking = {
       id: 1,
       transactionId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       userId: 1,
       duration: 60,
       starts: new Date(),
@@ -199,8 +193,7 @@ describe('Test /bookings', () => {
   test('POST /bookings', async () => {
     const newBooking: CreateBookingDTO = {
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       starts: new Date(),
       duration: 60,
@@ -233,8 +226,7 @@ describe('Test /bookings', () => {
     const existingBooking: Booking = {
       id: 10,
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       starts: new Date(),
       duration: 60,
@@ -269,8 +261,7 @@ describe('Test /bookings', () => {
     const booking: Booking = {
       id: 10,
       userId: 1,
-      facilityId: 1,
-      activityId: 1,
+      eventId: 1,
       transactionId: 1,
       starts: new Date(),
       duration: 60,
@@ -363,8 +354,7 @@ describe('Test /bookings', () => {
       .send({
         userId: 1,
         duration: 60,
-        facilityId: 1,
-        activityId: 1,
+        eventId: 1,
         starts: new Date(),
         transactionId: 1,
       } as CreateBookingDTO)

@@ -87,8 +87,7 @@ class BookingController {
     // get post body information
     const createBookingBodySchema = z.object({
       userId: z.number(),
-      facilityId: z.number(),
-      activityId: z.number(),
+      eventId: z.number(),
       transactionId: z.number(),
       starts: z.string().transform(time => new Date(time)),
       duration: z.number(),

@@ -13,13 +13,14 @@ datasource db {
 model Booking {
   id            Int      @id @default(autoincrement())
   userId        Int
-  facilityId    Int
-  activityId    Int
+  eventId       Int
   transactionId Int
   duration      Int
   starts        DateTime
   created       DateTime
   updated       DateTime
+
+  event Event @relation(fields: [eventId], references: [id])
 }
 
 enum EventType {
@@ -41,4 +42,6 @@ model Event {
   time       Int
   duration   Int
   type       EventType
+
+  bookings Booking[]
 }

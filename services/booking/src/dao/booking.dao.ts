@@ -129,13 +129,15 @@ class BookingDAO {
       `Getting bookings with the following filter: ${JSON.stringify(filter)}`
     );
 
+    // TODO: facility filter
     const queryWhere: Prisma.BookingWhereInput = {
       userId: filter.user,
-      facilityId: filter.facility,
-      activityId: filter.activity,
       starts: {
         ...(filter.start && {gte: new Date(filter.start)}),
         ...(filter.end && {lte: new Date(filter.end)}),
+      },
+      event: {
+        activityId: filter.activity,
       },
     };
 
