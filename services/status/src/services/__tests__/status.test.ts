@@ -98,6 +98,22 @@ describe('getLatestReport', () => {
       },
     ]);
   });
+
+  it('returns null if no healthcheck snapshots', async () => {
+    dbMock.service.findMany.mockResolvedValue([
+      {name: 'service', healthChecks: []},
+    ] as any);
+
+    const latest = await getLatestReport();
+    expect(latest).toEqual([
+      {
+        service: 'service',
+        timestamp: null,
+        status: null,
+        statusCode: null,
+      },
+    ]);
+  });
 });
 
 describe('getServicesHealthCheck', () => {
