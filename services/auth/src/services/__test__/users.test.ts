@@ -1,7 +1,12 @@
 import {dbMock} from '../../singleton';
 
 import {User} from '@prisma/client';
-import {getUsers, userWithoutPassword} from '../users';
+import {
+  getUserById,
+  getUsers,
+  updateUserById,
+  userWithoutPassword,
+} from '../users';
 
 const users: User[] = [
   {
@@ -23,6 +28,8 @@ const users: User[] = [
 ];
 
 describe('userWithoutPassword', () => {
+  userWithoutPassword;
+
   it('should return the user without password', async () => {
     const user = {...users[0]};
 
@@ -31,6 +38,8 @@ describe('userWithoutPassword', () => {
 });
 
 describe('getUsers', () => {
+  getUsers;
+
   it('should return users without password', async () => {
     dbMock.user.findMany.mockResolvedValue(users);
 
@@ -44,9 +53,24 @@ describe('getUsers', () => {
 });
 
 describe('getUserById', () => {
-  it.todo('should return user without password');
+  getUserById;
+
+  it('should return user without password', () => {
+    dbMock.user.findUnique.mockResolvedValue(users[0]);
+    expect(getUserById(0)).resolves.toEqual(userWithoutPassword(users[0]));
+  });
 });
 
 describe('updateUserById', () => {
-  it.todo('should update user');
+  updateUserById;
+
+  it('should update user', async () => {
+    dbMock.user.findUnique.mockResolvedValue(users[0]);
+    dbMock.user.update.mockResolvedValue(users[0]);
+
+    const result = await updateUserById(0, {role: 'admin'});
+
+    expect(result).toEqual(userWithoutPassword(users[0]));
+    expect(dbMock.user.update).toBeCalled();
+  });
 });
