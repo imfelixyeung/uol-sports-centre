@@ -281,7 +281,7 @@ class BookingController {
    * @memberof BookingController
    */
   async getAvailableBookings(req: express.Request, res: express.Response) {
-    const availableBookingParamsSchema = z.object({
+    const availableBookingQuerySchema = z.object({
       ...paginationSchema,
       start: timestamp.optional(),
       end: timestamp.optional(),
@@ -289,16 +289,25 @@ class BookingController {
       activity: id('activity id').optional(),
     });
 
-    const params = availableBookingParamsSchema.safeParse(req.params);
-    if (!params.success)
+    const query = availableBookingQuerySchema.safeParse(req.query);
+    if (!query.success)
       return res.status(400).json({
         status: 'error',
         message: 'malformed parameters',
-        error: params.error,
+        error: query.error,
       });
 
+    logger.debug(`${JSON.stringify(req.query)} ${JSON.stringify(query)}`);
+
     const availableBookings = await bookingService
-      .getAvailableBookings()
+      .getAvailableBookings(
+        query.data.start,
+        query.data.end,
+        query.data.facility,
+        query.data.activity,
+        query.data.limit,
+        query.data.page
+      )
       .catch(err => {
         logger.error(`Error getting available bookings: ${err}`);
         return new Error(err);
@@ -314,6 +323,9 @@ class BookingController {
     return res.status(200).send({
       status: 'OK',
       availableBookings,
+      metadata: {
+        count: availableBookings.length,
+      },
     });
   }
 }

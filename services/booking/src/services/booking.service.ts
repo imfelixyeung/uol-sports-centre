@@ -99,12 +99,17 @@ class BookingService {
     end?: number
   ) {
     // first we will get the events that fit within the specified filters
-    const validEvents = await eventDao.getEvents({
-      facility,
-      activity,
-      start,
-      end,
-    });
+    const validEvents = await eventDao
+      .getEvents({
+        facility,
+        activity,
+        start,
+        end,
+      })
+      .catch(err => {
+        logger.error(`Error getting list of valid events, ${err}`);
+        return new Error(err);
+      });
 
     // return the error if occurs
     if (validEvents instanceof Error) return validEvents;
@@ -189,6 +194,8 @@ class BookingService {
     if (!start) start = new Date().setHours(0, 0, 0);
     if (!end) end = new Date().setHours(23, 59, 59);
 
+    logger.debug({start, end, facility, activity, limit, page});
+
     // generate list of all possible bookings (not necessarily available)
     let possibleBookings = await this.generatePossibleBookings(
       facility,
@@ -220,8 +227,33 @@ class BookingService {
       end,
     });
 
+    // if error, return it
+    if (currentBookings instanceof Error) return currentBookings;
+
     // check capacity of open_use events
-    // add capacity to event if is open_use
+    possibleBookings.forEach(possibleBooking => {
+      if (possibleBooking.event.type !== 'OPEN_USE') return;
+      if (!possibleBooking.capacity) return;
+
+      // get the current number of bookings for that session
+      const bookingsInOpenUse = currentBookings.bookings.filter(
+        b =>
+          b.eventId === possibleBooking.event.id &&
+          b.starts === possibleBooking.starts
+      );
+
+      possibleBooking.capacity.current = bookingsInOpenUse.length;
+    });
+
+    // filter out all open use sessions that are at or over capacity
+    // possibleBookings.filter(
+    //   b =>
+    //     b.event.type !== 'OPEN_USE' ||
+    //     (b.event.type === 'OPEN_USE' &&
+    //       b.capacity &&
+    //       b.capacity.current < b.capacity.max)
+    // );
+
     // check availability based on sessions
     // remove them from the list of possible bookings
 

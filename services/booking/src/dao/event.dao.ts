@@ -37,21 +37,52 @@ class EventDAO {
       }
     }
 
-    const events: EventDTO[] | Error = await prisma.event
-      .findMany({
-        where: {
-          activityId: filter.activity,
-          day: days.length > 0 ? {in: days} : undefined,
-          type: filter.type,
-        },
-      })
-      .catch(err => {
-        logger.error(`Error getting events: ${err}`);
-        return new Error(err);
-      });
+    // logger.debug(`Days: ${JSON.stringify(days)}`);
+
+    // TODO: fix every day not returning events if days > 1 week
+    const allEvents: EventDTO[] = [];
+    const eventsByDay: (Error | EventDTO[] | null)[] = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    ];
+
+    logger.debug(eventsByDay);
+
+    // for every day
+    for (const day of days) {
+      // if this is the first time we have seen this day, fetch the events for it
+      if (eventsByDay[day] === null) {
+        const events = await prisma.event
+          .findMany({
+            where: {
+              activityId: filter.activity,
+              day,
+              type: filter.type,
+            },
+          })
+          .catch(err => {
+            logger.error(`Error getting events: ${err}`);
+            return new Error(err);
+          });
+        eventsByDay[day] = events;
+      }
+
+      console.log(`${JSON.stringify(eventsByDay[day])}`);
+
+      // return error if it exists
+      if (eventsByDay[day] instanceof Error) return eventsByDay[day] as Error;
+
+      // add all events
+      allEvents.push(...(eventsByDay[day] as EventDTO[]));
+    }
 
     // return either the list of events or the error
-    return events;
+    return allEvents;
   }
 }
 
