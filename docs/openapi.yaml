@@ -136,7 +136,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/viewFullRecord"
+          $ref: "#/components/responses/UserRecord"
 
   /users/updateFirstName:
     post:
@@ -146,7 +146,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updateFirstName"
+          $ref: "#/components/responses/UpdatedFirstNameUserRecord"
 
   /users/updateSecondName:
     post:
@@ -156,7 +156,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updateSecondName"
+          $ref: "#/components/responses/UpdatedSecondNameUserRecord"
 
   /users/updateAccountID:
     post:
@@ -166,7 +166,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updateAccountID"
+          $ref: "#/components/responses/updatedAccountID"
 
   /users/updatePaymentID:
     post:
@@ -176,7 +176,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updatePaymentID"
+          $ref: "#/components/responses/updatedPaymentID"
 
   /users/updateBookingID:
     post:
@@ -186,7 +186,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updateBookingID"
+          $ref: "#/components/responses/updatedBookingID"
 
   /users/updateMembership:
     post:
@@ -196,7 +196,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updateMembership"
+          $ref: "#/components/responses/updatedMembership"
 
   /users/testing:
     get:
@@ -206,7 +206,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/testing"
+          $ref: "#/components/responses/tested"
 
   /users/createUser:
     post:
@@ -216,7 +216,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/createUser"
+          $ref: "#/components/responses/createdUser"
 
   /users/deleteUser:
     post:
@@ -226,7 +226,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/deleteUser"
+          $ref: "#/components/responses/deletedUser"
 
   /booking/bookings:
     get:
