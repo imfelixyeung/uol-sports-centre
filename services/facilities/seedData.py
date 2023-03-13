@@ -82,11 +82,11 @@ def seed_activities():
 
     if not seed_check:
       general_use = Activity(name="Swimming Pool Open Use",
-                             duration=720,
+                             duration=60,
                              capacity=15,
                              facility_id=1)
       lane_swimming = Activity(name="Lane Swimming",
-                               duration=720,
+                               duration=60,
                                capacity=15,
                                facility_id=1)
       lessons = Activity(name="Lessons",
@@ -98,7 +98,7 @@ def seed_activities():
                                      capacity=30,
                                      facility_id=1)
       fitness_general = Activity(name="Fitness Room General Use",
-                                 duration=840,
+                                 duration=60,
                                  capacity=35,
                                  facility_id=2)
       squash_court_1_session = Activity(name="Squash Court 1 Session",
@@ -110,7 +110,7 @@ def seed_activities():
                                         capacity=4,
                                         facility_id=4)
       sports_hall_session = Activity(name="Sports hall Session",
-                                     duration=840,
+                                     duration=60,
                                      capacity=45,
                                      facility_id=5)
       sports_hall_team_event = Activity(name="Sports Hall Team Event",
@@ -118,7 +118,7 @@ def seed_activities():
                                         capacity=45,
                                         facility_id=5)
       climbing_wall_general = Activity(name="Climbing Wall General Use",
-                                       duration=600,
+                                       duration=60,
                                        capacity=22,
                                        facility_id=6)
       exercise_class = Activity(name="Exercise Class",
