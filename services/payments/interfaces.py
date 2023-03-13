@@ -10,7 +10,7 @@ load_dotenv(os.path.join(dirtoenv, '.env'))
 
 localDomain = 'http://localhost:' + str(os.getenv('APP_PORT'))
 
-def createCheckout(stripeID, productName):
+def createCheckout(stripeID, productName, successUrl=localDomain):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
     product = getProduct(productName)
 
@@ -19,7 +19,7 @@ def createCheckout(stripeID, productName):
         return None
 
     checkoutSession = stripe.checkout.Session.create(
-        success_url=localDomain + '/index.html',
+        success_url=successUrl,
         mode = product[3],
         expires_at=int(datetime.timestamp(datetime.now())) + 1800,
         customer=stripeID,
