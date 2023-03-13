@@ -18,7 +18,7 @@ tags:
 
   - name: status
     description: status microservice
-    
+
   - name: facility
     description: facility microservice
 
@@ -422,7 +422,7 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
-  
+
   /facilities/facilities:
     get:
       tags:
@@ -444,7 +444,7 @@ paths:
             type: number
           required: false
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation retuns the array of facilities
@@ -457,7 +457,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Facility"
-  
+
     post:
       tags:
         - facility
@@ -491,7 +491,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Facility"
-  
+
   /facilities/facilities/{facility_id}:
     get:
       tags:
@@ -506,7 +506,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the facility
@@ -521,10 +521,10 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   facility:
                     $ref: "#/components/schemas/Facility"
-    
+
     put:
       tags:
-       - facility
+        - facility
       summary: Updates the facility with the specified ID
       description: Updates the facility with the specified ID
       operationId: update_facility
@@ -535,7 +535,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the updated facility
@@ -554,21 +554,21 @@ paths:
                     description: More detail on the result of the operation
                   facility:
                     $ref: "#/components/schemas/Facility"
-    
+
     delete:
       tags:
-       - facility
+        - facility
       summary: Deletes the facility with the specified ID
       description: Deletes the facility with the specified ID
       operationId: delete_facility
       parameters:
-      - in: path
-        name: facility_id
-        schema:
-          type: number
-        required: true
-        example: 1
-      
+        - in: path
+          name: facility_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
       responses:
         "200":
           description: Successful operation returns deleted facility
@@ -609,7 +609,7 @@ paths:
             type: number
           required: false
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation retuns the array of opening times
@@ -622,7 +622,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/OpenTime"
-  
+
     post:
       tags:
         - facility
@@ -679,7 +679,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the opening time
@@ -694,10 +694,10 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   OpenTime:
                     $ref: "#/components/schemas/OpenTime"
-    
+
     put:
       tags:
-       - facility
+        - facility
       summary: Updates the opening time with the specified ID
       description: Updates the opening time with the specified ID
       operationId: update_open_time
@@ -708,7 +708,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the updated opening time
@@ -727,21 +727,21 @@ paths:
                     description: More detail on the result of the operation
                   OpenTime:
                     $ref: "#/components/schemas/OpenTime"
-    
+
     delete:
       tags:
-       - facility
+        - facility
       summary: Deletes the opening time with the specified ID
       description: Deletes the opening time with the specified ID
       operationId: delete_open_time
       parameters:
-      - in: path
-        name: time_id
-        schema:
-          type: number
-        required: true
-        example: 1
-      
+        - in: path
+          name: time_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
       responses:
         "200":
           description: Successful operation returns deleted opening time
@@ -782,7 +782,7 @@ paths:
             type: number
           required: false
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation retuns the array of activities
@@ -795,7 +795,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Activity"
-  
+
     post:
       tags:
         - facility
@@ -852,7 +852,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the activity
@@ -867,10 +867,10 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   activity:
                     $ref: "#/components/schemas/Activity"
-    
+
     put:
       tags:
-       - facility
+        - facility
       summary: Updates the activity with the specified ID
       description: Updates the activity with the specified ID
       operationId: update_activity
@@ -881,7 +881,7 @@ paths:
             type: number
           required: true
           example: 1
-      
+
       responses:
         "200":
           description: Successful operation returns the updated activity
@@ -900,21 +900,21 @@ paths:
                     description: More detail on the result of the operation
                   activity:
                     $ref: "#/components/schemas/Activity"
-    
+
     delete:
       tags:
-       - facility
+        - facility
       summary: Deletes the activity with the specified ID
       description: Deletes the activity with the specified ID
       operationId: delete_activity
       parameters:
-      - in: path
-        name: activity_id
-        schema:
-          type: number
-        required: true
-        example: 1
-      
+        - in: path
+          name: activity_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
       responses:
         "200":
           description: Successful operation returns deleted activity
@@ -1016,7 +1016,7 @@ components:
           type: string
           description: When the booking was last updated
           example: "2023-03-02T10:00:00.000Z"
-    
+
     Facility:
       type: object
       properties:
@@ -1032,7 +1032,7 @@ components:
           type: number
           description: Capacity of facility
           example: 30
-    
+
     OpenTime:
       type: object
       properties:
@@ -1056,7 +1056,7 @@ components:
           type: number
           description: Foreign key to facility associated with this opening.
           example: 1
-    
+
     Activity:
       type: object
       properties:
@@ -1080,7 +1080,7 @@ components:
           type: number
           description: Foreign key to facility associated with this activity
           example: 1
-    
+
   requestBodies:
     Credentials:
       description: "User's credentials (email password)"
@@ -1192,4 +1192,3 @@ components:
                   type: number
                   description: "The milliseconds since epoch"
                   example: 1680307200000
-
