@@ -127,7 +127,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/HealthCheck"
-    
+
   /users/viewFullRecord:
     get:
       tags:
@@ -137,7 +137,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/viewFullRecord"
-    
+
   /users/updateFirstName:
     post:
       tags:
@@ -147,7 +147,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/updateFirstName"
-    
+
   /users/updateSecondName:
     post:
       tags:
@@ -187,8 +187,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/updateBookingID"
-              /users/health:
-    
+
   /users/updateMembership:
     post:
       tags:
@@ -198,6 +197,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/updateMembership"
+
   /users/testing:
     get:
       tags:
@@ -206,7 +206,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/testing" 
+          $ref: "#/components/responses/testing"
 
   /users/createUser:
     post:
@@ -216,7 +216,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/createUser" 
+          $ref: "#/components/responses/createUser"
 
   /users/deleteUser:
     post:
@@ -226,7 +226,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/deleteUser" 
+          $ref: "#/components/responses/deleteUser"
 
   /booking/bookings:
     get:
