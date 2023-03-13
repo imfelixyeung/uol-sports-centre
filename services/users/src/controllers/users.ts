@@ -12,7 +12,7 @@ import {
   processData,
   returnFullRecord,
 } from '../services/users';
-import {CreateUserDBA} from '../services/dbRequests';
+import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
 
 async function testing(req: Request, res: Response) {
   const finishedData: String = await processData(req.query.trtr as string);
@@ -61,37 +61,247 @@ async function updateMembership(req: Request, res: Response) {
   // need to extract the data from the request
   // we need to create a valid UserDBA object
   // we need to pass that object to the editMembership function
+  const updateUserSchema = z.object({
+    id: z.number().optional(),
+    accountID: z.number().optional(),
+    paymentID: z.number().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    membership: z.string(),
+  });
+
+  const updateUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const body = updateUserSchema.safeParse(req.body);
+  const params = updateUserParamsSchema.safeParse(req.params);
+  if (!body.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed body',
+      error: body.error,
+    });
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const userData: EditUserDBA = {id: params.data.id, ...body.data};
+  const updatedUser = await editMembership(userData);
+
+  if (updatedUser === null)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create User',
+    });
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await editMembership(),
+    booking: updatedUser,
   });
 }
 
 async function updateFirstName(req: Request, res: Response) {
+  const updateUserSchema = z.object({
+    id: z.number().optional(),
+    accountID: z.number().optional(),
+    paymentID: z.number().optional(),
+    firstName: z.string(),
+    lastName: z.string().optional(),
+    membership: z.string().optional(),
+  });
+
+  const updateUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const body = updateUserSchema.safeParse(req.body);
+  const params = updateUserParamsSchema.safeParse(req.params);
+  if (!body.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed body',
+      error: body.error,
+    });
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const userData: EditUserDBA = {id: params.data.id, ...body.data};
+  const updatedUser = await editFirstName(userData);
+
+  if (updatedUser === null)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create User',
+    });
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await editFirstName(req.query.id as number),
+    booking: updatedUser,
   });
 }
 
 async function updateSecondName(req: Request, res: Response) {
+  const updateUserSchema = z.object({
+    id: z.number().optional(),
+    accountID: z.number().optional(),
+    paymentID: z.number().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string(),
+    membership: z.string().optional(),
+  });
+
+  const updateUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const body = updateUserSchema.safeParse(req.body);
+  const params = updateUserParamsSchema.safeParse(req.params);
+  if (!body.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed body',
+      error: body.error,
+    });
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const userData: EditUserDBA = {id: params.data.id, ...body.data};
+  const updatedUser = await editSecondName(userData);
+
+  if (updatedUser === null)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create User',
+    });
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await editSecondName(req.query.id as number),
+    booking: updatedUser,
   });
 }
 
 async function updateAccountID(req: Request, res: Response) {
+  const updateUserSchema = z.object({
+    id: z.number().optional(),
+    accountID: z.number(),
+    paymentID: z.number().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    membership: z.string().optional(),
+  });
+
+  const updateUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const body = updateUserSchema.safeParse(req.body);
+  const params = updateUserParamsSchema.safeParse(req.params);
+  if (!body.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed body',
+      error: body.error,
+    });
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const userData: EditUserDBA = {id: params.data.id, ...body.data};
+  const updatedUser = await editAccountID(userData);
+
+  if (updatedUser === null)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create User',
+    });
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await editAccountID(req.query.id as number),
+    booking: updatedUser,
   });
 }
 
 async function updatePaymentID(req: Request, res: Response) {
+  const updateUserSchema = z.object({
+    id: z.number().optional(),
+    accountID: z.number().optional(),
+    paymentID: z.number(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    membership: z.string().optional(),
+  });
+
+  const updateUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const body = updateUserSchema.safeParse(req.body);
+  const params = updateUserParamsSchema.safeParse(req.params);
+  if (!body.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed body',
+      error: body.error,
+    });
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const userData: EditUserDBA = {id: params.data.id, ...body.data};
+  const updatedUser = await editPaymentID(userData);
+
+  if (updatedUser === null)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create User',
+    });
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await editPaymentID(req.query.id as number),
+    booking: updatedUser,
   });
 }
 
