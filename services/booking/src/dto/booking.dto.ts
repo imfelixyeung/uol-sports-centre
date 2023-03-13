@@ -1,4 +1,5 @@
 import {Booking} from '@prisma/client';
+import {EventDTO} from './event.dto';
 
 export interface BookingDTO {
   id: number;
@@ -19,6 +20,16 @@ export const bookingToDTO = (booking: Booking): BookingDTO => {
     updated: booking.updated.toISOString(),
   };
 };
+
+export interface PossibleBookingDTO {
+  duration: number;
+  starts: string;
+  event: EventDTO;
+  capacity?: {
+    current: number;
+    max: number;
+  };
+}
 
 export interface CreateBookingDTO {
   userId: number;

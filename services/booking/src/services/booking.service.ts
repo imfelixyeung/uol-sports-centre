@@ -1,8 +1,8 @@
 import bookingDao from '@/dao/booking.dao';
 import eventDao from '@/dao/event.dao';
 import {
-  BookingDTO,
   CreateBookingDTO,
+  PossibleBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
 import httpClient from '@/lib/httpClient';
@@ -112,6 +112,58 @@ class BookingService {
     if (!start) start = new Date().setHours(0, 0, 0);
     if (!end) end = new Date().setHours(23, 59, 59);
 
+    // generate list of all possible bookings (not necessarily available)
+    let possibleBookings = await this.generatePossibleBookings(
+      facility,
+      activity,
+      start,
+      end
+    ).catch(err => {
+      return new Error(err);
+    });
+
+    // if error, catch and return
+    if (possibleBookings instanceof Error) {
+      logger.error(`error generating possible bookings: ${possibleBookings}`);
+      return possibleBookings;
+    }
+
+    // ignore any bookings that are team events since they cannot be booked
+    possibleBookings = possibleBookings.filter(
+      booking => booking.event.type !== 'TEAM_EVENT'
+    );
+
+    // get all existing booking for the range specified
+    const currentBookings = await bookingDao.getBookings({
+      facility,
+      activity,
+      limit,
+      page,
+      start,
+      end,
+    });
+
+    // check capacity of open_use events
+    // add capacity to event if is open_use
+    // check availability based on sessions
+    // remove them from the list of possible bookings
+
+    return possibleBookings;
+  }
+
+  /**
+   * Generates a list of possible bookings based on the input params. Note that
+   * these bookings may not all be available.
+   *
+   * @private
+   * @memberof BookingService
+   */
+  private async generatePossibleBookings(
+    facility?: number,
+    activity?: number,
+    start?: number,
+    end?: number
+  ) {
     // first we will get the events that fit within the specified filters
     const validEvents = await eventDao.getEvents({
       facility,
@@ -137,7 +189,7 @@ class BookingService {
     // return the error if occured
     if (activities instanceof Error) return activities;
 
-    const possibleBookings: BookingDTO[] = [];
+    const possibleBookings: PossibleBookingDTO[] = [];
 
     // for each event, generate a list of possible bookings
     validEvents.forEach(event => {
@@ -150,45 +202,28 @@ class BookingService {
       }
 
       const timeSlots = event.duration / activity.duration;
-      // logger.debug(`${timeSlots} ${activity.duration}m slots in ${event.name}`);
 
       // for each timeslot, generate a possible booking
       for (let i = 0; i < timeSlots; i++) {
-        const booking: BookingDTO = {
+        const possibleBooking: PossibleBookingDTO = {
           starts: new Date(
             new Date(start || new Date()).setMinutes(
               event.time + i * activity.duration
             )
           ).toISOString(),
           duration: activity.duration,
-          eventId: event.id,
-
-          // TODO: create new type for possible booking
-          id: 0,
-          transactionId: 0,
-          userId: 0,
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
+          event,
+          ...(event.type === 'OPEN_USE' && {
+            capacity: {
+              current: 0,
+              max: activity.capacity,
+            },
+          }),
         };
 
-        possibleBookings.push(booking);
-        // logger.debug(booking);
+        possibleBookings.push(possibleBooking);
       }
     });
-
-    // get all existing booking for the range specified
-    const currentBookings = await bookingDao.getBookings({
-      facility,
-      activity,
-      limit,
-      page,
-      start,
-      end,
-    });
-
-    // check capacity of open_use events
-    // check availability based on sessions and team events
-    // remove them from the list of possible bookings
 
     return possibleBookings;
   }

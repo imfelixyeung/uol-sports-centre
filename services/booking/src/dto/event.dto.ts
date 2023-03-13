@@ -5,5 +5,5 @@ export interface EventDTO {
   day: number;
   time: number;
   duration: number;
-  type: string;
+  type: 'SESSION' | 'OPEN_USE' | 'TEAM_EVENT';
 }
