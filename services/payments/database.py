@@ -1,14 +1,14 @@
 import sqlite3
 import os
 
-currentDir = os.getcwd()
-sqlPath = os.path.join(currentDir, "paymentSchema.sql")
-absPath = os.path.abspath(sqlPath)
+# Get absolute path of directory for payments
+dirtopayments = os.path.dirname(os.path.abspath(__file__))
+sqlPath = os.path.join(dirtopayments, "paymentSchema.sql")
 
 def initDatabase():
     '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
-    with open(absPath) as schema:
+    with open(sqlPath) as schema:
         connection.executescript(schema.read())
     connection.close()
 
