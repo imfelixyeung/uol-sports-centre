@@ -7,8 +7,8 @@ class OpenTime(db.Model):
 
   # The openingTime and closingTime fields are stored as minutes after midnight.
   # For example: if "football" opened at 11:30am the opening time would be stored as 690
-  openingTime = db.Column(db.Integer)
-  closingTime = db.Column(db.Integer)
+  opening_time = db.Column(db.Integer)
+  closing_time = db.Column(db.Integer)
 
   # Foreign Connectors for the OpenTimes table
   facility_id = db.Column(db.ForeignKey("facility.id"))
