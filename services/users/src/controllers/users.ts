@@ -128,10 +128,27 @@ async function createUser(req: express.Request, res: express.Response) {
   });
 }
 
-async function deleteUser(req: Request, res: Response) {
+async function deleteUser(req: express.Request, res: express.Response) {
+  const deleteUserParamsSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+  const params = deleteUserParamsSchema.safeParse(req.params);
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
   return res.status(200).send({
     status: 'OK',
-    bookings: await deleteExistingUser(req.query.id as number),
+    message: 'Deleted booking',
+    booking: await deleteExistingUser(params.data.id),
   });
 }
 
