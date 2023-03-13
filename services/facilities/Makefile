@@ -9,6 +9,7 @@ help:
 
 
 start:
+	python3 -m flask db upgrade
 	python3 seedData.py
 	python3 -m flask run
 
@@ -21,6 +22,11 @@ update-env:
 dev:
 	source environment/bin/activate
 	python3 -m flask run --debug
+
+test:
+	source environment/bin/activate
+	python3 -m coverage run facilities_test.py
+	python3 -m coverage report
 
 lint:
 	source environment/bin/activate
