@@ -129,12 +129,14 @@ class BookingService {
       .get<ActivitiesResponse>(
         'http://gateway/api/facilities/activities?page=1&limit=1000',
         {
-          cache: true,
-          cacheId: 'facilities/activities',
+          cache: {
+            id: 'facilities/activities',
+          },
+          timeout: 5 * 1000, // timeout after 5 seconds
         }
       )
       .catch(err => {
-        console.error(`Error fetching activities ${err}`);
+        logger.error(`Error fetching activities ${err}`);
         return new Error(err);
       });
 

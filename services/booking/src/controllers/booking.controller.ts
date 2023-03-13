@@ -307,7 +307,7 @@ class BookingController {
     if (availableBookings instanceof Error) {
       return res.status(500).send({
         status: 'error',
-        error: availableBookings,
+        error: availableBookings.message,
       });
     }
 
