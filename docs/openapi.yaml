@@ -185,16 +185,6 @@ paths:
         "200":
           $ref: "#/components/responses/HealthCheck"
 
-  /management/staff/<int:staff_id>:
-    put: 
-      tags:
-        - management
-      description: "Returns the health of the management service"
-
-      responses:
-        "200":
-          $ref: "#/components/responses/HealthCheck"
-
   /management/health:
     get:
       tags:
