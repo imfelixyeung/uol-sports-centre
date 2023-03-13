@@ -25,10 +25,6 @@ export async function editPaymentID(userData: CreateUserDBA) {
   return await UserDBA.editUser(userData);
 }
 
-export async function editBookingID(userData: CreateUserDBA) {
-  return await UserDBA.editUser(userData);
-}
-
 export async function processData(data: String) {
   return data;
 }

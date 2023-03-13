@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import {
   createNewUser,
   editAccountID,
-  editBookingID,
   editFirstName,
   editMembership,
   editPaymentID,
@@ -65,13 +64,6 @@ async function updatePaymentID(req: Request, res: Response) {
   });
 }
 
-async function updateBookingID(req: Request, res: Response) {
-  return res.status(200).send({
-    status: 'OK',
-    bookings: await editBookingID(req.query.id as number),
-  });
-}
-
 async function createUser(req: Request, res: Response) {
   return res.status(200).send({
     status: 'OK',
@@ -86,7 +78,6 @@ const usersControllers = {
   updateSecondName,
   updateAccountID,
   updatePaymentID,
-  updateBookingID,
   updateMembership,
   createUser,
 };

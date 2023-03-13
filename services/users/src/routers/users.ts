@@ -9,7 +9,6 @@ userRouter.get('/updateFirstName', usersControllers.updateFirstName);
 userRouter.get('/updateSecondName', usersControllers.updateSecondName);
 userRouter.get('/updateAccountID', usersControllers.updateAccountID);
 userRouter.get('/updatePaymentID', usersControllers.updatePaymentID);
-userRouter.get('/updateBookingID', usersControllers.updateBookingID);
 userRouter.get('/updateMembership', usersControllers.updateMembership);
 userRouter.get('/createUser', usersControllers.createUser);
 
