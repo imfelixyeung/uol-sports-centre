@@ -65,7 +65,6 @@ def webhookReceived():
         print('Payment succeeded!')
     return 'ok'
 
-
 # Endpoint to retreieve purchased products for a customer
 @app.route('/purchased-products/<int:userID>', methods=['GET'])
 def get_purchased_products(userID):

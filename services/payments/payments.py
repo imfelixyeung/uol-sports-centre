@@ -35,3 +35,11 @@ def MakeAPurchase(userID, productName):
     addPurchase(stripeUser[0], productID, datetime.now())
 
     return createCheckout(stripeUser[1], productName)
+
+def changePrice(newPrice, productName):
+    priceID = getProduct(productName)
+    stripe.Price.modify(
+        priceID, 
+        unit_amount_decimal=str(newPrice * 100)
+    )
+    updatePrice(productName, newPrice)

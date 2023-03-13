@@ -29,7 +29,7 @@ def setDiscount(discountAmount):
     '''Sets specified discount for subscriptions
     discountAmount: discount percentage for membership'''
 
-def setPrice(newPrice, productId):
+def setPrice(newPrice, productName):
     '''Sets a price for memberships
     newPrice: price to be set'''
 
