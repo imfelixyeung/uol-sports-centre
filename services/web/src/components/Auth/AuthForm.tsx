@@ -69,7 +69,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               id="email"
               name="email"
               type="email"
-              className="bg-white p-2"
+              className="bg-white p-2 text-black"
               placeholder="Email"
               inputMode="email"
               autoComplete="email"
@@ -82,7 +82,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
               id="password"
               name="password"
               type="password"
-              className="bg-white p-2"
+              className="bg-white p-2 text-black"
               placeholder="Password"
               inputMode="password"
               autoComplete={
