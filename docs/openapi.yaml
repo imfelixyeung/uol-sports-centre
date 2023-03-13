@@ -273,6 +273,42 @@ paths:
         "200":
           $ref: "#/components/responses/UserRecord"
 
+  UserRecord:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: If the operation was successful
+      data:
+        $ref: "#/components/schemas/UserData"
+
+  UpdateUser:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: If the operation was successful
+      data:
+        $ref: "#/components/schemas/UserData"
+    
+  userCreated:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: If the operation was successful
+      data:
+        $ref: "#/components/schemas/UserData"
+
+  deletedUser:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: If the operation was successful
+      data:
+        $ref: "#/components/schemas/UserData"
+
   /users/updateFirstName:
     post:
       tags:
@@ -281,7 +317,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/UpdatedFirstNameUserRecord"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/updateSecondName:
     post:
@@ -291,7 +327,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/UpdatedSecondNameUserRecord"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/updateAccountID:
     post:
@@ -301,7 +337,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updatedAccountID"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/updatePaymentID:
     post:
@@ -311,7 +347,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updatedPaymentID"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/updateBookingID:
     post:
@@ -321,7 +357,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updatedBookingID"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/updateMembership:
     post:
@@ -331,7 +367,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/updatedMembership"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/testing:
     get:
@@ -351,7 +387,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/createdUser"
+          $ref: "#/components/responses/userCreated"
 
   /users/deleteUser:
     post:
