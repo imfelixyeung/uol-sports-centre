@@ -1,35 +1,35 @@
-import userDBA from '../services/dba';
+import UserDBA from '../services/dba';
 import {CreateUserDBA} from './dbRequests';
 
-export function editMembership(userID: number) {
-  return userID;
+export async function editMembership(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function returnFullRecord(userID: number) {
-  return userID;
+export async function returnFullRecord(userID: number) {
+  return await UserDBA.getUser(userID);
 }
 
-export function editFirstName(userID: number) {
-  return userID;
+export async function editFirstName(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function editSecondName(userID: number) {
-  return userID;
+export async function editSecondName(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function editAccountID(userID: number) {
-  return userID;
+export async function editAccountID(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function editPaymentID(userID: number) {
-  return userID;
+export async function editPaymentID(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function editBookingID(userID: number) {
-  return userID;
+export async function editBookingID(userData: CreateUserDBA) {
+  return await UserDBA.editUser(userData);
 }
 
-export function processData(data: String): String {
+export async function processData(data: String) {
   return data;
 }
 
@@ -38,5 +38,5 @@ export function seedDatabase(): undefined {
 }
 
 export async function createNewUser(userData: CreateUserDBA) {
-  return await userDBA.createUser(userData);
+  return await UserDBA.createUser(userData);
 }

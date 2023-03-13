@@ -3,9 +3,9 @@ export interface usersDBA {
   accountID: number;
   paymentID: number;
   bookingID: number;
-  firstName: String;
-  lastName: String;
-  membership: String;
+  firstName: string;
+  lastName: string;
+  membership: string;
 }
 
 export interface CreateUserDBA {
@@ -13,9 +13,9 @@ export interface CreateUserDBA {
   accountID?: number;
   paymentID?: number;
   bookingID?: number;
-  firstName: String;
-  lastName: String;
-  membership?: String;
+  firstName: string;
+  lastName: string;
+  membership?: string;
 }
 
 export interface EditUserDBA {
@@ -23,7 +23,7 @@ export interface EditUserDBA {
   accountID?: number;
   paymentID?: number;
   bookingID?: number;
-  firstName?: String;
-  lastName?: String;
-  membership?: String;
+  firstName?: string;
+  lastName?: string;
+  membership?: string;
 }
