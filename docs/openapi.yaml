@@ -269,19 +269,6 @@ paths:
         - users
       description: "Returns the record in database for a specified user"
 
-      responses:
-        "200":
-          $ref: "#/components/responses/UserRecord"
-
-    UserRecord:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
-
   /users/updateFirstName:
     post:
       tags:
