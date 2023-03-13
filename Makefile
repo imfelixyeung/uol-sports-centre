@@ -26,8 +26,8 @@ ci-docs:
 	docker compose -f docker-compose.ci.yaml run docs
 
 ci-status:
-	docker compose -f docker-compose.ci.yaml build docs
-	docker compose -f docker-compose.ci.yaml run docs
+	docker compose -f docker-compose.ci.yaml build status
+	docker compose -f docker-compose.ci.yaml run status
 
 clean:
 	docker compose down

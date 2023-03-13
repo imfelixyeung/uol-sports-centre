@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run ci tests in docker
-        run: make ci-auth
+        run: make ci-docs
 
   status-ci-checks:
     runs-on: ubuntu-latest
