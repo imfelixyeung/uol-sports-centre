@@ -15,3 +15,8 @@ services:
     build:
       context: ./docs
       target: ci
+
+  payments:
+    build:
+      context: ./services/payments
+      target: ci
