@@ -16,7 +16,7 @@ def MakePurchasable(productName, productPrice, productType="payment"):
     #Adding product to database
     addProduct(productName, price.stripe_id, productPrice, productType)
 
-def MakeAPurchase(userID, productName):
+def MakeAPurchase(userID, productName, successUrl=None):
     '''redirects user to stripe checkout for chosen product'''
     stripeUser = getUser(userID)
 
@@ -34,9 +34,10 @@ def MakeAPurchase(userID, productName):
     print(stripeUser[0])
     addPurchase(stripeUser[0], productID, datetime.now())
 
-    return createCheckout(stripeUser[1], productName)
+    return createCheckout(stripeUser[1], productName, successUrl)
 
 def changePrice(newPrice, productName):
+    '''Changes price of specified product for management microservice'''
     priceID = getProduct(productName)
     stripe.Price.modify(
         priceID, 
