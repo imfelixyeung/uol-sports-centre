@@ -283,15 +283,6 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
 
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
-
   /users/updateSecondName:
     post:
       tags:
@@ -301,15 +292,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
-
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
 
   /users/updateAccountID:
     post:
@@ -321,15 +303,6 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
 
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
-
   /users/updatePaymentID:
     post:
       tags:
@@ -339,15 +312,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
-
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
 
   /users/updateBookingID:
     post:
@@ -359,15 +323,6 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
 
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
-
   /users/updateMembership:
     post:
       tags:
@@ -377,15 +332,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
-
-    UpdateUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
 
   /users/testing:
     get:
@@ -407,15 +353,6 @@ paths:
         "200":
           $ref: "#/components/responses/userCreated"
 
-    userCreated:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
-
   /users/deleteUser:
     post:
       tags:
@@ -425,15 +362,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/deletedUser"
-
-    deletedUser:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: If the operation was successful
-        data:
-          $ref: "#/components/schemas/UserData"
 
   /booking/bookings:
     get:
@@ -863,3 +791,17 @@ components:
                   type: number
                   description: "The milliseconds since epoch"
                   example: 1680307200000
+
+    UpdatedUser:
+      description: Updated user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
