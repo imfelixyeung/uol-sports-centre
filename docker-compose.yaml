@@ -120,6 +120,24 @@ services:
     volumes:
       - ./persistence/users/db:/var/lib/postgresql/data
 
+  payments:
+    build:
+      context: ./services/payments
+      target: prod
+    environment:
+      - APP_PORT=80
+    networks:
+      - network
+
+  management:
+    build:
+      context: ./services/management
+      target: prod
+    environment:
+      - APP_PORT=80
+    networks:
+      - network
+
   gateway:
     build: ./gateway
     env_file:
