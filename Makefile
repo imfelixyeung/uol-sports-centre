@@ -11,7 +11,7 @@ dev:
 	docker compose -f docker-compose.dev.yaml build
 	docker compose -f docker-compose.dev.yaml --env-file .env.dev up
 
-ci: ci-auth ci-docs ci-status ci-payments
+ci: ci-auth ci-docs ci-status ci-payments ci-management
 
 ci-auth:
 	docker compose -f docker-compose.ci.yaml build auth
@@ -28,6 +28,10 @@ ci-status:
 ci-payments:
 	docker compose -f docker-compose.ci.yaml build payments
 	docker compose -f docker-compose.ci.yaml run payments
+
+ci-management:
+	docker compose -f docker-compose.ci.yaml build management
+	docker compose -f docker-compose.ci.yaml run management
 
 clean:
 	docker compose down
