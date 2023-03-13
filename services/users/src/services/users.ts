@@ -36,3 +36,7 @@ export function seedDatabase(): undefined {
 export async function createNewUser(userData: CreateUserDBA) {
   return await UserDBA.createUser(userData);
 }
+
+export async function deleteExistingUser(userID: number) {
+  return await UserDBA.deleteUser(userID);
+}

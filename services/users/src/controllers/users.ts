@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import {
   createNewUser,
+  deleteExistingUser,
   editAccountID,
   editFirstName,
   editMembership,
@@ -71,6 +72,13 @@ async function createUser(req: Request, res: Response) {
   });
 }
 
+async function deleteUser(req: Request, res: Response) {
+  return res.status(200).send({
+    status: 'OK',
+    bookings: await deleteExistingUser(req.query.id as number),
+  });
+}
+
 const usersControllers = {
   testing,
   viewFullRecord,
@@ -79,6 +87,7 @@ const usersControllers = {
   updateAccountID,
   updatePaymentID,
   updateMembership,
+  deleteUser,
   createUser,
 };
 

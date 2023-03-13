@@ -10,6 +10,7 @@ userRouter.get('/updateSecondName', usersControllers.updateSecondName);
 userRouter.get('/updateAccountID', usersControllers.updateAccountID);
 userRouter.get('/updatePaymentID', usersControllers.updatePaymentID);
 userRouter.get('/updateMembership', usersControllers.updateMembership);
+userRouter.get('/deleteUser', usersControllers.deleteUser);
 userRouter.get('/createUser', usersControllers.createUser);
 
 export default userRouter;
