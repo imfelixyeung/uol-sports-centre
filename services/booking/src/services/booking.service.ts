@@ -86,72 +86,6 @@ class BookingService {
   }
 
   /**
-   * Get a list of available bookings given the current filters. All of the
-   * filters are optional which means that there are a number of fallback
-   * filters to use if unspecified. They are:
-   *
-   * - start: 00:00 of the current day
-   * - end: 23:59 of the current day
-   * - facility: all facilities searched
-   * - activity: all activities searched
-   *
-   * pagination (the limits will likely be changed to enforce the use of pagination)
-   * - limit: no limit (all returned)
-   * - page: will default to 1
-   *
-   * @memberof BookingService
-   */
-  async getAvailableBookings(
-    start?: number,
-    end?: number,
-    facility?: number,
-    activity?: number,
-    limit?: number,
-    page?: number
-  ) {
-    if (!start) start = new Date().setHours(0, 0, 0);
-    if (!end) end = new Date().setHours(23, 59, 59);
-
-    // generate list of all possible bookings (not necessarily available)
-    let possibleBookings = await this.generatePossibleBookings(
-      facility,
-      activity,
-      start,
-      end
-    ).catch(err => {
-      return new Error(err);
-    });
-
-    // if error, catch and return
-    if (possibleBookings instanceof Error) {
-      logger.error(`error generating possible bookings: ${possibleBookings}`);
-      return possibleBookings;
-    }
-
-    // ignore any bookings that are team events since they cannot be booked
-    possibleBookings = possibleBookings.filter(
-      booking => booking.event.type !== 'TEAM_EVENT'
-    );
-
-    // get all existing booking for the range specified
-    const currentBookings = await bookingDao.getBookings({
-      facility,
-      activity,
-      limit,
-      page,
-      start,
-      end,
-    });
-
-    // check capacity of open_use events
-    // add capacity to event if is open_use
-    // check availability based on sessions
-    // remove them from the list of possible bookings
-
-    return possibleBookings;
-  }
-
-  /**
    * Generates a list of possible bookings based on the input params. Note that
    * these bookings may not all be available.
    *
@@ -224,6 +158,72 @@ class BookingService {
         possibleBookings.push(possibleBooking);
       }
     });
+
+    return possibleBookings;
+  }
+
+  /**
+   * Get a list of available bookings given the current filters. All of the
+   * filters are optional which means that there are a number of fallback
+   * filters to use if unspecified. They are:
+   *
+   * - start: 00:00 of the current day
+   * - end: 23:59 of the current day
+   * - facility: all facilities searched
+   * - activity: all activities searched
+   *
+   * pagination (the limits will likely be changed to enforce the use of pagination)
+   * - limit: no limit (all returned)
+   * - page: will default to 1
+   *
+   * @memberof BookingService
+   */
+  async getAvailableBookings(
+    start?: number,
+    end?: number,
+    facility?: number,
+    activity?: number,
+    limit?: number,
+    page?: number
+  ) {
+    if (!start) start = new Date().setHours(0, 0, 0);
+    if (!end) end = new Date().setHours(23, 59, 59);
+
+    // generate list of all possible bookings (not necessarily available)
+    let possibleBookings = await this.generatePossibleBookings(
+      facility,
+      activity,
+      start,
+      end
+    ).catch(err => {
+      return new Error(err);
+    });
+
+    // if error, catch and return
+    if (possibleBookings instanceof Error) {
+      logger.error(`error generating possible bookings: ${possibleBookings}`);
+      return possibleBookings;
+    }
+
+    // ignore any bookings that are team events since they cannot be booked
+    possibleBookings = possibleBookings.filter(
+      booking => booking.event.type !== 'TEAM_EVENT'
+    );
+
+    // get all existing booking for the range specified
+    const currentBookings = await bookingDao.getBookings({
+      facility,
+      activity,
+      limit,
+      page,
+      start,
+      end,
+    });
+
+    // check capacity of open_use events
+    // add capacity to event if is open_use
+    // check availability based on sessions
+    // remove them from the list of possible bookings
 
     return possibleBookings;
   }
