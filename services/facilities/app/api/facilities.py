@@ -89,17 +89,16 @@ class FacilitiesRouter:
     if not new_facility:
       return {"status": "Failed", "message": "Invalid input"}, 400
 
-    else:
-      self.db.session.add(new_facility)
-      self.db.session.commit()
+    self.db.session.add(new_facility)
+    self.db.session.commit()
 
-      # Return the status of the addition and the object added to the database
-      return_value = make_response({
-          "status": "ok",
-          "message": "facility added",
-          "facility": makeFacility(new_facility)
-      })
-      return_value.status_code = 200
+    # Return the status of the addition and the object added to the database
+    return_value = make_response({
+        "status": "ok",
+        "message": "facility added",
+        "facility": makeFacility(new_facility)
+    })
+    return_value.status_code = 200
 
     return return_value
 
@@ -109,20 +108,15 @@ class FacilitiesRouter:
     # If the facility is not found within the table
     # respond with an error and error code 404
     if not facility_query:
-      return_value = make_response({
-          "status": "error",
-          "message": "resource not found"
-      })
-      return_value.status_code = 404
+      return {"status": "error", "message": "resource not found"}, 404
 
     # Else, facility is found so make it into a dictionary
     # then a response with the code 200 for success
-    else:
-      return_value = make_response({
-          "status": "ok",
-          "facility": makeFacility(facility_query)
-      })
-      return_value.status_code = 200
+    return_value = make_response({
+        "status": "ok",
+        "facility": makeFacility(facility_query)
+    })
+    return_value.status_code = 200
 
     return return_value
 
@@ -134,12 +128,7 @@ class FacilitiesRouter:
 
     # Check that the facility has been found
     if not to_update:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Object not found"
-      })
-      return_value.status_code = 404
-      return return_value
+      return {"status": "Failed", "message": "Object not found"}, 404
 
     # Value to check if something has been updated
     update_check = False
@@ -177,12 +166,7 @@ class FacilitiesRouter:
 
     # If the requested
     if not to_delete:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Object not found"
-      })
-      return_value.status_code = 404
-      return return_value
+      return {"status": "Failed", "message": "Object not found"}, 404
 
     # Since to_delete is in the database delete it
     self.db.session.delete(to_delete)

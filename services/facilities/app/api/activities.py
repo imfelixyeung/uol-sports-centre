@@ -91,17 +91,16 @@ class ActivitiesRouter:
     if not addition:
       return {"status": "Failed", "message": "Invalid input"}, 400
 
-    else:
-      self.db.session.add(addition)
-      self.db.session.commit()
+    self.db.session.add(addition)
+    self.db.session.commit()
 
-      # Return the status of the addition and the object added to the database
-      return_value = make_response({
-          "status": "ok",
-          "message": "Activity added",
-          "activity": makeActivity(addition)
-      })
-      return_value.status_code = 200
+    # Return the status of the addition and the object added to the database
+    return_value = make_response({
+        "status": "ok",
+        "message": "Activity added",
+        "activity": makeActivity(addition)
+    })
+    return_value.status_code = 200
 
     return return_value
 
@@ -111,17 +110,12 @@ class ActivitiesRouter:
     # If the activity is not found within the table
     # respond with an error and error code 404
     if not activity_query:
-      return_value = make_response({
-          "status": "error",
-          "message": "resource not found"
-      })
-      return_value.status_code = 404
+      return {"status": "error", "message": "resource not found"}, 404
 
     # Else, facility is found so make it into a dictionary
     # then a response with the code 200 for success
-    else:
-      return_value = make_response(makeActivity(activity_query))
-      return_value.status_code = 200
+    return_value = make_response(makeActivity(activity_query))
+    return_value.status_code = 200
 
     return return_value
 
@@ -158,16 +152,10 @@ class ActivitiesRouter:
 
     if "facility_id" in data:
       if not Facility.query.get(data.get("facility_id")):
-        return_value = make_response({
-            "status": "Failed",
-            "message": "Object not found"
-        })
-        return_value.status_code = 404
-        return return_value
+        return {"status": "Failed", "message": "Object not found"}, 404
 
-      else:
-        update_check = True
-        to_update.facility_id = data.get("facility_id")
+      update_check = True
+      to_update.facility_id = data.get("facility_id")
 
     # If the update check is still false return error as
     # user input is incorrect
@@ -190,12 +178,7 @@ class ActivitiesRouter:
 
     # If the requested
     if not to_delete:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Object not found"
-      })
-      return_value.status_code = 404
-      return return_value
+      return {"status": "Failed", "message": "Object not found"}, 404
 
     # Since to_delete is in the database delete it
     self.db.session.delete(to_delete)
