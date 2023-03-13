@@ -27,3 +27,30 @@ jobs:
       - name: Lint code base with GTS
         run: pnpm run ci
         working-directory: ./services/web
+
+  auth-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-auth
+
+  docs-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-docs
+
+  status-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-status

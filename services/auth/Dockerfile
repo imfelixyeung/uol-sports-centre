@@ -13,6 +13,11 @@ RUN pnpm install
 # copy app
 COPY . .
 
+# Continuous Integration target
+FROM base as ci
+
+CMD [ "pnpm", "ci" ]
+ 
 
 # Development target
 FROM base as dev
@@ -24,6 +29,7 @@ CMD [ "pnpm", "dev" ]
 
 # Production target
 FROM base as prod
+RUN pnpm build
 
 # start app as production mode
 EXPOSE ${PORT}

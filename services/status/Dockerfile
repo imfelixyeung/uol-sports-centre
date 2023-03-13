@@ -7,10 +7,16 @@ RUN npm install -g pnpm
 
 # install dependencies
 COPY package.json pnpm-lock.yaml ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN pnpm install
 
 # copy app
 COPY . .
+
+
+# Continuious development target
+FROM base as ci
+CMD [ "pnpm", "ci" ]
 
 
 # Development target
@@ -23,6 +29,7 @@ CMD [ "pnpm", "dev" ]
 
 # Production target
 FROM base as prod
+RUN pnpm build
 
 # start app as production mode
 EXPOSE ${PORT}
