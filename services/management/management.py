@@ -2,7 +2,7 @@
 Provides functionality for management-level access 
 to the booking system"""
 import stripe
-from flask import Flask
+from flask import Flask, request
 import os
 import sys
 import sqlite3
@@ -12,8 +12,7 @@ paymentsDir = os.path.join( fileDir, '..', 'payments')
 sys.path.append( paymentsDir )
 import payments
 
-from payments import addProductDatabase
-from payments import MakePurchasable
+from payments import *
 
 app = Flask(__name__,
             static_url_path='',
@@ -44,10 +43,15 @@ def removeFacility(facilityName):                        #
     facilityName: name of facility to be removed'''      #
 #---------------------------------------------------------
 
-def manageStaff(staffId, action, name=''):
+@app.route('/management/staff/<int:staff_id>', methods=['PUT'])
+def manageStaff(staffId):
     '''Amends details of chosen staff member
     staffId: id for staff member to be amended
     action: operation to be performed (promote, rename, etc.)'''
+
+    # Parse through the request body
+    action = request.args.get('action')
+    name = request.args.get('name')
 
     # Connect to the database
     conn = sqlite3.connect('database.db')
@@ -57,21 +61,28 @@ def manageStaff(staffId, action, name=''):
     if action == 'promote':
         c.execute('UPDATE staff SET staffRole = "Manager" WHERE id = ?', (staffId,))
         conn.commit()
+        conn.close()
+        return {'message': 'Staff member promoted to manager'}, 200
 
+    # Rename the staff member
     elif action == 'rename':
+        # In case there is an error:
+        if not name:
+            return {'message': 'Name is required for rename action'}, 400
         c.execute('UPDATE staff SET staffName = ? WHERE id = ?', (name, staffId))
         conn.commit()
+        conn.close()
+        return {'message': 'Staff member renamed successfully'}, 200
 
+    # Delete the staff member
     elif action == 'delete':
         c.execute('DELETE FROM staff WHERE id = ?', (staffId,))
         conn.commit()
+        conn.close()
+        return {'message': 'Staff member deleted successfully'}, 200 
 
-    # ERROR handling
     else:
-        a = 1
-        
-    # Close the database connection
-    conn.close()
+        return {'message': 'Invalid action'}, 400
 
 @app.route('/health')
 def get_health():

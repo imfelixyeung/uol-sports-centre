@@ -1,9 +1,14 @@
 import sqlite3
+import os
+
+currentDir = os.getcwd()
+sqlPath = os.path.join(currentDir, "paymentSchema.sql")
+absPath = os.path.abspath(sqlPath)
 
 def initDatabase():
     '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
-    with open('services/payments/paymentSchema.sql') as schema:
+    with open(absPath) as schema:
         connection.executescript(schema.read())
     connection.close()
 
@@ -17,6 +22,13 @@ def addProduct(name, priceID, price, type):
     connection.commit()
     connection.close()
     return productID
+
+def updatePrice(productName, newPrice):
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    cur.execute('''UPDATE products SET price = ? WHERE productName = ?''', (newPrice, productName))
+    con.commit()
+    con.close()
 
 def addCustomer(userID, stripeID):
     con = sqlite3.connect("database.db")
