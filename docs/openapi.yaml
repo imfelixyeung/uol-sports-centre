@@ -48,6 +48,14 @@ paths:
       responses:
         "200":
           description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
 
   /auth/register:
     post:
@@ -111,6 +119,112 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DecodedJWT"
+
+  /auth/users:
+    get:
+      tags:
+        - auth
+      description: "Returns all users in the auth service (paginated)"
+
+      parameters:
+        - name: pageIndex
+          in: query
+          schema:
+            type: number
+            minimum: 0
+            exclusiveMinimum: true
+          required: false
+          example: 0
+        - name: limit
+          in: query
+          schema:
+            type: number
+            minimum: 0
+          required: false
+          example: 20
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AuthUserData"
+
+  /auth/users/{userId}:
+    get:
+      tags:
+        - auth
+      description: "Returns a user in the auth service"
+
+      parameters:
+        - name: userId
+          in: path
+          schema:
+            type: number
+            minimum: 0
+            exclusiveMinimum: true
+          required: true
+          example: 0
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
+                  data:
+                    $ref: "#/components/schemas/AuthUserData"
+    patch:
+      tags:
+        - auth
+      description: "Updates a user in the auth service"
+
+      parameters:
+        - name: userId
+          in: path
+          schema:
+            type: number
+            minimum: 0
+            exclusiveMinimum: true
+          required: true
+          example: 0
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  $ref: "#/components/schemas/UserRole"
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: If the operation was successful
+                  data:
+                    $ref: "#/components/schemas/AuthUserData"
 
   /auth/health:
     get:
@@ -491,6 +605,31 @@ components:
       bearerFormat: JWT
 
   schemas:
+    UserRole:
+      type: string
+      description: User's role
+      enum:
+        - user
+        - employee
+        - admin
+    AuthUserData:
+      type: object
+      properties:
+        id:
+          type: number
+          description: User's ID
+        email:
+          type: string
+          description: User's Email
+        role:
+          $ref: "#/components/schemas/UserRole"
+        createdAt:
+          type: string
+          description: User's registration date
+        updatedAt:
+          type: string
+          description: User's last update date
+
     tokenAndRefreshToken:
       type: object
       properties:

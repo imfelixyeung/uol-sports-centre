@@ -29,6 +29,7 @@ CMD [ "pnpm", "dev" ]
 
 # Production target
 FROM base as prod
+RUN pnpm build
 
 # start app as production mode
 EXPOSE ${PORT}
