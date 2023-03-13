@@ -9,3 +9,6 @@ __pycache__
 facilities-env/
 environment/
 
+coverage
+.coverage
+
