@@ -23,10 +23,37 @@ async function testing(req: Request, res: Response) {
   });
 }
 
-async function viewFullRecord(req: Request, res: Response) {
+async function viewFullRecord(req: express.Request, res: express.Response) {
+  const paramSchema = z.object({
+    id: z
+      .string()
+      .transform(id => parseInt(id))
+      .refine(id => !Number.isNaN(id), {
+        message: 'Non-number id supplied',
+      }),
+  });
+
+  const params = paramSchema.safeParse(req.params);
+  if (!params.success)
+    return res.status(400).json({
+      status: 'error',
+      message: 'malformed parameters',
+      error: params.error,
+    });
+
+  const user = await returnFullRecord(params.data.id);
+  if (user === null) {
+    // if it is null, it was not found in the database
+    return res.status(404).json({
+      status: 'error',
+      message: 'User not found',
+    });
+  }
+
+  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
-    bookings: await returnFullRecord(req.query.id as number),
+    booking: user,
   });
 }
 
