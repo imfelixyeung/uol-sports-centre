@@ -269,6 +269,10 @@ paths:
         - users
       description: "Returns the record in database for a specified user"
 
+      responses:
+        "200":
+          $ref: "#/components/responses/FullUserRecord"
+
   /users/updateFirstName:
     post:
       tags:
