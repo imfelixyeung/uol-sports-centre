@@ -64,10 +64,6 @@ def manageStaff(staffId, action, name=''):
     elif action == 'delete':
         c.execute('DELETE FROM staff WHERE id = ?', (staffId,))
         conn.commit()
-
-    # ERROR handling
-    else:
-        a = 1
         
     # Close the database connection
     conn.close()

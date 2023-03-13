@@ -15,7 +15,7 @@ tags:
 
   - name: booking
     description: Booking microservice
-    
+
   - name: payments
     description: Payments microservice
 
@@ -121,23 +121,23 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/HealthCheck"
-          
+
   /payments/:
     get:
       tags:
         - payments
       description: "Returns a template html file in order to access other functions"
-        
+
       responses:
         "200":
           description: OK
-            
+
   /payments/checkout-session:
     post:
       tags:
         - payments
       description: "Generates checkout sessions for products in stripe"
-        
+
       responses:
         "200":
           description: OK
@@ -147,37 +147,37 @@ paths:
       tags:
         - payments
       description: "Provides purchased products to user after successful payment"
-      
+
       responses:
         "200":
           description: OK
-  
+
   /payments/purchased-products/<int:userID>:
     get:
-      tags: 
+      tags:
         - payments
       description: "Retrieves all purchased products for a given user"
-      
+
       responses:
         "200":
           description: OK
-  
+
   /payments/customer-portal:
     get:
       tags:
-      - payments
+        - payments
       description: "Generates a stripe customer portal URL for the customer"
-      
+
       responses:
         "200":
           description: OK
-  
+
   /payments/health:
     get:
       tags:
         - payments
       description: "Returns the health of the payments service"
-      
+
       responses:
         "200":
           $ref: "#/components/responses/Healthcheck"
