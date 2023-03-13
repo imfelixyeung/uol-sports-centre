@@ -42,6 +42,22 @@ def redirectCheckout():
 @app.route('/webhook', methods=['POST'])
 def webhookReceived():
     '''Provisions purchased product to user, after successful payment'''
+    
+    webhook_secret = 'whsec_de3f267a8bf26130bdfb026bf70488c16ce2dcaa63ddec8dd807ac408d63af8a'
+    request_data = json.loads(request.data)
+    if webhook_secret:
+        signature = request.headers.get('stripe-signature')
+        event = stripe.Webhook.construct_event(
+            payload=request.data, sig_header=signature, secret=webhook_secret)
+        event_type = event['type']
+    else:
+        event_type = request_data['type']
+    
+    print('event ' + event_type)
+    if event_type == 'checkout.session.completed':
+        print('Payment succeeded!')
+    return 'ok'
+
 
 # Endpoint to retreieve purchased products for a customer
 @app.route('/purchased-products/<int:userID>', methods=['GET'])

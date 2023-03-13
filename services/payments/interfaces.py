@@ -8,7 +8,7 @@ from datetime import datetime
 dirtoenv = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(dirtoenv, '.env'))
 
-localDomain = 'http://localhost:' + os.getenv('APP_PORT')
+localDomain = 'http://localhost:' + str(os.getenv('APP_PORT'))
 
 def createCheckout(stripeID, productName):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
