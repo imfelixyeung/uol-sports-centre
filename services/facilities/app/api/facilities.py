@@ -44,21 +44,27 @@ class FacilitiesRouter:
                                 methods=["DELETE"])
 
   def get_facilities(self):
-    try:
-      page = int(request.args.get("page"))
-      limit = int(request.args.get("limit"))
-    except ValueError:
-      # Catch value error and return a failed response code before continuing
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Invalid input"
-      })
-      return_value.status_code = 400
-      return return_value
+    # Check to see if page and limit have been supplied
+    if request.args.get("page") and request.args.get("limit"):
+      try:
+        page = int(request.args.get("page"))
+        limit = int(request.args.get("limit"))
+      except ValueError:
+        # Catch value error and return a failed response code before continuing
+        return_value = make_response({
+            "status": "Failed",
+            "message": "Invalid input"
+        })
+        return_value.status_code = 400
+        return return_value
 
-    offset = (page - 1) * limit
+      offset = (page - 1) * limit
 
-    facilities_query = Facility.query.limit(limit).offset(offset).all()
+      facilities_query = Facility.query.limit(limit).offset(offset).all()
+
+    # If no page and limit supplied return everything
+    else:
+      facilities_query = Facility.query.all()
 
     return_array = []
 
