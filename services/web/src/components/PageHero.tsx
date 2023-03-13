@@ -14,7 +14,8 @@ interface PageHeroProps {
 const PageHero: FC<PageHeroProps> = ({
   title,
   titleStyles = {
-    styledAs: 'display2',
+    styledAs: 'h2',
+    desktopStyledAs: 'display2',
     uppercase: true,
   },
   subtitle,

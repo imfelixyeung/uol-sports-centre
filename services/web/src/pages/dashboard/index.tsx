@@ -36,7 +36,7 @@ const UserDashboardPage = () => {
 
   const upcomingSection = (
     <section className="my-16 flex flex-col gap-3">
-      <Typography.h2 styledAs="h1" uppercase>
+      <Typography.h2 styledAs="h1" desktopStyledAs="h2" uppercase>
         {'/// Upcoming'}
       </Typography.h2>
       <BookingActivity

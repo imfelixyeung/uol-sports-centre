@@ -18,6 +18,19 @@ export const typographyStyles = cva('', {
       button: 'typography-button',
       data: 'typography-data',
     },
+    desktopStyledAs: {
+      display1: 'md:typography-display1',
+      display2: 'md:typography-display2',
+      subtext: 'md:typography-subtext',
+      h1: 'md:typography-h1',
+      h2: 'md:typography-h2',
+      h3: 'md:typography-h3',
+      p: 'md:typography-p',
+      navLink: 'md:typography-link-nav',
+      footerLink: 'md:typography-link-footer',
+      button: 'md:typography-button',
+      data: 'md:typography-data',
+    },
     uppercase: {
       true: 'uppercase',
     },
@@ -44,6 +57,7 @@ export type TypographyTags = {
 
 const Typography: FC<TypographyProps> & TypographyTags = ({
   styledAs,
+  desktopStyledAs,
   uppercase,
   as: is = 'p',
   className,
@@ -52,6 +66,7 @@ const Typography: FC<TypographyProps> & TypographyTags = ({
   const element = createElement(is, {
     className: typographyStyles({
       styledAs: (styledAs ?? is) as TypographyProps['styledAs'],
+      desktopStyledAs,
       uppercase,
       className,
     }),

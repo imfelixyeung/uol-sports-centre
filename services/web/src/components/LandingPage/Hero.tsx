@@ -7,7 +7,8 @@ const Hero = () => {
     <PageHero
       title="A Sports Centre"
       titleStyles={{
-        styledAs: 'display1',
+        styledAs: 'display2',
+        desktopStyledAs: 'display1',
         uppercase: true,
       }}
       subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo
