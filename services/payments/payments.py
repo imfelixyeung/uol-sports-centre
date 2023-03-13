@@ -16,7 +16,7 @@ def MakePurchasable(productName, productPrice, productType="payment"):
     #Adding product to database
     addProduct(productName, price.stripe_id, productPrice, productType)
 
-def MakeAPurchase(userID, productName, successUrl=None):
+def MakeAPurchase(userID, productName, successUrl=localDomain):
     '''redirects user to stripe checkout for chosen product'''
     stripeUser = getUser(userID)
 
