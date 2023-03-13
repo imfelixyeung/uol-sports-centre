@@ -341,7 +341,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/tested"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/createUser:
     post:
@@ -351,7 +351,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/userCreated"
+          $ref: "#/components/responses/UpdatedUser"
 
   /users/deleteUser:
     post:
@@ -361,7 +361,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/deletedUser"
+          $ref: "#/components/responses/UpdatedUser"
 
   /booking/bookings:
     get:
