@@ -290,7 +290,7 @@ paths:
         description: If the operation was successful
       data:
         $ref: "#/components/schemas/UserData"
-    
+
   userCreated:
     type: object
     properties:
