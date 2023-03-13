@@ -2,7 +2,7 @@ import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Activity, Facility
-from app.createDictionaries import makeActivity
+from app.createDictionaries import make_activity
 
 
 class ActivitiesRouter:
@@ -65,7 +65,7 @@ class ActivitiesRouter:
 
     # Add every activity found in the query to the array as a dictionary
     for activity in activities_query:
-      return_array.append(makeActivity(activity))
+      return_array.append(make_activity(activity))
 
     # Turn array into a flask response
     return_value = make_response(return_array)
@@ -98,7 +98,7 @@ class ActivitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "Activity added",
-        "activity": makeActivity(addition)
+        "activity": make_activity(addition)
     })
     return_value.status_code = 200
 
@@ -114,7 +114,7 @@ class ActivitiesRouter:
 
     # Else, facility is found so make it into a dictionary
     # then a response with the code 200 for success
-    return_value = make_response(makeActivity(activity_query))
+    return_value = make_response(make_activity(activity_query))
     return_value.status_code = 200
 
     return return_value
@@ -167,7 +167,7 @@ class ActivitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "activity updated",
-        "activity": makeActivity(to_update)
+        "activity": make_activity(to_update)
     })
 
     return_value.status_code = 200
@@ -187,6 +187,6 @@ class ActivitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "activity deleted",
-        "activity": makeActivity(to_delete)
+        "activity": make_activity(to_delete)
     })
     return return_value

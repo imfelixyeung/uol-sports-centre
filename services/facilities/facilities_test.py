@@ -6,7 +6,7 @@ from app.database import db
 from app.models.activity import Activity
 from app.models.facility import Facility
 from app.models.opentime import OpenTime
-from app.createDictionaries import makeActivity, makeFacility, makeOpenTime
+from app.createDictionaries import make_activity, make_facility, make_open_time
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = create_app(testing=True,
@@ -77,7 +77,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = Facility.query.get(2)
 
-      check_data = makeFacility(check_query)
+      check_data = make_facility(check_query)
 
       self.assertDictEqual({
           "id": 2,
@@ -119,7 +119,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = Facility.query.get(1)
 
-      check_data = makeFacility(check_query)
+      check_data = make_facility(check_query)
 
       self.assertDictEqual({
           "id": 1,
@@ -147,7 +147,7 @@ class FacilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "facility deleted",
-          "facility": makeFacility(to_delete)
+          "facility": make_facility(to_delete)
       }
 
       self.assertDictEqual(expected_response, json.loads(response.data))
@@ -182,7 +182,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = OpenTime.query.get(2)
 
-      check_data = makeOpenTime(check_query)
+      check_data = make_open_time(check_query)
 
       self.assertDictEqual(
           {
@@ -214,7 +214,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = OpenTime.query.get(1)
 
-      check_data = makeOpenTime(check_query)
+      check_data = make_open_time(check_query)
 
       self.assertDictEqual(
           {
@@ -245,7 +245,7 @@ class FacilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "opening time deleted",
-          "open_time": makeOpenTime(to_delete)
+          "open_time": make_open_time(to_delete)
       }
 
       self.assertDictEqual(expected_response, json.loads(response.data))
@@ -280,7 +280,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = Activity.query.get(2)
 
-      check_data = makeActivity(check_query)
+      check_data = make_activity(check_query)
 
       self.assertDictEqual(
           {
@@ -312,7 +312,7 @@ class FacilitiesTests(unittest.TestCase):
 
       check_query = Activity.query.get(1)
 
-      check_data = makeActivity(check_query)
+      check_data = make_activity(check_query)
 
       self.assertDictEqual(
           {
@@ -343,7 +343,7 @@ class FacilitiesTests(unittest.TestCase):
       expected_response = {
           "status": "ok",
           "message": "activity deleted",
-          "activity": makeActivity(to_delete)
+          "activity": make_activity(to_delete)
       }
 
       self.assertDictEqual(expected_response, json.loads(response.data))

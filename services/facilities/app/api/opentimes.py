@@ -2,7 +2,7 @@ import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import OpenTime, Facility
-from app.createDictionaries import makeOpenTime
+from app.createDictionaries import make_open_time
 
 
 class OpenTimesRouter:
@@ -64,7 +64,7 @@ class OpenTimesRouter:
     return_array = []
 
     for open_time in open_time_query:
-      return_array.append(makeOpenTime(open_time))
+      return_array.append(make_open_time(open_time))
 
     # Turn array into a flask response
     return_value = make_response(return_array)
@@ -95,7 +95,7 @@ class OpenTimesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "Opening time added",
-        "open_time": makeOpenTime(addition)
+        "open_time": make_open_time(addition)
     })
     return_value.status_code = 200
 
@@ -111,7 +111,7 @@ class OpenTimesRouter:
 
     # Else, facility is found so make it into a dictionary
     # then a response with the code 200 for success
-    return_value = make_response(makeOpenTime(open_time_query))
+    return_value = make_response(make_open_time(open_time_query))
     return_value.status_code = 200
 
     return return_value
@@ -159,7 +159,7 @@ class OpenTimesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "opening time updated",
-        "open_time": makeOpenTime(OpenTime.query.get(time_id))
+        "open_time": make_open_time(OpenTime.query.get(time_id))
     })
 
     return_value.status_code = 200
@@ -179,6 +179,6 @@ class OpenTimesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "opening time deleted",
-        "open_time": makeOpenTime(to_delete)
+        "open_time": make_open_time(to_delete)
     })
     return return_value

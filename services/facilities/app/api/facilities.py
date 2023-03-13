@@ -2,7 +2,7 @@ import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
-from app.createDictionaries import makeFacility
+from app.createDictionaries import make_facility
 
 
 class FacilitiesRouter:
@@ -64,7 +64,7 @@ class FacilitiesRouter:
 
     # Add every facility found in the query to the array as a dictionary
     for facility in facilities_query:
-      return_array.append(makeFacility(facility))
+      return_array.append(make_facility(facility))
 
     # Convert array into flask response
     return_value = make_response(return_array)
@@ -96,7 +96,7 @@ class FacilitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "facility added",
-        "facility": makeFacility(new_facility)
+        "facility": make_facility(new_facility)
     })
     return_value.status_code = 200
 
@@ -114,7 +114,7 @@ class FacilitiesRouter:
     # then a response with the code 200 for success
     return_value = make_response({
         "status": "ok",
-        "facility": makeFacility(facility_query)
+        "facility": make_facility(facility_query)
     })
     return_value.status_code = 200
 
@@ -152,7 +152,7 @@ class FacilitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "facility updated",
-        "facility": makeFacility(to_update)
+        "facility": make_facility(to_update)
     })
 
     return_value.status_code = 200
@@ -175,6 +175,6 @@ class FacilitiesRouter:
     return_value = make_response({
         "status": "ok",
         "message": "facility deleted",
-        "facility": makeFacility(to_delete)
+        "facility": make_facility(to_delete)
     })
     return return_value
