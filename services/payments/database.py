@@ -1,9 +1,14 @@
 import sqlite3
+import os
+
+currentDir = os.getcwd()
+sqlPath = os.path.join(currentDir, "paymentSchema.sql")
+absPath = os.path.abspath(sqlPath)
 
 def initDatabase():
     '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
-    with open('services/payments/paymentSchema.sql') as schema:
+    with open(absPath) as schema:
         connection.executescript(schema.read())
     connection.close()
 
