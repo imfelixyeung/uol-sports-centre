@@ -1,37 +1,58 @@
-import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
+import {
+  AxiosCacheInstance,
+  CacheRequestConfig,
+  setupCache,
+} from 'axios-cache-interceptor';
+
+import logger from './logger';
 
 interface IHttpClient {
-  get<TResponse>(url: string): Promise<TResponse>;
+  get<TRes>(url: string, cacheOptions?: CacheOptions): Promise<TRes>;
+  post<TRes, TReq>(url: string, data: TReq): Promise<TRes>;
+  put<TRes, TReq>(url: string, data: TReq): Promise<TRes>;
+  delete<TRes>(url: string): Promise<TRes>;
+}
 
-  post<TResponse, TRequestBody>(
-    url: string,
-    data: TRequestBody
-  ): Promise<TResponse>;
-
-  put<TResponse, TRequestBody>(
-    url: string,
-    data: TRequestBody
-  ): Promise<TResponse>;
-
-  delete<TResponse>(url: string): Promise<TResponse>;
+interface CacheOptions {
+  cache: boolean;
+  ttl?: number;
+  cacheId: string;
 }
 
 class AxiosHttpClient implements IHttpClient {
-  private instance: AxiosInstance | null = null;
+  private instance: AxiosCacheInstance | null = null;
 
-  private get axiosClient(): AxiosInstance {
+  private get axiosClient(): AxiosCacheInstance {
     return this.instance ?? this.initAxiosClient();
   }
 
   private initAxiosClient() {
-    return axios.create();
+    const axiosInstance = axios.create();
+
+    // apply the caching interceptor to the axios instance
+    // this applies a default 5 minute TTL using an in memory cache store
+    return setupCache(axiosInstance);
   }
 
-  get<TResponse>(url: string): Promise<TResponse> {
-    return new Promise<TResponse>((resolve, reject) => {
+  get<TRes>(url: string, cacheOptions?: CacheOptions): Promise<TRes> {
+    return new Promise<TRes>((resolve, reject) => {
       this.axiosClient
-        .get<TResponse, AxiosResponse<TResponse>>(url)
+        .get<TRes, AxiosResponse<TRes>>(
+          url,
+          cacheOptions?.cache
+            ? {
+                cache: {
+                  ttl: cacheOptions.ttl || 1000 * 60 * 5,
+                },
+                id: cacheOptions.cacheId,
+              }
+            : undefined
+        )
         .then(result => {
+          logger.debug(
+            `Made GET request to ${url}. Cached response: ${result.cached}`
+          );
           resolve(result.data);
         })
         .catch((error: Error | AxiosError) => {
@@ -40,28 +61,16 @@ class AxiosHttpClient implements IHttpClient {
     });
   }
 
-  post<TResponse, TRequestBody>(
-    url: string,
-    data: TRequestBody
-  ): Promise<TResponse> {
-    return new Promise<TResponse>((resolve, reject) =>
-      resolve({} as TResponse)
-    );
+  post<TRes, TReq>(url: string, data: TReq): Promise<TRes> {
+    return new Promise<TRes>((resolve, reject) => reject({url, data}));
   }
 
-  put<TResponse, TRequestBody>(
-    url: string,
-    data: TRequestBody
-  ): Promise<TResponse> {
-    return new Promise<TResponse>((resolve, reject) =>
-      resolve({} as TResponse)
-    );
+  put<TRes, TReq>(url: string, data: TReq): Promise<TRes> {
+    return new Promise<TRes>((resolve, reject) => reject({url, data}));
   }
 
-  delete<TResponse, TRequestBody>(url: string): Promise<TResponse> {
-    return new Promise<TResponse>((resolve, reject) =>
-      resolve({} as TResponse)
-    );
+  delete<TRes>(url: string): Promise<TRes> {
+    return new Promise<TRes>((resolve, reject) => reject(url));
   }
 }
 

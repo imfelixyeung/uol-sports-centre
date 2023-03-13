@@ -127,7 +127,11 @@ class BookingService {
     // long each instance of an activity will be
     const activities = await httpClient
       .get<ActivitiesResponse>(
-        'http://gateway/api/facilities/activities?page=1&limit=1000'
+        'http://gateway/api/facilities/activities?page=1&limit=1000',
+        {
+          cache: true,
+          cacheId: 'facilities/activities',
+        }
       )
       .catch(err => {
         console.error(`Error fetching activities ${err}`);
