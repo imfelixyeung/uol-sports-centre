@@ -26,11 +26,11 @@ def addCustomer(userID, stripeID):
     con.commit()
     con.close()
 
-def addPurchase(customerID, productID, purchaseDate):
+def addPurchase(customerID, priceID, purchaseDate):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    cur.execute('''INSERT INTO orders (userID, productID, purchaseDate) 
-    VALUES (?, ?, ?)''', (customerID, productID, purchaseDate))
+    cur.execute('''INSERT INTO orders (userID, priceID, purchaseDate) 
+    VALUES (?, ?, ?)''', (customerID, priceID, purchaseDate))
     con.commit()
     con.close()
 
@@ -54,7 +54,7 @@ def getPurchases(userID):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
     purchased_products = cur.execute('''SELECT * FROM orders
-    JOIN products ON orders.productID = products.productID
+    JOIN products ON orders.priceID = products.priceID
     WHERE orders.userID = ?''',
     [userID]).fetchall()
     return purchased_products
