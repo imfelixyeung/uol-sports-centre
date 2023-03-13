@@ -12,8 +12,7 @@ paymentsDir = os.path.join( fileDir, '..', 'payments')
 sys.path.append( paymentsDir )
 import payments
 
-from payments import addProductDatabase
-from payments import MakePurchasable
+from payments import *
 
 app = Flask(__name__,
             static_url_path='',
