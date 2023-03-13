@@ -7,13 +7,6 @@ import os
 import sys
 import sqlite3
 
-fileDir = os.path.dirname( __file__ )
-paymentsDir = os.path.join( fileDir, '..', 'payments')
-sys.path.append( paymentsDir )
-import payments
-
-from payments import *
-
 app = Flask(__name__,
             static_url_path='',
             static_folder='public')
