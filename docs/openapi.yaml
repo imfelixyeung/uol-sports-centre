@@ -423,7 +423,7 @@ paths:
                   booking:
                     $ref: "#/components/schemas/Booking"
   
-  /facility/facilities:
+  /facilities/facilities:
     get:
       tags:
         - facility
@@ -492,7 +492,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Facility"
   
-  /facility/facilities/{facility_id}:
+  /facilities/facilities/{facility_id}:
     get:
       tags:
         - facility
@@ -588,7 +588,7 @@ paths:
                   facility:
                     $ref: "#/components/schemas/Facility"
 
-  /facility/times:
+  /facilities/times:
     get:
       tags:
         - facility
@@ -618,7 +618,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  opening times:
+                  opening_times:
                     type: array
                     items:
                       $ref: "#/components/schemas/OpenTime"
@@ -665,7 +665,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/OpenTime"
 
-  /facility/times/{time_id}:
+  /facilities/times/{time_id}:
     get:
       tags:
         - facility
@@ -692,7 +692,7 @@ paths:
                     type: string
                     example: "ok"
                     description: Whether the operation was a success or whether there were any errors
-                  facility:
+                  OpenTime:
                     $ref: "#/components/schemas/OpenTime"
     
     put:
@@ -725,7 +725,7 @@ paths:
                     type: string
                     example: "open time updated"
                     description: More detail on the result of the operation
-                  facility:
+                  OpenTime:
                     $ref: "#/components/schemas/OpenTime"
     
     delete:
@@ -758,10 +758,10 @@ paths:
                     type: string
                     example: "opening time deleted"
                     description: More detail on the result of the operation
-                  facility:
+                  OpenTime:
                     $ref: "#/components/schemas/OpenTime"
 
-  /facility/activities:
+  /facilities/activities:
     get:
       tags:
         - facility
@@ -791,7 +791,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  opening times:
+                  activities:
                     type: array
                     items:
                       $ref: "#/components/schemas/Activity"
@@ -838,7 +838,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Activity"
 
-  /facility/activities/{activity_id}:
+  /facilities/activities/{activity_id}:
     get:
       tags:
         - facility
@@ -865,7 +865,7 @@ paths:
                     type: string
                     example: "ok"
                     description: Whether the operation was a success or whether there were any errors
-                  facility:
+                  activity:
                     $ref: "#/components/schemas/Activity"
     
     put:
@@ -898,7 +898,7 @@ paths:
                     type: string
                     example: "activity updated"
                     description: More detail on the result of the operation
-                  facility:
+                  activity:
                     $ref: "#/components/schemas/Activity"
     
     delete:
@@ -931,7 +931,7 @@ paths:
                     type: string
                     example: "activity deleted"
                     description: More detail on the result of the operation
-                  facility:
+                  activity:
                     $ref: "#/components/schemas/Activity"
 
 components:
