@@ -127,16 +127,10 @@ class BookingService {
     // long each instance of an activity will be
     const activities = await httpClient
       .get<ActivitiesResponse>(
-        'http://gateway/api/facilities/activities?page=1&limit=1000',
-        {
-          cache: {
-            id: 'facilities/activities',
-          },
-          timeout: 5 * 1000, // timeout after 5 seconds
-        }
+        'http://gateway/api/facilities/activities?page=1&limit=1000'
       )
       .catch(err => {
-        logger.error(`Error fetching activities ${err}`);
+        logger.error(err);
         return new Error(err);
       });
 
@@ -156,7 +150,7 @@ class BookingService {
       }
 
       const timeSlots = event.duration / activity.duration;
-      logger.debug(`${timeSlots} ${activity.duration}m slots in ${event.name}`);
+      // logger.debug(`${timeSlots} ${activity.duration}m slots in ${event.name}`);
 
       // for each timeslot, generate a possible booking
       for (let i = 0; i < timeSlots; i++) {
@@ -178,7 +172,7 @@ class BookingService {
         };
 
         possibleBookings.push(booking);
-        logger.debug(booking);
+        // logger.debug(booking);
       }
     });
 

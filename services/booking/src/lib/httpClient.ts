@@ -1,5 +1,10 @@
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import {AxiosCacheInstance, setupCache} from 'axios-cache-interceptor';
+import {
+  AxiosCacheInstance,
+  buildMemoryStorage,
+  MemoryStorage,
+  setupCache,
+} from 'axios-cache-interceptor';
 
 import logger from './logger';
 
@@ -20,17 +25,25 @@ interface RequestOptions {
 
 class AxiosHttpClient implements IHttpClient {
   private instance: AxiosCacheInstance | null = null;
+  private cache: MemoryStorage = buildMemoryStorage();
 
   private get axiosClient(): AxiosCacheInstance {
     return this.instance ?? this.initAxiosClient();
   }
 
   private initAxiosClient() {
-    const axiosInstance = axios.create();
+    const axiosInstance = axios.create({
+      timeout: 5 * 1000, // timeout after 5 seconds
+    });
 
     // apply the caching interceptor to the axios instance
     // this applies a default 5 minute TTL using an in memory cache store
-    return setupCache(axiosInstance);
+    return setupCache(axiosInstance, {
+      debug: console.log,
+      staleIfError: true,
+      ttl: 5 * 60 * 1000,
+      storage: this.cache,
+    });
   }
 
   get<TRes>(url: string, options?: RequestOptions): Promise<TRes> {
@@ -38,15 +51,17 @@ class AxiosHttpClient implements IHttpClient {
       this.axiosClient
         .get<TRes, AxiosResponse<TRes>>(
           url,
-          options?.cache
+          options
             ? {
-                cache: {
-                  ttl: options.cache.ttl || 1000 * 60 * 5,
-                },
-                id: options.cache.id,
+                ...(options.cache?.ttl && {
+                  cache: {
+                    ttl: options.cache.ttl,
+                  },
+                }),
+                ...(options.cache?.id && {id: options.cache.id}),
                 timeout: options.timeout,
               }
-            : undefined
+            : {}
         )
         .then(result => {
           logger.debug(
