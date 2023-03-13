@@ -1,9 +1,8 @@
 import logging
-import json
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import OpenTime, Facility
-from app.createDictionaries import makeOpenTime
+from app.createDictionaries import make_open_time
 
 
 class OpenTimesRouter:
@@ -21,12 +20,12 @@ class OpenTimesRouter:
     self.blueprint.add_url_rule("/",
                                 "get_open_times",
                                 self.get_open_times,
-                                methods=['GET'])
+                                methods=["GET"])
 
     self.blueprint.add_url_rule("/",
                                 "add_open_time",
                                 self.add_open_time,
-                                methods=['POST'])
+                                methods=["POST"])
 
     self.blueprint.add_url_rule("/<time_id>",
                                 "get_open_time",
@@ -44,60 +43,142 @@ class OpenTimesRouter:
                                 methods=["DELETE"])
 
   def get_open_times(self):
-    try:
-      page = int(request.args.get("page"))
-      limit = int(request.args.get("limit"))
-    except ValueError:
-      return json.dumps({
-          "status": "Failed",
-          "message": "Incorrect argument type"
-      })
 
-    offset = (page - 1) * limit
+    # Check to see if page and limit have been supplied
+    if request.args.get("page") and request.args.get("limit"):
+      try:
+        page = int(request.args.get("page"))
+        limit = int(request.args.get("limit"))
+      except ValueError:
+        # Catch value error and return a failed response code before continuing
+        return {"status": "Failed", "message": "Invalid input"}, 400
 
-    open_time_query = OpenTime.query.limit(limit).offset(offset).all()
+      offset = (page - 1) * limit
+
+      open_time_query = OpenTime.query.limit(limit).offset(offset).all()
+
+    # If no page and limit supplied return everything
+    else:
+      open_time_query = OpenTime.query.all()
 
     return_array = []
 
     for open_time in open_time_query:
-      return_array.append(makeOpenTime(open_time))
+      return_array.append(make_open_time(open_time))
 
-    return json.dumps(return_array)
+    # Turn array into a flask response
+    return_value = make_response(return_array)
+    return_value.status_code = 200
+
+    return return_value
 
   def add_open_time(self):
     # Get data from body of post request
-    data = json.loads(request.data)
+    data = request.json
 
     # Check that the supplied foreign key existss
-    if (not Facility.query.get(int(data.get("facility_id")))):
-      return json.dumps({"status": "failed", "message": "facility not found"})
+    if not Facility.query.get(int(data.get("facility_id"))):
+      # Catch value error and return a failed response code before continuing
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     # Add the supplied object to the data base
     addition = OpenTime(day=data.get("day"),
-                        openingTime=data.get("openTime"),
-                        closingTime=data.get("closeTime"),
+                        opening_time=data.get("opening_time"),
+                        closing_time=data.get("closing_time"),
                         facility_id=data.get("facility_id"))
+    if not addition:
+      return {"status": "Failed", "message": "Invalid input"}, 400
     self.db.session.add(addition)
     self.db.session.commit()
 
     # Return the status of the addition and the object added to the database
-    return_value = {
+    return_value = make_response({
         "status": "ok",
         "message": "Opening time added",
-        "facility": makeOpenTime(addition)
-    }
+        "open_time": make_open_time(addition)
+    })
+    return_value.status_code = 200
 
-    return json.dumps(return_value)
+    return return_value
 
   def get_open_time(self, time_id: int):
     open_time_query = OpenTime.query.get(time_id)
 
-    return_value = makeOpenTime(open_time_query)
+    # If the activity is not found within the table
+    # respond with an error and error code 404
+    if not open_time_query:
+      return {"status": "error", "message": "resource not found"}, 404
 
-    return json.dumps(return_value)
+    # Else, facility is found so make it into a dictionary
+    # then a response with the code 200 for success
+    return_value = make_response(make_open_time(open_time_query))
+    return_value.status_code = 200
+
+    return return_value
 
   def update_open_time(self, time_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    data = request.json
+
+    # Get item to be updated
+    to_update = OpenTime.query.get(time_id)
+
+    # Check that the facility has been found
+    if not to_update:
+      return {"status": "Failed", "message": "Object not found"}, 404
+
+    # Value to check if something has been updated
+    update_check = False
+
+    # Check which fields need to be updated
+    if "day" in data:
+      update_check = True
+      to_update.day = data.get("day")
+
+    if "opening_time" in data:
+      update_check = True
+      to_update.opening_time = int(data.get("opening_time"))
+
+    if "closing_time" in data:
+      update_check = True
+      to_update.closing_time = int(data.get("closing_time"))
+
+    if "facility_id" in data:
+      if not Facility.query.get(data.get("facility_id")):
+        return {"status": "Failed", "message": "Object not found"}, 404
+
+      update_check = True
+      to_update.facility_id = data.get("facility_id")
+
+    # If the update check is still false return error as
+    # user input is incorrect
+    if not update_check:
+      return {"status": "Failed", "message": "Invalid input"}, 400
+
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "opening time updated",
+        "open_time": make_open_time(OpenTime.query.get(time_id))
+    })
+
+    return_value.status_code = 200
+    return return_value
 
   def delete_open_time(self, time_id: int):
-    return {"status": "error", "message": "Not yet implemented"}
+    to_delete = OpenTime.query.get(time_id)
+
+    # If the requested
+    if not to_delete:
+      return {"status": "Failed", "message": "Object not found"}, 404
+
+    # Since to_delete is in the database delete it
+    self.db.session.delete(to_delete)
+    self.db.session.commit()
+
+    return_value = make_response({
+        "status": "ok",
+        "message": "opening time deleted",
+        "open_time": make_open_time(to_delete)
+    })
+    return return_value

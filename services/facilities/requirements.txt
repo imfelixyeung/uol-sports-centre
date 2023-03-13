@@ -13,3 +13,5 @@ flask_migrate==3.1.0
 flask_admin==1.6.0
 yapf==0.32.0
 pylint==2.16.3
+coverage==7.2.1
+
