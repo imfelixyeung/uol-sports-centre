@@ -137,6 +137,15 @@ services:
     networks:
       - network
 
+  management:
+    build:
+      context: ./services/management
+      target: dev
+    environment:
+      - APP_PORT=80
+    networks:
+      - network
+
   gateway:
     build: ./gateway
     env_file:
