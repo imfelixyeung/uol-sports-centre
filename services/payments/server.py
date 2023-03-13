@@ -50,11 +50,18 @@ def webhookReceived():
         event = stripe.Webhook.construct_event(
             payload=request.data, sig_header=signature, secret=webhook_secret)
         event_type = event['type']
+        
     else:
         event_type = request_data['type']
     
-    print('event ' + event_type)
     if event_type == 'checkout.session.completed':
+        session = stripe.checkout.Session.retrieve(
+            event['data']['object']['id'],
+            expand=['line_items'],
+        )
+
+        purchasedItem = session.line_items.data[0]
+        addPurchase(session.customer, purchasedItem.price.id, str(datetime.now()))
         print('Payment succeeded!')
     return 'ok'
 

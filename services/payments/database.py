@@ -1,9 +1,14 @@
 import sqlite3
+import os
+
+currentDir = os.getcwd()
+sqlPath = os.path.join(currentDir, "paymentSchema.sql")
+absPath = os.path.abspath(sqlPath)
 
 def initDatabase():
     '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
-    with open('services/payments/paymentSchema.sql') as schema:
+    with open(absPath) as schema:
         connection.executescript(schema.read())
     connection.close()
 
@@ -33,11 +38,11 @@ def addCustomer(userID, stripeID):
     con.commit()
     con.close()
 
-def addPurchase(customerID, productID, purchaseDate):
+def addPurchase(customerID, priceID, purchaseDate):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    cur.execute('''INSERT INTO orders (userID, productID, purchaseDate) 
-    VALUES (?, ?, ?)''', (customerID, productID, purchaseDate))
+    cur.execute('''INSERT INTO orders (userID, priceID, purchaseDate) 
+    VALUES (?, ?, ?)''', (customerID, priceID, purchaseDate))
     con.commit()
     con.close()
 
@@ -61,7 +66,7 @@ def getPurchases(userID):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
     purchased_products = cur.execute('''SELECT * FROM orders
-    JOIN products ON orders.productID = products.productID
+    JOIN products ON orders.priceID = products.priceID
     WHERE orders.userID = ?''',
     [userID]).fetchall()
     return purchased_products
