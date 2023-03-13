@@ -1,5 +1,4 @@
 import logging
-import json
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Activity, Facility
@@ -52,12 +51,7 @@ class ActivitiesRouter:
         limit = int(request.args.get("limit"))
       except ValueError:
         # Catch value error and return a failed response code before continuing
-        return_value = make_response({
-            "status": "Failed",
-            "message": "Invalid input"
-        })
-        return_value.status_code = 400
-        return return_value
+        return {"status": "Failed", "message": "Invalid input"}, 400
 
       offset = (page - 1) * limit
 
@@ -81,17 +75,12 @@ class ActivitiesRouter:
 
   def add_activity(self):
     # Get data from body of post request
-    data = json.loads(request.data)
+    data = request.json
 
     # Check that the supplied foreign key existss
     if not Facility.query.get(int(data.get("facility_id"))):
       # Catch value error and return a failed response code before continuing
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Invalid input"
-      })
-      return_value.status_code = 400
-      return return_value
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     # Add the supplied object to the data base
     addition = Activity(name=data.get("name"),
@@ -100,11 +89,7 @@ class ActivitiesRouter:
                         facility_id=data.get("facility_id"))
 
     if not addition:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Object not added"
-      })
-      return_value.status_code = 400
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     else:
       self.db.session.add(addition)
@@ -141,7 +126,7 @@ class ActivitiesRouter:
     return return_value
 
   def update_activity(self, activity_id: int):
-    data = json.loads(request.data)
+    data = request.json
 
     # Get item to be updated
     to_update = Activity.query.get(activity_id)
@@ -187,12 +172,7 @@ class ActivitiesRouter:
     # If the update check is still false return error as
     # user input is incorrect
     if not update_check:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Incorrect input"
-      })
-      return_value.status_code = 400
-      return return_value
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     self.db.session.commit()
 

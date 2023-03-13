@@ -20,7 +20,7 @@ app = create_app(testing=True,
                  })
 
 
-class facilitiesTests(unittest.TestCase):
+class FacilitiesTests(unittest.TestCase):
 
   def setUp(self):
     self.app = app.test_client()
@@ -64,7 +64,7 @@ class facilitiesTests(unittest.TestCase):
 
       response_data = json.loads(response.data)
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_add_facility_success(self):
     with app.app_context():
@@ -79,7 +79,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeFacility(check_query)
 
-      self.assertEqual({
+      self.assertDictEqual({
           "id": 2,
           "name": "Tennis Court",
           "capacity": 6
@@ -93,7 +93,7 @@ class facilitiesTests(unittest.TestCase):
           "facility": check_data
       }
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_add_facility_failed(self):
     with app.app_context():
@@ -104,7 +104,7 @@ class facilitiesTests(unittest.TestCase):
                                    "capacity": str("yeah")
                                })
 
-      self.assertEqual({
+      self.assertDictEqual({
           "status": "Failed",
           "message": "Invalid input"
       }, json.loads(response.data))
@@ -121,7 +121,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeFacility(check_query)
 
-      self.assertEqual({
+      self.assertDictEqual({
           "id": 1,
           "name": "Football Pitch",
           "capacity": 25
@@ -135,7 +135,7 @@ class facilitiesTests(unittest.TestCase):
           "facility": check_data
       }
 
-      self.assertEqual(expected_response, response_data)
+      self.assertDictEqual(expected_response, response_data)
 
   def test_delete_facility(self):
     with app.app_context():
@@ -150,7 +150,7 @@ class facilitiesTests(unittest.TestCase):
           "facility": makeFacility(to_delete)
       }
 
-      self.assertEqual(expected_response, json.loads(response.data))
+      self.assertDictEqual(expected_response, json.loads(response.data))
 
   ################## OPEN TIME TESTS ##################
   def test_get_open_time(self):
@@ -167,7 +167,7 @@ class facilitiesTests(unittest.TestCase):
 
       response_data = json.loads(response.data)
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_add_open_time_success(self):
     with app.app_context():
@@ -184,7 +184,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeOpenTime(check_query)
 
-      self.assertEqual(
+      self.assertDictEqual(
           {
               "id": 2,
               "day": "monday",
@@ -201,7 +201,7 @@ class facilitiesTests(unittest.TestCase):
           "open_time": check_data
       }
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_update_open_time(self):
     with app.app_context():
@@ -216,7 +216,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeOpenTime(check_query)
 
-      self.assertEqual(
+      self.assertDictEqual(
           {
               "id": 1,
               "day": "Tuesday",
@@ -233,7 +233,7 @@ class facilitiesTests(unittest.TestCase):
           "open_time": check_data
       }
 
-      self.assertEqual(expected_response, response_data)
+      self.assertDictEqual(expected_response, response_data)
 
   def test_delete_open_time(self):
     with app.app_context():
@@ -248,7 +248,7 @@ class facilitiesTests(unittest.TestCase):
           "open_time": makeOpenTime(to_delete)
       }
 
-      self.assertEqual(expected_response, json.loads(response.data))
+      self.assertDictEqual(expected_response, json.loads(response.data))
 
   ################## ACTIVITY TESTS ##################
   def test_get_activity(self):
@@ -265,7 +265,7 @@ class facilitiesTests(unittest.TestCase):
 
       response_data = json.loads(response.data)
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_add_activity_success(self):
     with app.app_context():
@@ -282,7 +282,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeActivity(check_query)
 
-      self.assertEqual(
+      self.assertDictEqual(
           {
               "id": 2,
               "name": "Football Lesson",
@@ -299,7 +299,7 @@ class facilitiesTests(unittest.TestCase):
           "activity": check_data
       }
 
-      self.assertEqual(response_data, expected_response)
+      self.assertDictEqual(response_data, expected_response)
 
   def test_update_activity(self):
     with app.app_context():
@@ -314,7 +314,7 @@ class facilitiesTests(unittest.TestCase):
 
       check_data = makeActivity(check_query)
 
-      self.assertEqual(
+      self.assertDictEqual(
           {
               "id": 1,
               "name": "Football Lesson",
@@ -331,7 +331,7 @@ class facilitiesTests(unittest.TestCase):
           "activity": check_data
       }
 
-      self.assertEqual(expected_response, response_data)
+      self.assertDictEqual(expected_response, response_data)
 
   def test_delete_activity(self):
     with app.app_context():
@@ -346,7 +346,7 @@ class facilitiesTests(unittest.TestCase):
           "activity": makeActivity(to_delete)
       }
 
-      self.assertEqual(expected_response, json.loads(response.data))
+      self.assertDictEqual(expected_response, json.loads(response.data))
 
 
 if __name__ == "__main__":

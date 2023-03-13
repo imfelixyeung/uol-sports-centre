@@ -1,5 +1,4 @@
 import logging
-import json
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
@@ -51,12 +50,7 @@ class FacilitiesRouter:
         limit = int(request.args.get("limit"))
       except ValueError:
         # Catch value error and return a failed response code before continuing
-        return_value = make_response({
-            "status": "Failed",
-            "message": "Invalid input"
-        })
-        return_value.status_code = 400
-        return return_value
+        return {"status": "Failed", "message": "Invalid input"}, 400
 
       offset = (page - 1) * limit
 
@@ -80,29 +74,20 @@ class FacilitiesRouter:
 
   def add_facility(self):
     # Get data from body of post request
-    data = json.loads(request.data)
+    data = request.json
     name = data.get("name")
     try:
       capacity = int(data.get("capacity"))
     except ValueError:
       # Catch value error and return a failed response code before continuing
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Invalid input"
-      })
-      return_value.status_code = 400
-      return return_value
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     # Add the supplied object to the data base
     new_facility = Facility(name=name, capacity=capacity)
 
     # If facility not added for any reason respond failed
     if not new_facility:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Object not added"
-      })
-      return_value.status_code = 400
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     else:
       self.db.session.add(new_facility)
@@ -142,7 +127,7 @@ class FacilitiesRouter:
     return return_value
 
   def update_facility(self, facility_id: int):
-    data = json.loads(request.data)
+    data = request.json
 
     # Get item to be updated
     to_update = Facility.query.get(facility_id)
@@ -171,12 +156,7 @@ class FacilitiesRouter:
     # If the update check is still false return error as
     # user input is incorrect
     if not update_check:
-      return_value = make_response({
-          "status": "Failed",
-          "message": "Incorrect input"
-      })
-      return_value.status_code = 400
-      return return_value
+      return {"status": "Failed", "message": "Invalid input"}, 400
 
     self.db.session.commit()
 
