@@ -80,6 +80,12 @@ services:
       - network
     volumes:
       - ./persistence/status/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "status", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
 
   users:
     build:

@@ -96,3 +96,30 @@ jobs:
       - name: Test
         run: pnpm run test
         working-directory: ./services/booking
+
+  facilities-ci-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup env
+        run: make setup-dev
+        working-directory: ./services/facilities
+
+      - name: Update env
+        run: make update-env
+        working-directory: ./services/facilities
+
+      - name: Run tests
+        run: make test
+        working-directory: ./services/facilities
