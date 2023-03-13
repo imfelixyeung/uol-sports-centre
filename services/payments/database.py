@@ -18,6 +18,13 @@ def addProduct(name, priceID, price, type):
     connection.close()
     return productID
 
+def updatePrice(productName, newPrice):
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    cur.execute('''UPDATE products SET price = ? WHERE productName = ?''', (newPrice, productName))
+    con.commit()
+    con.close()
+
 def addCustomer(userID, stripeID):
     con = sqlite3.connect("database.db")
     cur = con.cursor()
