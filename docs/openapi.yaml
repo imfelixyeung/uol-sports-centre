@@ -277,7 +277,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updateFirstName:
-    post:
+    put:
       tags:
         - users
       description: "Updates the first name of a specified user"
@@ -287,7 +287,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updateSecondName:
-    post:
+    put:
       tags:
         - users
       description: "Updates the first second of a specified user"
@@ -297,7 +297,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updateAccountID:
-    post:
+    put:
       tags:
         - users
       description: "Updates the account ID of a specified user"
@@ -307,7 +307,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updatePaymentID:
-    post:
+    put:
       tags:
         - users
       description: "Updates the Payment ID of a specified user"
@@ -317,7 +317,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updateBookingID:
-    post:
+    put:
       tags:
         - users
       description: "Updates the Booking ID of a specified user"
@@ -327,7 +327,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/updateMembership:
-    post:
+    put:
       tags:
         - users
       description: "Updates the Membership of a specified user"
@@ -357,7 +357,7 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
   /users/deleteUser:
-    post:
+    delete:
       tags:
         - users
       description: "Delete an existing user in the users database"

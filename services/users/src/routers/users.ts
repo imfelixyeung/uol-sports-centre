@@ -5,12 +5,12 @@ const userRouter: Router = Router();
 
 userRouter.get('/testing', usersControllers.testing);
 userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
-userRouter.get('/updateFirstName', usersControllers.updateFirstName);
-userRouter.get('/updateSecondName', usersControllers.updateSecondName);
-userRouter.get('/updateAccountID', usersControllers.updateAccountID);
-userRouter.get('/updatePaymentID', usersControllers.updatePaymentID);
-userRouter.get('/updateMembership', usersControllers.updateMembership);
-userRouter.get('/deleteUser', usersControllers.deleteUser);
-userRouter.get('/createUser', usersControllers.createUser);
+userRouter.put('/updateFirstName', usersControllers.updateFirstName);
+userRouter.put('/updateSecondName', usersControllers.updateSecondName);
+userRouter.put('/updateAccountID', usersControllers.updateAccountID);
+userRouter.put('/updatePaymentID', usersControllers.updatePaymentID);
+userRouter.put('/updateMembership', usersControllers.updateMembership);
+userRouter.delete('/deleteUser', usersControllers.deleteUser);
+userRouter.post('/createUser', usersControllers.createUser);
 
 export default userRouter;
