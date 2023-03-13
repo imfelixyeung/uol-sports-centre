@@ -180,7 +180,7 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/Healthcheck"
+          $ref: "#/components/responses/HealthCheck"
 
   /status/report:
     get:
