@@ -13,7 +13,7 @@ dev:
 	flask --app management run --debug
 
 test:
-	@echo "TODO: add tests"
+	python tests/test_management.py
 
 format-check:
 	yapf --recursive --diff --verbose --style google .
