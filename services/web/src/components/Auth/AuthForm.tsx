@@ -36,8 +36,8 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
       };
 
     return {
-      login: `/auth/login?redirect=${redirectTo}`,
-      register: `/auth/register?redirect=${redirectTo}`,
+      login: `/auth/login?redirect=${encodeURIComponent(redirectTo)}`,
+      register: `/auth/register?redirect=${encodeURIComponent(redirectTo)}`,
     };
   }, [redirectTo]);
 

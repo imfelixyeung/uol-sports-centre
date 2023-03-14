@@ -170,7 +170,7 @@ export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
 
       const path = router.asPath;
 
-      void router.push(`/auth/login?redirect=${path}`);
+      void router.push(`/auth/login?redirect=${encodeURIComponent(path)}`);
     }, 1000);
 
     return () => clearTimeout(timeout);
