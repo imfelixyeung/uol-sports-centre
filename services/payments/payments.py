@@ -40,8 +40,7 @@ def make_a_purchase(user_id, product_name, success_url=LOCAL_DOMAIN):
     product_id = get_product(product_name)[0]
 
     # Creates a new row in the purchased products table
-    print(stripe_user[0])
-    add_purchase(stripe_user[0], product_id, datetime.now())
+    addPurchase(stripeUser[0], productID, datetime.now())
 
     return create_checkout(stripe_user[1], product_name, success_url)
 

@@ -46,11 +46,11 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     prices = stripe.Price.list(limit=100, product=productStripe.id).data
 
-  #test addProductDatabase()
-  def test_addProductDatabase(self):
+  #test addProduct()
+  def test_add_product(self):
     initDatabase()
 
-    #Add products using payments
+    #Add test products to the databse
     addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
                                 "5", "payment")
     addProduct("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
@@ -69,6 +69,32 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Assert correct products
     self.assertEqual(t1[0][0], "product-test")
     self.assertEqual(t2[0][0], "subscription-test")
+
+  #test updatePrice
+  def test_update_price(self):
+    #initialise database
+    initDatabase()
+
+    #Add test products to the databse
+    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
+                                "5", "payment")
+    
+    #Update price of product
+    updatePrice("product-test", "10")
+
+    connection = sqlite3.connect('database.db')
+    cur = connection.cursor()
+
+    #Fetch product price from database
+    t1 = cur.execute('''SELECT price FROM products 
+      WHERE productName LIKE ?''', ['product-test']).fetchone()
+    connection.close()
+    
+    #Assert correct price
+    self.assertEqual(t1[0], "10")
+
+    #Reset price
+    updatePrice("product-test", "5")
 
   #test createCheckout()
   def test_create_checkout_success(self):
