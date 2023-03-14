@@ -2,6 +2,7 @@ import unittest
 import sqlite3
 import stripe
 import os
+import urllib.request
 
 import sys
 from pathlib import Path
@@ -45,15 +46,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     prices = stripe.Price.list(limit=100, product=productStripe.id).data
 
-    # Delete all prices for the product
-    #for price in prices:
-    #stripe.Price.delete(price.id)
-
-    # Delete the product
-    #stripe.Product.delete(productStripe.id)
-
   #test addProductDatabase()
-
   def test_addProductDatabase(self):
     initDatabase()
 
@@ -78,14 +71,22 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     self.assertEqual(t2[0][0], "subscription-test")
 
   #test createCheckout()
-  @patch("stripe.checkout.Session.create")
-  def test_create_checkout_success(self, mock_checkout_session_create):
+  def test_create_checkout_success(self):
+    #initialsie Database
     initDatabase()
+
+    #Create temp new customer on stripe
     newCustomer = stripe.Customer.create()
+
+    #Add test product to payments service
     addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
-    mock_checkout_session_create.return_value = Mock(url='http://localhost:5000/checkout-session')
+
+    #Assert valid checkout URL response
     session_url = createCheckout(newCustomer.stripe_id, "product-test")
-    self.assertEqual(session_url, 'http://localhost:5000/checkout-session')
+    session_code = urllib.request.urlopen(session_url).getcode()
+    self.assertEqual(session_code, 200)
+
+    #Delete temp customer
     stripe.Customer.delete(newCustomer.stripe_id)
 
   @classmethod

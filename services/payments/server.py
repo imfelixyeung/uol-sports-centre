@@ -63,6 +63,7 @@ def webhookReceived():
         purchasedItem = session.line_items.data[0]
         addPurchase(session.customer, purchasedItem.price.id, str(datetime.now()))
         print('Payment succeeded!')
+        stripe.Customer.delete(session.customer)
     return 'ok'
 
 # Endpoint to retreieve purchased products for a customer
