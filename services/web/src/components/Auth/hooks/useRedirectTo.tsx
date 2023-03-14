@@ -36,6 +36,9 @@ const useRedirectTo = (options: UseRedirectToOptions = {}) => {
   const sanitisedRedirectTo = useMemo(() => {
     if (allowCrossOriginRedirect) return rawRedirectTo;
 
+    // running on server, abort
+    if (typeof window === 'undefined') return null;
+
     const currentOrigin = window.location.origin;
     const redirectToOrigin = new URL(rawRedirectTo ?? '', currentOrigin).origin;
 
