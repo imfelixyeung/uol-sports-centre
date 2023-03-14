@@ -13,6 +13,9 @@ bookingRouter.post('/', BookingController.createBooking);
 // get available booking slots
 bookingRouter.get('/availability', BookingController.getAvailableBookings);
 
+// user book booking
+bookingRouter.post('/book', BookingController.bookBooking);
+
 // get specific booking
 bookingRouter.get('/:id', BookingController.getBookingById);
 

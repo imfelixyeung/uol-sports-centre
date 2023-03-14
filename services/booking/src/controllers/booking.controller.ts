@@ -337,6 +337,18 @@ class BookingController {
       },
     });
   }
+
+  /**
+   * The endpoint called when the user wants to book a booking
+   *
+   * @memberof BookingController
+   */
+  async bookBooking(req: express.Request, res: express.Response) {
+    return res.status(400).send({
+      status: 'error',
+      error: 'Not yet implemented',
+    });
+  }
 }
 
 export default new BookingController();
