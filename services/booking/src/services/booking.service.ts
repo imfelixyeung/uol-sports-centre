@@ -147,7 +147,9 @@ class BookingService {
         const possibleBooking: PossibleBookingDTO = {
           starts: new Date(
             new Date(start || new Date()).setMinutes(
-              event.time + i * activity.duration
+              event.time + i * activity.duration,
+              0,
+              0
             )
           ).toISOString(),
           duration: activity.duration,
@@ -191,8 +193,8 @@ class BookingService {
     limit?: number,
     page?: number
   ) {
-    if (!start) start = new Date().setHours(0, 0, 0);
-    if (!end) end = new Date().setHours(23, 59, 59);
+    if (!start) start = new Date().setHours(0, 0, 0, 0);
+    if (!end) end = new Date().setHours(23, 59, 59, 999);
 
     logger.debug({start, end, facility, activity, limit, page});
 
@@ -246,13 +248,13 @@ class BookingService {
     });
 
     // filter out all open use sessions that are at or over capacity
-    // possibleBookings.filter(
-    //   b =>
-    //     b.event.type !== 'OPEN_USE' ||
-    //     (b.event.type === 'OPEN_USE' &&
-    //       b.capacity &&
-    //       b.capacity.current < b.capacity.max)
-    // );
+    possibleBookings.filter(
+      b =>
+        b.event.type !== 'OPEN_USE' ||
+        (b.event.type === 'OPEN_USE' &&
+          b.capacity &&
+          b.capacity.current < b.capacity.max)
+    );
 
     // check availability based on sessions
     // remove them from the list of possible bookings
