@@ -31,13 +31,11 @@ def createCheckout(stripeID, productName, successUrl=localDomain):
     )
     return checkoutSession.url
 
-def createPortal(userID):
-    # Get the Stripe customer ID for the current user from the database
-    stripe_customer_id = getUser(userID)[1]
+def createPortal(stripeID, returnUrl=localDomain):
 
-    # Generate a Stripe customer portal URL for the current user
+    # Generate a Stripe customer portal for the current user
     customer_portal_session = stripe.billing_portal.Session.create(
-        customer=stripe_customer_id,
-        return_url=localDomain + '/index.html'
+        customer=stripeID,
+        return_url=returnUrl
     )
     return customer_portal_session

@@ -3,7 +3,6 @@ Provides functionality for making payments for subscriptions'''
 import stripe
 import os
 from database import *
-from interfaces import *
 from payments import *
 from dotenv import load_dotenv
 from flask import * 
@@ -76,8 +75,7 @@ def get_purchased_products(userID):
 @app.route('/customer-portal', methods=['GET'])
 def customerPortal():
     # Generate a Stripe customer portal URL for the current user
-    customer_portal_session = createPortal(467468)
-    return redirect(customer_portal_session.url, code=303)
+    return redirect(getPaymentManager(467468), code=303)
 
 @app.route('/health')
 def get_health():

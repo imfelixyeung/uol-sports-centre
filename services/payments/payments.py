@@ -44,3 +44,12 @@ def changePrice(newPrice, productName):
         unit_amount_decimal=str(newPrice * 100)
     )
     updatePrice(productName, newPrice)
+
+def getPaymentManager(userID):
+    '''Returns portal session for payments and subscription'''
+    # Get the Stripe customer ID for the current user from the database
+    stripe_customer_id = getUser(userID)[1]
+
+    #Return portal for customer
+    portalSession = createPortal(stripe_customer_id)
+    return portalSession.url
