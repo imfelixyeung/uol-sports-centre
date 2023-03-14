@@ -121,6 +121,9 @@ services:
       - HOST=booking
       - DATABASE_URL=postgresql://booking:booking@booking-db:5432/prod
       - DEBUG=true
+      - PRISMA_STUDIO_PORT=5555
+    ports:
+      - "5555"
     networks:
       - network
     volumes:

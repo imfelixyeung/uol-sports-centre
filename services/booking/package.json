@@ -14,7 +14,7 @@
     "check-types": "tsc --noemit",
     "db:push": "prisma db push",
     "seed": "prisma db seed",
-    "dev": "pnpm db:push && pnpm seed && tsx watch --clear-screen=false src/index.ts",
+    "dev": "tsx watch --clear-screen=false src/index.ts",
     "build": "swc ./src -d build",
     "serve": "pnpm db:push && pnpm seed && node ./build/src/index.js"
   },

@@ -23,7 +23,8 @@ COPY . .
 
 # serve app
 EXPOSE ${PORT}
-CMD [ "pnpm", "dev" ]
+EXPOSE ${PRISMA_STUDIO_PORT}
+CMD [ "sh", "dev.sh" ]
 
 
 ##############
