@@ -109,4 +109,10 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useGetFacilitiesQuery,
+  useGetFacilityQuery,
+  useGetFacilityActivitiesQuery,
+  useGetFacilityActivityQuery,
+  useGetFacilityTimesQuery,
+  useGetFacilityTimeQuery,
 } = api;
