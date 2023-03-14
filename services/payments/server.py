@@ -10,9 +10,8 @@ from database import add_product
 from database import get_purchases
 from database import add_purchase
 
-from interfaces import create_portal
-
 from payments import make_a_purchase
+from payments import get_payment_manager
 
 from dotenv import load_dotenv
 from flask import Flask, json, request, jsonify, redirect, render_template
@@ -74,7 +73,7 @@ def webhook_received():
         purchased_item = session.line_items.data[0]
         add_purchase(session.customer, purchased_item.price.id, str(datetime.now()))
         print('Payment succeeded!')
-    
+
     return 'ok'
 
 # Endpoint to retreieve purchased products for a customer
@@ -85,7 +84,7 @@ def get_purchased_products(user_id):
     return jsonify(purchased_products)
 
 @app.route('/customer-portal', methods=['GET'])
-def customerPortal():
+def customer_portal():
     """Generate a Stripe customer portal URL for the current user"""
     return redirect(get_payment_manager(467468), code=303)
 
