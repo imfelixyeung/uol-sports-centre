@@ -9,13 +9,13 @@ from dotenv import load_dotenv
 
 # Get absolute path of directory where .env is
 dirtoenv = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(dirtoenv, '.env'))
+load_dotenv(os.path.join(dirtoenv, ".env"))
 
-LOCAL_DOMAIN = 'http://localhost:' + str(os.getenv('APP_PORT'))
+LOCAL_DOMAIN = "http://localhost:" + str(os.getenv("APP_PORT"))
 
 
 def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):
-    '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
+    "Create checkout session for purchasing bookings/subscriptions using Stripe"
     product = get_product(product_name)
 
     if not product:
