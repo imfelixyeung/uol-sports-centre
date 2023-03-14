@@ -1,10 +1,7 @@
 {
   "editor.formatOnSave": true,
   "python.formatting.provider": "yapf",
-  "python.formatting.yapfArgs": [
-    "--style",
-    "{based_on_style: google, indent_width: 2}"
-  ],
+  "python.formatting.yapfArgs": ["--style", "google"],
   "python.linting.enabled": true,
   "python.linting.pylintPath": "pylint",
   "python.linting.pylintEnabled": true,
