@@ -133,13 +133,17 @@ class BookingDAO {
     const queryWhere: Prisma.BookingWhereInput = {
       userId: filter.user,
       starts: {
-        ...(filter.start && {gte: new Date(filter.start)}),
-        ...(filter.end && {lte: new Date(filter.end)}),
+        ...(filter.start && {gte: new Date(filter.start).toISOString()}),
+        ...(filter.end && {lte: new Date(filter.end).toISOString()}),
       },
-      event: {
-        activityId: filter.activity,
-      },
+      ...(filter.activity && {
+        event: {
+          activityId: filter.activity,
+        },
+      }),
     };
+
+    logger.debug(`Get bookings query: ${JSON.stringify(queryWhere)}`);
 
     // TODO: Implement `filter.sort`
     const queryOrderBy: Prisma.Enumerable<Prisma.BookingOrderByWithRelationInput> =

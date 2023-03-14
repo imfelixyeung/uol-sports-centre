@@ -281,13 +281,22 @@ class BookingController {
    * @memberof BookingController
    */
   async getAvailableBookings(req: express.Request, res: express.Response) {
-    const availableBookingQuerySchema = z.object({
-      ...paginationSchema,
-      start: timestamp.optional(),
-      end: timestamp.optional(),
-      facility: id('facility id').optional(),
-      activity: id('activity id').optional(),
-    });
+    const availableBookingQuerySchema = z
+      .object({
+        ...paginationSchema,
+        start: timestamp.optional(),
+        end: timestamp.optional(),
+        facility: id('facility id').optional(),
+        activity: id('activity id').optional(),
+      })
+      .superRefine(({start, end}, ctx) => {
+        if (start === end) {
+          ctx.addIssue({
+            code: 'custom',
+            message: 'The start and end filters cannot match',
+          });
+        }
+      });
 
     const query = availableBookingQuerySchema.safeParse(req.query);
     if (!query.success)

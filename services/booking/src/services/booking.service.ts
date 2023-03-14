@@ -144,14 +144,26 @@ class BookingService {
 
       // for each timeslot, generate a possible booking
       for (let i = 0; i < timeSlots; i++) {
+        // calculate start and end time, then check whether they fit within the bounds
+        const bookingStartTime = new Date(start || new Date()).setHours(
+          0,
+          event.time + i * activity.duration,
+          0,
+          0
+        );
+        const bookingEndTime = bookingStartTime + activity.duration * 60 * 1000;
+
+        // if booking starts before the filter or booking ends after the filter,
+        // we dont add it as a possible booking
+
+        if (
+          (start && bookingStartTime < start) ||
+          (end && bookingEndTime > end)
+        )
+          continue;
+
         const possibleBooking: PossibleBookingDTO = {
-          starts: new Date(
-            new Date(start || new Date()).setMinutes(
-              event.time + i * activity.duration,
-              0,
-              0
-            )
-          ).toISOString(),
+          starts: new Date(bookingStartTime).toISOString(),
           duration: activity.duration,
           event,
           ...(event.type === 'OPEN_USE' && {
@@ -238,7 +250,9 @@ class BookingService {
     // if error, return it
     if (currentBookings instanceof Error) return currentBookings;
 
-    // check capacity of open_use events
+    logger.debug(`Current bookings: ${JSON.stringify(currentBookings)}`);
+
+    // add the capacity of "open_use" events
     possibleBookings.forEach(possibleBooking => {
       if (possibleBooking.event.type !== 'OPEN_USE') return;
       if (!possibleBooking.capacity) return;
@@ -254,7 +268,7 @@ class BookingService {
     });
 
     // filter out all open use sessions that are at or over capacity
-    possibleBookings.filter(
+    possibleBookings = possibleBookings.filter(
       b =>
         b.event.type !== 'OPEN_USE' ||
         (b.event.type === 'OPEN_USE' &&
@@ -263,7 +277,17 @@ class BookingService {
     );
 
     // check availability based on sessions
-    // remove them from the list of possible bookings
+    // Desc: includes all bookings that are not session based or all bookings
+    // that are sessions and that a booking does not exist with the same event
+    // id and start time
+    possibleBookings = possibleBookings.filter(
+      b =>
+        b.event.type !== 'SESSION' ||
+        (b.event.type === 'SESSION' &&
+          !currentBookings.bookings.find(
+            cb => cb.eventId === b.event.id && cb.starts === b.starts
+          ))
+    );
 
     return possibleBookings;
   }
