@@ -1,20 +1,22 @@
+'''Unit testing for payments microservice'''
 import unittest
 import sqlite3
 import stripe
 import os
 import urllib.request
 
+from server import app
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
 
 sys.path[0] = str(Path(sys.path[0]).parent)
 
-from server import app
 from payments import *
-from database import *
+from database import init_database
+from database import add_product
+from database import
 
-def create_testDatabase():
+def create_test_database():
     connection = sqlite3.connect("database.db")
     with open('paymentTestSchema.sql') as schema:
       connection.executescript(schema.read())
@@ -48,12 +50,12 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   #test addProduct()
   def test_add_product(self):
-    initDatabase()
+    init_database()
 
     #Add test products to the databse
-    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
+    add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
                                 "5", "payment")
-    addProduct("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
+    add_product("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
                                 "15", "subscription")
     
     connection = sqlite3.connect('database.db')
@@ -73,47 +75,74 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #test updatePrice
   def test_update_price(self):
     #initialise database
-    initDatabase()
+    init_database()
 
     #Add test products to the databse
-    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
+    add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
                                 "5", "payment")
     
     #Update price of product
-    updatePrice("product-test", "10")
+    change_price(10, "product-test")
 
     connection = sqlite3.connect('database.db')
     cur = connection.cursor()
 
     #Fetch product price from database
-    t1 = cur.execute('''SELECT price FROM products 
+    t1 = cur.execute('''SELECT priceID, price FROM products 
       WHERE productName LIKE ?''', ['product-test']).fetchone()
     connection.close()
+
+    #Fetch product price from stripe
+    stripePrice = stripe.stripe.Price.retrieve(t1[0])
     
     #Assert correct price
-    self.assertEqual(t1[0], "10")
+    self.assertEqual(t1[1], "10")
+    self.assertEqual(stripePrice.unit_amount, 10)
 
     #Reset price
-    updatePrice("product-test", "5")
+    change_price(5, "product-test")
 
   #test createCheckout()
   def test_create_checkout_success(self):
     #initialise Database
-    initDatabase()
+    init_database()
 
     #Create temp new customer on stripe
     newCustomer = stripe.Customer.create()
 
     #Add test product to payments service
-    addProduct("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
+    add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
 
     #Assert valid checkout URL response
-    session_url = createCheckout(newCustomer.stripe_id, "product-test")
+    session_url = create_checkout(newCustomer.stripe_id, "product-test")
     session_code = urllib.request.urlopen(session_url).getcode()
     self.assertEqual(session_code, 200)
 
     #Delete temp customer
     stripe.Customer.delete(newCustomer.stripe_id)
+  
+  #test customerPortal
+  def test_customer_portal(self):
+    #initialise Database
+    init_database()
+
+    #Create temp new customer on stripe
+    newCustomer = stripe.Customer.create()
+
+    #Add customer to database with '111' as ID
+    add_customer(111, newCustomer.stripe_id)
+
+    #Assert valid portal URL response
+    session_url = get_payment_manager(111)
+    session_code = urllib.request.urlopen(session_url).getcode()
+    self.assertEqual(session_code, 200)
+
+    #Delete temp customer
+    stripe.Customer.delete(newCustomer.stripe_id)
+
+  #test makePurchase()
+  #def test_make_purchase(self):
+
 
   #test get_index()
   def test_get_index(self):
@@ -127,25 +156,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertIn('text/html', response.content_type)
     self.assertEqual(response.data.decode('utf-8'), html)
-  
-  #test customerPortal
-  def test_customer_portal(self):
-    #initialise Database
-    initDatabase()
-
-    #Create temp new customer on stripe
-    newCustomer = stripe.Customer.create()
-
-    #Add customer to database with '111' as ID
-    addCustomer(111, newCustomer.stripe_id)
-
-    #Assert valid portal URL response
-    session_url = getPaymentManager(111)
-    session_code = urllib.request.urlopen(session_url).getcode()
-    self.assertEqual(session_code, 200)
-
-    #Delete temp customer
-    stripe.Customer.delete(newCustomer.stripe_id)
 
   #test redirectCheckout()
   def redirectCheckout_test(self):

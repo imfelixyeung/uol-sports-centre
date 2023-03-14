@@ -1,5 +1,5 @@
-"""Management Microservice: 
-Provides functionality for management-level access 
+"""Management Microservice:
+Provides functionality for management-level access
 to the booking system"""
 import sqlite3
 from flask import Flask, request

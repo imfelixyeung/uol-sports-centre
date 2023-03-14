@@ -3,6 +3,7 @@
 from datetime import datetime
 import stripe
 from interfaces import create_checkout
+from interfaces import create_portal
 from interfaces import LOCAL_DOMAIN
 
 from database import add_product
@@ -40,7 +41,7 @@ def make_a_purchase(user_id, product_name, success_url=LOCAL_DOMAIN):
     product_id = get_product(product_name)[0]
 
     # Creates a new row in the purchased products table
-    addPurchase(stripeUser[0], productID, datetime.now())
+    add_purchase(stripe_user[0], product_id, datetime.now())
 
     return create_checkout(stripe_user[1], product_name, success_url)
 
@@ -53,10 +54,10 @@ def change_price(new_price, product_name):
     )
     update_price(product_name, new_price)
 
-def get_payment_manager(userID):
+def get_payment_manager(user_id):
     '''Returns portal session for payments and subscription'''
     # Get the Stripe customer ID for the current user from the database
-    stripe_customer_id = get_user(userID)[1]
+    stripe_customer_id = get_user(user_id)[1]
 
     #Return portal for customer
     portal_session = create_portal(stripe_customer_id)
