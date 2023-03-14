@@ -3,13 +3,14 @@ import {Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import type {FC} from 'react';
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
 import Button from '../Button';
 import Typography from '../Typography';
+import useRedirectTo from './hooks/useRedirectTo';
 
 export interface AuthFormProps {
   variant: 'login' | 'register';
@@ -19,6 +20,26 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
   const auth = useAuth();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const redirectTo = useRedirectTo();
+
+  useEffect(() => {
+    if (!auth.session) return;
+
+    void router.replace(redirectTo);
+  }, [auth.session, redirectTo, router]);
+
+  const urls = useMemo(() => {
+    if (!redirectTo)
+      return {
+        login: '/auth/login',
+        register: '/auth/register',
+      };
+
+    return {
+      login: `/auth/login?redirect=${redirectTo}`,
+      register: `/auth/register?redirect=${redirectTo}`,
+    };
+  }, [redirectTo]);
 
   return (
     <>
@@ -46,7 +67,6 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
                     error: 'Failed to register',
                   }
             )
-            .then(() => router.push('/'))
             .catch(res => {
               const error = getErrorFromAPIResponse(res);
               if (error) setErrorMessage(error);
@@ -129,7 +149,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
                 : 'Dont have an account?'}
             </span>{' '}
             <Link
-              href={variant === 'register' ? '/auth/login' : '/auth/register'}
+              href={variant === 'register' ? urls.login : urls.register}
               className="underline"
             >
               {variant === 'register' ? 'Log In' : 'Create Account'}
