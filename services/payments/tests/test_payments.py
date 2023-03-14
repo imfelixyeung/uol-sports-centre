@@ -13,6 +13,7 @@ from server import app
 from payments import *
 from database import init_database
 from database import add_product
+
 sys.path[0] = str(Path(sys.path[0]).parent)
 
 def create_test_database():
@@ -90,7 +91,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         connection.close()
 
         #Fetch product price from stripe
-        stripePrice = stripe.stripe.Price.retrieve(t1[0])
+        stripePrice = stripe.Price.retrieve(t1[0])
     
         #Assert correct price
         self.assertEqual(t1[1], "10")
