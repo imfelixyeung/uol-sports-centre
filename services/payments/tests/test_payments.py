@@ -1,12 +1,12 @@
 '''Unit testing for payments microservice'''
 import unittest
 import sqlite3
-import stripe
 import os
-import urllib.request
 
-import sys
-from pathlib import Path
+import urllib.request
+import stripe
+
+from path import sys
 
 from server import app
 
@@ -19,10 +19,9 @@ from database import add_customer
 
 from interfaces import create_checkout
 
-sys.path[0] = str(Path(sys.path[0]).parent)
-
 
 def create_test_database():
+    """Createst the database for the tests"""
     connection = sqlite3.connect("database.db")
     with open("paymentTestSchema.sql", encoding="utf-8") as schema:
         connection.executescript(schema.read())
@@ -39,9 +38,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.product_price = 50.00
         self.user_id = 467468
 
-    #test createCheckout()
-    def test_MakePurchasable_test(self):
-        #tests if it can make a test product purchasable
+    def test_make_purchasable_test(self):
+        """tests if it can make a test product purchasable"""
         #payments.MakePurchasable('product-test', 5.0, 'test-type')
 
         #retrieving the added product from Stripe
@@ -54,8 +52,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.assertEqual(product_stripe.name, "product-test")
         self.assertEqual(price.unit_amount_decimal, "500")
 
-    #test addProduct()
     def test_add_product(self):
+        """Testing the functionality of adding products"""
         init_database()
 
         #Add test products to the databse
@@ -67,20 +65,20 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         cur = connection.cursor()
 
         #Fetch products from database
-        t1 = cur.execute(
+        test_1 = cur.execute(
             """SELECT productName FROM products 
         WHERE priceId LIKE ?""", ["price_1MjOpSK4xeIGYs5lrzHsvy8N"]).fetchall()
-        t2 = cur.execute(
+        test_2 = cur.execute(
             """SELECT productName FROM products
         WHERE priceId LIKE ?""", ["price_1MjOq1K4xeIGYs5lvqNSB9l5"]).fetchall()
         connection.close()
 
         #Assert correct products
-        self.assertEqual(t1[0][0], "product-test")
-        self.assertEqual(t2[0][0], "subscription-test")
+        self.assertEqual(test_1[0][0], "product-test")
+        self.assertEqual(test_2[0][0], "subscription-test")
 
-    #test changePrice
     def test_change_price(self):
+        """Tests the change price functionality"""
         #initialise database
         init_database()
 
@@ -95,23 +93,23 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         cur = connection.cursor()
 
         #Fetch product price from database
-        t1 = cur.execute(
+        test_1 = cur.execute(
             '''SELECT priceID, price FROM products 
         WHERE productName LIKE ?''', ["product-test"]).fetchone()
         connection.close()
 
         #Fetch product price from stripe
-        stripe_price = stripe.Price.retrieve(t1[0])
+        stripe_price = stripe.Price.retrieve(test_1[0])
 
         #Assert correct price
-        self.assertEqual(t1[1], "10")
+        self.assertEqual(test_1[1], "10")
         self.assertEqual(stripe_price.unit_amount, 10)
 
         #Reset price
         change_price(5, "product-test")
 
-    #test createCheckout()
     def test_create_checkout_success(self):
+        """Tests the create checkout functionality for the success case"""
         #initialise Database
         init_database()
 
@@ -130,8 +128,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
 
-    #test customerPortal
     def test_customer_portal(self):
+        """Tests the customer portal functionality"""
         #initialise Database
         init_database()
 
@@ -148,12 +146,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
-
-
-#test makePurchase()
-#def test_make_purchase(self):
-
-#test get_index()
 
     def test_get_index(self):
         """Test if the get_index() function returns a 200 status code"""
@@ -176,7 +168,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #a = 1
 
     @classmethod
-    def setUpClass(cls, self):
+    def setUpClass(self):
         """Create a new app instance and set up a test client"""
         self.app = app.test_client()
         self.app.testing = True
@@ -190,6 +182,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         conn.execute("DROP TABLE IF EXISTS customers")
         conn.commit()
         conn.close()
+
 
 if __name__ == "__main__":
     unittest.main()
