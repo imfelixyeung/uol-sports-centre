@@ -2,7 +2,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AppIcon from '~/components/AppIcon/AppIcon';
 import Button, {buttonStyles} from '~/components/Button';
-import ScrollArea from '~/components/ScrollArea';
+import Json from '~/components/Json';
 import Typography from '~/components/Typography';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 
@@ -49,31 +49,17 @@ const AuthPage = () => {
         <div className="my-8 bg-white p-8 text-black">
           <Typography.h2>This is you!</Typography.h2>
           <Typography.p styledAs="subtext">For demo only</Typography.p>
-          <ScrollArea>
-            <pre className="mb-3 bg-black p-3 text-white">
-              <code className="break-words">
-                {JSON.stringify(auth.session, null, 2)}
-              </code>
-            </pre>
-          </ScrollArea>
+          <Json data={auth.session} />
           <Typography.h3 className="mt-6">Your Tokens</Typography.h3>
           <Typography.p styledAs="subtext">
             For demo only, refresh tokens should be kept securely
           </Typography.p>
-          <ScrollArea>
-            <pre className="mb-3 bg-black p-3 text-white">
-              <code className="break-words">
-                {JSON.stringify(
-                  {
-                    accessToken: auth.token,
-                    refreshToken: auth.refreshToken,
-                  },
-                  null,
-                  2
-                )}
-              </code>
-            </pre>
-          </ScrollArea>
+          <Json
+            data={{
+              accessToken: auth.token,
+              refreshToken: auth.refreshToken,
+            }}
+          />
         </div>
       )}
     </div>
