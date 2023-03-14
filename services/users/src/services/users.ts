@@ -17,10 +17,6 @@ export async function editSecondName(userData: EditUserDBA) {
   return await UserDBA.editUser(userData);
 }
 
-export async function editAccountID(userData: EditUserDBA) {
-  return await UserDBA.editUser(userData);
-}
-
 export async function editPaymentID(userData: EditUserDBA) {
   return await UserDBA.editUser(userData);
 }

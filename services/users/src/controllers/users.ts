@@ -4,7 +4,6 @@ import {z} from 'zod';
 import {
   createNewUser,
   deleteExistingUser,
-  editAccountID,
   editFirstName,
   editMembership,
   editPaymentID,
@@ -207,55 +206,6 @@ async function updateSecondName(req: express.Request, res: express.Response) {
   });
 }
 
-async function updateAccountID(req: express.Request, res: express.Response) {
-  const updateUserSchema = z.object({
-    id: z.number().optional(),
-    accountID: z.number(),
-    paymentID: z.number().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    membership: z.string().optional(),
-  });
-
-  const updateUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
-  });
-  const body = updateUserSchema.safeParse(req.body);
-  const params = updateUserParamsSchema.safeParse(req.params);
-  if (!body.success)
-    return res.status(400).json({
-      status: 'error',
-      message: 'malformed body',
-      error: body.error,
-    });
-  if (!params.success)
-    return res.status(400).json({
-      status: 'error',
-      message: 'malformed parameters',
-      error: params.error,
-    });
-
-  const userData: EditUserDBA = {id: params.data.id, ...body.data};
-  const updatedUser = await editAccountID(userData);
-
-  if (updatedUser === null)
-    return res.status(500).send({
-      status: 'error',
-      message: 'Unable to create User',
-    });
-
-  // after passing all the above checks, the booking should be okay
-  return res.status(200).send({
-    status: 'OK',
-    booking: updatedUser,
-  });
-}
-
 async function updatePaymentID(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     id: z.number().optional(),
@@ -367,7 +317,6 @@ const usersControllers = {
   viewFullRecord,
   updateFirstName,
   updateSecondName,
-  updateAccountID,
   updatePaymentID,
   updateMembership,
   deleteUser,

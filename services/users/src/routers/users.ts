@@ -7,7 +7,6 @@ userRouter.get('/testing', usersControllers.testing);
 userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
 userRouter.put('/updateFirstName', usersControllers.updateFirstName);
 userRouter.put('/updateSecondName', usersControllers.updateSecondName);
-userRouter.put('/updateAccountID', usersControllers.updateAccountID);
 userRouter.put('/updatePaymentID', usersControllers.updatePaymentID);
 userRouter.put('/updateMembership', usersControllers.updateMembership);
 userRouter.delete('/deleteUser', usersControllers.deleteUser);
