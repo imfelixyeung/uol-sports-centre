@@ -140,14 +140,8 @@ export const refreshAccessToken = async (
   token: JsonWebToken,
   refreshToken: string
 ) => {
-  const verified = !!(
-    (await TokenRegistry.verifyToken(token)) &&
-    (await RefreshTokenRegistry.verifyRefreshToken(refreshToken))
-  );
-
-  if (!verified) {
-    throw new Error('Malformed token or refresh token');
-  }
+  await TokenRegistry.verifyToken(token);
+  await RefreshTokenRegistry.verifyRefreshToken(refreshToken);
 
   // success, create tokens
   const newToken = await TokenRegistry.renewToken(token);
