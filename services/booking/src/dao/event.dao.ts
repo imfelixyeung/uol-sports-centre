@@ -41,9 +41,6 @@ class EventDAO {
       }
     }
 
-    // logger.debug(`Days: ${JSON.stringify(days)}`);
-
-    // TODO: fix every day not returning events if days > 1 week
     const allEvents: EventDTO[] = [];
     const eventsByDay: (Error | EventDTO[] | null)[] = [
       null,
@@ -74,16 +71,12 @@ class EventDAO {
         eventsByDay[day] = events;
       }
 
-      console.log(`${JSON.stringify(eventsByDay[day])}`);
-
       // return error if it exists
       if (eventsByDay[day] instanceof Error) return eventsByDay[day] as Error;
 
       let daysEvents = eventsByDay[day] as EventDTO[];
 
-      logger.debug(`Days events: ${JSON.stringify(daysEvents)}`);
-
-      // TODO: if is first day, ensure that all the events returned are equal to or later than the start time
+      // if is first day, ensure that all the events returned are equal to or later than the start time
       if (index === 0)
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.start as number).setHours(
@@ -92,15 +85,10 @@ class EventDAO {
             0,
             0
           );
-          logger.debug(
-            `Test ${filter.start} <= ${eventStartTime} : ${
-              (filter.start as number) <= eventStartTime
-            }`
-          );
           return (filter.start as number) <= eventStartTime;
         });
 
-      // TODO: if is last day, ensure that all the events returned are equal to or less than the end time
+      // if is last day, ensure that all the events returned are equal to or less than the end time
       if (index === days.length - 1)
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.end as number).setHours(
@@ -108,12 +96,6 @@ class EventDAO {
             e.time,
             0,
             0
-          );
-
-          logger.debug(
-            `Test ${filter.end} >= ${eventStartTime} : ${
-              (filter.end as number) >= eventStartTime
-            }`
           );
           return (filter.end as number) >= eventStartTime;
         });

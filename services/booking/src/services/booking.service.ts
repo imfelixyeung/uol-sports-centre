@@ -250,8 +250,6 @@ class BookingService {
     // if error, return it
     if (currentBookings instanceof Error) return currentBookings;
 
-    logger.debug(`Current bookings: ${JSON.stringify(currentBookings)}`);
-
     // add the capacity of "open_use" events
     possibleBookings.forEach(possibleBooking => {
       if (possibleBooking.event.type !== 'OPEN_USE') return;
