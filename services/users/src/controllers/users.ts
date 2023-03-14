@@ -14,7 +14,7 @@ import {
 } from '../services/users';
 import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
 
-async function testing(req: Request, res: Response) {
+async function testing(req: express.Request, res: express.Response) {
   const finishedData: String = await processData(req.query.trtr as string);
   const otherData: String = 'A STRING';
   return res.json({
@@ -57,7 +57,7 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
   });
 }
 
-async function updateMembership(req: Request, res: Response) {
+async function updateMembership(req: express.Request, res: express.Response) {
   // need to extract the data from the request
   // we need to create a valid UserDBA object
   // we need to pass that object to the editMembership function
@@ -109,7 +109,7 @@ async function updateMembership(req: Request, res: Response) {
   });
 }
 
-async function updateFirstName(req: Request, res: Response) {
+async function updateFirstName(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     id: z.number().optional(),
     accountID: z.number().optional(),
@@ -158,7 +158,7 @@ async function updateFirstName(req: Request, res: Response) {
   });
 }
 
-async function updateSecondName(req: Request, res: Response) {
+async function updateSecondName(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     id: z.number().optional(),
     accountID: z.number().optional(),
@@ -207,7 +207,7 @@ async function updateSecondName(req: Request, res: Response) {
   });
 }
 
-async function updateAccountID(req: Request, res: Response) {
+async function updateAccountID(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     id: z.number().optional(),
     accountID: z.number(),
@@ -256,7 +256,7 @@ async function updateAccountID(req: Request, res: Response) {
   });
 }
 
-async function updatePaymentID(req: Request, res: Response) {
+async function updatePaymentID(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     id: z.number().optional(),
     accountID: z.number().optional(),

@@ -4,10 +4,6 @@ import healthRouter from './routers/health';
 import userRouter from './routers/users';
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
-
 app.use('/health', healthRouter);
 app.get('/testing', userRouter);
 
