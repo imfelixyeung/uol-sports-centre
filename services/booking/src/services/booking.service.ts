@@ -198,6 +198,12 @@ class BookingService {
 
     logger.debug({start, end, facility, activity, limit, page});
 
+    // lets check how many days are between the start and the end to make sure
+    // we dont generate way too many responses
+    const numDays = Math.floor((end - start) / (24 * 60 * 60 * 1000));
+    if (numDays > 100)
+      return new Error('Too many days between specified date range');
+
     // generate list of all possible bookings (not necessarily available)
     let possibleBookings = await this.generatePossibleBookings(
       facility,
