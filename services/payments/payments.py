@@ -15,18 +15,18 @@ from database import add_customer
 from database import add_purchase
 from database import update_price
 
+
 def make_purchasable(product_name, product_price, product_type="payment"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
 
     #Adding product to stripe
     product_stripe = stripe.Product.create(name=product_name)
-    price = stripe.Price.create(
-        unit_amount_decimal=str(product_price * 100),
-        currency="gbp",
-        product=product_stripe.stripe_id
-    )
+    price = stripe.Price.create(unit_amount_decimal=str(product_price * 100),
+                                currency="gbp",
+                                product=product_stripe.stripe_id)
     #Adding product to database
     add_product(product_name, price.stripe_id, product_price, product_type)
+
 
 def make_a_purchase(user_id, product_name, success_url=LOCAL_DOMAIN):
     '''redirects user to stripe checkout for chosen product'''
@@ -47,14 +47,13 @@ def make_a_purchase(user_id, product_name, success_url=LOCAL_DOMAIN):
 
     return create_checkout(stripe_user[1], product_name, success_url)
 
+
 def change_price(new_price, product_name):
     '''Changes price of specified product for management microservice'''
     price_id = get_product(product_name)
-    stripe.Price.modify(
-        price_id,
-        unit_amount_decimal=str(new_price * 100)
-    )
+    stripe.Price.modify(price_id, unit_amount_decimal=str(new_price * 100))
     update_price(product_name, new_price)
+
 
 def get_payment_manager(user_id):
     '''Returns portal session for payments and subscription'''

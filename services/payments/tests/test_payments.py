@@ -5,7 +5,6 @@ import stripe
 import os
 import urllib.request
 
-
 import sys
 from pathlib import Path
 
@@ -16,13 +15,16 @@ from database import add_product
 
 sys.path[0] = str(Path(sys.path[0]).parent)
 
+
 def create_test_database():
     connection = sqlite3.connect("database.db")
     with open('paymentTestSchema.sql') as schema:
         connection.executescript(schema.read())
     connection.close()
 
+
 class TestingPaymentsMicroservice(unittest.TestCase):
+
     def setUp(self):
         app.testing = True
         self.client = app.test_client()
@@ -38,13 +40,13 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #retrieving the added product from Stripe
         products = stripe.Product.list()
         productStripe = next((p for p in products if p.name == 'product-test'),
-                         None)
+                             None)
         price = stripe.Price.list(limit=1, product=productStripe.id).data[0]
-        
+
         #asserting that the added product matches the expected result
         self.assertEqual(productStripe.name, 'product-test')
         self.assertEqual(price.unit_amount_decimal, '500')
-        
+
         prices = stripe.Price.list(limit=100, product=productStripe.id).data
 
     #test addProduct()
@@ -52,19 +54,21 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the databse
-        add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
-                    "5", "payment")
-        add_product("subscription-test","price_1MjOq1K4xeIGYs5lvqNSB9l5", 
-                    "15", "subscription")     
+        add_product("product-test", "price_1MjOpSK4xeIGYs5lrzHsvy8N", "5",
+                    "payment")
+        add_product("subscription-test", "price_1MjOq1K4xeIGYs5lvqNSB9l5", "15",
+                    "subscription")
         connection = sqlite3.connect('database.db')
-        cur = connection.cursor()    
+        cur = connection.cursor()
 
         #Fetch products from database
-        t1 = cur.execute('''SELECT productName FROM products 
+        t1 = cur.execute(
+            '''SELECT productName FROM products 
         WHERE priceId LIKE ?''', ['price_1MjOpSK4xeIGYs5lrzHsvy8N']).fetchall()
-        t2 = cur.execute('''SELECT productName FROM products
+        t2 = cur.execute(
+            '''SELECT productName FROM products
         WHERE priceId LIKE ?''', ['price_1MjOq1K4xeIGYs5lvqNSB9l5']).fetchall()
-        connection.close() 
+        connection.close()
 
         #Assert correct products
         self.assertEqual(t1[0][0], "product-test")
@@ -76,9 +80,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the databse
-        add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", 
-                    "5", "payment")
-    
+        add_product("product-test", "price_1MjOpSK4xeIGYs5lrzHsvy8N", "5",
+                    "payment")
+
         #Update price of product
         change_price(10, "product-test")
 
@@ -86,13 +90,14 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         cur = connection.cursor()
 
         #Fetch product price from database
-        t1 = cur.execute('''SELECT priceID, price FROM products 
+        t1 = cur.execute(
+            '''SELECT priceID, price FROM products 
         WHERE productName LIKE ?''', ['product-test']).fetchone()
         connection.close()
 
         #Fetch product price from stripe
         stripePrice = stripe.Price.retrieve(t1[0])
-    
+
         #Assert correct price
         self.assertEqual(t1[1], "10")
         self.assertEqual(stripePrice.unit_amount, 10)
@@ -109,7 +114,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         newCustomer = stripe.Customer.create()
 
         #Add test product to payments service
-        add_product("product-test","price_1MjOpSK4xeIGYs5lrzHsvy8N", "5", "payment")
+        add_product("product-test", "price_1MjOpSK4xeIGYs5lrzHsvy8N", "5",
+                    "payment")
 
         #Assert valid checkout URL response
         session_url = create_checkout(newCustomer.stripe_id, "product-test")
@@ -118,7 +124,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Delete temp customer
         stripe.Customer.delete(newCustomer.stripe_id)
-  
+
     #test customerPortal
     def test_customer_portal(self):
         #initialise Database
@@ -138,14 +144,16 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #Delete temp customer
         stripe.Customer.delete(newCustomer.stripe_id)
 
-  #test makePurchase()
-  #def test_make_purchase(self):
 
+#test makePurchase()
+#def test_make_purchase(self):
 
-    #test get_index()
+#test get_index()
+
     def test_get_index(self):
-        """Test if the get_index() function returns a 200 status code"""   
-        file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_index.html"))
+        """Test if the get_index() function returns a 200 status code"""
+        file_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "test_index.html"))
 
         with open(file_path) as file:
             html = file.read()

@@ -4,16 +4,17 @@ to the booking system"""
 import sqlite3
 from flask import Flask, request
 
-app = Flask(__name__,
-            static_url_path='',
-            static_folder='public')
+app = Flask(__name__, static_url_path='', static_folder='public')
+
 
 def init_database():
     '''Initialise database from schema'''
     connection = sqlite3.connect('database.db')
-    with open('services/management/managementSchema.sql', encoding="utf-8") as schema:
+    with open('services/management/managementSchema.sql',
+              encoding="utf-8") as schema:
         connection.executescript(schema.read())
     connection.close()
+
 
 """
 #To be coupled with Facility microservice-----------------
@@ -37,6 +38,7 @@ def setPrice(newPrice, productName):                     #
 #---------------------------------------------------------
 """
 
+
 @app.route('/management/staff/<int:staff_id>', methods=['PUT'])
 def manage_staff(staff_id):
     '''Amends details of chosen staff member
@@ -53,7 +55,8 @@ def manage_staff(staff_id):
 
     # Perform the requested action
     if action == 'promote':
-        cursor.execute('UPDATE staff SET staffRole = "Manager" WHERE id = ?', (staff_id,))
+        cursor.execute('UPDATE staff SET staffRole = "Manager" WHERE id = ?',
+                       (staff_id,))
         conn.commit()
         conn.close()
         return {'message': 'Staff member promoted to manager'}, 200
@@ -63,7 +66,8 @@ def manage_staff(staff_id):
         # In case there is an error:
         if not name:
             return {'message': 'Name is required for rename action'}, 400
-        cursor.execute('UPDATE staff SET staffName = ? WHERE id = ?', (name, staff_id))
+        cursor.execute('UPDATE staff SET staffName = ? WHERE id = ?',
+                       (name, staff_id))
         conn.commit()
         conn.close()
         return {'message': 'Staff member renamed successfully'}, 200
@@ -77,6 +81,7 @@ def manage_staff(staff_id):
 
     else:
         return {'message': 'Invalid action'}, 400
+
 
 @app.route('/health')
 def get_health():
