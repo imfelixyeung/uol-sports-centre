@@ -1,41 +1,43 @@
-import stripe
+"""Module that presents interface to the payment microservice"""
 import os
-from dotenv import load_dotenv
-from database import *
 from datetime import datetime
 
-# Get absolute path of directory where .env is 
+from database import get_product
+
+import stripe
+from dotenv import load_dotenv
+
+# Get absolute path of directory where .env is
 dirtoenv = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(dirtoenv, '.env'))
 
-localDomain = 'http://localhost:' + str(os.getenv('APP_PORT'))
+LOCAL_DOMAIN = 'http://localhost:' + str(os.getenv('APP_PORT'))
 
-def createCheckout(stripeID, productName, successUrl=localDomain):
+def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):
     '''Create checkout session for purchasing bookings/subscriptions using Stripe'''
-    product = getProduct(productName)
+    product = get_product(product_name)
 
     if not product:
         # handle the case where no product was found
         return None
 
-    checkoutSession = stripe.checkout.Session.create(
-        success_url=successUrl,
+    checkout_session = stripe.checkout.Session.create(
+        success_url=success_url,
         mode = product[3],
         expires_at=int(datetime.timestamp(datetime.now())) + 1800,
-        customer=stripeID,
+        customer=stripe_id,
         line_items=[
         {
             "price": product[0],
             "quantity": 1
         },],
     )
-    return checkoutSession.url
+    return checkout_session.url
 
-def createPortal(stripeID, returnUrl=localDomain):
-
-    # Generate a Stripe customer portal for the current user
+def create_portal(stripe_id, return_url=LOCAL_DOMAIN):
+    """Generate a Stripe customer portal for the given user"""
     customer_portal_session = stripe.billing_portal.Session.create(
-        customer=stripeID,
-        return_url=returnUrl
+        customer=stripe_id,
+        return_url=return_url
     )
     return customer_portal_session
