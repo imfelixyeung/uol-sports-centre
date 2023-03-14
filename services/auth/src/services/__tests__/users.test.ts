@@ -30,6 +30,10 @@ const users: User[] = [
 describe('userWithoutPassword', () => {
   userWithoutPassword;
 
+  it('should return null if user not supplied', async () => {
+    expect(userWithoutPassword(null)).toEqual(null);
+  });
+
   it('should return the user without password', async () => {
     const user = {...users[0]};
 
