@@ -44,13 +44,7 @@ describe('registerWithCredentials', () => {
     dbMock.user.findUnique.mockResolvedValue(user);
 
     expect(
-      registerWithCredentials(
-        {
-          email: 'example@example.com',
-          password: 'password',
-        },
-        {rememberMe: false}
-      )
+      registerWithCredentials(userCredentials, {rememberMe: false})
     ).rejects.toThrow('User already exists');
   });
 
@@ -66,13 +60,9 @@ describe('registerWithCredentials', () => {
       updatedAt: new Date(),
     });
 
-    const tokens = await registerWithCredentials(
-      {
-        email: 'example@example.com',
-        password: 'password',
-      },
-      {rememberMe: false}
-    );
+    const tokens = await registerWithCredentials(userCredentials, {
+      rememberMe: false,
+    });
 
     expect(tokensSchema.parse(tokens)).toBeTruthy();
   });
@@ -169,6 +159,8 @@ describe('refreshAccessToken', () => {
     const tokens = await refreshAccessToken(token, refreshToken);
 
     expect(tokensSchema.parse(tokens)).toBeTruthy();
+    expect(dbMock.token.update).toBeCalled();
+    expect(dbMock.refreshToken.create).toBeCalled();
   });
 });
 
@@ -178,7 +170,7 @@ describe('resetPassword', () => {
   it('throws error if user does not exist', () => {
     dbMock.user.findUnique.mockResolvedValue(null);
     expect(
-      resetPassword({...userCredentials, newPassword: 'password'})
+      resetPassword({...userCredentials, newPassword: 'new-password'})
     ).rejects.toThrow('User not found');
   });
 
@@ -188,16 +180,17 @@ describe('resetPassword', () => {
       resetPassword({
         ...userCredentials,
         password: 'incorrect-password',
-        newPassword: 'password',
+        newPassword: 'new-password',
       })
     ).rejects.toThrow('Wrong old password');
   });
 
   it('updates user password with new password if success', async () => {
     dbMock.user.findUnique.mockResolvedValue(user);
+
     await resetPassword({
       ...userCredentials,
-      newPassword: 'password',
+      newPassword: 'new-password',
     });
 
     expect(dbMock.user.update).toBeCalled();

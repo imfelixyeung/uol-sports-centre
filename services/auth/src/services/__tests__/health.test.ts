@@ -5,11 +5,18 @@ import {getDatabaseHealth, getHealth} from '../health';
 describe('getHealth', () => {
   it('should be healthy if all services are healthy', () => {
     dbMock.$queryRaw.mockResolvedValue('something');
-    expect(getHealth()).resolves.toHaveProperty('healthy', true);
+    expect(getHealth()).resolves.toEqual({
+      healthy: true,
+      services: [{name: 'database', healthy: true}],
+    });
   });
+
   it('should not be healthy if any service is not healthy', () => {
     dbMock.$queryRaw.mockRejectedValue('error');
-    expect(getHealth()).resolves.toHaveProperty('healthy', false);
+    expect(getHealth()).resolves.toEqual({
+      healthy: false,
+      services: [{name: 'database', healthy: false}],
+    });
   });
 });
 
