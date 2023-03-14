@@ -23,14 +23,7 @@ dev:
 	source environment/bin/activate
 	python3 -m flask run --debug
 
-# TODO: fix error where make file does not allow test target
-# test:
-# 	source environment/bin/activate
-# 	python3 -m coverage -m pytest
-# 	python3 -m coverage report
-
-# Renaming target allowed tests to run
-new-test:
+test:
 	source environment/bin/activate
 	python3 -m coverage run -m pytest
 	python3 -m coverage report
