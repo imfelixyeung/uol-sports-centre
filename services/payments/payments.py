@@ -31,7 +31,6 @@ def MakeAPurchase(userID, productName, successUrl=localDomain):
     productID = getProduct(productName)[0]
     
     # Creates a new row in the purchased products table
-    print(stripeUser[0])
     addPurchase(stripeUser[0], productID, datetime.now())
 
     return createCheckout(stripeUser[1], productName, successUrl)
