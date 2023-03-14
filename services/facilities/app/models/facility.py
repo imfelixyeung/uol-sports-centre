@@ -7,5 +7,9 @@ class Facility(db.Model):
   capacity = db.Column(db.Integer)
 
   # Foreign Connectors for the Facilities table
-  open_times = db.relationship('OpenTime', backref='facility')
-  activities = db.relationship('Activity', backref='facility')
+  open_times = db.relationship('OpenTime',
+                               backref='facility',
+                               cascade='all, delete')
+  activities = db.relationship('Activity',
+                               backref='facility',
+                               cascade='all, delete')
