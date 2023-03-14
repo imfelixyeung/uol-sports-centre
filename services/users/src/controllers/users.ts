@@ -24,12 +24,7 @@ async function testing(req: express.Request, res: express.Response) {
 
 async function viewFullRecord(req: express.Request, res: express.Response) {
   const paramSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
 
   const params = paramSchema.safeParse(req.params);
@@ -70,12 +65,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
   });
 
   const updateUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
@@ -119,12 +109,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   });
 
   const updateUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
@@ -168,12 +153,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
   });
 
   const updateUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
@@ -217,12 +197,7 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   });
 
   const updateUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
@@ -290,12 +265,7 @@ async function createUser(req: express.Request, res: express.Response) {
 
 async function deleteUser(req: express.Request, res: express.Response) {
   const deleteUserParamsSchema = z.object({
-    id: z
-      .string()
-      .transform(id => parseInt(id))
-      .refine(id => !Number.isNaN(id), {
-        message: 'Non-number id supplied',
-      }),
+    id: z.coerce.number(),
   });
   const params = deleteUserParamsSchema.safeParse(req.params);
   if (!params.success)
