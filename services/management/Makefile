@@ -7,10 +7,10 @@ help:
 	@echo "make ci: runs scripts for CI"
 
 start:
-	flask --app management run
+	flask --app management run --host=0.0.0.0
 
 dev:
-	flask --app management run --debug
+	flask --app management run --debug --host=0.0.0.0
 
 test:
 	python tests/test_management.py
