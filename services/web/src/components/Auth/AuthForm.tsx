@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {Field, Form, Formik} from 'formik';
+import {ErrorMessage, Field, Form, Formik} from 'formik';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import type {FC} from 'react';
@@ -47,11 +47,31 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
         initialValues={{
           email: '',
           password: '',
+          passwordConfirmation: '',
           rememberMe: false,
           acceptTerms: false,
         }}
         onSubmit={async (values, actions) => {
           setErrorMessage(null);
+
+          if (
+            variant === 'register' &&
+            values.password !== values.passwordConfirmation
+          ) {
+            actions.setFieldError(
+              'passwordConfirmation',
+              'Passwords do not match'
+            );
+            actions.setSubmitting(false);
+            return;
+          }
+
+          if (!values.acceptTerms) {
+            setErrorMessage('You must accept the terms and policies');
+            actions.setSubmitting(false);
+            return;
+          }
+
           await toast
             .promise(
               variant === 'login' ? auth.login(values) : auth.register(values),
@@ -74,8 +94,14 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
           actions.setSubmitting(false);
         }}
         validationSchema={yup.object({
-          email: yup.string().email().required(),
-          password: yup.string().required().min(8, 'Password too short!'),
+          email: yup
+            .string()
+            .email('This should be an email')
+            .required('This field is required'),
+          password: yup
+            .string()
+            .required('This field is required')
+            .min(8, 'Password too short!'),
         })}
       >
         <Form className="flex w-full flex-col gap-3">
@@ -88,28 +114,54 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             <Field
               id="email"
               name="email"
-              type="email"
+              type="text"
               className="bg-white p-2 text-black"
               placeholder="Email"
               inputMode="email"
               autoComplete="email"
             />
+            <span className="text-red-600">
+              <ErrorMessage name="email" />
+            </span>
           </label>
 
-          <label htmlFor="password" className="flex flex-col">
-            <span className="">Password</span>
-            <Field
-              id="password"
-              name="password"
-              type="password"
-              className="bg-white p-2 text-black"
-              placeholder="Password"
-              inputMode="password"
-              autoComplete={
-                variant === 'login' ? 'current-password' : 'new-password'
-              }
-            />
-          </label>
+          <div className="flex gap-3">
+            <label htmlFor="password" className="flex grow flex-col">
+              <span className="">Password</span>
+              <Field
+                id="password"
+                name="password"
+                type="password"
+                className="bg-white p-2 text-black"
+                placeholder="Password"
+                inputMode="password"
+                autoComplete={
+                  variant === 'login' ? 'current-password' : 'new-password'
+                }
+              />
+              <span className="text-red-600">
+                <ErrorMessage name="password" />
+              </span>
+            </label>
+
+            {variant === 'register' && (
+              <label htmlFor="password" className="flex grow flex-col">
+                <span className="">Password Confirmation</span>
+                <Field
+                  id="passwordConfirmation"
+                  name="passwordConfirmation"
+                  type="password"
+                  className="bg-white p-2 text-black"
+                  placeholder="Password Confirmation"
+                  inputMode="password"
+                  autoComplete="new-password"
+                />
+                <span className="text-red-600">
+                  <ErrorMessage name="passwordConfirmation" />
+                </span>
+              </label>
+            )}
+          </div>
 
           <div
             className={clsx(
