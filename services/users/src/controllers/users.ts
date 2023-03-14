@@ -37,14 +37,11 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
 
   const user = await returnFullRecord(params.data.id);
   if (user === null) {
-    // if it is null, it was not found in the database
     return res.status(404).json({
       status: 'error',
       message: 'User not found',
     });
   }
-
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: user,
@@ -91,7 +88,6 @@ async function updateMembership(req: express.Request, res: express.Response) {
       message: 'Unable to create User',
     });
 
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: updatedUser,
@@ -135,7 +131,6 @@ async function updateFirstName(req: express.Request, res: express.Response) {
       message: 'Unable to create User',
     });
 
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: updatedUser,
@@ -179,7 +174,6 @@ async function updateSecondName(req: express.Request, res: express.Response) {
       message: 'Unable to create User',
     });
 
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: updatedUser,
@@ -223,7 +217,6 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
       message: 'Unable to create User',
     });
 
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: updatedUser,
@@ -256,7 +249,6 @@ async function createUser(req: express.Request, res: express.Response) {
       message: 'Unable to create user',
     });
 
-  // after passing all the above checks, the booking should be okay
   return res.status(200).send({
     status: 'OK',
     booking: newUser,
