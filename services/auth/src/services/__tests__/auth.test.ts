@@ -199,6 +199,9 @@ describe('resetPassword', () => {
 
 describe('signOutToken', () => {
   signOutToken;
+
+  // this function involves prisma transactions,
+  // and I don't know how to test and mock it yet...
   it.todo('deletes refresh token associated with the token');
   it.todo('deletes the token');
 });
