@@ -115,7 +115,7 @@ export const resetPassword = async (options: ResetPassword) => {
  */
 export const getSessionFromToken = async (token: JsonWebToken) => {
   try {
-    const decoded = TokenRegistry.verifyToken(token);
+    const decoded = await TokenRegistry.verifyToken(token);
     return decoded;
   } catch (error) {
     throw new Error('Malformed token');
