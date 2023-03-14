@@ -73,7 +73,6 @@ def webhook_received():
         purchased_item = session.line_items.data[0]
         add_purchase(session.customer, purchased_item.price.id, str(datetime.now()))
         print('Payment succeeded!')
-   
     return 'ok'
 
 # Endpoint to retreieve purchased products for a customer
