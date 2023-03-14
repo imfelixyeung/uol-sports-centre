@@ -19,6 +19,9 @@ tags:
   - name: status
     description: status microservice
 
+  - name: facility
+    description: facility microservice
+
 paths:
   /auth/login:
     post:
@@ -534,6 +537,517 @@ paths:
                   booking:
                     $ref: "#/components/schemas/Booking"
 
+  /facilities/facilities:
+    get:
+      tags:
+        - facility
+      summary: Returns all facilities
+      description: Returns all the facilities
+      operationId: get_facilities
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation retuns the array of facilities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  facilities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Facility"
+
+    post:
+      tags:
+        - facility
+      summary: Add a new facility
+      description: Add a new facility
+      operationId: add_facility
+      requestBody:
+        description: Create a new facility
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the new facility
+                capacity:
+                  type: number
+                  description: The capacity of the new facility
+            examples:
+              example:
+                summary: Example
+                value:
+                  name: "Football Pitch"
+                  capacity: 30
+      responses:
+        "200":
+          description: Successful operation returns the new facility
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facility"
+
+  /facilities/facilities/{facility_id}:
+    get:
+      tags:
+        - facility
+      summary: Returns a facility with the specified ID
+      description: Returns a facility with the specified ID
+      operationId: get_facility
+      parameters:
+        - in: path
+          name: facility_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the facility
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or whether there were any errors
+                  facility:
+                    $ref: "#/components/schemas/Facility"
+
+    put:
+      tags:
+        - facility
+      summary: Updates the facility with the specified ID
+      description: Updates the facility with the specified ID
+      operationId: update_facility
+      parameters:
+        - in: path
+          name: facility_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the updated facility
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "facility updated"
+                    description: More detail on the result of the operation
+                  facility:
+                    $ref: "#/components/schemas/Facility"
+
+    delete:
+      tags:
+        - facility
+      summary: Deletes the facility with the specified ID
+      description: Deletes the facility with the specified ID
+      operationId: delete_facility
+      parameters:
+        - in: path
+          name: facility_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns deleted facility
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "facility deleted"
+                    description: More detail on the result of the operation
+                  facility:
+                    $ref: "#/components/schemas/Facility"
+
+  /facilities/times:
+    get:
+      tags:
+        - facility
+      summary: Returns all times
+      description: Returns all times
+      operationId: get_open_times
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation retuns the array of opening times
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  opening_times:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OpenTime"
+
+    post:
+      tags:
+        - facility
+      summary: Add a new opening time
+      description: Add a new opening time
+      operationId: add_open_time
+      requestBody:
+        description: Create a new opening time
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                day:
+                  type: string
+                  description: The day the opening time takes place
+                opening_time:
+                  type: number
+                  description: The minutes after midnight the opening time takes place
+                closing_time:
+                  type: number
+                  description: The minutes after midnight the closing time takes place
+                facility_id:
+                  type: number
+                  description: The ID of the facility associated with this opening time
+            examples:
+              example:
+                summary: Example
+                value:
+                  day: "Monday"
+                  opening_time: 600
+                  closing_time: 900
+                  facility_id: 1
+      responses:
+        "200":
+          description: Successful operation returns the new opening time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenTime"
+
+  /facilities/times/{time_id}:
+    get:
+      tags:
+        - facility
+      summary: Returns the opening time with the specified ID
+      description: Returns the opening time with the specified ID
+      operationId: get_open_time
+      parameters:
+        - in: path
+          name: time_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the opening time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or whether there were any errors
+                  OpenTime:
+                    $ref: "#/components/schemas/OpenTime"
+
+    put:
+      tags:
+        - facility
+      summary: Updates the opening time with the specified ID
+      description: Updates the opening time with the specified ID
+      operationId: update_open_time
+      parameters:
+        - in: path
+          name: time_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the updated opening time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "open time updated"
+                    description: More detail on the result of the operation
+                  OpenTime:
+                    $ref: "#/components/schemas/OpenTime"
+
+    delete:
+      tags:
+        - facility
+      summary: Deletes the opening time with the specified ID
+      description: Deletes the opening time with the specified ID
+      operationId: delete_open_time
+      parameters:
+        - in: path
+          name: time_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns deleted opening time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "opening time deleted"
+                    description: More detail on the result of the operation
+                  OpenTime:
+                    $ref: "#/components/schemas/OpenTime"
+
+  /facilities/activities:
+    get:
+      tags:
+        - facility
+      summary: Returns all activities
+      description: Returns all activities
+      operationId: get_activities
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation retuns the array of activities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  activities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Activity"
+
+    post:
+      tags:
+        - facility
+      summary: Add a new activity
+      description: Add a new activity
+      operationId: add_activity
+      requestBody:
+        description: Create a new activity
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the activity
+                duration:
+                  type: number
+                  description: The length of the activity
+                capacity:
+                  type: number
+                  description: The amount of people that can take part in the activity
+                facility_id:
+                  type: number
+                  description: The ID of the facility associated with this activity
+            examples:
+              example:
+                summary: Example
+                value:
+                  name: "Football Match"
+                  duration: 90
+                  capacity: 30
+                  facility_id: 1
+      responses:
+        "200":
+          description: Successful operation returns the new activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+
+  /facilities/activities/{activity_id}:
+    get:
+      tags:
+        - facility
+      summary: Returns the activity with the specified ID
+      description: Returns the activity with the specified ID
+      operationId: get_activity
+      parameters:
+        - in: path
+          name: activity_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the activity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or whether there were any errors
+                  activity:
+                    $ref: "#/components/schemas/Activity"
+
+    put:
+      tags:
+        - facility
+      summary: Updates the activity with the specified ID
+      description: Updates the activity with the specified ID
+      operationId: update_activity
+      parameters:
+        - in: path
+          name: activity_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the updated activity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "activity updated"
+                    description: More detail on the result of the operation
+                  activity:
+                    $ref: "#/components/schemas/Activity"
+
+    delete:
+      tags:
+        - facility
+      summary: Deletes the activity with the specified ID
+      description: Deletes the activity with the specified ID
+      operationId: delete_activity
+      parameters:
+        - in: path
+          name: activity_id
+          schema:
+            type: number
+          required: true
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns deleted activity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                    description: Whether the operation was a success or not
+                  message:
+                    type: string
+                    example: "activity deleted"
+                    description: More detail on the result of the operation
+                  activity:
+                    $ref: "#/components/schemas/Activity"
+
 components:
   securitySchemes:
     JWT:
@@ -641,6 +1155,70 @@ components:
           type: string
           description: When the booking was last updated
           example: "2023-03-02T10:00:00.000Z"
+
+    Facility:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Facility ID
+          example: 1
+        name:
+          type: string
+          description: Name of facility
+          example: "Swimming Pool"
+        capacity:
+          type: number
+          description: Capacity of facility
+          example: 30
+
+    OpenTime:
+      type: object
+      properties:
+        id:
+          type: number
+          description: OpenTime ID
+          example: 1
+        day:
+          type: string
+          description: Day of the week that the time is associated with
+          example: "Monday"
+        opening_time:
+          type: number
+          description: The minutes after midnight at which a facility opens.
+          example: 600
+        closing_time:
+          type: number
+          description: The minutes after midnight at which a facility closes.
+          example: 900
+        facility_id:
+          type: number
+          description: Foreign key to facility associated with this opening.
+          example: 1
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Activity ID
+          example: 1
+        name:
+          type: string
+          description: Name of activity
+          example: "Swimming lesson"
+        duration:
+          type: number
+          description: Duration of the activity in minutes
+          example: 60
+        capacity:
+          type: number
+          description: Amount of people the activity can account for
+          example: 30
+        facility_id:
+          type: number
+          description: Foreign key to facility associated with this activity
+          example: 1
 
   requestBodies:
     Credentials:

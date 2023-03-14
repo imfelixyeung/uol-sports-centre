@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "postinstall": "prisma generate",
+    "type-check": "tsc --noEmit",
     "lint": "gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
@@ -15,7 +16,7 @@
     "db:push": "prisma db push",
     "test": "jest --ci",
     "test-watch": "jest --watchAll",
-    "ci": "pnpm lint && pnpm test && pnpm build"
+    "ci": "pnpm type-check && pnpm lint && pnpm test && pnpm build"
   },
   "keywords": [],
   "author": "",
