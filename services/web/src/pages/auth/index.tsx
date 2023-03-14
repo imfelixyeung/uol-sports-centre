@@ -31,13 +31,13 @@ const AuthPage = () => {
         ) : (
           <>
             <Link
-              href="/auth/login"
+              href={`/auth/login?redirectTo=${encodeURIComponent('/auth')}`}
               className={buttonStyles({intent: 'primary'})}
             >
               Login
             </Link>
             <Link
-              href="/auth/register"
+              href={`/auth/register?redirectTo=${encodeURIComponent('/auth')}`}
               className={buttonStyles({intent: 'primary'})}
             >
               Register
