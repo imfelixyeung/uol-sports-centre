@@ -10,13 +10,11 @@ CREATE TABLE products (
 DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
-    userID INTEGER NOT NULL,
+    orderID INTEGER PRIMARY KEY,
+    userID TEXT NOT NULL,
     priceID TEXT NOT NULL,
-    productID TEXT NOT NULL,
     purchaseDate TEXT NOT NULL, 
-    FOREIGN KEY (priceID) REFERENCES products(priceID),
-    FOREIGN KEY (productID) REFERENCES products(productID),
-    PRIMARY KEY (userID, priceID)
+    FOREIGN KEY (priceID) REFERENCES products(priceID)
 );
 
 DROP TABLE IF EXISTS customers;

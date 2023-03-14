@@ -11,7 +11,7 @@ from unittest.mock import Mock, patch
 sys.path[0] = str(Path(sys.path[0]).parent)
 
 from server import app
-from payments import createCheckout
+from payments import *
 from database import *
 
 def create_testDatabase():
@@ -72,7 +72,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   #test createCheckout()
   def test_create_checkout_success(self):
-    #initialsie Database
+    #initialise Database
     initDatabase()
 
     #Create temp new customer on stripe
@@ -89,12 +89,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Delete temp customer
     stripe.Customer.delete(newCustomer.stripe_id)
 
-  @classmethod
-  def setUpClass(self):
-    """Create a new app instance and set up a test client"""
-    self.app = app.test_client()
-    self.app.testing = True
-
   #test get_index()
   def test_get_index(self):
     """Test if the get_index() function returns a 200 status code"""
@@ -107,6 +101,25 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertIn('text/html', response.content_type)
     self.assertEqual(response.data.decode('utf-8'), html)
+  
+  #test customerPortal
+  def test_customer_portal(self):
+    #initialise Database
+    initDatabase()
+
+    #Create temp new customer on stripe
+    newCustomer = stripe.Customer.create()
+
+    #Add customer to database with '111' as ID
+    addCustomer(111, newCustomer.stripe_id)
+
+    #Assert valid portal URL response
+    session_url = getPaymentManager(111)
+    session_code = urllib.request.urlopen(session_url).getcode()
+    self.assertEqual(session_code, 200)
+
+    #Delete temp customer
+    stripe.Customer.delete(newCustomer.stripe_id)
 
   #test redirectCheckout()
   def redirectCheckout_test(self):
@@ -116,9 +129,11 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def webhookReceived_test(self):
     a = 1
 
-  #test customerPortal
-  def customerPortal_test():
-    a=1
+  @classmethod
+  def setUpClass(self):
+    """Create a new app instance and set up a test client"""
+    self.app = app.test_client()
+    self.app.testing = True
 
   @classmethod
   def tearDownClass(cls):
