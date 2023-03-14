@@ -80,7 +80,7 @@ export const api = createApi({
       query: () => '/facilities/facilities/',
     }),
 
-    getFacility: builder.query<FacilityResponse, string>({
+    getFacility: builder.query<FacilityResponse, number>({
       query: facilityId => `/facilities/facilities/${facilityId}`,
     }),
 
@@ -88,7 +88,7 @@ export const api = createApi({
       query: () => '/facilities/times/',
     }),
 
-    getFacilityTime: builder.query<FacilityTimeResponse, string>({
+    getFacilityTime: builder.query<FacilityTimeResponse, number>({
       query: timeId => `/facilities/times/${timeId}`,
     }),
 
@@ -96,7 +96,7 @@ export const api = createApi({
       query: () => '/facilities/activities/',
     }),
 
-    getFacilityActivity: builder.query<FacilityActivityResponse, string>({
+    getFacilityActivity: builder.query<FacilityActivityResponse, number>({
       query: activityId => `/facilities/activities/${activityId}`,
     }),
   }),
