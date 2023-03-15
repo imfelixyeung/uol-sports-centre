@@ -286,6 +286,8 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to view"
+        schema:
+          type: string
         required: true
         type: "string"
 
@@ -308,11 +310,15 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "firstName"
         in: "query"
         description: "First name of user to update"
+        schema:
+          type: string
         required: true
         type: "string"
 
@@ -335,11 +341,15 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "secondName"
         in: "query"
         description: "Second name of user to update"
+        schema:
+          type: string
         required: true
         type: "string"
 
@@ -362,11 +372,15 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "paymentID"
         in: "query"
         description: "Payment ID of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
 
@@ -389,11 +403,15 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "membership"
         in: "query"
         description: "Membership of user to update"
+        schema:
+          type: integer
         required: true
         type: "string"
 
@@ -412,11 +430,15 @@ paths:
       - name: "id"
         in: "query"
         description: "ID of user to view"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "firstName"
         in: "query"
         description: "First name of user to view"
+        schema:
+          type: integer
         required: true
         type: "string"
       - name: "secondName"
