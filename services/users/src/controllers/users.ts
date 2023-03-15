@@ -49,11 +49,6 @@ async function updateMembership(req: express.Request, res: express.Response) {
   // we need to create a valid UserDBA object
   // we need to pass that object to the editMembership function
   const updateUserSchema = z.object({
-    id: z.number().optional(),
-    accountID: z.number().optional(),
-    paymentID: z.number().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
     membership: z.string(),
   });
 
@@ -95,12 +90,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
 
 async function updateFirstName(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
-    id: z.number().optional(),
-    accountID: z.number().optional(),
-    paymentID: z.number().optional(),
     firstName: z.string(),
-    lastName: z.string().optional(),
-    membership: z.string().optional(),
   });
 
   const updateUserParamsSchema = z.object({
@@ -142,12 +132,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
 
 async function updateSecondName(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
-    id: z.number().optional(),
-    accountID: z.number().optional(),
-    paymentID: z.number().optional(),
-    firstName: z.string().optional(),
     lastName: z.string(),
-    membership: z.string().optional(),
   });
 
   const updateUserParamsSchema = z.object({
@@ -188,12 +173,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
 
 async function updatePaymentID(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
-    id: z.number().optional(),
-    accountID: z.number().optional(),
     paymentID: z.number(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    membership: z.string().optional(),
   });
 
   const updateUserParamsSchema = z.object({
