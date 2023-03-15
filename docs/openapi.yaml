@@ -287,9 +287,8 @@ paths:
         in: "query"
         description: "ID of user to view"
         schema:
-          type: string
+          type: integer
         required: true
-        type: "string"
 
   /users/updateFirstName:
     put:
@@ -313,14 +312,12 @@ paths:
         schema:
           type: integer
         required: true
-        type: "string"
       - name: "firstName"
         in: "query"
         description: "First name of user to update"
         schema:
           type: string
         required: true
-        type: "string"
 
   /users/updateSecondName:
     put:
@@ -344,14 +341,12 @@ paths:
         schema:
           type: integer
         required: true
-        type: "string"
       - name: "secondName"
         in: "query"
         description: "Second name of user to update"
         schema:
           type: string
         required: true
-        type: "string"
 
   /users/updatePaymentID:
     put:
@@ -375,14 +370,12 @@ paths:
         schema:
           type: integer
         required: true
-        type: "string"
       - name: "paymentID"
         in: "query"
         description: "Payment ID of user to update"
         schema:
           type: integer
         required: true
-        type: "string"
 
   /users/updateMembership:
     put:
@@ -406,14 +399,12 @@ paths:
         schema:
           type: integer
         required: true
-        type: "string"
       - name: "membership"
         in: "query"
         description: "Membership of user to update"
         schema:
-          type: integer
+          type: string
         required: true
-        type: "string"
 
   /users/testing:
     get:
@@ -433,29 +424,30 @@ paths:
         schema:
           type: integer
         required: true
-        type: "string"
       - name: "firstName"
         in: "query"
         description: "First name of user to view"
         schema:
-          type: integer
+          type: string
         required: true
-        type: "string"
       - name: "secondName"
         in: "query"
         description: "Second name of user to view"
         required: true
-        type: "string"
+        schema:
+          type: string
       - name: "paymentID"
         in: "query"
         description: "Payment ID of user to view"
         required: true
-        type: "string"
+        schema:
+          type: string
       - name: "membership"
         in: "query"
         description: "Membership of user to view"
         required: true
-        type: "string"
+        schema:
+          type: string
 
   /users/createUser:
     post:
@@ -477,27 +469,32 @@ paths:
         in: "query"
         description: "ID of user to create"
         required: true
-        type: "string"
+        schema:
+          type: integer
       - name: "firstName"
         in: "query"
         description: "First name of user to create"
         required: true
-        type: "string"
+        schema:
+          type: string
       - name: "secondName"
         in: "query"
         description: "Second name of user to create"
         required: true
-        type: "string"
+        schema:
+          type: string
       - name: "paymentID"
         in: "query"
         description: "Payment ID of user to create"
         required: true
-        type: "string"
+        schema:
+          type: string
       - name: "membership"
         in: "query"
         description: "Membership of user to create"
         required: true
-        type: "string"
+        schema:
+          type: string
 
   /users/deleteUser:
     delete:
@@ -519,7 +516,8 @@ paths:
         in: "query"
         description: "ID of user to delete"
         required: true
-        type: "string"
+        schema:
+          type: string
 
   /booking/bookings:
     get:
