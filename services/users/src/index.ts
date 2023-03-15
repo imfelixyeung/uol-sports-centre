@@ -5,7 +5,7 @@ import userRouter from './routers/users';
 const app = express();
 
 app.use('/health', healthRouter);
-app.get('/testing', userRouter);
+app.get('/', userRouter);
 
 app.listen(env.PORT, env.HOST, () => {
   console.log(`Listening on ${env.HOST}:${env.PORT}`);

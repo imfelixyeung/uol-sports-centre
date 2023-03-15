@@ -3,7 +3,7 @@ import usersControllers from '../controllers/users';
 
 const userRouter: Router = Router();
 
-userRouter.get('/testing', usersControllers.testing);
+userRouter.get('/testing', usersControllers.demoHandler);
 userRouter.get('/viewFullRecord', usersControllers.viewFullRecord);
 userRouter.put('/updateFirstName', usersControllers.updateFirstName);
 userRouter.put('/updateSecondName', usersControllers.updateSecondName);

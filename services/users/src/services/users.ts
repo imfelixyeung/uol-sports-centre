@@ -21,10 +21,6 @@ export async function editPaymentID(userData: EditUserDBA) {
   return await UserDBA.editUser(userData);
 }
 
-export async function processData(data: String) {
-  return data;
-}
-
 export function seedDatabase(): undefined {
   return undefined;
 }

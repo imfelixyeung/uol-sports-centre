@@ -1,4 +1,3 @@
-import {Request, Response} from 'express';
 import express from 'express';
 import {z} from 'zod';
 import {
@@ -8,17 +7,14 @@ import {
   editMembership,
   editPaymentID,
   editSecondName,
-  processData,
   returnFullRecord,
 } from '../services/users';
 import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
 
-async function testing(req: express.Request, res: express.Response) {
-  const finishedData: String = await processData(req.query.trtr as string);
-  const otherData: String = 'A STRING';
+async function demoHandler(req: express.Request, res: express.Response) {
+  const demoData = 'THIS IS A DEMO';
   return res.json({
-    data: finishedData,
-    data2: otherData,
+    data: demoData,
   });
 }
 
@@ -79,19 +75,22 @@ async function updateMembership(req: express.Request, res: express.Response) {
       error: params.error,
     });
 
-  const userData: EditUserDBA = {id: params.data.id, ...body.data};
-  const updatedUser = await editMembership(userData);
-
-  if (updatedUser === null)
+  const userData: EditUserDBA = {
+    id: params.data.id,
+    membership: body.data.membership,
+  };
+  try {
+    const updatedUser = await editMembership(userData);
+    return res.status(200).send({
+      status: 'OK',
+      booking: updatedUser,
+    });
+  } catch (err) {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create User',
     });
-
-  return res.status(200).send({
-    status: 'OK',
-    booking: updatedUser,
-  });
+  }
 }
 
 async function updateFirstName(req: express.Request, res: express.Response) {
@@ -122,19 +121,23 @@ async function updateFirstName(req: express.Request, res: express.Response) {
       error: params.error,
     });
 
-  const userData: EditUserDBA = {id: params.data.id, ...body.data};
-  const updatedUser = await editFirstName(userData);
+  const userData: EditUserDBA = {
+    id: params.data.id,
+    firstName: body.data.firstName,
+  };
 
-  if (updatedUser === null)
+  try {
+    const updatedUser = await editFirstName(userData);
+    return res.status(200).send({
+      status: 'OK',
+      booking: updatedUser,
+    });
+  } catch (err) {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create User',
     });
-
-  return res.status(200).send({
-    status: 'OK',
-    booking: updatedUser,
-  });
+  }
 }
 
 async function updateSecondName(req: express.Request, res: express.Response) {
@@ -165,19 +168,22 @@ async function updateSecondName(req: express.Request, res: express.Response) {
       error: params.error,
     });
 
-  const userData: EditUserDBA = {id: params.data.id, ...body.data};
-  const updatedUser = await editSecondName(userData);
-
-  if (updatedUser === null)
+  const userData: EditUserDBA = {
+    id: params.data.id,
+    lastName: body.data.lastName,
+  };
+  try {
+    const updatedUser = await editSecondName(userData);
+    return res.status(200).send({
+      status: 'OK',
+      booking: updatedUser,
+    });
+  } catch (err) {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create User',
     });
-
-  return res.status(200).send({
-    status: 'OK',
-    booking: updatedUser,
-  });
+  }
 }
 
 async function updatePaymentID(req: express.Request, res: express.Response) {
@@ -208,19 +214,22 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
       error: params.error,
     });
 
-  const userData: EditUserDBA = {id: params.data.id, ...body.data};
-  const updatedUser = await editPaymentID(userData);
-
-  if (updatedUser === null)
+  const userData: EditUserDBA = {
+    id: params.data.id,
+    paymentID: body.data.paymentID,
+  };
+  try {
+    const updatedUser = await editPaymentID(userData);
+    return res.status(200).send({
+      status: 'OK',
+      booking: updatedUser,
+    });
+  } catch (err) {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create User',
     });
-
-  return res.status(200).send({
-    status: 'OK',
-    booking: updatedUser,
-  });
+  }
 }
 
 async function createUser(req: express.Request, res: express.Response) {
@@ -241,18 +250,19 @@ async function createUser(req: express.Request, res: express.Response) {
     });
 
   const userData: CreateUserDBA = body.data;
-  const newUser = await createNewUser(userData);
 
-  if (newUser === null)
+  try {
+    const newUser = await createNewUser(userData);
+    return res.status(200).send({
+      status: 'OK',
+      booking: newUser,
+    });
+  } catch (err) {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create user',
     });
-
-  return res.status(200).send({
-    status: 'OK',
-    booking: newUser,
-  });
+  }
 }
 
 async function deleteUser(req: express.Request, res: express.Response) {
@@ -267,15 +277,22 @@ async function deleteUser(req: express.Request, res: express.Response) {
       error: params.error,
     });
 
-  return res.status(200).send({
-    status: 'OK',
-    message: 'Deleted booking',
-    booking: await deleteExistingUser(params.data.id),
-  });
+  try {
+    return res.status(200).send({
+      status: 'OK',
+      message: 'Deleted booking',
+      booking: await deleteExistingUser(params.data.id),
+    });
+  } catch (err) {
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to delete user',
+    });
+  }
 }
 
 const usersControllers = {
-  testing,
+  demoHandler,
   viewFullRecord,
   updateFirstName,
   updateSecondName,
