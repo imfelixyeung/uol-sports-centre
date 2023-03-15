@@ -55,7 +55,7 @@ const Testimonials = () => {
       <Typography.h2 styledAs="h1" uppercase>
         {'/// Testimonials'}
       </Typography.h2>
-      <ScrollArea>
+      <ScrollArea showControls alwaysShowScrollbar={false}>
         <div className="flex gap-6 pb-3">
           {testimonials.map((testimonial, index) => (
             <TestimonialCard testimonial={testimonial} key={index} />
