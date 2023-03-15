@@ -29,11 +29,11 @@ export async function editFirstName(userData: EditUserDBA) {
   }
 }
 
-export async function editSecondName(userData: EditUserDBA) {
+export async function editSurname(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    return error('Error editing second name');
+    return error('Error editing Surname name');
   }
 }
 
