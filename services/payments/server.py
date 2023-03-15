@@ -10,7 +10,7 @@ from database import add_product
 from database import get_purchases
 from database import add_purchase
 
-from payments import make_a_purchase
+from payments import make_a_purchase_subscription
 from payments import get_payment_manager
 
 from dotenv import load_dotenv
@@ -34,20 +34,23 @@ card = {
     "cvc": "123"
 }
 
+
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
     init_database()
     add_customer(467468, stripe.Customer.create().stripe_id)
-    add_product("subscription-test",
-                "prod_NUNbPMJPMIEvWk", "15", "subscription")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                "subscription")
+    #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     return render_template("index.html")
 
 
 @app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():
     """It redicrects the checkout"""
-    return redirect(make_a_purchase(467468, "subscription-test"), code=303)
+    products = ["subscription-test"]
+    return make_a_purchase_subscription(467468, products)
 
 
 @app.route("/webhook", methods=["POST"])
