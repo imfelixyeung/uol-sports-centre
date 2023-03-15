@@ -40,7 +40,7 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
   }
   return res.status(200).send({
     status: 'OK',
-    booking: user,
+    user: user,
   });
 }
 
@@ -83,7 +83,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
     const updatedUser = await editMembership(userData);
     return res.status(200).send({
       status: 'OK',
-      booking: updatedUser,
+      user: updatedUser,
     });
   } catch (err) {
     return res.status(500).send({
@@ -130,7 +130,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
     const updatedUser = await editFirstName(userData);
     return res.status(200).send({
       status: 'OK',
-      booking: updatedUser,
+      user: updatedUser,
     });
   } catch (err) {
     return res.status(500).send({
@@ -176,7 +176,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
     const updatedUser = await editSecondName(userData);
     return res.status(200).send({
       status: 'OK',
-      booking: updatedUser,
+      user: updatedUser,
     });
   } catch (err) {
     return res.status(500).send({
@@ -222,7 +222,7 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
     const updatedUser = await editPaymentID(userData);
     return res.status(200).send({
       status: 'OK',
-      booking: updatedUser,
+      user: updatedUser,
     });
   } catch (err) {
     return res.status(500).send({
@@ -255,7 +255,7 @@ async function createUser(req: express.Request, res: express.Response) {
     const newUser = await createNewUser(userData);
     return res.status(200).send({
       status: 'OK',
-      booking: newUser,
+      user: newUser,
     });
   } catch (err) {
     return res.status(500).send({
@@ -280,8 +280,8 @@ async function deleteUser(req: express.Request, res: express.Response) {
   try {
     return res.status(200).send({
       status: 'OK',
-      message: 'Deleted booking',
-      booking: await deleteExistingUser(params.data.id),
+      message: 'Deleted user',
+      user: await deleteExistingUser(params.data.id),
     });
   } catch (err) {
     return res.status(500).send({

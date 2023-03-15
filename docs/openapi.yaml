@@ -261,6 +261,7 @@ paths:
       tags:
         - users
       description: "Returns the health of the users service"
+      summary: "Returns the health of the users service"
 
       responses:
         "200":
@@ -275,9 +276,11 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/UpdatedUser"
+          $ref: "#/components/responses/UserReturned"
         "500":
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -297,7 +300,9 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
         "500":
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -322,7 +327,9 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
         "500":
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -347,7 +354,9 @@ paths:
         "200":
           $ref: "#/components/responses/UpdatedUser"
         "500":
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -373,6 +382,8 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
         "500":
           $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -433,9 +444,11 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/UpdatedUser"
+          $ref: "#/components/responses/UserCreated"
         "500":
           $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -473,9 +486,11 @@ paths:
 
       responses:
         "200":
-          $ref: "#/components/responses/UpdatedUser"
+          $ref: "#/components/responses/UserDeleted"
         "500":
           $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
     parameters:
       - name: "id"
@@ -507,7 +522,7 @@ paths:
           example: 1
       responses:
         "200":
-          description: Successful operation retuns the array of bookings
+          description: Successful operation returns the array of bookings
           content:
             application/json:
               schema:
@@ -1501,3 +1516,86 @@ components:
                 enum:
                   - "OK"
                   - "ERROR"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    UserCreated:
+      description: User created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+
+    UserDeleted:
+      description: User deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+
+    UserReturned:
+      description: User returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+              data:
+                $ref: "#/components/schemas/User"
