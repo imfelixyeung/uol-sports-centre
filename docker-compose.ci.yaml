@@ -22,6 +22,7 @@ services:
       target: ci
     environment:
       - STRIPE_API=${STRIPE_API}
+      - APP_PORT=${APP_PORT}
 
   management:
     build:

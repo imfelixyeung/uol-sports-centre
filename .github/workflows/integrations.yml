@@ -94,6 +94,7 @@ jobs:
         run: |
           touch .env.ci
           echo STRIPE_API=${{ secrets.STRIPE_API_KEY_TEST }} >> .env.ci
+          echo APP_PORT=${{ secrets.APP_PORT }} >> .env.ci
 
       - name: Run ci tests in docker
         run: make ci-payments
