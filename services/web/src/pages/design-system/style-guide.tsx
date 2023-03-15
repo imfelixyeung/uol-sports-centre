@@ -82,7 +82,7 @@ const StyleGuidePage = () => {
     <>
       <Seo title="Style Guide" />
       <div className="grow bg-white text-black">
-        <div className="container my-16">
+        <div className="container py-16">
           <Typography.h1 styledAs="display1" uppercase>
             Style Guide
           </Typography.h1>
@@ -119,7 +119,10 @@ const StyleGuidePage = () => {
               {colours.map((colour, index) => (
                 <div
                   key={index}
-                  className={clsx('grow p-6 text-center', colour.class)}
+                  className={clsx(
+                    'grow p-6 text-center shadow-card',
+                    colour.class
+                  )}
                 >
                   <Typography.p styledAs="h1" uppercase>
                     {colour.name}
@@ -143,7 +146,7 @@ const TypographyShowcase: FC<{
 }> = ({typography, variant}) => (
   <div
     className={clsx(
-      'space-y-3 p-3',
+      'space-y-3 p-3 shadow-card',
       variant === 'light' ? 'bg-white text-black' : 'bg-black text-white'
     )}
   >
