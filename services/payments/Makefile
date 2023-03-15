@@ -15,10 +15,13 @@ dev:
 test:
 	python tests/test_payments.py
 
+type-check:
+	mypy server.py
+
 format-check:
 	yapf --recursive --diff --verbose --style google .
 
 lint:
 	pylint --rc-file pylintrc ./*.py
 
-ci: format-check lint test
+ci: type-check format-check lint test
