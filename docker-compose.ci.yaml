@@ -11,6 +11,11 @@ services:
       context: ./services/status
       target: ci
 
+  users:
+    build:
+      context: ./services/users
+      target: ci
+
   docs:
     build:
       context: ./docs

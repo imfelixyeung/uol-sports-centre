@@ -14,6 +14,11 @@ RUN pnpm install
 COPY . .
 
 
+# CI target
+FROM base as ci
+CMD [ "pnpm", "ci" ]
+
+
 # Development target
 FROM base as dev
 
