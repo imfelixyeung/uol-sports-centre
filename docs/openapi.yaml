@@ -319,12 +319,12 @@ paths:
           type: string
         required: true
 
-  /users/updateSecondName:
+  /users/updateSurname:
     put:
       tags:
         - users
-      description: "Updates the second name of a specified user"
-      summary: "Updates second name of a user"
+      description: "Updates the surname of a specified user"
+      summary: "Updates surname of a user"
 
       responses:
         "200":
@@ -341,9 +341,9 @@ paths:
         schema:
           type: integer
         required: true
-      - name: "secondName"
+      - name: "surname"
         in: "query"
-        description: "Second name of user to update"
+        description: "Surname of user to update"
         schema:
           type: string
         required: true
@@ -430,9 +430,9 @@ paths:
         schema:
           type: string
         required: true
-      - name: "secondName"
+      - name: "surname"
         in: "query"
-        description: "Second name of user to view"
+        description: "Surname of user to view"
         required: true
         schema:
           type: string
@@ -477,9 +477,9 @@ paths:
         required: true
         schema:
           type: string
-      - name: "secondName"
+      - name: "surname"
         in: "query"
-        description: "Second name of user to create"
+        description: "Surname of user to create"
         required: true
         schema:
           type: string

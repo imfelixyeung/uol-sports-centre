@@ -6,7 +6,7 @@ import {
   editFirstName,
   editMembership,
   editPaymentID,
-  editSecondName,
+  editSurname,
   returnFullRecord,
 } from '../services/users';
 import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
@@ -130,7 +130,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   }
 }
 
-async function updateSecondName(req: express.Request, res: express.Response) {
+async function updateSurname(req: express.Request, res: express.Response) {
   const updateUserSchema = z.object({
     lastName: z.string(),
   });
@@ -158,7 +158,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
     lastName: body.data.lastName,
   };
   try {
-    const updatedUser = await editSecondName(userData);
+    const updatedUser = await editSurname(userData);
     return res.status(200).send({
       status: 'OK',
       user: updatedUser,
@@ -166,7 +166,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to update second name of user',
+      message: 'Unable to update surname of user',
     });
   }
 }
@@ -275,7 +275,7 @@ const usersControllers = {
   demoHandler,
   viewFullRecord,
   updateFirstName,
-  updateSecondName,
+  updateSurname,
   updatePaymentID,
   updateMembership,
   deleteUser,
