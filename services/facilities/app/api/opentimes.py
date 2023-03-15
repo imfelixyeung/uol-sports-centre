@@ -76,6 +76,13 @@ class OpenTimesRouter:
     # Get data from body of post request
     data = request.json
 
+    try:
+      opening_time = int(data.get("opening_time"))
+      closing_time = int(data.get("closing_time"))
+    except ValueError:
+      # Catch value error and return a failed response code before continuing
+      return {"status": "Failed", "message": "Invalid input"}, 400
+
     # Check that the supplied foreign key existss
     if not Facility.query.get(int(data.get("facility_id"))):
       # Catch value error and return a failed response code before continuing
@@ -83,8 +90,8 @@ class OpenTimesRouter:
 
     # Add the supplied object to the data base
     addition = OpenTime(day=data.get("day"),
-                        opening_time=data.get("opening_time"),
-                        closing_time=data.get("closing_time"),
+                        opening_time=opening_time,
+                        closing_time=closing_time,
                         facility_id=data.get("facility_id"))
     if not addition:
       return {"status": "Failed", "message": "Invalid input"}, 400
