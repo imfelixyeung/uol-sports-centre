@@ -1,24 +1,48 @@
 import UserDBA from '../services/dba';
 import {CreateUserDBA, EditUserDBA} from './dbRequests';
 
+export async function error(errorMessage: string) {
+  return {error: errorMessage};
+}
+
 export async function editMembership(userData: EditUserDBA) {
-  return await UserDBA.editUser(userData);
+  try {
+    return await UserDBA.editUser(userData);
+  } catch (err) {
+    return error('Error editing membership');
+  }
 }
 
 export async function returnFullRecord(userID: number) {
-  return await UserDBA.getUser(userID);
+  try {
+    return await UserDBA.getUser(userID);
+  } catch (err) {
+    return error('Error getting user');
+  }
 }
 
 export async function editFirstName(userData: EditUserDBA) {
-  return await UserDBA.editUser(userData);
+  try {
+    return await UserDBA.editUser(userData);
+  } catch (err) {
+    return error('Error editing first name');
+  }
 }
 
 export async function editSecondName(userData: EditUserDBA) {
-  return await UserDBA.editUser(userData);
+  try {
+    return await UserDBA.editUser(userData);
+  } catch (err) {
+    return error('Error editing second name');
+  }
 }
 
 export async function editPaymentID(userData: EditUserDBA) {
-  return await UserDBA.editUser(userData);
+  try {
+    return await UserDBA.editUser(userData);
+  } catch (err) {
+    return error('Error editing payment ID');
+  }
 }
 
 export function seedDatabase(): undefined {
@@ -26,9 +50,17 @@ export function seedDatabase(): undefined {
 }
 
 export async function createNewUser(userData: CreateUserDBA) {
-  return await UserDBA.createUser(userData);
+  try {
+    return await UserDBA.createUser(userData);
+  } catch (err) {
+    return error('Error creating user');
+  }
 }
 
 export async function deleteExistingUser(userID: number) {
-  return await UserDBA.deleteUser(userID);
+  try {
+    return await UserDBA.deleteUser(userID);
+  } catch (err) {
+    return error('Error deleting user');
+  }
 }
