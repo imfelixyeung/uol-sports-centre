@@ -15,7 +15,9 @@ load_dotenv(os.path.join(dirtoenv, ".env"))
 LOCAL_DOMAIN = f"http://localhost:{env.APP_PORT}"
 
 
-def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):
+def create_checkout(stripe_id: str,
+                    product_name: str,
+                    success_url=LOCAL_DOMAIN):
     "Create checkout session for purchasing bookings/subscriptions using Stripe"
     product = get_product(product_name)
 
@@ -38,7 +40,7 @@ def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):
     return checkout_session.url
 
 
-def create_portal(stripe_id, return_url=LOCAL_DOMAIN):
+def create_portal(stripe_id: str, return_url=LOCAL_DOMAIN):
     """Generate a Stripe customer portal for the given user"""
     customer_portal_session = stripe.billing_portal.Session.create(
         customer=stripe_id, return_url=return_url)

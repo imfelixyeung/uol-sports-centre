@@ -1,5 +1,7 @@
 """Module that interacts with the database of payments"""
 
+from typing import Optional
+
 import sqlite3
 import os
 
@@ -8,7 +10,7 @@ dirtopayments = os.path.dirname(os.path.abspath(__file__))
 sqlPath = os.path.join(dirtopayments, "paymentSchema.sql")
 
 
-def init_database():
+def init_database() -> None:
     """Initialise database from schema"""
     connection = sqlite3.connect("database.db")
     with open(sqlPath, encoding="utf-8") as schema:
@@ -16,19 +18,19 @@ def init_database():
     connection.close()
 
 
-def add_product(name, product_id, price, product_type):
+def add_product(name: str, product_id: str, price: str, product_type: str):
     """Adds a new product to the database"""
     connection = sqlite3.connect("database.db")
     cur = connection.cursor()
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
                 (product_id, name, price, product_type))
-    product_id = cur.lastrowid
+    last_row_id = cur.lastrowid
     connection.commit()
     connection.close()
-    return product_id
+    return last_row_id
 
 
-def update_price(product_name, new_price):
+def update_price(product_name: str, new_price: str):
     """Updates the price of a given product to a given price"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -38,7 +40,7 @@ def update_price(product_name, new_price):
     con.close()
 
 
-def update_expiry(stripe_user, product_id, expiry_date):
+def update_expiry(stripe_user: str, product_id: str, expiry_date: str):
     '''Updates the expiry date of a subscription'''
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -52,7 +54,7 @@ def update_expiry(stripe_user, product_id, expiry_date):
     con.close()
 
 
-def add_customer(user_id, stripe_id):
+def add_customer(user_id: int, stripe_id: str):
     """Function to add a new customer to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -61,7 +63,10 @@ def add_customer(user_id, stripe_id):
     con.close()
 
 
-def add_purchase(customer_id, product_id, purchase_date, expiry=None):
+def add_purchase(customer_id: str,
+                 product_id: str,
+                 purchase_date: str,
+                 expiry: Optional[str] = None):
     """Function that adds a new purchase to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -77,7 +82,7 @@ def add_purchase(customer_id, product_id, purchase_date, expiry=None):
     con.close()
 
 
-def get_user(user_id):
+def get_user(user_id: int):
     """Function that finds the user in the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -87,7 +92,7 @@ def get_user(user_id):
     return find_user
 
 
-def get_product(product_name):
+def get_product(product_name: str):
     """Function to get the product by its product name from the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -98,7 +103,7 @@ def get_product(product_name):
     return product
 
 
-def get_purchases(user_id):
+def get_purchases(user_id: int):
     """Function to get a; the purchases for a specific user"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()

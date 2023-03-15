@@ -15,7 +15,9 @@ from database import add_purchase
 from database import update_price
 
 
-def make_purchasable(product_name, product_price, product_type="payment"):
+def make_purchasable(product_name: str,
+                     product_price: str,
+                     product_type="payment"):
     '''Make a chosen product purchasable through adding to stripe and DB'''
 
     #Adding product to stripe
@@ -27,7 +29,10 @@ def make_purchasable(product_name, product_price, product_type="payment"):
     add_product(product_name, product.stripe_id, product_price, product_type)
 
 
-def make_a_purchase(user_id, products, payment_mode, success_url=LOCAL_DOMAIN):
+def make_a_purchase(user_id: int,
+                    products: list[str],
+                    payment_mode: str,
+                    success_url=LOCAL_DOMAIN):
     '''redirects user to stripe checkout for chosen subscription'''
     stripe_user = get_user(user_id)
 
@@ -51,7 +56,7 @@ def make_a_purchase(user_id, products, payment_mode, success_url=LOCAL_DOMAIN):
         line_items.append(line_item)
 
         # Creates a new row in the purchased products table
-        add_purchase(stripe_user[0], product_id, datetime.now())
+        add_purchase(stripe_user[0], product_id, str(datetime.now()))
 
     session = stripe.checkout.Session.create(
         customer=stripe_user[1],
@@ -65,7 +70,7 @@ def make_a_purchase(user_id, products, payment_mode, success_url=LOCAL_DOMAIN):
     return redirect(session.url, code=303)
 
 
-def change_price(new_price, product_name):
+def change_price(new_price: str, product_name: str):
     '''Changes price of specified product for management microservice'''
     product = get_product(product_name)
 
@@ -80,7 +85,7 @@ def change_price(new_price, product_name):
     update_price(product_name, new_price)
 
 
-def get_payment_manager(user_id):
+def get_payment_manager(user_id: int):
     '''Returns portal session for payments and subscription'''
     # Get the Stripe customer ID for the current user from the database
     stripe_customer_id = get_user(user_id)[1]

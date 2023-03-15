@@ -105,7 +105,7 @@ def webhook_received():
 
 # Endpoint to retreieve purchased products for a customer
 @app.route("/purchased-products/<int:userID>", methods=["GET"])
-def get_purchased_products(user_id):
+def get_purchased_products(user_id: int):
     """Retrieve all purchased products for a given user"""
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
