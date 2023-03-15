@@ -75,7 +75,7 @@ const colours = [
   },
 ];
 
-// type ColourShowcaseData = (typeof colours)[number];
+type ColourShowcaseData = (typeof colours)[number];
 
 const StyleGuidePage = () => {
   return (
@@ -115,22 +115,9 @@ const StyleGuidePage = () => {
             <Typography.h2 styledAs="display2" uppercase>
               Colours
             </Typography.h2>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {colours.map((colour, index) => (
-                <div
-                  key={index}
-                  className={clsx(
-                    'grow p-6 text-center shadow-card',
-                    colour.class
-                  )}
-                >
-                  <Typography.p styledAs="h1" uppercase>
-                    {colour.name}
-                  </Typography.p>
-                  <Typography.p styledAs="h2" uppercase>
-                    {colour.hex}
-                  </Typography.p>
-                </div>
+                <ColourShowcase key={index} colour={colour} />
               ))}
             </div>
           </section>
@@ -139,6 +126,17 @@ const StyleGuidePage = () => {
     </>
   );
 };
+
+const ColourShowcase: FC<{colour: ColourShowcaseData}> = ({colour}) => (
+  <div className={clsx('grow p-6 text-center shadow-card', colour.class)}>
+    <Typography.p styledAs="h1" uppercase>
+      {colour.name}
+    </Typography.p>
+    <Typography.p styledAs="h2" uppercase>
+      {colour.hex}
+    </Typography.p>
+  </div>
+);
 
 const TypographyShowcase: FC<{
   typography: TypographyShowcaseData;
