@@ -1,16 +1,10 @@
 """Module that presents interface to the payment microservice"""
-import os
 from datetime import datetime
 
 from database import get_product
 
 import stripe
-from dotenv import load_dotenv
 import env
-
-# Get absolute path of directory where .env is
-dirtoenv = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(dirtoenv, ".env"))
 
 LOCAL_DOMAIN = f"http://localhost:{env.APP_PORT}"
 
