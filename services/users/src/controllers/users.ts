@@ -88,7 +88,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create User',
+      message: 'Unable to update membership of user',
     });
   }
 }
@@ -135,7 +135,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create User',
+      message: 'Unable to update first name of user',
     });
   }
 }
@@ -181,7 +181,7 @@ async function updateSecondName(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create User',
+      message: 'Unable to update second name of user',
     });
   }
 }
@@ -227,7 +227,7 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create User',
+      message: 'Unable to update PaymentID of user',
     });
   }
 }
@@ -260,7 +260,7 @@ async function createUser(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create user',
+      message: 'Unable to create new user',
     });
   }
 }
@@ -286,7 +286,7 @@ async function deleteUser(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to delete user',
+      message: 'Unable to delete specified user',
     });
   }
 }
