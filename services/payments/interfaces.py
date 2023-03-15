@@ -6,12 +6,13 @@ from database import get_product
 
 import stripe
 from dotenv import load_dotenv
+import env
 
 # Get absolute path of directory where .env is
 dirtoenv = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(dirtoenv, ".env"))
 
-LOCAL_DOMAIN = "http://localhost:" + str(os.getenv("APP_PORT"))
+LOCAL_DOMAIN = f"http://localhost:{env.APP_PORT}"
 
 
 def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):

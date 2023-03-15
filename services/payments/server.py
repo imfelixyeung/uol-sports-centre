@@ -1,6 +1,5 @@
 """Payments Microservice:
 Provides functionality for making payments for subscriptions"""
-import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
@@ -15,18 +14,13 @@ from database import update_expiry
 from payments import make_a_purchase
 from payments import get_payment_manager
 
-from dotenv import load_dotenv
 from flask import Flask, json, request, jsonify, redirect, render_template
+
+import env
 
 app = Flask(__name__, static_url_path="", static_folder="public")
 
-# Get absolute path of directory where .env is
-dirtoenv = os.path.dirname(os.path.abspath(__file__))
-
-# Load .env file from base directory
-load_dotenv(os.path.join(dirtoenv, ".env"))
-
-stripe.api_key = os.getenv("STRIPE_API")
+stripe.api_key = env.STRIPE_API_KEY
 
 #Creating a test card for our use
 card = {
@@ -134,4 +128,4 @@ def get_health():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=os.getenv("APP_PORT"))
+    app.run(host="0.0.0.0", port=env.APP_PORT)
