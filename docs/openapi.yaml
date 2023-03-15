@@ -573,6 +573,66 @@ paths:
                     items:
                       $ref: "#/components/schemas/Event"
 
+    post:
+      tags:
+        - booking
+      summary: Add a new event
+      description: Add a new event
+      operationId: addevent
+      requestBody:
+        description: Create a new event
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The user the event relates to
+                activityId:
+                  type: number
+                  description: The event that the event relates to
+                day:
+                  type: number
+                  description: The transaction linked with this event
+                time:
+                  type: number
+                  description: the start time of the event
+                duration:
+                  type: number
+                  description: the length of time of the event in minutes
+                type:
+                  type: string
+                  enum: ["OPEN_USE", "TEAM_EVENT", "SESSION"]
+            examples:
+              example:
+                summary: Example
+                value:
+                  name: "Event name"
+                  activityId: 1
+                  day: 1
+                  time: 480
+                  duration: 60
+                  type: "OPEN_USE"
+
+      responses:
+        "200":
+          description: Successful operation retuns the new event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  event:
+                    $ref: "#/components/schemas/Event"
+        "405":
+          description: Invalid input
+
   /facilities/facilities:
     get:
       tags:
