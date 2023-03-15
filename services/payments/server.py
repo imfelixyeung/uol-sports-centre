@@ -12,6 +12,7 @@ from database import add_purchase
 
 from payments import make_a_purchase
 from payments import get_payment_manager
+from payments import change_price
 
 from dotenv import load_dotenv
 from flask import Flask, json, request, jsonify, redirect, render_template
@@ -35,13 +36,17 @@ card = {
 }
 
 
+def get_test_subscrip_price():
+    return stripe.Product.retrieve("prod_NUNbPMJPMIEvWk").default_price
+
+
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
     init_database()
     add_customer(467468, stripe.Customer.create().stripe_id)
-    add_product("subscription-test", "price_1MjOq1K4xeIGYs5lvqNSB9l5", "15",
-                "subscription")
+    add_product("subscription-test", get_test_subscrip_price(),
+                "prod_NUNbPMJPMIEvWk", "15", "subscription")
     return render_template("index.html")
 
 

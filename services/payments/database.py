@@ -16,12 +16,12 @@ def init_database():
     connection.close()
 
 
-def add_product(name, price_id, price, product_type):
+def add_product(name, price_id, product_id, price, product_type):
     """Adds a new product to the database"""
     connection = sqlite3.connect("database.db")
     cur = connection.cursor()
-    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
-                (price_id, name, price, product_type))
+    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
+                (price_id, product_id, name, price, product_type))
     price_id = cur.lastrowid
     connection.commit()
     connection.close()

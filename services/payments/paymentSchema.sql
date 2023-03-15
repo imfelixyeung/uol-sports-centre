@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS products;
 
 CREATE TABLE products (
     priceID TEXT PRIMARY KEY,
+    productID TEXT NOT NULL,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT NOT NULL
