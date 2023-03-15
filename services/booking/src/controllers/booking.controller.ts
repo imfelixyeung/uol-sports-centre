@@ -342,9 +342,32 @@ class BookingController {
    * @memberof BookingController
    */
   async bookBooking(req: express.Request, res: express.Response) {
-    return res.status(400).send({
-      status: 'error',
-      error: 'Not yet implemented',
+    const bookQuerySchema = z.object({
+      starts: timestamp,
+      event: id('event id'),
+      user: id('user id'),
+    });
+
+    const query = bookQuerySchema.safeParse(req.query);
+    if (!query.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: query.error,
+      });
+
+    const booking = await bookingService.book(query.data);
+
+    if (booking instanceof Error) {
+      return res.status(400).send({
+        status: 'error',
+        error: booking.message,
+      });
+    }
+
+    return res.status(200).send({
+      status: 'OK',
+      booking,
     });
   }
 }

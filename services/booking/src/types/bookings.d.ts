@@ -13,4 +13,5 @@ export interface BookingsFilter {
   facility?: number;
   activity?: number;
   sort?: BookingsSort;
+  event?: number;
 }

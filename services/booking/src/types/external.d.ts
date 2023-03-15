@@ -8,3 +8,5 @@ export type Activity = {
 
 // http://gateway/api/facilities/activities
 export type ActivitiesResponse = Activity[];
+
+export type ActivityResponse = Activity;

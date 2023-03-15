@@ -1,4 +1,5 @@
 import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
+import NotFoundError from '@/errors/notFound';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
@@ -120,6 +121,31 @@ class EventDAO {
       })
       .catch(err => {
         logger.error(`Error creating event ${err}`);
+        return new Error(err);
+      });
+
+    return event;
+  }
+
+  /**
+   * Gets a specific event from the database by id
+   *
+   * @memberof EventDAO
+   */
+  async getEvent(eventId: number): Promise<EventDTO | Error> {
+    logger.debug(`Getting event from database, ${eventId}`);
+
+    const event = await prisma.event
+      .findUnique({
+        where: {
+          id: eventId,
+        },
+      })
+      .then(value =>
+        value === null ? new NotFoundError(`Event ${eventId} not found`) : value
+      )
+      .catch(err => {
+        logger.error(`Error getting event ${err}`);
         return new Error(err);
       });
 

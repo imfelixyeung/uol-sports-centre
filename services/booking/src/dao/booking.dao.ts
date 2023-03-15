@@ -141,6 +141,7 @@ class BookingDAO {
           activityId: filter.activity,
         },
       }),
+      ...(filter.event && {eventId: filter.event}),
     };
 
     logger.debug(`Get bookings query: ${JSON.stringify(queryWhere)}`);

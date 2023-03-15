@@ -44,3 +44,9 @@ export interface UpdateBookingDTO {
   transactionId?: number;
   starts?: Date;
 }
+
+export interface BookBookingDTO {
+  event: number;
+  starts: number;
+  user: number;
+}

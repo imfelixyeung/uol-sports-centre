@@ -1,13 +1,14 @@
 import bookingDao from '@/dao/booking.dao';
 import eventDao from '@/dao/event.dao';
 import {
+  BookBookingDTO,
   CreateBookingDTO,
   PossibleBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
-import {ActivitiesResponse} from '@/types/external';
+import {ActivitiesResponse, ActivityResponse} from '@/types/external';
 
 /**
  * The Booking Service performs any required business logic before updating the
@@ -288,6 +289,57 @@ class BookingService {
     );
 
     return possibleBookings;
+  }
+
+  async book(bookingData: BookBookingDTO) {
+    // check that it is possible to book this booking
+
+    // get the event that relates to the prospective booking
+    const event = await eventDao.getEvent(bookingData.event);
+    if (event instanceof Error) return event;
+
+    // ensure that team events cannot be booked
+    if (event.type === 'TEAM_EVENT')
+      return new Error('Team events are not bookable');
+
+    // for both session and open_use we need to check the number of bookings
+    // with the same event id and the same start time
+    const bookings = await bookingDao.getBookings({
+      event: event.id,
+      start: bookingData.starts,
+      end: bookingData.starts,
+    });
+    if (bookings instanceof Error) return bookings;
+
+    if (event.type === 'SESSION') {
+      // check if 1 booking exists
+      if (bookings.metadata.count > 1)
+        return new Error('Unable to book session, booking already exists');
+    } else {
+      // get capacity information from facilities
+      const activity = await httpClient
+        .get<ActivityResponse>(
+          `http://gateway/api/facilities/activities/${event.activityId}`
+        )
+        .catch(err => {
+          logger.error(err);
+          return new Error(err);
+        });
+      if (activity instanceof Error) return activity;
+
+      if (bookings.metadata.count >= activity.capacity)
+        return new Error('Unable to book session, capacity is full');
+    }
+
+    // must be okay to book
+    const newBooking = await this.create({
+      eventId: bookingData.event,
+      starts: new Date(bookingData.starts),
+      transactionId: 0,
+      userId: bookingData.user,
+    });
+
+    return newBooking;
   }
 }
 
