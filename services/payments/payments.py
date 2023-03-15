@@ -27,46 +27,7 @@ def make_purchasable(product_name, product_price, product_type="payment"):
     add_product(product_name, product.stripe_id, product_price, product_type)
 
 
-def make_a_purchase_bookings(user_id, products, success_url=LOCAL_DOMAIN):
-    '''redirects user to stripe checkout for chosen bookings'''
-    stripe_user = get_user(user_id)
-
-    if len(stripe_user[1]) == 0:
-        new_customer = stripe.Customer.create(
-            #get user details from user microservice
-        )
-        add_customer(user_id, new_customer.stripe_id)
-        stripe_user = get_user(user_id)
-
-    line_items = []
-
-    for product in products:
-        # Gets the product ID and price from the products table
-        product_id = get_product(product)[0]
-        #price = get_product(product)[2]
-
-        line_item = {
-            "price": "price_1MjOq1K4xeIGYs5lvqNSB9l5",
-            "quantity": 1,
-        }
-        line_items.append(line_item)
-
-        # Creates a new row in the purchased products table
-        add_purchase(stripe_user[0], product_id, datetime.now())
-
-    session = stripe.checkout.Session.create(
-        customer=stripe_user[1],
-        payment_method_types=["card"],
-        line_items=line_items,
-        mode="payment",
-        success_url=success_url,
-        cancel_url=success_url,
-    )
-
-    return redirect(session.url, code=303)
-
-
-def make_a_purchase_subscription(user_id, products, success_url=LOCAL_DOMAIN):
+def make_a_purchase(user_id, products, payment_mode, success_url=LOCAL_DOMAIN):
     '''redirects user to stripe checkout for chosen subscription'''
     stripe_user = get_user(user_id)
 
@@ -85,7 +46,7 @@ def make_a_purchase_subscription(user_id, products, success_url=LOCAL_DOMAIN):
         #price = get_product(product)[2]
 
         line_item = {
-            "price": "price_1MjOq1K4xeIGYs5lvqNSB9l5",
+            "price": stripe.Product.retrieve(product_id).default_price,
             "quantity": 1,
         }
         line_items.append(line_item)
@@ -97,7 +58,7 @@ def make_a_purchase_subscription(user_id, products, success_url=LOCAL_DOMAIN):
         customer=stripe_user[1],
         payment_method_types=["card"],
         line_items=line_items,
-        mode="subscription",
+        mode=payment_mode,
         success_url=success_url,
         cancel_url=success_url,
     )

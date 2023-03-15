@@ -10,7 +10,7 @@ from database import add_product
 from database import get_purchases
 from database import add_purchase
 
-from payments import make_a_purchase_subscription
+from payments import make_a_purchase
 from payments import get_payment_manager
 
 from dotenv import load_dotenv
@@ -50,7 +50,8 @@ def get_index():
 def redirect_checkout():
     """It redicrects the checkout"""
     products = ["subscription-test"]
-    return make_a_purchase_subscription(467468, products)
+    payment_mode = "subscription"
+    return make_a_purchase(467468, products, payment_mode)
 
 
 @app.route("/webhook", methods=["POST"])
