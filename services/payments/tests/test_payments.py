@@ -6,7 +6,7 @@ import os
 import urllib.request
 import stripe
 
-from path import sys
+import path  # pylint: disable=unused-import
 
 from server import app
 
@@ -18,6 +18,7 @@ from database import add_product
 from database import add_customer
 
 from interfaces import create_checkout
+
 
 def create_test_database():
     """Createst the database for the tests"""
@@ -165,7 +166,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #a = 1
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls, self):
         """Create a new app instance and set up a test client"""
         self.app = app.test_client()
         self.app.testing = True

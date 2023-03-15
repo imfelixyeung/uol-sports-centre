@@ -5,6 +5,7 @@ certifi==2022.12.7
 charset-normalizer==3.0.1
 click==8.1.3
 colorama==0.4.6
+dateutil==2.8.2
 dill==0.3.6
 exceptiongroup==1.1.0
 Flask==2.2.3

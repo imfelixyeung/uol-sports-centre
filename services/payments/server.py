@@ -84,33 +84,25 @@ def webhook_received():
         transaction_time = str(datetime.now())
         expiry_time = str(datetime.now() + relativedelta(months=1))
         for purchased_item in session.line_items.data:
-            type = stripe.Product.retrieve(purchased_item.price.product).object
-            if type == "subscription":
-                add_purchase(
-                    session.customer,
-                    purchased_item.price.product,
-                    transaction_time,
-                    expiry_time
-                )
+            item_type = stripe.Product.retrieve(
+                purchased_item.price.product).object
+            if item_type == "subscription":
+                add_purchase(session.customer, purchased_item.price.product,
+                             transaction_time, expiry_time)
             else:
-                add_purchase(
-                    session.customer,
-                    purchased_item.product,
-                    transaction_time
-                )
+                add_purchase(session.customer, purchased_item.product,
+                             transaction_time)
         print("Payment succeeded!")
-    
+
     elif event_type == "invoice.paid":
         #Renews exipry of purchased subscription when paid
-        invoice = event['data']['object']
-        product = invoice['price']['product']
-        customer = invoice['customer']
+        invoice = event["data"]["object"]
+        product = invoice["price"]["product"]
+        customer = invoice["customer"]
 
-        if(stripe.Product.retrieve(product).object == "subscription"):
-            update_expiry(
-                customer, product, 
-                str(datetime.now() + relativedelta(months=1))
-            )
+        if stripe.Product.retrieve(product).object == "subscription":
+            update_expiry(customer, product,
+                          str(datetime.now() + relativedelta(months=1)))
     elif event_type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")

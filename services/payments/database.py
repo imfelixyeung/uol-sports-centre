@@ -65,7 +65,7 @@ def add_purchase(customer_id, product_id, purchase_date, expiry=None):
     """Function that adds a new purchase to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    if (expiry != None):
+    if expiry is not None:
         cur.execute(
             """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
         VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date, expiry))
