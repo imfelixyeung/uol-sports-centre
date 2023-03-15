@@ -4,15 +4,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 
-from database import init_database
-from database import add_customer
-from database import add_product
-from database import get_purchases
-from database import add_purchase
-from database import update_expiry
+from database import init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
 
-from payments import make_a_purchase
-from payments import get_payment_manager
+from payments import make_a_purchase, get_payment_manager
 
 from flask import Flask, json, request, jsonify, redirect, render_template
 

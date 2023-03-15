@@ -4,15 +4,9 @@ from datetime import datetime
 import stripe
 from flask import redirect
 
-from interfaces import create_portal
-from interfaces import LOCAL_DOMAIN
+from interfaces import create_portal, LOCAL_DOMAIN
 
-from database import add_product
-from database import get_user
-from database import get_product
-from database import add_customer
-from database import add_purchase
-from database import update_price
+from database import add_product, get_user, get_product, add_customer, add_purchase, update_price
 
 
 def make_purchasable(product_name: str,
