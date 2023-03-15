@@ -24,12 +24,12 @@ def create_checkout(stripe_id, product_name, success_url=LOCAL_DOMAIN):
 
     checkout_session = stripe.checkout.Session.create(
         success_url=success_url,
-        mode=product[4],
+        mode=product[3],
         expires_at=int(datetime.timestamp(datetime.now())) + 1800,
         customer=stripe_id,
         line_items=[
             {
-                "price": product[0],
+                "price": stripe.Product.retrieve(product[0]).default_price,
                 "quantity": 1
             },
         ],

@@ -16,16 +16,16 @@ def init_database():
     connection.close()
 
 
-def add_product(name, price_id, product_id, price, product_type):
+def add_product(name, product_id, price, product_type):
     """Adds a new product to the database"""
     connection = sqlite3.connect("database.db")
     cur = connection.cursor()
-    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
-                (price_id, product_id, name, price, product_type))
-    price_id = cur.lastrowid
+    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
+                (product_id, name, price, product_type))
+    product_id = cur.lastrowid
     connection.commit()
     connection.close()
-    return price_id
+    return product_id
 
 
 def update_price(product_name, new_price):
@@ -47,13 +47,13 @@ def add_customer(user_id, stripe_id):
     con.close()
 
 
-def add_purchase(customer_id, price_id, purchase_date):
+def add_purchase(customer_id, product_id, purchase_date):
     """Function that adds a new purchase to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
     cur.execute(
-        """INSERT INTO orders (userID, priceID, purchaseDate)
-    VALUES (?, ?, ?)""", (customer_id, price_id, purchase_date))
+        """INSERT INTO orders (userID, productID, purchaseDate)
+    VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date))
     con.commit()
     con.close()
 
@@ -85,6 +85,6 @@ def get_purchases(user_id):
     cur = con.cursor()
     purchased_products = cur.execute(
         """SELECT * FROM orders
-    JOIN products ON orders.priceID = products.priceID
+    JOIN products ON orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()
     return purchased_products

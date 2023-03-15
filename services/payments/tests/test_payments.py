@@ -19,15 +19,6 @@ from database import add_customer
 
 from interfaces import create_checkout
 
-
-def get_test_product_price():
-    return stripe.Product.retrieve("prod_NUNazbUQcwZQaU").default_price
-
-
-def get_test_subscrip_price():
-    return stripe.Product.retrieve("prod_NUNbPMJPMIEvWk").default_price
-
-
 def create_test_database():
     """Createst the database for the tests"""
     connection = sqlite3.connect("database.db")
@@ -65,20 +56,19 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the databse
-        add_product("product-test", get_test_product_price(),
-                    "prod_NUNazbUQcwZQaU", "5", "payment")
-        add_product("subscription-test", get_test_subscrip_price(),
-                    "prod_NUNbPMJPMIEvWk", "15", "subscription")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                    "subscription")
         connection = sqlite3.connect("database.db")
         cur = connection.cursor()
 
         #Fetch products from database
         test_1 = cur.execute(
             """SELECT productName FROM products 
-        WHERE priceId LIKE ?""", [get_test_product_price()]).fetchall()
+        WHERE productId LIKE ?""", ["prod_NUNazbUQcwZQaU"]).fetchall()
         test_2 = cur.execute(
             """SELECT productName FROM products
-        WHERE priceId LIKE ?""", [get_test_subscrip_price()]).fetchall()
+        WHERE productId LIKE ?""", ["prod_NUNbPMJPMIEvWk"]).fetchall()
         connection.close()
 
         #Assert correct products
@@ -91,8 +81,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the databse
-        add_product("product-test", get_test_product_price(),
-                    "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
 
         #Update price of product
         change_price(10, "product-test")
@@ -102,16 +91,17 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Fetch product price from database
         test_1 = cur.execute(
-            '''SELECT priceID, price FROM products 
+            '''SELECT productID, price FROM products 
         WHERE productName LIKE ?''', ["product-test"]).fetchone()
         connection.close()
 
         #Fetch product price from stripe
-        stripe_price = stripe.Price.retrieve(test_1[0])
+        stripe_price = stripe.Price.retrieve(
+            stripe.Product.retrieve(test_1[0]).default_price)
 
         #Assert correct price
         self.assertEqual(test_1[1], "10")
-        self.assertEqual(stripe_price.unit_amount, 10)
+        self.assertEqual(stripe_price.unit_amount, 1000)
 
         #Reset price
         change_price(5, "product-test")
@@ -125,8 +115,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         new_customer = stripe.Customer.create()
 
         #Add test product to payments service
-        add_product("product-test", get_test_product_price(),
-                    "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
 
         #Assert valid checkout URL response
         session_url = create_checkout(new_customer.stripe_id, "product-test")

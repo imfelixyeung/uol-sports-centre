@@ -20,12 +20,11 @@ def make_purchasable(product_name, product_price, product_type="payment"):
 
     #Adding product to stripe
     product = stripe.Product.create(name=product_name)
-    price = stripe.Price.create(unit_amount_decimal=str(product_price * 100),
-                                currency="gbp",
-                                product=product.stripe_id)
+    stripe.Price.create(unit_amount_decimal=str(product_price * 100),
+                        currency="gbp",
+                        product=product.stripe_id)
     #Adding product to database
-    add_product(product_name, price.stripe_id, product.stripe_id, product_price,
-                product_type)
+    add_product(product_name, product.stripe_id, product_price, product_type)
 
 
 def make_a_purchase(user_id, product_name, success_url=LOCAL_DOMAIN):
@@ -52,13 +51,13 @@ def change_price(new_price, product_name):
     '''Changes price of specified product for management microservice'''
     product = get_product(product_name)
 
-    new_stripe_price = stripe.Price.create(unit_amount_decimal=str(new_price *
-                                                                   100),
+    old_stripe_price = stripe.Product.retrieve(product[0]).default_price
+    new_stripe_price = stripe.Price.create(unit_amount_decimal=str(new_price * 100),
                                            currency='gbp',
-                                           product=product[1])
+                                           product=product[0])
 
-    stripe.Product.modify(product[1], default_price=new_stripe_price.stripe_id)
-    stripe.Price.modify(product[0], active=False)
+    stripe.Product.modify(product[0], default_price=new_stripe_price.stripe_id)
+    stripe.Price.modify(old_stripe_price, active=False)
     update_price(product_name, new_price)
 
 

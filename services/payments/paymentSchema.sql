@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS products;
 
 CREATE TABLE products (
-    priceID TEXT PRIMARY KEY,
-    productID TEXT NOT NULL,
+    productID TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT NOT NULL
@@ -13,9 +12,9 @@ DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     orderID INTEGER PRIMARY KEY,
     userID TEXT NOT NULL,
-    priceID TEXT NOT NULL,
+    productID TEXT NOT NULL,
     purchaseDate TEXT NOT NULL, 
-    FOREIGN KEY (priceID) REFERENCES products(priceID)
+    FOREIGN KEY (productID) REFERENCES products(productID)
 );
 
 DROP TABLE IF EXISTS customers;
