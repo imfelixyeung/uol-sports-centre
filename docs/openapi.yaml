@@ -549,6 +549,93 @@ paths:
                   booking:
                     $ref: "#/components/schemas/Booking"
 
+  /booking/bookings/availability:
+    get:
+      tags:
+        - booking
+      summary: Returns possible bookings
+      description: Returns an array of possible bookings depending on supplied parameters
+      operationId: getAvailableBookings
+      parameters:
+        - in: query
+          name: limit
+          description: Max number of bookings to return in one query
+          schema:
+            type: number
+            maximum: 256
+            minimum: 1
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          description: Page of results to return
+          schema:
+            type: number
+            minimum: 1
+            format: int32
+          required: false
+          example: 1
+
+        - in: query
+          name: start
+          description: Start timestamp in miliseconds
+          schema:
+            type: number
+            minimum: 1
+            maximum: 2147483647
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: end
+          description: End timestamp in miliseconds
+          schema:
+            type: number
+            minimum: 1
+            maximum: 2147483647
+            format: int32
+          required: false
+          example: 1
+
+        - in: query
+          name: activity
+          description: Activity id to filter by
+          schema:
+            type: number
+            maximum: 256
+            minimum: 1
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: facility
+          description: Facility id to filter by
+          schema:
+            type: number
+            minimum: 1
+            format: int32
+          required: false
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+
   /booking/events:
     get:
       tags:
@@ -1251,6 +1338,32 @@ components:
           type: string
           description: When the booking was last updated
           example: "2023-03-02T10:00:00.000Z"
+
+    PossibleBooking:
+      type: object
+      properties:
+        starts:
+          type: string
+          description: Start time of the booking
+          example: "2023-03-02T10:00:00.000Z"
+        duration:
+          type: number
+          description: Length of the booking
+          example: 60
+        event:
+          type: object
+          $ref: "#/components/schemas/Event"
+        capacity:
+          type: object
+          properties:
+            current:
+              type: number
+              description: current number of bookings for current event
+              example: 15
+            max:
+              type: number
+              description: maximum number of bookings for the current event
+              example: 30
 
     Event:
       type: object
