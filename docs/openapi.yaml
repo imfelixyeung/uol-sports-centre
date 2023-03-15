@@ -370,6 +370,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
 
     post:
       tags:
@@ -420,7 +422,7 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
-        "405":
+        "400":
           description: Invalid input
 
   /booking/bookings/{bookingId}:
@@ -452,6 +454,9 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
     put:
       tags:
         - booking
@@ -507,6 +512,9 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
     delete:
       tags:
         - booking
@@ -535,6 +543,8 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
 
   /booking/bookings/availability:
     get:
@@ -630,6 +640,8 @@ paths:
                       count:
                         type: number
                         example: 1
+        "400":
+          description: Invalid input
 
   /booking/bookings/book:
     post:
@@ -678,6 +690,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
 
   /booking/events:
     get:
@@ -702,6 +716,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid input
 
     post:
       tags:
@@ -760,7 +776,7 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   event:
                     $ref: "#/components/schemas/Event"
-        "405":
+        "400":
           description: Invalid input
 
   /facilities/facilities:
