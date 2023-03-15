@@ -3,6 +3,7 @@ import logger from '@/lib/logger';
 import eventService from '@/services/event.service';
 import {z} from 'zod';
 import {id, timestamp} from '@/schema';
+import {CreateEventDTO} from '@/dto/event.dto';
 
 /**
  * The Event Controller handles the incomming network requests and validates
@@ -59,6 +60,52 @@ class EventController {
       events,
     });
   }
+
+  async createEvent(req: express.Request, res: express.Response) {
+    logger.debug('Received createEvent request');
+
+    // get post body information
+    const createEventBodySchema = z.object({
+      name: z.string(),
+      activityId: id('activity id'),
+      day: z.number(),
+      time: z.number(),
+      duration: z.number(),
+      type: z.enum(['SESSION', 'OPEN_USE', 'TEAM_EVENT']),
+    });
+
+    // ensure the request params abide by that schema
+    const body = createEventBodySchema.safeParse(req.body);
+    if (!body.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: body.error,
+      });
+
+    // create the new event
+    const eventData: CreateEventDTO = body.data;
+    const newEvent = await eventService.create(eventData).catch(err => {
+      logger.error(`Unable to create event: ${err}`);
+      return new Error(err);
+    });
+
+    if (eventData instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: 'Unable to create event',
+      });
+    }
+    // after passing all the above checks, the booking should be okay
+    return res.status(200).send({
+      status: 'OK',
+      event: newEvent,
+    });
+  }
+
+  // async getEventById(req: express.Request, res: express.Response) {}
+  // async updateEventById(req: express.Request, res: express.Response) {}
+  // async deleteEventById(req: express.Request, res: express.Response) {}
 }
 
 export default new EventController();

@@ -1,4 +1,4 @@
-import {EventDTO} from '@/dto/event.dto';
+import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
@@ -39,6 +39,9 @@ class EventDAO {
         day = day === 0 ? 6 : day - 1;
         days.push(day);
       }
+    } else {
+      // default to all events in a week
+      days.push(...Array.from(Array(7).keys()));
     }
 
     const allEvents: EventDTO[] = [];
@@ -106,6 +109,21 @@ class EventDAO {
 
     // return either the list of events or the error
     return allEvents;
+  }
+
+  async createEvent(eventData: CreateEventDTO): Promise<EventDTO | Error> {
+    logger.debug(`Adding event to database, ${eventData}`);
+
+    const event = await prisma.event
+      .create({
+        data: eventData,
+      })
+      .catch(err => {
+        logger.error(`Error creating event ${err}`);
+        return new Error(err);
+      });
+
+    return event;
   }
 }
 

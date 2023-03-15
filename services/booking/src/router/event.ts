@@ -8,7 +8,7 @@ const eventRouter: Router = express.Router();
 eventRouter.get('/', EventController.getEvents);
 
 // create new event
-// eventRouter.post('/', EventController.createEvent);
+eventRouter.post('/', EventController.createEvent);
 
 // get specific event
 // eventRouter.get('/:id', EventController.getEventById);
