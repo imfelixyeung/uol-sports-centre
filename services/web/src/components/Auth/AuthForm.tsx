@@ -66,7 +66,7 @@ const AuthForm: FC<AuthFormProps> = ({variant}) => {
             return;
           }
 
-          if (!values.acceptTerms) {
+          if (variant === 'register' && !values.acceptTerms) {
             setErrorMessage('You must accept the terms and policies');
             actions.setSubmitting(false);
             return;
