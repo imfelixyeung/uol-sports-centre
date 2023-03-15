@@ -83,6 +83,12 @@ def webhook_received():
         add_purchase(session.customer, purchased_item.price.product,
                      str(datetime.now()))
         print("Payment succeeded!")
+    elif event_type == "customer.subscription.created":
+        #Add subscription to user
+        print("Subscription created!")
+    elif event_type == "customer.subscription.deleted":
+        #Remove subscription from user
+        print("Subscription deleted")
     return "ok"
 
 
