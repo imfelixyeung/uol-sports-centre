@@ -13,7 +13,8 @@ CREATE TABLE orders (
     orderID INTEGER PRIMARY KEY,
     userID TEXT NOT NULL,
     productID TEXT NOT NULL,
-    purchaseDate TEXT NOT NULL, 
+    purchaseDate TEXT NOT NULL,
+    expiryDate TEXT, 
     FOREIGN KEY (productID) REFERENCES products(productID)
 );
 

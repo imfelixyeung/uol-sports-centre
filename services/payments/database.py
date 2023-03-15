@@ -47,13 +47,19 @@ def add_customer(user_id, stripe_id):
     con.close()
 
 
-def add_purchase(customer_id, product_id, purchase_date):
+def add_purchase(customer_id, product_id, purchase_date, expiry=None):
     """Function that adds a new purchase to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    cur.execute(
+    if(expiry != None):
+        cur.execute(
+        """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
+        VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date,
+                              expiry))
+    else:
+        cur.execute(
         """INSERT INTO orders (userID, productID, purchaseDate)
-    VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date))
+        VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date))
     con.commit()
     con.close()
 

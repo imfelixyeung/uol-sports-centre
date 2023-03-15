@@ -43,7 +43,6 @@ def make_a_purchase(user_id, products, payment_mode, success_url=LOCAL_DOMAIN):
     for product in products:
         # Gets the product ID and price from the products table
         product_id = get_product(product)[0]
-        #price = get_product(product)[2]
 
         line_item = {
             "price": stripe.Product.retrieve(product_id).default_price,

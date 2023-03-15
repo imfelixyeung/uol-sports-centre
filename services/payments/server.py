@@ -2,6 +2,7 @@
 Provides functionality for making payments for subscriptions"""
 import os
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import stripe
 
 from database import init_database
@@ -42,14 +43,14 @@ def get_index():
     add_customer(467468, stripe.Customer.create().stripe_id)
     add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
                 "subscription")
-    #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
+    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     return render_template("index.html")
 
 
 @app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():
     """It redicrects the checkout"""
-    products = ["subscription-test"]
+    products = ["subscription-test", "product-2"]
     payment_mode = "subscription"
     return make_a_purchase(467468, products, payment_mode)
 
@@ -80,9 +81,22 @@ def webhook_received():
         )
 
         transaction_time = str(datetime.now())
+        expiry_time = str(datetime.now() + relativedelta(months=1))
         for purchased_item in session.line_items.data:
-            add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time)
+            type = stripe.Product.retrieve(purchased_item.price.product).object
+            if type == "subscription":
+                add_purchase(
+                    session.customer,
+                    purchased_item.price.product,
+                    transaction_time,
+                    expiry_time
+                )
+            else:
+                add_purchase(
+                    session.customer,
+                    purchased_item.product,
+                    transaction_time
+                )
         print("Payment succeeded!")
 
     elif event_type == "customer.subscription.created":
