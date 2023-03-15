@@ -6,6 +6,8 @@ import os
 import urllib.request
 import stripe
 
+from path import sys
+
 from server import app
 
 from payments import change_price
