@@ -166,12 +166,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #a = 1
 
     @classmethod
-    def setUpClass(cls, self):
-        """Create a new app instance and set up a test client"""
-        self.app = app.test_client()
-        self.app.testing = True
-
-    @classmethod
     def tearDownClass(cls):
         """Remove the database file after running all tests"""
         conn = sqlite3.connect("database.db")
