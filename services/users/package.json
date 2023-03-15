@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "type-check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
     "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --packages=external",
     "start": "node dist/index.js",
-    "dev": "tsx watch --clear-screen=false src/index.ts"
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "ci": "pnpm type-check && pnpm lint && pnpm build"
   },
   "keywords": [],
   "author": "",
