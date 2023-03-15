@@ -1312,6 +1312,25 @@ components:
           type: string
           description: JWT ID
 
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          description: User ID
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        paymentID:
+          type: number
+          description: User's payment ID
+        membership:
+          type: string
+          description: User's membership ID
+
     Booking:
       type: object
       properties:
