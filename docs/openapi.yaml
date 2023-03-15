@@ -633,8 +633,16 @@ paths:
                     type: string
                     example: "OK"
                     description: Whether the operation was a success or whether there were any errors
-                  booking:
-                    $ref: "#/components/schemas/Booking"
+                  availableBookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PossibleBooking"
+                  metadata:
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                        example: 1
 
   /booking/events:
     get:
