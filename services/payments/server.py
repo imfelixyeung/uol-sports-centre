@@ -10,6 +10,7 @@ from database import add_customer
 from database import add_product
 from database import get_purchases
 from database import add_purchase
+from database import update_expiry
 
 from payments import make_a_purchase
 from payments import get_payment_manager
@@ -98,10 +99,18 @@ def webhook_received():
                     transaction_time
                 )
         print("Payment succeeded!")
+    
+    elif event_type == "invoice.paid":
+        #Renews exipry of purchased subscription when paid
+        invoice = event['data']['object']
+        product = invoice['price']['product']
+        customer = invoice['customer']
 
-    elif event_type == "customer.subscription.created":
-        #Add subscription to user
-        print("Subscription created!")
+        if(stripe.Product.retrieve(product).object == "subscription"):
+            update_expiry(
+                customer, product, 
+                str(datetime.now() + relativedelta(months=1))
+            )
     elif event_type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")

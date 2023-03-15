@@ -38,6 +38,20 @@ def update_price(product_name, new_price):
     con.close()
 
 
+def update_expiry(stripe_user, product_id, expiry_date):
+    '''Updates the expiry date of a subscription'''
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    user_id = cur.execute(
+        '''SELECT userID FROM customers WHERE
+                         stripeID = ?''', (stripe_user)).fetchone()
+    cur.execute(
+        """UPDATE orders SET expiryDate = ? WHERE productID = ? 
+                AND userID = ?""", (expiry_date, product_id, user_id))
+    con.commit()
+    con.close()
+
+
 def add_customer(user_id, stripe_id):
     """Function to add a new customer to the database"""
     con = sqlite3.connect("database.db")
@@ -51,14 +65,13 @@ def add_purchase(customer_id, product_id, purchase_date, expiry=None):
     """Function that adds a new purchase to the database"""
     con = sqlite3.connect("database.db")
     cur = con.cursor()
-    if(expiry != None):
+    if (expiry != None):
         cur.execute(
-        """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
-        VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date,
-                              expiry))
+            """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
+        VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date, expiry))
     else:
         cur.execute(
-        """INSERT INTO orders (userID, productID, purchaseDate)
+            """INSERT INTO orders (userID, productID, purchaseDate)
         VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date))
     con.commit()
     con.close()
