@@ -15,7 +15,6 @@ model Booking {
   userId        Int
   eventId       Int
   transactionId Int
-  duration      Int
   starts        DateTime
   created       DateTime
   updated       DateTime

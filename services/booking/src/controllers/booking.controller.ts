@@ -90,7 +90,6 @@ class BookingController {
       eventId: z.number(),
       transactionId: z.number(),
       starts: z.string().transform(time => new Date(time)),
-      duration: z.number(),
     });
 
     // ensure the request params abide by that schema
@@ -189,7 +188,6 @@ class BookingController {
         .string()
         .transform(time => new Date(time))
         .optional(),
-      duration: z.number().optional(),
     });
     const updateBookingParamsSchema = z.object({
       id: id('booking id'),

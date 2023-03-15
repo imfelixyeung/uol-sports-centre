@@ -397,9 +397,6 @@ paths:
                 starts:
                   type: string
                   description: the start time of the booking
-                duration:
-                  type: string
-                  description: the length of time of the booking in minutes
             examples:
               example:
                 summary: Example
@@ -408,7 +405,6 @@ paths:
                   eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
-                  duration: 60
 
       responses:
         "200":
@@ -489,9 +485,6 @@ paths:
                 starts:
                   type: string
                   description: the start time of the booking
-                duration:
-                  type: string
-                  description: the length of time of the booking in minutes
             examples:
               example:
                 summary: Example
@@ -500,12 +493,6 @@ paths:
                   eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
-                  duration: 60
-              twoHourDuration:
-                summary: 120 minute duration
-                description: Update the specified booking with a 120 minute duration
-                value:
-                  duration: 120
       responses:
         "200":
           description: Successful operation returns the updated booking
@@ -1331,9 +1318,6 @@ components:
           type: number
           description: Transaction ID
           example: 1
-        duration:
-          type: number
-          description: Length of the booking
         starts:
           type: string
           description: Start time of the booking

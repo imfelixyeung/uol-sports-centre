@@ -29,7 +29,6 @@ describe('Test /bookings', () => {
         transactionId: 1,
         eventId: 1,
         userId: 1,
-        duration: 60,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -68,7 +67,6 @@ describe('Test /bookings', () => {
         transactionId: 1,
         eventId: 1,
         userId: 1,
-        duration: 60,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -107,7 +105,6 @@ describe('Test /bookings', () => {
         transactionId: 1,
         eventId: 1,
         userId: 2,
-        duration: 60,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -117,7 +114,6 @@ describe('Test /bookings', () => {
         transactionId: 1,
         eventId: 1,
         userId: 2,
-        duration: 60,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -127,7 +123,6 @@ describe('Test /bookings', () => {
         transactionId: 1,
         eventId: 1,
         userId: 2,
-        duration: 60,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -167,7 +162,6 @@ describe('Test /bookings', () => {
       transactionId: 1,
       eventId: 1,
       userId: 1,
-      duration: 60,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),
@@ -196,7 +190,6 @@ describe('Test /bookings', () => {
       eventId: 1,
       transactionId: 1,
       starts: new Date(),
-      duration: 60,
     };
     const mockBooking: Booking = {
       ...newBooking,
@@ -229,13 +222,12 @@ describe('Test /bookings', () => {
       eventId: 1,
       transactionId: 1,
       starts: new Date(),
-      duration: 60,
       created: new Date(),
       updated: new Date(),
     };
     const update: UpdateBookingDTO = {
       id: 10,
-      duration: 100000,
+      eventId: 3,
     };
     const expectedUpdate: Booking = {...existingBooking, ...update};
 
@@ -264,7 +256,6 @@ describe('Test /bookings', () => {
       eventId: 1,
       transactionId: 1,
       starts: new Date(),
-      duration: 60,
       created: new Date(),
       updated: new Date(),
     };
@@ -353,7 +344,6 @@ describe('Test /bookings', () => {
       .post('/bookings')
       .send({
         userId: 1,
-        duration: 60,
         eventId: 1,
         starts: new Date(),
         transactionId: 1,

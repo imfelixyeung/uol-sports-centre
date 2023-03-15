@@ -17,7 +17,6 @@ describe('Test BookingService', () => {
         userId: 1,
         eventId: 1,
         transactionId: 1,
-        duration: 100,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -50,7 +49,6 @@ describe('Test BookingService', () => {
         userId: 1,
         eventId: 1,
         transactionId: 1,
-        duration: 100,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -83,7 +81,6 @@ describe('Test BookingService', () => {
       userId: 1,
       eventId: 1,
       transactionId: 1,
-      duration: 100,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),
@@ -102,7 +99,6 @@ describe('Test BookingService', () => {
       eventId: 1,
       transactionId: 1,
       starts: new Date(),
-      duration: 60,
     };
     const mockBooking: Booking = {
       ...newBooking,
@@ -135,13 +131,12 @@ describe('Test BookingService', () => {
       eventId: 1,
       transactionId: 1,
       starts: new Date(),
-      duration: 60,
       created: new Date(),
       updated: new Date(),
     };
     const update: UpdateBookingDTO = {
       id: 10,
-      duration: 100000,
+      eventId: 34,
     };
     const expectedUpdate: Booking = {...existingBooking, ...update};
 
@@ -158,7 +153,6 @@ describe('Test BookingService', () => {
       userId: 1,
       eventId: 1,
       transactionId: 1,
-      duration: 60,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),
