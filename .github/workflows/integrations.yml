@@ -88,6 +88,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo STRIPE_API=${{ secrets.STRIPE_API_KEY_TEST }} >> .env.ci
+
       - name: Run ci tests in docker
         run: make ci-payments
 

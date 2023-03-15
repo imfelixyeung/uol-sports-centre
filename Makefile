@@ -27,7 +27,7 @@ ci-status:
 
 ci-payments:
 	docker compose -f docker-compose.ci.yaml build payments
-	docker compose -f docker-compose.ci.yaml run payments
+	docker compose -f docker-compose.ci.yaml --env-file .env.ci run payments
 
 ci-management:
 	docker compose -f docker-compose.ci.yaml build management

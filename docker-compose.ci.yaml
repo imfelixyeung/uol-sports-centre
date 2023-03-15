@@ -20,6 +20,8 @@ services:
     build:
       context: ./services/payments
       target: ci
+    environment:
+      - STRIPE_API=${STRIPE_API}
 
   management:
     build:
