@@ -79,10 +79,12 @@ def webhook_received():
             expand=["line_items"],
         )
 
-        purchased_item = session.line_items.data[0]
-        add_purchase(session.customer, purchased_item.price.product,
-                     str(datetime.now()))
+        transaction_time = str(datetime.now())
+        for purchased_item in session.line_items.data:
+            add_purchase(session.customer, purchased_item.price.product,
+                     transaction_time)
         print("Payment succeeded!")
+
     elif event_type == "customer.subscription.created":
         #Add subscription to user
         print("Subscription created!")
