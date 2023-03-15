@@ -271,100 +271,218 @@ paths:
       tags:
         - users
       description: "Returns the record in database for a specified user"
+      summary: "Returns full record of a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to view"
+        required: true
+        type: "string"
 
   /users/updateFirstName:
     put:
       tags:
         - users
       description: "Updates the first name of a specified user"
+      summary: "Updates first name of a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to update"
+        required: true
+        type: "string"
+      - name: "firstName"
+        in: "query"
+        description: "First name of user to update"
+        required: true
+        type: "string"
 
   /users/updateSecondName:
     put:
       tags:
         - users
-      description: "Updates the first second of a specified user"
+      description: "Updates the second name of a specified user"
+      summary: "Updates second name of a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
-  /users/updateAccountID:
-    put:
-      tags:
-        - users
-      description: "Updates the account ID of a specified user"
-
-      responses:
-        "200":
-          $ref: "#/components/responses/UpdatedUser"
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to update"
+        required: true
+        type: "string"
+      - name: "secondName"
+        in: "query"
+        description: "Second name of user to update"
+        required: true
+        type: "string"
 
   /users/updatePaymentID:
     put:
       tags:
         - users
       description: "Updates the Payment ID of a specified user"
+      summary: "Updates payment ID of a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
-  /users/updateBookingID:
-    put:
-      tags:
-        - users
-      description: "Updates the Booking ID of a specified user"
-
-      responses:
-        "200":
-          $ref: "#/components/responses/UpdatedUser"
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to update"
+        required: true
+        type: "string"
+      - name: "paymentID"
+        in: "query"
+        description: "Payment ID of user to update"
+        required: true
+        type: "string"
 
   /users/updateMembership:
     put:
       tags:
         - users
       description: "Updates the Membership of a specified user"
+      summary: "Updates membership of a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to update"
+        required: true
+        type: "string"
+      - name: "membership"
+        in: "query"
+        description: "Membership of user to update"
+        required: true
+        type: "string"
 
   /users/testing:
     get:
       tags:
         - users
       description: "Returns the values of the users microservice used for testing and feature showcase"
+      summary: "Experimental endpoint for testing and feature showcase"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to view"
+        required: true
+        type: "string"
+      - name: "firstName"
+        in: "query"
+        description: "First name of user to view"
+        required: true
+        type: "string"
+      - name: "secondName"
+        in: "query"
+        description: "Second name of user to view"
+        required: true
+        type: "string"
+      - name: "paymentID"
+        in: "query"
+        description: "Payment ID of user to view"
+        required: true
+        type: "string"
+      - name: "membership"
+        in: "query"
+        description: "Membership of user to view"
+        required: true
+        type: "string"
 
   /users/createUser:
     post:
       tags:
         - users
       description: "Creates a new users in the users database"
+      summary: "Creates a new user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to create"
+        required: true
+        type: "string"
+      - name: "firstName"
+        in: "query"
+        description: "First name of user to create"
+        required: true
+        type: "string"
+      - name: "secondName"
+        in: "query"
+        description: "Second name of user to create"
+        required: true
+        type: "string"
+      - name: "paymentID"
+        in: "query"
+        description: "Payment ID of user to create"
+        required: true
+        type: "string"
+      - name: "membership"
+        in: "query"
+        description: "Membership of user to create"
+        required: true
+        type: "string"
 
   /users/deleteUser:
     delete:
       tags:
         - users
       description: "Delete an existing user in the users database"
+      summary: "Delete a user"
 
       responses:
         "200":
           $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    parameters:
+      - name: "id"
+        in: "query"
+        description: "ID of user to delete"
+        required: true
+        type: "string"
 
   /booking/bookings:
     get:
