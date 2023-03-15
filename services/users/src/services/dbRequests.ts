@@ -1,8 +1,6 @@
-export interface usersDBA {
+export interface UsersDBA {
   id: number;
-  accountID: number;
   paymentID: number;
-  bookingID: number;
   firstName: string;
   lastName: string;
   membership: string;
@@ -10,9 +8,7 @@ export interface usersDBA {
 
 export interface CreateUserDBA {
   id: number;
-  accountID?: number;
   paymentID?: number;
-  bookingID?: number;
   firstName: string;
   lastName: string;
   membership?: string;
@@ -20,9 +16,7 @@ export interface CreateUserDBA {
 
 export interface EditUserDBA {
   id: number;
-  accountID?: number;
   paymentID?: number;
-  bookingID?: number;
   firstName?: string;
   lastName?: string;
   membership?: string;
