@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
     orderID INTEGER PRIMARY KEY,
-    userID TEXT NOT NULL,
+    userID INTEGER NOT NULL,
     productID TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT, 
