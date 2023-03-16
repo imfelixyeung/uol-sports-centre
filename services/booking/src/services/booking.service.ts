@@ -8,6 +8,7 @@ import {
 } from '@/dto/booking.dto';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
+import {PaginationFilter, TimeLimitFilter} from '@/types';
 import {ActivitiesResponse, ActivityResponse} from '@/types/external';
 
 /**
@@ -37,10 +38,10 @@ class BookingService {
    *
    * @memberof BookingService
    */
-  async get(limit?: number, page?: number) {
-    logger.debug(`Get bookings, limit: ${limit}, page: ${page}`);
+  async get(filter: PaginationFilter = {}) {
+    logger.debug(`Get bookings, limit: ${filter.limit}, page: ${filter.page}`);
 
-    return await bookingDao.getBookings({limit, page});
+    return await bookingDao.getBookings(filter);
   }
 
   /**
@@ -48,9 +49,11 @@ class BookingService {
    *
    * @memberof BookingService
    */
-  async getUserBookings(user: number, limit?: number, page?: number) {
-    logger.debug(`Get user ${user} bookings, limit: ${limit}, page: ${page}`);
-    return await bookingDao.getBookings({user, limit, page});
+  async getUserBookings(filter: {user: number} & PaginationFilter) {
+    logger.debug(
+      `Get user ${filter.user} bookings, limit: ${filter.limit}, page: ${filter.page}`
+    );
+    return await bookingDao.getBookings(filter);
   }
 
   /**
@@ -94,23 +97,13 @@ class BookingService {
    * @memberof BookingService
    */
   private async generatePossibleBookings(
-    facility?: number,
-    activity?: number,
-    start?: number,
-    end?: number
+    filter: {facility?: number; activity?: number} & TimeLimitFilter
   ) {
     // first we will get the events that fit within the specified filters
-    const validEvents = await eventDao
-      .getEvents({
-        facility,
-        activity,
-        start,
-        end,
-      })
-      .catch(err => {
-        logger.error(`Error getting list of valid events, ${err}`);
-        return new Error(err);
-      });
+    const validEvents = await eventDao.getEvents(filter).catch(err => {
+      logger.error(`Error getting list of valid events, ${err}`);
+      return new Error(err);
+    });
 
     // return the error if occurs
     if (validEvents instanceof Error) return validEvents;
@@ -126,7 +119,7 @@ class BookingService {
         return new Error(err);
       });
 
-    // return the error if occured
+    // return the error if occurred
     if (activities instanceof Error) return activities;
 
     const possibleBookings: PossibleBookingDTO[] = [];
@@ -146,7 +139,7 @@ class BookingService {
       // for each timeslot, generate a possible booking
       for (let i = 0; i < timeSlots; i++) {
         // calculate start and end time, then check whether they fit within the bounds
-        const bookingStartTime = new Date(start || new Date()).setHours(
+        const bookingStartTime = new Date(filter.start ?? new Date()).setHours(
           0,
           event.time + i * activity.duration,
           0,
@@ -158,8 +151,8 @@ class BookingService {
         // we dont add it as a possible booking
 
         if (
-          (start && bookingStartTime < start) ||
-          (end && bookingEndTime > end)
+          (filter.start && bookingStartTime < filter.start) ||
+          (filter.end && bookingEndTime > filter.end)
         )
           continue;
 
@@ -199,43 +192,32 @@ class BookingService {
    * @memberof BookingService
    */
   async getAvailableBookings(
-    start?: number,
-    end?: number,
-    facility?: number,
-    activity?: number,
-    limit?: number,
-    page?: number
+    filter: {
+      facility?: number;
+      activity?: number;
+    } & PaginationFilter &
+      TimeLimitFilter = {}
   ) {
     // if start and end are unset, use today from 00:00 to 23:59
-    if (!start) start = new Date().setHours(0, 0, 0, 0);
-    if (!end) end = new Date().setHours(23, 59, 59, 999);
+    if (!filter.start) filter.start = new Date().setHours(0, 0, 0, 0);
+    if (!filter.end) filter.end = new Date().setHours(23, 59, 59, 999);
 
-    logger.debug(
-      `Get available bookings filters: ${{
-        start,
-        end,
-        facility,
-        activity,
-        limit,
-        page,
-      }}`
-    );
+    logger.debug(`Get available bookings filters: ${filter}`);
 
     // lets check how many days are between the start and the end to make sure
     // we dont generate way too many responses
-    const numDays = Math.floor((end - start) / (24 * 60 * 60 * 1000));
+    const numDays = Math.floor(
+      (filter.end - filter.start) / (24 * 60 * 60 * 1000)
+    );
     if (numDays > 100)
       return new Error('Too many days between specified date range');
 
     // generate list of all possible bookings (not necessarily available)
-    let possibleBookings = await this.generatePossibleBookings(
-      facility,
-      activity,
-      start,
-      end
-    ).catch(err => {
-      return new Error(err);
-    });
+    let possibleBookings = await this.generatePossibleBookings(filter).catch(
+      err => {
+        return new Error(err);
+      }
+    );
 
     // if error, catch and return
     if (possibleBookings instanceof Error) {
@@ -249,14 +231,7 @@ class BookingService {
     );
 
     // get all existing booking for the range specified
-    const currentBookings = await bookingDao.getBookings({
-      facility,
-      activity,
-      limit,
-      page,
-      start,
-      end,
-    });
+    const currentBookings = await bookingDao.getBookings(filter);
 
     // if error, return it
     if (currentBookings instanceof Error) return currentBookings;

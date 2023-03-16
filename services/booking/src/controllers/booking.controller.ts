@@ -45,18 +45,17 @@ class BookingController {
       });
 
     let bookings: PaginatedBookings | Error;
-    if (query.data.user) {
-      bookings = await bookingService
-        .getUserBookings(query.data.user, query.data.limit, query.data.page)
-        .catch(err => {
-          logger.error(
-            `Error getting bookings from user ${query.data.user}: ${err}`
-          );
-          return new Error(err);
-        });
+    if (query.data.user !== undefined) {
+      const filter = {...query.data, user: query.data.user};
+      bookings = await bookingService.getUserBookings(filter).catch(err => {
+        logger.error(
+          `Error getting bookings from user ${query.data.user}: ${err}`
+        );
+        return new Error(err);
+      });
     } else {
       bookings = await bookingService
-        .get(query.data.limit, query.data.page)
+        .get({limit: query.data.limit, page: query.data.page})
         .catch(err => {
           logger.error(`Error getting bookings: ${err}`);
           return new Error(err);
@@ -304,17 +303,8 @@ class BookingController {
         error: query.error,
       });
 
-    logger.debug(`${JSON.stringify(req.query)} ${JSON.stringify(query)}`);
-
     const availableBookings = await bookingService
-      .getAvailableBookings(
-        query.data.start,
-        query.data.end,
-        query.data.facility,
-        query.data.activity,
-        query.data.limit,
-        query.data.page
-      )
+      .getAvailableBookings(query.data)
       .catch(err => {
         logger.error(`Error getting available bookings: ${err}`);
         return new Error(err);

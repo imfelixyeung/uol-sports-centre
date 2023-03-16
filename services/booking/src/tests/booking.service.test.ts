@@ -74,7 +74,7 @@ describe('Test BookingService', () => {
     prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
 
     // test if the returned value from the booking service equals the mocked data
-    await expect(bookingService.getUserBookings(1)).resolves.toEqual(
+    await expect(bookingService.getUserBookings({user: 1})).resolves.toEqual(
       expectedResult
     );
   });
@@ -213,10 +213,10 @@ describe('Test BookingService', () => {
     // mock the getBookings
     prismaMock.$transaction.mockResolvedValueOnce([1, bookings]);
 
-    const availableBookings = await bookingService.getAvailableBookings(
-      new Date('2023-03-16T08:00:00.000Z').getTime(),
-      new Date('2023-03-16T10:00:00.000Z').getTime()
-    );
+    const availableBookings = await bookingService.getAvailableBookings({
+      start: new Date('2023-03-16T08:00:00.000Z').getTime(),
+      end: new Date('2023-03-16T10:00:00.000Z').getTime(),
+    });
 
     // if (availableBookings instanceof Error) console.error(availableBookings);
 

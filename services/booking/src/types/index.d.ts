@@ -10,3 +10,13 @@ export interface Pagination {
     pageCount: number;
   };
 }
+
+export interface PaginationFilter {
+  page?: number;
+  limit?: number;
+}
+
+export interface TimeLimitFilter {
+  start?: number;
+  end?: number;
+}
