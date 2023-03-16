@@ -6,7 +6,7 @@ import Hero from './Hero';
 import Memberships from './Memberships';
 import ReachGoals from './ReachGoals';
 import Socials from './Socials';
-import Testimonials from './Testimonials';
+import {Testimonials} from './Testimonials';
 
 const LandingPage = () => {
   return (
