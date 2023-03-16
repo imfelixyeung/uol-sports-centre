@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import {ErrorMessage, Field, Form, Formik} from 'formik';
+import {Field, Form, Formik, useFormikContext} from 'formik';
 import type {FC, PropsWithChildren} from 'react';
 import {useState} from 'react';
+import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import AppIcon from '~/components/AppIcon/AppIcon';
 import Button from '~/components/Button';
@@ -109,17 +110,25 @@ const OnboardingPage: NextPageWithLayout = () => {
         </div>
       </aside>
       <main className="grow bg-white py-16 px-8 text-black">
-        <div className="container flex h-full flex-col">
-          <Typography.h1 uppercase>{step.title}</Typography.h1>
-          <div className="grid grow grid-cols-2 items-start gap-6">
-            <Formik
-              initialValues={{undefined}}
-              onSubmit={(values, actions) => {
-                actions.setSubmitting(false);
-              }}
-              validationSchema={step.validationSchema}
-            >
-              <Form className="flex grow flex-col gap-3">
+        <Formik
+          initialValues={{undefined}}
+          onSubmit={async (values, actions) => {
+            await actions.validateForm();
+            if (!isLastStep) {
+              actions.setSubmitting(false);
+              nextStep();
+              return;
+            }
+
+            toast.success('Onboarding complete!');
+            actions.setSubmitting(false);
+          }}
+          validationSchema={step.validationSchema}
+        >
+          <Form className="container flex h-full flex-col">
+            <Typography.h1 uppercase>{step.title}</Typography.h1>
+            <div className="grid grow grid-cols-2 items-start gap-6">
+              <div className="flex grow flex-col gap-3">
                 {step.fields.map(field => (
                   <OnboardingField
                     key={field.name}
@@ -128,23 +137,24 @@ const OnboardingPage: NextPageWithLayout = () => {
                     required={field.required}
                   />
                 ))}
-              </Form>
-            </Formik>
-            {step.why && <OnboardingWhyBox>{step.why}</OnboardingWhyBox>}
-          </div>
-          <div className="flex justify-between">
-            <Button
-              intent="primary"
-              onClick={previousStep}
-              className={clsx(isFirstStep && 'opacity-10')}
-            >
-              Previous
-            </Button>
-            <Button intent="primary" onClick={nextStep}>
-              {isLastStep ? 'Finish' : 'Next'}
-            </Button>
-          </div>
-        </div>
+              </div>
+              {step.why && <OnboardingWhyBox>{step.why}</OnboardingWhyBox>}
+            </div>
+            <div className="flex justify-between">
+              <Button
+                intent="primary"
+                type="button"
+                onClick={previousStep}
+                className={clsx(isFirstStep && 'opacity-10')}
+              >
+                Previous
+              </Button>
+              <Button intent="primary" type="submit">
+                {isLastStep ? 'Finish' : 'Next'}
+              </Button>
+            </div>
+          </Form>
+        </Formik>
       </main>
     </div>
   );
@@ -194,6 +204,8 @@ const OnboardingField: FC<{
   label: string;
   required?: boolean;
 }> = ({name, label, required = false}) => {
+  const context = useFormikContext<Record<string, string>>();
+
   return (
     <label htmlFor={name} className="flex grow flex-col">
       <span>
@@ -205,9 +217,9 @@ const OnboardingField: FC<{
         name={name}
         className="border-2 border-black/20 bg-[#fff] p-2 text-black"
       />
-      <span className="text-red-600">
-        <ErrorMessage name={name} />
-      </span>
+      {context.submitCount !== 0 && context.errors[name] && (
+        <span className="text-red-600">{context.errors[name]}</span>
+      )}
     </label>
   );
 };
