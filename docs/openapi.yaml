@@ -577,7 +577,7 @@ paths:
 
         - in: query
           name: start
-          description: Start timestamp in miliseconds
+          description: Start timestamp in milliseconds
           schema:
             type: number
             minimum: 1
@@ -588,7 +588,7 @@ paths:
 
         - in: query
           name: end
-          description: End timestamp in miliseconds
+          description: End timestamp in milliseconds
           schema:
             type: number
             minimum: 1
