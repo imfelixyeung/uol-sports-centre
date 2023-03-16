@@ -1,3 +1,5 @@
+// This file is used to parse environment variables
+
 import {z} from 'zod';
 
 const envSchema = z.object({

@@ -256,77 +256,256 @@ paths:
         "200":
           $ref: "#/components/responses/HealthCheck"
 
-  /users/login:
-    post:
-      tags:
-        - users
-      description: "Takes the user through the log in phase"
-      responses:
-        "200":
-          description: OK
-
-  /users/accountInfo:
+  /users/health:
     get:
       tags:
         - users
-      description: "Returns account info as JSON"
+      description: "Returns the health of the users service"
+      summary: "Returns the health of the users service"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/HealthCheck"
 
-  /users/pricingList:
+  /users/{id}/viewFullRecord:
     get:
       tags:
         - users
-      description: "Returns pricing list as JSON"
+      description: "Returns the record in database for a specified user"
+      summary: "Returns full record of a user"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UserReturned"
+        "500":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
-  /users/bookSession:
-    post:
+    parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user to view"
+        schema:
+          type: integer
+        required: true
+
+  /users/{id}/updateFirstName:
+    put:
       tags:
         - users
-      description: "Allows the user to book a session"
+      description: "Updates the first name of a specified user"
+      summary: "Updates first name of a user"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
-  /users/membership:
-    post:
+    parameters:
+      - name: id
+        in: "path"
+        description: "ID of user to update"
+        schema:
+          type: integer
+        required: true
+      - name: "firstName"
+        in: "header"
+        description: "First name of user to update"
+        schema:
+          type: string
+        required: true
+
+  /users/{id}/updateSurname:
+    put:
       tags:
         - users
-      description: "Takes the user through the process of signing up for the membership or modifying it"
+      description: "Updates the surname of a specified user"
+      summary: "Updates surname of a user"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
-  /users/payment:
-    post:
+    parameters:
+      - name: id
+        in: "path"
+        description: "ID of user to update"
+        schema:
+          type: integer
+        required: true
+      - name: "surname"
+        in: "header"
+        description: "Surname of user to update"
+        schema:
+          type: string
+        required: true
+
+  /users/{id}/updatePaymentID:
+    put:
       tags:
         - users
-      description: "Takes the user through the process of payment"
+      description: "Updates the Payment ID of a specified user"
+      summary: "Updates payment ID of a user"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
-  /users/bookingHistory:
+    parameters:
+      - name: id
+        in: "path"
+        description: "ID of user to update"
+        schema:
+          type: integer
+        required: true
+      - name: "paymentID"
+        in: "header"
+        description: "Payment ID of user to update"
+        schema:
+          type: integer
+        required: true
+
+  /users/{id}/updateMembership:
+    put:
+      tags:
+        - users
+      description: "Updates the Membership of a specified user"
+      summary: "Updates membership of a user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdatedUser"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+    parameters:
+      - name: id
+        in: "path"
+        description: "ID of user to update"
+        schema:
+          type: integer
+        required: true
+      - name: "membership"
+        in: "header"
+        description: "Membership of user to update"
+        schema:
+          type: string
+        required: true
+
+  /users/testing:
     get:
       tags:
         - users
-      description: "Returns booking history as JSON"
+      description: "Returns the values of the users microservice used for testing and feature showcase"
+      summary: "Experimental endpoint for testing and feature showcase"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UpdatedUser"
 
-  /users/upcomingSessions:
-    get:
+    parameters:
+      - name: id
+        in: "header"
+        description: "ID of user to view"
+        schema:
+          type: integer
+        required: true
+      - name: "firstName"
+        in: "header"
+        description: "First name of user to view"
+        schema:
+          type: string
+        required: true
+      - name: "surname"
+        in: "header"
+        description: "Surname of user to view"
+        required: true
+        schema:
+          type: string
+      - name: "paymentID"
+        in: "header"
+        description: "Payment ID of user to view"
+        required: true
+        schema:
+          type: string
+      - name: "membership"
+        in: "header"
+        description: "Membership of user to view"
+        required: true
+        schema:
+          type: string
+
+  /users/createUser:
+    post:
       tags:
         - users
-      description: "Returns upcoming sessions as JSON"
+      description: "Creates a new users in the users database"
+      summary: "Creates a new user"
+
       responses:
         "200":
-          description: OK
+          $ref: "#/components/responses/UserCreated"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+    parameters:
+      - name: id
+        in: "header"
+        description: "ID of user to create"
+        required: true
+        schema:
+          type: integer
+      - name: "firstName"
+        in: "header"
+        description: "First name of user to create"
+        required: true
+        schema:
+          type: string
+      - name: "surname"
+        in: "header"
+        description: "Surname of user to create"
+        required: true
+        schema:
+          type: string
+
+  /users/{id}/deleteUser:
+    delete:
+      tags:
+        - users
+      description: "Delete an existing user in the users database"
+      summary: "Delete a user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/UserDeleted"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+    parameters:
+      - name: id
+        in: "path"
+        description: "ID of user to delete"
+        required: true
+        schema:
+          type: string
 
   /booking/bookings:
     get:
@@ -1363,6 +1542,25 @@ components:
           type: string
           description: JWT ID
 
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          description: User ID
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        paymentID:
+          type: number
+          description: User's payment ID
+        membership:
+          type: string
+          description: User's membership ID
+
     Booking:
       type: object
       properties:
@@ -1629,3 +1827,100 @@ components:
                   type: number
                   description: "The milliseconds since epoch"
                   example: 1680307200000
+
+    UpdatedUser:
+      description: Updated user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "ERROR"
+
+    UserCreated:
+      description: User created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+
+    UserDeleted:
+      description: User deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+
+    UserReturned:
+      description: User returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "The status of the operation"
+                enum:
+                  - "OK"
+                  - "ERROR"
+              user:
+                $ref: "#/components/schemas/User"
