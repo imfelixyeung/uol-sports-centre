@@ -154,7 +154,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=booking
       - POSTGRES_USER=booking
-      - POSTGRES_DB=prod
+      - POSTGRES_DB=dev
     networks:
       - network
     volumes:
