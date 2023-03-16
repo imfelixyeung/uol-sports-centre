@@ -25,6 +25,10 @@ ci-status:
 	docker compose -f docker-compose.ci.yaml build status
 	docker compose -f docker-compose.ci.yaml run status
 
+ci-users:
+	docker compose -f docker-compose.ci.yaml build users
+	docker compose -f docker-compose.ci.yaml run users
+
 clean:
 	docker compose down
 	docker compose -f docker-compose.dev.yaml down
