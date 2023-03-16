@@ -1,12 +1,17 @@
 import {Booking} from '@prisma/client';
-import bookingService from '@/services/booking.service';
 import {prismaMock} from './mock/prisma';
+import {httpClientMock} from './mock/httpClient';
+
+import bookingService from '@/services/booking.service';
 import {
   bookingToDTO,
   CreateBookingDTO,
+  PossibleBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
 import {PaginatedBookings} from '@/types/responses';
+import {EventDTO} from '@/dto/event.dto';
+import {ActivitiesResponse} from '@/types/external';
 
 describe('Test BookingService', () => {
   test('get bookings', async () => {
@@ -160,5 +165,61 @@ describe('Test BookingService', () => {
     prismaMock.booking.delete.mockResolvedValue(booking);
 
     await expect(bookingService.deleteById(100)).resolves.toEqual(booking);
+  });
+
+  test('get available bookings', async () => {
+    const event: EventDTO = {
+      id: 4,
+      name: 'Pool Open Use',
+      activityId: 1,
+      day: 3,
+      time: 480,
+      duration: 720,
+      type: 'OPEN_USE',
+    };
+
+    const bookings: Booking[] = [];
+    const expectedOutput: PossibleBookingDTO[] = [
+      {
+        starts: '2023-03-16T08:00:00.000Z',
+        duration: 60,
+        event: event,
+        capacity: {current: 0, max: 15},
+      },
+      {
+        starts: '2023-03-16T09:00:00.000Z',
+        duration: 60,
+        event: event,
+        capacity: {current: 0, max: 15},
+      },
+    ];
+
+    const activitiesRes: ActivitiesResponse = [
+      {
+        id: 1,
+        name: 'Pool Open Use',
+        facility_id: 1,
+        capacity: 15,
+        duration: 60,
+      },
+    ];
+
+    // mock the event fetching
+    prismaMock.event.findMany.mockResolvedValueOnce([event]);
+
+    // mock the activity fetching
+    httpClientMock.get.mockResolvedValue(activitiesRes);
+
+    // mock the getBookings
+    prismaMock.$transaction.mockResolvedValueOnce([1, bookings]);
+
+    const availableBookings = await bookingService.getAvailableBookings(
+      new Date('2023-03-16T08:00:00.000Z').getTime(),
+      new Date('2023-03-16T10:00:00.000Z').getTime()
+    );
+
+    // if (availableBookings instanceof Error) console.error(availableBookings);
+
+    expect(availableBookings).toEqual(expectedOutput);
   });
 });

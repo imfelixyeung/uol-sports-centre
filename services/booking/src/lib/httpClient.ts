@@ -8,7 +8,7 @@ import {
 
 import logger from './logger';
 
-interface IHttpClient {
+export interface IHttpClient {
   get<TRes>(url: string, options?: RequestOptions): Promise<TRes>;
   post<TRes, TReq>(url: string, data: TReq): Promise<TRes>;
   put<TRes, TReq>(url: string, data: TReq): Promise<TRes>;
