@@ -200,6 +200,15 @@ describe('resetPassword', () => {
 describe('signOutToken', () => {
   signOutToken;
 
+  it('throws error if the token is not found', async () => {
+    dbMock.$transaction.mockImplementation(cb => cb(dbMock));
+    dbMock.token.findUnique.mockResolvedValue(null);
+
+    const validToken = await TokenRegistry.createTokenForUser(user);
+
+    expect(signOutToken(validToken)).rejects.toThrow('Token not found');
+  });
+
   it('deletes refresh token associated with the token', async () => {
     dbMock.$transaction.mockImplementation(cb => cb(dbMock));
     dbMock.token.findUnique.mockResolvedValue({
