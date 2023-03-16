@@ -20,7 +20,6 @@ const getDatabaseHealth = async () => {
     return true;
   } catch (error) {
     console.error('Database health check failed', error);
-    console.log('Database health check failed', error);
     return false;
   }
 };

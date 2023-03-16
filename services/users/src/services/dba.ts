@@ -11,6 +11,16 @@ class UserDBA {
   }
   async editUser(userData: EditUserDBA) {
     const {id, ...updateData} = userData;
+    // Check if user exists
+    const userExists = db.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!userExists) {
+      throw new Error('User with ID: ' + id + ' does not exist');
+    }
+    // Update user
     const user = await db.user.update({
       where: {
         id: id,
@@ -21,6 +31,16 @@ class UserDBA {
     return user;
   }
   async deleteUser(userID: number) {
+    // Check if user exists
+    const userExists = db.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+    if (!userExists) {
+      throw new Error('User with ID: ' + userID + ' does not exist');
+    }
+    // Delete user
     const user = await db.user.delete({
       where: {
         id: userID,
