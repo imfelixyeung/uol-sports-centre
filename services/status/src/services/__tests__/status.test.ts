@@ -18,14 +18,21 @@ describe('getServiceHealthCheck', () => {
   const serviceHealthCheckEndpoint = `http://${serviceName}/health`;
 
   it('returns service up if reachable and 200', async () => {
+    // mocks the axios client to resolve with 200 code
     const statusCode = 200;
     axiosMock.get.mockResolvedValue({status: statusCode});
 
+    // tries getting the health check
     const result = await getServiceHealthCheck(serviceName);
+
+    // check if the expected endpoint is being used
     expect(axiosMock.get).toBeCalledWith(
       serviceHealthCheckEndpoint,
       expect.anything()
     );
+
+    // checks if the result contains the service name,
+    // 200 status and is indicated as 'up'
     expect(result).toEqual(
       expect.objectContaining({
         service: serviceName,
@@ -36,14 +43,21 @@ describe('getServiceHealthCheck', () => {
   });
 
   it('returns service degraded if reachable and not 200', async () => {
+    // mocks the axios client to resolve with 500 code
     const statusCode = 500;
     axiosMock.get.mockResolvedValue({status: statusCode});
 
+    // tries getting the health check
     const result = await getServiceHealthCheck(serviceName);
+
+    // check if the expected endpoint is being used
     expect(axiosMock.get).toBeCalledWith(
       serviceHealthCheckEndpoint,
       expect.anything()
     );
+
+    // checks if the result contains the service name,
+    // 500 status and is indicated as 'degraded'
     expect(result).toEqual(
       expect.objectContaining({
         service: serviceName,
@@ -54,13 +68,20 @@ describe('getServiceHealthCheck', () => {
   });
 
   it('returns service down if unreachable', async () => {
+    // mocks the axios client to reject (unreachable)
     axiosMock.get.mockRejectedValue(new Error());
 
+    // tries getting the health check
     const result = await getServiceHealthCheck(serviceName);
+
+    // check if the expected endpoint is being used
     expect(axiosMock.get).toBeCalledWith(
       serviceHealthCheckEndpoint,
       expect.anything()
     );
+
+    // checks if the result contains the service name,
+    // 503 status (service unavailable) and is indicated as 'down'
     expect(result).toEqual(
       expect.objectContaining({
         service: serviceName,
@@ -75,6 +96,8 @@ describe('getLatestReport', () => {
   getLatestReport;
   it('returns the formatted latest report', async () => {
     const now = new Date();
+
+    // mock the service's latest snapshot
     dbMock.service.findMany.mockResolvedValue([
       {
         name: 'service',
@@ -86,9 +109,11 @@ describe('getLatestReport', () => {
           },
         ],
       },
-    ] as any);
+    ] as any); // casting to any to prevent type errors
 
     const latest = await getLatestReport();
+
+    // checks if the correct service is being returned with expected values
     expect(latest).toEqual([
       {
         service: 'service',
@@ -100,11 +125,14 @@ describe('getLatestReport', () => {
   });
 
   it('returns null if no healthcheck snapshots', async () => {
+    // mocks the service's has no prior snapshots
     dbMock.service.findMany.mockResolvedValue([
       {name: 'service', healthChecks: []},
-    ] as any);
+    ] as any); // casting to any to prevent type errors
 
     const latest = await getLatestReport();
+
+    // expect the fields related to the latest snapshot to be null
     expect(latest).toEqual([
       {
         service: 'service',
@@ -120,13 +148,15 @@ describe('getServicesHealthCheck', () => {
   getServicesHealthCheck;
 
   it('returns formatted health check report for all registered services', async () => {
+    // mocks the axios client to resolve with 200 code
     axiosMock.get.mockResolvedValue({status: 200});
     dbMock.service.findMany.mockResolvedValue([
       {name: 'service1'},
       {name: 'service2'},
       {name: 'service3'},
-    ] as Service[]);
+    ] as Service[]); // casting to Service[] so other fields don't cause type errors
 
+    // expect all services to be up
     const result = await getServicesHealthCheck();
     expect(result).toEqual([
       expect.objectContaining({
@@ -155,12 +185,18 @@ describe('getStatusHistory', () => {
   getStatusHistory;
 
   it('returns empty list if not history', () => {
+    // mocks the services has no prior snapshots
     dbMock.service.findMany.mockResolvedValue([]);
+
+    // expect the status history to be empty
     expect(getStatusHistory()).resolves.toEqual([]);
+
+    // expect findMany to have been called
     expect(dbMock.service.findMany).toBeCalled();
   });
 
   it('returns the status history for all registered services', () => {
+    // mocks the db return, and expects the exact same result
     const servicesWithHealthChecks = [
       {
         name: 'service1',
@@ -212,6 +248,7 @@ describe('registerServices', () => {
   registerServices;
 
   it('upsert the service to database', async () => {
+    // upsert should always resolves
     dbMock.service.upsert.mockResolvedValue({
       id: 1,
       name: 'service',
@@ -221,6 +258,7 @@ describe('registerServices', () => {
     const services = ['service', 'service', 'service'];
     await registerServices(services);
 
+    // 3 services means 3 upserts
     expect(dbMock.service.upsert).toBeCalledTimes(services.length);
   });
 });
@@ -229,6 +267,7 @@ describe('removeOldHealthCheckSnapshots', () => {
   removeOldHealthCheckSnapshots;
 
   it('removes old status snapshots', async () => {
+    // simple check to see if deleteMany was called after the function is called
     await removeOldHealthCheckSnapshots();
     expect(dbMock.healthCheck.deleteMany).toBeCalled();
   });
@@ -244,11 +283,16 @@ describe('takeServicesHealthCheckSnapshot', () => {
       {name: 'service3'},
     ] as Service[];
 
+    // mocks the axios client to resolve
     axiosMock.get.mockResolvedValue({status: 200});
+
+    // mocks the database to return some services
     dbMock.service.findMany.mockResolvedValue(services);
 
     await takeServicesHealthCheckSnapshot();
 
+    // after taking snapshot, the service should be updated the same number
+    // of times as the number of services
     expect(dbMock.service.update).toBeCalledTimes(services.length);
   });
 });
