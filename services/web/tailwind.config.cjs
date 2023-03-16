@@ -96,6 +96,13 @@ module.exports = {
           lineHeight: '2rem',
           letterSpacing: '0em',
         },
+        '.typography-p-small': {
+          fontFamily: theme('fontFamily.body'),
+          fontWeight: '400',
+          fontSize: '0.875rem',
+          lineHeight: '0.875rem',
+          letterSpacing: '0em',
+        },
         '.typography-link-nav': {
           fontFamily: theme('fontFamily.display'),
           fontWeight: '700',

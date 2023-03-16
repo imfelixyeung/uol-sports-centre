@@ -13,6 +13,7 @@ export const typographyStyles = cva('', {
       h2: 'typography-h2',
       h3: 'typography-h3',
       p: 'typography-p',
+      smallP: 'typography-p-small',
       navLink: 'typography-link-nav',
       footerLink: 'typography-link-footer',
       button: 'typography-button',
