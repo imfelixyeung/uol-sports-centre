@@ -200,8 +200,33 @@ describe('resetPassword', () => {
 describe('signOutToken', () => {
   signOutToken;
 
-  // this function involves prisma transactions,
-  // and I don't know how to test and mock it yet...
-  it.todo('deletes refresh token associated with the token');
-  it.todo('deletes the token');
+  it('deletes refresh token associated with the token', async () => {
+    dbMock.$transaction.mockImplementation(cb => cb(dbMock));
+    dbMock.token.findUnique.mockResolvedValue({
+      refreshTokens: {},
+    } as unknown as Token);
+
+    const validToken = await TokenRegistry.createTokenForUser(user);
+    await signOutToken(validToken);
+
+    expect(dbMock.token.update).toBeCalledWith(
+      expect.objectContaining({
+        data: {
+          refreshTokens: {delete: true},
+        },
+      })
+    );
+  });
+
+  it('deletes the token', async () => {
+    dbMock.$transaction.mockImplementation(callback => callback(dbMock));
+    dbMock.token.findUnique.mockResolvedValue({
+      refreshTokens: {},
+    } as unknown as Token);
+
+    const validToken = await TokenRegistry.createTokenForUser(user);
+    await signOutToken(validToken);
+
+    expect(dbMock.token.delete).toBeCalledWith({where: {token: validToken}});
+  });
 });
