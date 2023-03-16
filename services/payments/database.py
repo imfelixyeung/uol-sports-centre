@@ -112,3 +112,20 @@ def get_purchases(user_id: int):
     JOIN products ON orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()
     return purchased_products
+
+
+def check_health() -> bool:
+    try:
+        # tries to connect to db
+        connection = sqlite3.connect("database.db")
+        cursor = connection.cursor()
+
+        # try executing a simple query
+        cursor.execute("SELECT 1")
+        connection.close()
+
+        # health check passed
+        return True
+    except sqlite3.Error:
+        # something went wrong
+        return False

@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 
-from database import init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
+from database import check_health, init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
 
 from payments import make_a_purchase, get_payment_manager
 
@@ -114,11 +114,7 @@ def customer_portal():
 @app.route("/health")
 def get_health():
     """Gets the health of the microservice"""
-    # if service_healthy:
-    #     return 200
-    # else:
-    #     return "not ok", 500
-    pass
+    return {"status": "healthy" if check_health() else "degraded"}
 
 
 if __name__ == "__main__":
