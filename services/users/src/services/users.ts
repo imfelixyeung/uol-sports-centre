@@ -3,7 +3,7 @@ import UserDBA from '../services/dba';
 import {CreateUserDBA, EditUserDBA} from './dbRequests';
 
 export async function error(errorMessage: string) {
-  return new Error(errorMessage);
+  throw new Error(errorMessage);
 }
 
 export async function editMembership(userData: EditUserDBA) {
@@ -11,7 +11,7 @@ export async function editMembership(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    return error('Error editing membership');
+    throw error('Error editing membership');
   }
 }
 
@@ -20,7 +20,7 @@ export async function returnFullRecord(userID: number) {
   try {
     return await UserDBA.getUser(userID);
   } catch (err) {
-    return error('Error getting user');
+    throw error('Error getting user');
   }
 }
 
@@ -29,7 +29,7 @@ export async function editFirstName(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    return error('Error editing first name');
+    throw error('Error editing first name');
   }
 }
 
@@ -38,7 +38,7 @@ export async function editSurname(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    return error('Error editing Surname name');
+    throw error('Error editing Surname name');
   }
 }
 
@@ -47,7 +47,7 @@ export async function editPaymentID(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    return error('Error editing payment ID');
+    throw error('Error editing payment ID');
   }
 }
 
@@ -60,7 +60,7 @@ export async function createNewUser(userData: CreateUserDBA) {
   try {
     return await UserDBA.createUser(userData);
   } catch (err) {
-    return error('Error creating user');
+    throw error('Error creating user');
   }
 }
 
@@ -69,6 +69,6 @@ export async function deleteExistingUser(userID: number) {
   try {
     return await UserDBA.deleteUser(userID);
   } catch (err) {
-    return error('Error deleting user');
+    throw error('Error deleting user');
   }
 }

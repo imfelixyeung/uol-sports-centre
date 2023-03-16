@@ -18,7 +18,7 @@ class UserDBA {
           ' already exists. Attempted to overwrite'
       );
     }
-    // if user exists, throw error
+    // Create user
     const user = await db.user.create({
       data: userData,
     });

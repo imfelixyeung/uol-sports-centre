@@ -14,5 +14,4 @@ const get = createController({
 const healthControllers = {
   get,
 };
-// Export the healthControllers object
 export default healthControllers;

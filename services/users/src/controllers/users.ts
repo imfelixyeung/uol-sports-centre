@@ -1,5 +1,4 @@
 // Description: This file contains the controller functions for the users service
-// Author: MW
 import express from 'express';
 import {z} from 'zod';
 import {
