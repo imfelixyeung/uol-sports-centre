@@ -15,6 +15,7 @@ load_dotenv(os.path.join(dirtoenv, ".env"))
 
 STRIPE_API_KEY = os.getenv("STRIPE_API")
 APP_PORT_STRING = os.getenv("APP_PORT")
+DEBUG = os.getenv("DEBUG")
 
 # Docker defaults unset environment variables to empty strings
 # Will need to check if they are not empty strings on top of None

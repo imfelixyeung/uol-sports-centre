@@ -134,8 +134,11 @@ services:
       target: dev
     environment:
       - APP_PORT=80
+      - DEBUG=true
     networks:
       - network
+    volumes:
+      - ./services/payments:/app
 
   management:
     build:
