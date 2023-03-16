@@ -356,7 +356,7 @@ paths:
           example: 1
       responses:
         "200":
-          description: Successful operation retuns the array of bookings
+          description: Successful operation returns the array of bookings
           content:
             application/json:
               schema:
@@ -410,7 +410,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the new booking
+          description: Successful operation returns the new booking
           content:
             application/json:
               schema:
@@ -702,7 +702,7 @@ paths:
       operationId: getEvents
       responses:
         "200":
-          description: Successful operation retuns the array of events
+          description: Successful operation returns the array of events
           content:
             application/json:
               schema:
@@ -764,7 +764,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the new event
+          description: Successful operation returns the new event
           content:
             application/json:
               schema:
@@ -803,7 +803,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of facilities
+          description: Successful operation returns the array of facilities
           content:
             application/json:
               schema:
@@ -968,7 +968,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of opening times
+          description: Successful operation returns the array of opening times
           content:
             application/json:
               schema:
@@ -1141,7 +1141,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of activities
+          description: Successful operation returns the array of activities
           content:
             application/json:
               schema:
