@@ -1,10 +1,11 @@
 import {Request, Response} from 'express';
+import {HealthCheck} from '../schema/health-check';
 import {getHealth} from '../services/health';
 
-const get = async (req: Request, res: Response) => {
+const get = async (req: Request, res: Response<HealthCheck>) => {
   await getHealth()
-    .then(health => res.json({success: true, health}))
-    .catch(error => res.status(500).json({success: false, error}));
+    .then(healthy => res.json({status: healthy ? 'healthy' : 'degraded'}))
+    .catch(() => res.json({status: 'degraded'}));
 };
 
 const healthControllers = {
