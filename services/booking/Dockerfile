@@ -37,11 +37,11 @@ ENV NODE_ENV="production"
 # generate prisma client
 RUN pnpm exec prisma generate
 
-# switch to non-root user
-USER node
-
 # build the app
 RUN pnpm build
+
+# switch to non-root user
+USER node
 
 # copy app
 COPY --chown=node:node . ./

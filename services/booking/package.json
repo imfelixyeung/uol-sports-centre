@@ -16,7 +16,7 @@
     "seed": "prisma db seed",
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "build": "swc ./src -d build",
-    "serve": "pnpm db:push && pnpm seed && node ./build/src/index.js"
+    "serve": "pnpm db:push && pnpm seed && node ./build/index.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
