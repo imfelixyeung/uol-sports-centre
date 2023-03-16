@@ -1,12 +1,98 @@
 import clsx from 'clsx';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
 import type {FC, PropsWithChildren} from 'react';
+import {useState} from 'react';
+import * as yup from 'yup';
 import AppIcon from '~/components/AppIcon/AppIcon';
 import Button from '~/components/Button';
 import Typography from '~/components/Typography';
 import type {NextPageWithLayout} from '~/types/NextPage';
 
+const onboardingSteps = [
+  {
+    title: 'Personal Details',
+    why: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque expedita quod, tempora ullam quaerat pariatur. Quaerat culpa facere laborum numquam voluptates autem! A veniam quidem eaque incidunt quas, error modi!',
+    fields: [
+      {
+        name: 'firstName',
+        label: 'First Name',
+        required: true,
+      },
+      {
+        name: 'middleName',
+        label: 'Middle Name(s)',
+        required: false,
+      },
+      {
+        name: 'lastName',
+        label: 'Last Name',
+        required: true,
+      },
+      {
+        name: 'dateOfBirth',
+        label: 'Date of Birth',
+        required: true,
+      },
+      {
+        name: 'phoneNumber',
+        label: 'Phone Number',
+        required: false,
+      },
+    ],
+    validationSchema: yup.object({
+      firstName: yup.string().required('First name is required'),
+      middleName: yup.string(),
+      lastName: yup.string().required('Last name is required'),
+      dateOfBirth: yup.string().required('Date of birth is required'),
+      phoneNumber: yup.string(),
+    }),
+  },
+  {
+    title: 'Emergency Contact',
+    why: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque expedita quod, tempora ullam quaerat pariatur. Quaerat culpa facere laborum numquam voluptates autem! A veniam quidem eaque incidunt quas, error modi!',
+    fields: [
+      {
+        name: 'emergencyPreferredName',
+        label: 'Preferred Name',
+        required: false,
+      },
+      {
+        name: 'emergencyPhoneNumber',
+        label: 'Phone Number',
+        required: false,
+      },
+      {
+        name: 'emergencyEmail',
+        label: 'Email Address',
+        required: false,
+      },
+    ],
+    validationSchema: yup.object({
+      emergencyPreferredName: yup.string(),
+      emergencyPhoneNumber: yup.string(),
+      emergencyEmail: yup.string().email('Is this an email?'),
+    }),
+  },
+  {
+    title: 'Mysteries has arisen',
+    fields: [],
+    validationSchema: yup.object({}),
+  },
+];
+
 const OnboardingPage: NextPageWithLayout = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const step = onboardingSteps[currentStep - 1];
+
+  if (!step) return <>Something went wrong</>;
+
+  const previousStep = () => setCurrentStep(Math.max(1, currentStep - 1));
+  const nextStep = () =>
+    setCurrentStep(Math.min(onboardingSteps.length, currentStep + 1));
+
+  const isFirstStep = currentStep === 1;
+  const isLastStep = currentStep === onboardingSteps.length;
+
   return (
     <div className="flex grow">
       <aside className="bg-auth bg-cover bg-center p-16">
@@ -14,39 +100,49 @@ const OnboardingPage: NextPageWithLayout = () => {
           <div className="grow">
             <AppIcon />
           </div>
-          <Typography.p styledAs="data">Step 1</Typography.p>
-          <Typography.h2>Personal Details</Typography.h2>
-          <OnboardingStepper steps={3} currentStep={1} />
+          <Typography.p styledAs="data">Step {currentStep}</Typography.p>
+          <Typography.h2>{step.title}</Typography.h2>
+          <OnboardingStepper
+            steps={onboardingSteps.length}
+            currentStep={currentStep}
+          />
         </div>
       </aside>
       <main className="grow bg-white py-16 px-8 text-black">
         <div className="container flex h-full flex-col">
-          <Typography.h1 uppercase>Personal Details</Typography.h1>
+          <Typography.h1 uppercase>{step.title}</Typography.h1>
           <div className="grid grow grid-cols-2 items-start gap-6">
             <Formik
               initialValues={{undefined}}
               onSubmit={(values, actions) => {
                 actions.setSubmitting(false);
               }}
+              validationSchema={step.validationSchema}
             >
               <Form className="flex grow flex-col gap-3">
-                <OnboardingField name="firstName" label="First Name" required />
-                <OnboardingField name="middleName" label="Middle Name" />
-                <OnboardingField name="lastName" label="Last Name" required />
-                <OnboardingField name="dob" label="Date of Birth" required />
-                <OnboardingField name="phoneNumber" label="Phone Number" />
+                {step.fields.map(field => (
+                  <OnboardingField
+                    key={field.name}
+                    name={field.name}
+                    label={field.label}
+                    required={field.required}
+                  />
+                ))}
               </Form>
             </Formik>
-            <OnboardingWhyBox>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus
-              nisi, explicabo ea et nemo dolores blanditiis quisquam nostrum
-              totam perferendis veritatis minus quo accusantium quos eveniet
-              consequuntur nesciunt tenetur? Laboriosam.
-            </OnboardingWhyBox>
+            {step.why && <OnboardingWhyBox>{step.why}</OnboardingWhyBox>}
           </div>
           <div className="flex justify-between">
-            <Button intent="primary">Previous</Button>
-            <Button intent="primary">Next</Button>
+            <Button
+              intent="primary"
+              onClick={previousStep}
+              className={clsx(isFirstStep && 'opacity-10')}
+            >
+              Previous
+            </Button>
+            <Button intent="primary" onClick={nextStep}>
+              {isLastStep ? 'Finish' : 'Next'}
+            </Button>
           </div>
         </div>
       </main>
