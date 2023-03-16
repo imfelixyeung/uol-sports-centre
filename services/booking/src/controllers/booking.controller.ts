@@ -282,8 +282,8 @@ class BookingController {
     const availableBookingQuerySchema = z
       .object({
         ...paginationSchema,
-        start: timestamp.optional(),
-        end: timestamp.optional(),
+        start: timestamp.default(`${new Date().setHours(0, 0, 0, 0)}`),
+        end: timestamp.default(`${new Date().setHours(23, 59, 59, 999)}`),
         facility: id('facility id').optional(),
         activity: id('activity id').optional(),
       })
@@ -291,7 +291,7 @@ class BookingController {
         if (start === end) {
           ctx.addIssue({
             code: 'custom',
-            message: 'The start and end filters cannot match',
+            message: `The start and end filters cannot match: ${start} ${end}`,
           });
         }
       });

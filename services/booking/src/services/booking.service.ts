@@ -206,10 +206,20 @@ class BookingService {
     limit?: number,
     page?: number
   ) {
+    // if start and end are unset, use today from 00:00 to 23:59
     if (!start) start = new Date().setHours(0, 0, 0, 0);
     if (!end) end = new Date().setHours(23, 59, 59, 999);
 
-    logger.debug({start, end, facility, activity, limit, page});
+    logger.debug(
+      `Get available bookings filters: ${{
+        start,
+        end,
+        facility,
+        activity,
+        limit,
+        page,
+      }}`
+    );
 
     // lets check how many days are between the start and the end to make sure
     // we dont generate way too many responses
