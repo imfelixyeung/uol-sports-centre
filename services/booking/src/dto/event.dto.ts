@@ -1,3 +1,5 @@
+import {EventType} from '@prisma/client';
+
 export interface EventDTO {
   id: number;
   name: string;
@@ -5,7 +7,7 @@ export interface EventDTO {
   day: number;
   time: number;
   duration: number;
-  type: 'SESSION' | 'OPEN_USE' | 'TEAM_EVENT';
+  type: EventType;
 }
 
 export interface CreateEventDTO {
@@ -14,5 +16,5 @@ export interface CreateEventDTO {
   day: number;
   time: number;
   duration: number;
-  type: 'SESSION' | 'OPEN_USE' | 'TEAM_EVENT';
+  type: EventType;
 }

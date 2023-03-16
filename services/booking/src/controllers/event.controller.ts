@@ -4,6 +4,7 @@ import eventService from '@/services/event.service';
 import {z} from 'zod';
 import {id, timestamp} from '@/schema';
 import {CreateEventDTO} from '@/dto/event.dto';
+import {EventType} from '@prisma/client';
 
 /**
  * The Event Controller handles the incomming network requests and validates
@@ -71,7 +72,7 @@ class EventController {
       day: z.number(),
       time: z.number(),
       duration: z.number(),
-      type: z.enum(['SESSION', 'OPEN_USE', 'TEAM_EVENT']),
+      type: z.nativeEnum(EventType),
     });
 
     // ensure the request params abide by that schema
