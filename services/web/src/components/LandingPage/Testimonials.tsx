@@ -2,7 +2,14 @@ import type {FC} from 'react';
 import ScrollArea from '../ScrollArea';
 import Typography from '../Typography';
 
-const testimonials = [
+interface Testimonial {
+  name: string;
+  image: string;
+  title: string;
+  content: string;
+}
+
+const testimonials: Testimonial[] = [
   {
     name: 'Heather Poole',
     image: '/assets/images/pexels-andrea-piacquadio-733872.jpg',
@@ -46,8 +53,6 @@ const testimonials = [
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aliquid explicabo quidem nihil soluta rem voluptas impedit deleniti labore. Consectetur amet vero aliquid cum officiis. Architecto maxime vitae explicabo unde?',
   },
 ];
-
-type Testimonial = (typeof testimonials)[0];
 
 const Testimonials = () => {
   return (
