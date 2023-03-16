@@ -267,7 +267,7 @@ paths:
         "200":
           $ref: "#/components/responses/HealthCheck"
 
-  /users/viewFullRecord:
+  /users/{id}/viewFullRecord:
     get:
       tags:
         - users
@@ -284,13 +284,13 @@ paths:
 
     parameters:
       - name: "id"
-        in: "query"
+        in: "path"
         description: "ID of user to view"
         schema:
           type: integer
         required: true
 
-  /users/updateFirstName:
+  /users/{id}/updateFirstName:
     put:
       tags:
         - users
@@ -306,20 +306,20 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to update"
         schema:
           type: integer
         required: true
       - name: "firstName"
-        in: "query"
+        in: "header"
         description: "First name of user to update"
         schema:
           type: string
         required: true
 
-  /users/updateSurname:
+  /users/{id}/updateSurname:
     put:
       tags:
         - users
@@ -335,20 +335,20 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to update"
         schema:
           type: integer
         required: true
       - name: "surname"
-        in: "query"
+        in: "header"
         description: "Surname of user to update"
         schema:
           type: string
         required: true
 
-  /users/updatePaymentID:
+  /users/{id}/updatePaymentID:
     put:
       tags:
         - users
@@ -364,20 +364,20 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to update"
         schema:
           type: integer
         required: true
       - name: "paymentID"
-        in: "query"
+        in: "header"
         description: "Payment ID of user to update"
         schema:
           type: integer
         required: true
 
-  /users/updateMembership:
+  /users/{id}/updateMembership:
     put:
       tags:
         - users
@@ -393,14 +393,14 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to update"
         schema:
           type: integer
         required: true
       - name: "membership"
-        in: "query"
+        in: "header"
         description: "Membership of user to update"
         schema:
           type: string
@@ -418,38 +418,38 @@ paths:
           $ref: "#/components/responses/UpdatedUser"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "header"
         description: "ID of user to view"
         schema:
           type: integer
         required: true
       - name: "firstName"
-        in: "query"
+        in: "header"
         description: "First name of user to view"
         schema:
           type: string
         required: true
       - name: "surname"
-        in: "query"
+        in: "header"
         description: "Surname of user to view"
         required: true
         schema:
           type: string
       - name: "paymentID"
-        in: "query"
+        in: "header"
         description: "Payment ID of user to view"
         required: true
         schema:
           type: string
       - name: "membership"
-        in: "query"
+        in: "header"
         description: "Membership of user to view"
         required: true
         schema:
           type: string
 
-  /users/createUser:
+  /users/{id}/createUser:
     post:
       tags:
         - users
@@ -465,38 +465,38 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to create"
         required: true
         schema:
           type: integer
       - name: "firstName"
-        in: "query"
+        in: "header"
         description: "First name of user to create"
         required: true
         schema:
           type: string
       - name: "surname"
-        in: "query"
+        in: "header"
         description: "Surname of user to create"
         required: true
         schema:
           type: string
       - name: "paymentID"
-        in: "query"
+        in: "header"
         description: "Payment ID of user to create"
         required: true
         schema:
           type: string
       - name: "membership"
-        in: "query"
+        in: "header"
         description: "Membership of user to create"
         required: true
         schema:
           type: string
 
-  /users/deleteUser:
+  /users/{id}/deleteUser:
     delete:
       tags:
         - users
@@ -512,8 +512,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
 
     parameters:
-      - name: "id"
-        in: "query"
+      - name: id
+        in: "path"
         description: "ID of user to delete"
         required: true
         schema:

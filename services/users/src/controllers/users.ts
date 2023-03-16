@@ -34,18 +34,20 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
       error: params.error,
     });
   // need to call the service
-  const user = await returnFullRecord(params.data.id);
-  // need to return the response
-  if (user === null) {
+  // check if errors are thrown
+  try {
+    const user = await returnFullRecord(params.data.id);
+    return res.status(200).send({
+      status: 'OK',
+      user: user,
+    });
+  } catch (err) {
     return res.status(404).json({
       status: 'error',
       message: 'User with ID: ' + params.data.id + 'not found',
     });
   }
-  return res.status(200).send({
-    status: 'OK',
-    user: user,
-  });
+  // need to return the response
 }
 
 async function updateMembership(req: express.Request, res: express.Response) {
