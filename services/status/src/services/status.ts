@@ -27,7 +27,7 @@ export const getServiceHealthCheck = async (
   });
 
   try {
-    const {status, data} = await axios(serviceHealthCheckEndpoint, {
+    const {status, data} = await axios.get(serviceHealthCheckEndpoint, {
       // only throw errors if connection fails
       validateStatus: () => true, // ensures errors are thrown only if connection fails
     });

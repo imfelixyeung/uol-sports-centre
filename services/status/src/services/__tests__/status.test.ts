@@ -14,6 +14,10 @@ import {
 // note: type casting is used when mocking the db to prevent type errors
 // prisma queries' return types differs when different queries are used
 
+// expected responses for the health check endpoints
+const healthyResponse = {status: 'healthy'};
+const degradedResponse = {status: 'degraded'};
+
 describe('getServiceHealthCheck', () => {
   getServiceHealthCheck;
 
@@ -23,7 +27,10 @@ describe('getServiceHealthCheck', () => {
   it('returns service up if reachable and 200', async () => {
     // mocks the axios client to resolve with 200 code
     const statusCode = 200;
-    axiosMock.get.mockResolvedValue({status: statusCode});
+    axiosMock.get.mockResolvedValue({
+      status: statusCode,
+      data: healthyResponse,
+    });
 
     // tries getting the health check
     const result = await getServiceHealthCheck(serviceName);
@@ -48,7 +55,10 @@ describe('getServiceHealthCheck', () => {
   it('returns service degraded if reachable and not 200', async () => {
     // mocks the axios client to resolve with 500 code
     const statusCode = 500;
-    axiosMock.get.mockResolvedValue({status: statusCode});
+    axiosMock.get.mockResolvedValue({
+      status: statusCode,
+      data: degradedResponse,
+    });
 
     // tries getting the health check
     const result = await getServiceHealthCheck(serviceName);
@@ -152,7 +162,10 @@ describe('getServicesHealthCheck', () => {
 
   it('returns formatted health check report for all registered services', async () => {
     // mocks the axios client to resolve with 200 code
-    axiosMock.get.mockResolvedValue({status: 200});
+    axiosMock.get.mockResolvedValue({
+      status: 200,
+      data: healthyResponse,
+    });
     dbMock.service.findMany.mockResolvedValue([
       {name: 'service1'},
       {name: 'service2'},
@@ -265,7 +278,7 @@ describe('takeServicesHealthCheckSnapshot', () => {
     ] as Service[];
 
     // mocks the axios client to resolve
-    axiosMock.get.mockResolvedValue({status: 200});
+    axiosMock.get.mockResolvedValue({status: 200, data: healthyResponse});
 
     // mocks the database to return some services
     dbMock.service.findMany.mockResolvedValue(services);
