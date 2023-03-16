@@ -11,6 +11,9 @@ import {
   takeServicesHealthCheckSnapshot,
 } from '../status';
 
+// note: type casting is used when mocking the db to prevent type errors
+// prisma queries' return types differs when different queries are used
+
 describe('getServiceHealthCheck', () => {
   getServiceHealthCheck;
 
@@ -158,24 +161,25 @@ describe('getServicesHealthCheck', () => {
 
     // expect all services to be up
     const result = await getServicesHealthCheck();
+
+    const commonResult = {
+      status: 'up',
+      statusCode: 200,
+      timestamp: expect.any(Number),
+    };
+
     expect(result).toEqual([
       expect.objectContaining({
         service: 'service1',
-        status: 'up',
-        statusCode: 200,
-        timestamp: expect.any(Number),
+        ...commonResult,
       }),
       expect.objectContaining({
         service: 'service2',
-        status: 'up',
-        statusCode: 200,
-        timestamp: expect.any(Number),
+        ...commonResult,
       }),
       expect.objectContaining({
         service: 'service3',
-        status: 'up',
-        statusCode: 200,
-        timestamp: expect.any(Number),
+        ...commonResult,
       }),
     ]);
   });
@@ -197,46 +201,21 @@ describe('getStatusHistory', () => {
 
   it('returns the status history for all registered services', () => {
     // mocks the db return, and expects the exact same result
+
+    const healthCheck = {
+      timestamp: new Date(),
+      status: 'up',
+      statusCode: 200,
+    };
+
     const servicesWithHealthChecks = [
       {
         name: 'service1',
-        healthChecks: [
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-        ],
+        healthChecks: [{...healthCheck}, {...healthCheck}, {...healthCheck}],
       },
       {
         name: 'service2',
-        healthChecks: [
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-          {
-            timestamp: new Date(),
-            status: 'up',
-            statusCode: 200,
-          },
-        ],
+        healthChecks: [{...healthCheck}, {...healthCheck}, {...healthCheck}],
       },
     ];
     dbMock.service.findMany.mockResolvedValue(servicesWithHealthChecks as any);
@@ -247,15 +226,17 @@ describe('getStatusHistory', () => {
 describe('registerServices', () => {
   registerServices;
 
+  const serviceName = 'service';
+
   it('upsert the service to database', async () => {
     // upsert should always resolves
     dbMock.service.upsert.mockResolvedValue({
       id: 1,
-      name: 'service',
+      name: serviceName,
       createdAt: new Date(),
     });
 
-    const services = ['service', 'service', 'service'];
+    const services = [serviceName, serviceName, serviceName];
     await registerServices(services);
 
     // 3 services means 3 upserts
