@@ -222,4 +222,11 @@ describe('Test BookingService', () => {
 
     expect(availableBookings).toEqual(expectedOutput);
   });
+
+  test('get available bookings - db events error', async () => {
+    prismaMock.event.findMany.mockRejectedValue(null);
+    await expect(bookingService.getAvailableBookings()).resolves.toBeInstanceOf(
+      Error
+    );
+  });
 });
