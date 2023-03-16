@@ -1,3 +1,5 @@
+// Description: This file contains the controller functions for the users service
+// Author: MW
 import express from 'express';
 import {z} from 'zod';
 import {
@@ -19,23 +21,25 @@ async function demoHandler(req: express.Request, res: express.Response) {
 }
 
 async function viewFullRecord(req: express.Request, res: express.Response) {
+  // need to extract the data from the request
   const paramSchema = z.object({
     id: z.coerce.number(),
   });
-
+  // need to validate the data
   const params = paramSchema.safeParse(req.params);
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
-
+  // need to call the service
   const user = await returnFullRecord(params.data.id);
+  // need to return the response
   if (user === null) {
     return res.status(404).json({
       status: 'error',
-      message: 'User not found',
+      message: 'User with ID: ' + params.data.id + 'not found',
     });
   }
   return res.status(200).send({
@@ -48,32 +52,39 @@ async function updateMembership(req: express.Request, res: express.Response) {
   // need to extract the data from the request
   // we need to create a valid UserDBA object
   // we need to pass that object to the editMembership function
+  // we need to return the response
+
+  // need to extract the data from the request
   const updateUserSchema = z.object({
     membership: z.string(),
   });
-
+  // need to validate the data
   const updateUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+  // need to validate the data
   const body = updateUserSchema.safeParse(req.body);
+  // need to validate the id parameter
   const params = updateUserParamsSchema.safeParse(req.params);
+  // check if the body and params are valid
   if (!body.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed body',
+      message: 'Malformed body as membership is not a string or is missing',
       error: body.error,
     });
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
-
+  // put the data into a valid object
   const userData: EditUserDBA = {
     id: params.data.id,
     membership: body.data.membership,
   };
+  // call the service and see if any errors are thrown
   try {
     const updatedUser = await editMembership(userData);
     return res.status(200).send({
@@ -81,9 +92,14 @@ async function updateMembership(req: express.Request, res: express.Response) {
       user: updatedUser,
     });
   } catch (err) {
+    // if an error is thrown, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to update membership of user',
+      message:
+        'Unable to update membership to <' +
+        userData.membership +
+        '> of user with ID: ' +
+        params.data.id,
     });
   }
 }
@@ -101,13 +117,13 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   if (!body.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed body',
+      message: 'Malformed body as first name is not a string or is missing',
       error: body.error,
     });
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
 
@@ -125,7 +141,11 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to update first name of user',
+      message:
+        'Unable to update first name <' +
+        userData.firstName +
+        '> of user with ID: ' +
+        params.data.id,
     });
   }
 }
@@ -143,13 +163,13 @@ async function updateSurname(req: express.Request, res: express.Response) {
   if (!body.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed body',
+      message: 'Malformed body as last name is not a string or is missing',
       error: body.error,
     });
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
 
@@ -166,7 +186,11 @@ async function updateSurname(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to update surname of user',
+      message:
+        'Unable to update last name' +
+        userData.lastName +
+        'of user with ID: ' +
+        params.data.id,
     });
   }
 }
@@ -184,13 +208,13 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   if (!body.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed body',
+      message: 'Malformed body as paymentID is not a number or is missing',
       error: body.error,
     });
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
 
@@ -207,12 +231,17 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to update PaymentID of user',
+      message:
+        'Unable to update paymentID <' +
+        userData.paymentID +
+        '> of user with ID: ' +
+        params.data.id,
     });
   }
 }
 
 async function createUser(req: express.Request, res: express.Response) {
+  // create a schema to validate the body
   const createUserSchema = z.object({
     id: z.number(),
     paymentID: z.number(),
@@ -220,16 +249,18 @@ async function createUser(req: express.Request, res: express.Response) {
     lastName: z.string(),
     membership: z.string(),
   });
+  // validate the body
   const body = createUserSchema.safeParse(req.body);
+  // if the body is not valid, return a 400 error
   if (!body.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed body as some user data is missing or incorrect type',
       error: body.error,
     });
-
+  // if the body is valid, put it into an object
   const userData: CreateUserDBA = body.data;
-
+  // try to create the user
   try {
     const newUser = await createNewUser(userData);
     return res.status(200).send({
@@ -237,39 +268,47 @@ async function createUser(req: express.Request, res: express.Response) {
       user: newUser,
     });
   } catch (err) {
+    // if the user cannot be created, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to create new user',
+      message:
+        'Unable to create new user when connecting to database. User ID <' +
+        userData.id +
+        '>',
     });
   }
 }
 
 async function deleteUser(req: express.Request, res: express.Response) {
+  // create a schema to validate the body
   const deleteUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+  // validate the body
   const params = deleteUserParamsSchema.safeParse(req.params);
+  // if the body is not valid, return a 400 error
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
-
+  // if the body is valid, attempt to delete the user
   try {
     return res.status(200).send({
       status: 'OK',
-      message: 'Deleted user',
+      message: 'Deleted user with ID <' + params.data.id + '>',
       user: await deleteExistingUser(params.data.id),
     });
   } catch (err) {
+    // if the user cannot be deleted, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to delete specified user',
+      message: 'Unable to delete user with ID <' + params.data.id + '>',
     });
   }
 }
-
+// export the functions
 const usersControllers = {
   demoHandler,
   viewFullRecord,

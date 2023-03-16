@@ -1,3 +1,4 @@
+// Description: This file contains all the database transfer objects for the users service
 export interface UsersDBA {
   id: number;
   paymentID: number;

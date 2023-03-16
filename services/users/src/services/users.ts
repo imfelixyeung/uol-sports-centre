@@ -1,3 +1,4 @@
+// Description: This file contains the logic for the users service
 import UserDBA from '../services/dba';
 import {CreateUserDBA, EditUserDBA} from './dbRequests';
 
@@ -6,6 +7,7 @@ export async function error(errorMessage: string) {
 }
 
 export async function editMembership(userData: EditUserDBA) {
+  // attempt to edit membership
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
@@ -14,6 +16,7 @@ export async function editMembership(userData: EditUserDBA) {
 }
 
 export async function returnFullRecord(userID: number) {
+  // attempt to get user
   try {
     return await UserDBA.getUser(userID);
   } catch (err) {
@@ -22,6 +25,7 @@ export async function returnFullRecord(userID: number) {
 }
 
 export async function editFirstName(userData: EditUserDBA) {
+  // attempt to edit first name
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
@@ -30,6 +34,7 @@ export async function editFirstName(userData: EditUserDBA) {
 }
 
 export async function editSurname(userData: EditUserDBA) {
+  // attempt to edit surname
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
@@ -38,6 +43,7 @@ export async function editSurname(userData: EditUserDBA) {
 }
 
 export async function editPaymentID(userData: EditUserDBA) {
+  // attempt to edit payment ID
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
@@ -50,6 +56,7 @@ export function seedDatabase(): undefined {
 }
 
 export async function createNewUser(userData: CreateUserDBA) {
+  // attempt to create user
   try {
     return await UserDBA.createUser(userData);
   } catch (err) {
@@ -58,6 +65,7 @@ export async function createNewUser(userData: CreateUserDBA) {
 }
 
 export async function deleteExistingUser(userID: number) {
+  // attempt to delete user
   try {
     return await UserDBA.deleteUser(userID);
   } catch (err) {

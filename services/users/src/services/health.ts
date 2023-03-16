@@ -1,6 +1,8 @@
+// This file is used to check the health of the service
 import {db} from '../utils/db';
 
 export const getHealth = async () => {
+  // Check the database health
   const databaseHealth = await getDatabaseHealth();
   return {
     healthy: databaseHealth,
@@ -15,7 +17,7 @@ export const getHealth = async () => {
 
 const getDatabaseHealth = async () => {
   try {
-    // attempt to query the database
+    // Attempt to query the database
     await db.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
