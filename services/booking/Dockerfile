@@ -23,9 +23,20 @@ COPY . .
 
 # serve app
 EXPOSE ${PORT}
-EXPOSE ${PRISMA_STUDIO_PORT}
-CMD [ "sh", "dev.sh" ]
+CMD [ "pnpm", "dev" ]
 
+
+#################
+# Prisma Studio #
+#################
+FROM base AS studio
+
+# copy app
+COPY . .
+
+# serve app
+EXPOSE ${PRISMA_STUDIO_PORT}
+CMD [ "pnpm", "studio" ]
 
 ##############
 # Production #
@@ -49,4 +60,3 @@ COPY --chown=node:node . ./
 # serve the microservice
 EXPOSE ${PORT}
 CMD [ "pnpm", "serve" ]
-
