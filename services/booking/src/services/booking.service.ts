@@ -192,15 +192,18 @@ class BookingService {
    * @memberof BookingService
    */
   async getAvailableBookings(
-    filter: {
+    _filter: {
       facility?: number;
       activity?: number;
     } & PaginationFilter &
       TimeLimitFilter = {}
   ) {
     // if start and end are unset, use today from 00:00 to 23:59
-    if (!filter.start) filter.start = new Date().setHours(0, 0, 0, 0);
-    if (!filter.end) filter.end = new Date().setHours(23, 59, 59, 999);
+    const filter = {
+      start: _filter.start ?? new Date().setHours(0, 0, 0, 0),
+      end: _filter.end ?? new Date().setHours(23, 59, 59, 999),
+      ..._filter,
+    };
 
     logger.debug(`Get available bookings filters: ${filter}`);
 
