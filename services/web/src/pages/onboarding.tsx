@@ -9,7 +9,18 @@ import Button from '~/components/Button';
 import Typography from '~/components/Typography';
 import type {NextPageWithLayout} from '~/types/NextPage';
 
-const onboardingSteps = [
+interface OnboardingStep {
+  title: string;
+  why?: string;
+  fields: {
+    name: string;
+    label: string;
+    required?: boolean;
+  }[];
+  validationSchema: unknown;
+}
+
+const onboardingSteps: OnboardingStep[] = [
   {
     title: 'Personal Details',
     why: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque expedita quod, tempora ullam quaerat pariatur. Quaerat culpa facere laborum numquam voluptates autem! A veniam quidem eaque incidunt quas, error modi!',
