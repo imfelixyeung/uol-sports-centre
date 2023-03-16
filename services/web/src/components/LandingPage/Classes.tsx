@@ -1,4 +1,4 @@
-import ProductCarousel from '../ProductCarousel';
+import {ProductCarousel} from '../ProductCarousel';
 import Typography from '../Typography';
 
 const Classes = () => {

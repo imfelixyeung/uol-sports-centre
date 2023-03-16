@@ -1,32 +1,9 @@
 import type {FC} from 'react';
-import ChevronDoubleRightBorderedIcon from './Icons/ChevronTripleRightBorderedIcon';
-import ScrollArea from './ScrollArea';
-import Typography from './Typography';
+import ChevronDoubleRightBorderedIcon from '../Icons/ChevronTripleRightBorderedIcon';
+import Typography from '../Typography';
+import type {Product} from './types';
 
-interface Product {
-  image: string;
-  name: string;
-  description: string;
-  url: string;
-}
-
-interface ProductCarouselProps {
-  products: Product[];
-}
-
-const ProductCarousel: FC<ProductCarouselProps> = ({products}) => {
-  return (
-    <ScrollArea>
-      <div className="flex gap-6 pb-3">
-        {products.map((product, index) => (
-          <ProductCard product={product} key={index} />
-        ))}
-      </div>
-    </ScrollArea>
-  );
-};
-
-interface ProductCardProps {
+export interface ProductCardProps {
   product: Product;
 }
 
@@ -52,4 +29,4 @@ const ProductCard: FC<ProductCardProps> = ({product}) => {
   );
 };
 
-export default ProductCarousel;
+export default ProductCard;
