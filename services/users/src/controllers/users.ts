@@ -215,7 +215,6 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
 async function createUser(req: express.Request, res: express.Response) {
   const createUserSchema = z.object({
     id: z.number(),
-    accountID: z.number(),
     paymentID: z.number(),
     firstName: z.string(),
     lastName: z.string(),

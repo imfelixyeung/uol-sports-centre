@@ -19,6 +19,8 @@ const getDatabaseHealth = async () => {
     await db.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
+    console.error('Database health check failed', error);
+    console.log('Database health check failed', error);
     return false;
   }
 };
