@@ -4,6 +4,7 @@ help:
 	@echo "make dev: starts the service in development mode"
 	@echo "make format-check: checks code formatting"
 	@echo "make test: run tests"
+	@echo "make type-check: run type checking"
 	@echo "make ci: runs scripts for CI"
 
 start:
@@ -21,4 +22,7 @@ format-check:
 lint:
 	pylint --rc-file pylintrc ./*.py
 
-ci: format-check lint test
+type-check:
+	mypy management.py
+
+ci: type-check format-check lint test

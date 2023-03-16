@@ -139,6 +139,8 @@ services:
       - network
     volumes:
       - ./services/payments:/app
+    ports:
+      - "3000:80"
 
   management:
     build:
