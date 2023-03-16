@@ -1,5 +1,6 @@
 import logging
-from flask import Flask, Blueprint, request, make_response
+from flask import Flask, Blueprint
+from app.models import Facility, OpenTime, Activity
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -21,4 +22,12 @@ class HealthRouter:
                                 methods=["GET"])
 
   def get_health(self):
-    return {"status": "ok"}
+    # Attempt to get an item from the database to check connection
+    facility_check = Facility.query.get(1)
+    open_time_check = OpenTime.query.get(1)
+    activity_check = Activity.query.get(1)
+
+    if not facility_check or not open_time_check or not activity_check:
+      return {"status": "degraded"}
+
+    return {"status": "healthy"}, 200
