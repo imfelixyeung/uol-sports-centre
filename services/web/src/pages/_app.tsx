@@ -5,7 +5,7 @@ import {type AppType} from 'next/dist/shared/lib/utils';
 import {Saira, Saira_Condensed} from 'next/font/google';
 import {Toaster} from 'react-hot-toast';
 import {Provider} from 'react-redux';
-import Layout from '~/components/Layout/Layout';
+import {Layout} from '~/components/Layout';
 import {AuthProvider} from '~/providers/auth';
 import {store} from '~/redux/store';
 
