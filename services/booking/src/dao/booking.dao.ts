@@ -1,5 +1,4 @@
 import {
-  BookingDTO,
   bookingToDTO,
   CreateBookingDTO,
   UpdateBookingDTO,
@@ -150,7 +149,7 @@ class BookingDAO {
     const queryOrderBy: Prisma.Enumerable<Prisma.BookingOrderByWithRelationInput> =
       {};
 
-    const bookings = await prisma
+    const bookingQuery = await prisma
       .$transaction([
         prisma.booking.count({where: queryWhere}),
         prisma.booking.findMany({
@@ -163,8 +162,8 @@ class BookingDAO {
           orderBy: queryOrderBy,
         }),
       ])
-      .then(response => {
-        return [response[0], response[1].map(b => bookingToDTO(b))];
+      .then(([count, bookings]) => {
+        return {count, bookings: bookings.map(b => bookingToDTO(b))};
       })
       .catch(err => {
         logger.error(`Error getting bookings: ${err}`);
@@ -172,18 +171,18 @@ class BookingDAO {
       });
 
     // return the error if it is one
-    if (bookings instanceof Error) return bookings;
+    if (bookingQuery instanceof Error) return bookingQuery;
 
     // if not, return in paginated form
     return {
-      bookings: bookings[1] as BookingDTO[],
+      bookings: bookingQuery.bookings,
       metadata: {
-        count: bookings[0] as number,
-        limit: filter.limit || 0,
-        page: filter.page || 1,
-        pageCount:
-          (bookings[0] as number) / (filter.limit || (bookings[0] as number)) ||
-          0,
+        count: bookingQuery.count,
+        limit: filter.limit ?? 0,
+        page: filter.page ?? 1,
+        pageCount: Math.ceil(
+          bookingQuery.count / (filter.limit ?? bookingQuery.count)
+        ),
       },
     };
   }
