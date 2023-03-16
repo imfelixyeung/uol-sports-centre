@@ -8,7 +8,7 @@ export const id = (description: string) =>
       message: `Non-numeric ${description} supplied`,
     });
 
-export const date = z.string().pipe(z.coerce.date());
+export const date = z.coerce.date();
 
 export const timestamp = z
   .string()
