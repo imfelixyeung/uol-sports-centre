@@ -245,10 +245,8 @@ async function createUser(req: express.Request, res: express.Response) {
   // create a schema to validate the body
   const createUserSchema = z.object({
     id: z.number(),
-    paymentID: z.number(),
     firstName: z.string(),
     lastName: z.string(),
-    membership: z.string(),
   });
   // validate the body
   const body = createUserSchema.safeParse(req.body);
