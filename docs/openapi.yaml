@@ -1234,7 +1234,6 @@ paths:
       description: Returns status of the microservice
       operationId: get_health
 
-
       responses:
         "200":
           description: Returns healthy or degraded based on the connection to the database.
