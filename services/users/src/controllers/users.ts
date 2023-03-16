@@ -43,7 +43,7 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(404).json({
       status: 'error',
-      message: 'User with ID: ' + params.data.id + 'not found',
+      message: `Unable to find user with ID: ${params.data.id}`,
     });
   }
   // need to return the response
@@ -77,7 +77,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
   if (!params.success)
     return res.status(400).json({
       status: 'error',
-      message: 'malformed parameters as ID is not a number or is missing',
+      message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
   // put the data into a valid object
@@ -96,11 +96,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
     // if an error is thrown, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message:
-        'Unable to update membership to <' +
-        userData.membership +
-        '> of user with ID: ' +
-        params.data.id,
+      message: `Unable to update membership <${userData.membership}> of user with ID: ${params.data.id}`,
     });
   }
 }
@@ -142,11 +138,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message:
-        'Unable to update first name <' +
-        userData.firstName +
-        '> of user with ID: ' +
-        params.data.id,
+      message: `Unable to update first name <${userData.firstName}> of user with ID: ${params.data.id}`,
     });
   }
 }
@@ -187,11 +179,7 @@ async function updateSurname(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message:
-        'Unable to update last name' +
-        userData.lastName +
-        'of user with ID: ' +
-        params.data.id,
+      message: `Unable to update last name <${userData.lastName}> of user with ID: ${params.data.id}`,
     });
   }
 }
@@ -232,11 +220,7 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   } catch (err) {
     return res.status(500).send({
       status: 'error',
-      message:
-        'Unable to update paymentID <' +
-        userData.paymentID +
-        '> of user with ID: ' +
-        params.data.id,
+      message: `Unable to update paymentID <${userData.paymentID}> of user with ID: ${params.data.id}`,
     });
   }
 }
@@ -270,10 +254,7 @@ async function createUser(req: express.Request, res: express.Response) {
     // if the user cannot be created, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message:
-        'Unable to create new user when connecting to database. User ID <' +
-        userData.id +
-        '>',
+      message: `Unable to create user with ID: ${userData.id}`,
     });
   }
 }
@@ -303,7 +284,7 @@ async function deleteUser(req: express.Request, res: express.Response) {
     // if the user cannot be deleted, return a 500 error
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to delete user with ID <' + params.data.id + '>',
+      message: `Unable to delete user with ID: ${params.data.id}`,
     });
   }
 }

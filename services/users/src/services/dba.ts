@@ -13,9 +13,7 @@ class UserDBA {
     // if user exists, throw error
     if (await userExists) {
       throw new Error(
-        'User with ID: ' +
-          userData.id +
-          ' already exists. Attempted to overwrite'
+        `User with ID: ${userData.id} already exists in database. Attempted to overwrite.`
       );
     }
     // Create user
@@ -35,7 +33,7 @@ class UserDBA {
     });
     // if user does not exist, throw error
     if (!userExists) {
-      throw new Error('User with ID: ' + id + ' does not exist');
+      throw new Error(`User with ID: ${id} does not exist`);
     }
     // Update user
     const user = await db.user.update({
@@ -56,7 +54,7 @@ class UserDBA {
     });
     // if user does not exist, throw error
     if (!userExists) {
-      throw new Error('User with ID: ' + userID + ' does not exist');
+      throw new Error(`User with ID: ${userID} does not exist`);
     }
     // Delete user
     const user = await db.user.delete({
@@ -75,7 +73,7 @@ class UserDBA {
     });
     // if user does not exist, throw error
     if (!user) {
-      throw new Error('User with ID: ' + userID + ' does not exist');
+      throw new Error(`User with ID: ${userID} does not exist`);
     }
     // Return user
     return user;

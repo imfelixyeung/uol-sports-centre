@@ -449,7 +449,7 @@ paths:
         schema:
           type: string
 
-  /users/{id}/createUser:
+  /users/createUser:
     post:
       tags:
         - users
@@ -466,7 +466,7 @@ paths:
 
     parameters:
       - name: id
-        in: "path"
+        in: "header"
         description: "ID of user to create"
         required: true
         schema:
@@ -480,18 +480,6 @@ paths:
       - name: "surname"
         in: "header"
         description: "Surname of user to create"
-        required: true
-        schema:
-          type: string
-      - name: "paymentID"
-        in: "header"
-        description: "Payment ID of user to create"
-        required: true
-        schema:
-          type: string
-      - name: "membership"
-        in: "header"
-        description: "Membership of user to create"
         required: true
         schema:
           type: string
@@ -1636,5 +1624,5 @@ components:
                 enum:
                   - "OK"
                   - "ERROR"
-              data:
+              user:
                 $ref: "#/components/schemas/User"
