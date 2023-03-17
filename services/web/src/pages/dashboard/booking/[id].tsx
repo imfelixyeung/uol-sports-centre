@@ -3,6 +3,8 @@ import {useState} from 'react';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
+import {withPageAuthRequired} from '~/providers/auth';
+import {withUserOnboardingRequired} from '~/providers/user';
 
 const ViewBookingPage = () => {
   const [tempBooked, setTempBooked] = useState(false);
@@ -44,8 +46,9 @@ const ViewBookingPage = () => {
   );
 };
 
-export default ViewBookingPage;
-
+export default withPageAuthRequired(
+  withUserOnboardingRequired(ViewBookingPage)
+);
 export const getStaticPaths: GetStaticPaths = async () => {
   return await Promise.resolve({
     fallback: true,

@@ -1,4 +1,4 @@
-import {db} from '../utils/db';
+import {db} from '~/utils/db';
 
 /**
  * evaluates the health of the service
@@ -17,7 +17,7 @@ export const getHealth = async () => {
   };
 };
 
-const getDatabaseHealth = async () => {
+export const getDatabaseHealth = async () => {
   try {
     // attempt to query the database
     await db.$queryRaw`SELECT 1`;

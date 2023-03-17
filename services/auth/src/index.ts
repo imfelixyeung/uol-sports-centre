@@ -1,17 +1,9 @@
-import express from 'express';
 import cron from 'node-cron';
+import {createApp} from './app';
 import {env} from './env';
-import authRouter from './routers/auth';
-import healthRouter from './routers/health';
-import usersRouter from './routers/users';
 import {deleteExpiredTokens} from './services/auth';
 
-const app = express();
-
-app.use(express.json());
-app.use('/', authRouter);
-app.use('/users', usersRouter);
-app.use('/health', healthRouter);
+const app = createApp();
 
 // start cron jobs
 cron.schedule('0 * * * *', deleteExpiredTokens);

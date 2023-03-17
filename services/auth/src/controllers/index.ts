@@ -1,9 +1,9 @@
 import {Request, Response} from 'express';
 import {z} from 'zod';
-import {UserRole} from '../config';
-import {TokenRegistry} from '../persistence/tokens';
-import {JsonWebTokenPayload, jsonWebTokenPayloadSchema} from '../schema/jwt';
-import {getJwtFromRequest} from '../utils/getJwtFromRequest';
+import {UserRole} from '~/config';
+import {TokenRegistry} from '~/persistence/tokens';
+import {JsonWebTokenPayload, jsonWebTokenPayloadSchema} from '~/schema/jwt';
+import {getJwtFromRequest} from '~/utils/getJwtFromRequest';
 
 // inspired by https://github.com/colinhacks/zod/discussions/2032#discussioncomment-4943969
 // and inspired by https://trpc.io/

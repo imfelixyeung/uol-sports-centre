@@ -2,9 +2,9 @@ import {User} from '@prisma/client';
 import {randomUUID} from 'crypto';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
-import {ACCESS_JWT_EXPIRES_IN_MS, ACCESS_JWT_SIGN_OPTIONS} from '../config';
-import {env} from '../env';
-import {db} from '../utils/db';
+import {ACCESS_JWT_EXPIRES_IN_MS, ACCESS_JWT_SIGN_OPTIONS} from '~/config';
+import {env} from '~/env';
+import {db} from '~/utils/db';
 
 interface AccessJWTCustomClaims {
   user: {

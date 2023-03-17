@@ -15,6 +15,7 @@ import type {
   DecodedJsonWebToken,
   Tokens,
 } from '~/redux/services/types/auth';
+import type {NextPageWithLayout} from '~/types/NextPage';
 import {AuthContext} from './context';
 import {useAuth} from './hooks/useAuth';
 import {useStorage} from './hooks/useStorage';
@@ -181,14 +182,18 @@ export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
 };
 
 // function inspired by auth0 nextjs's withPageAuthRequired function
-export const withPageAuthRequired = <T extends {} = {}>(Page: FC<T>): FC<T> => {
-  const WithPageAuthRequired = (props: T) => {
+export const withPageAuthRequired = <T extends {} = {}>(
+  Page: NextPageWithLayout
+): NextPageWithLayout<T> => {
+  const WithPageAuthRequired: NextPageWithLayout<T> = (props: T) => {
     return (
       <PageAuthRequired>
         <Page {...props} />
       </PageAuthRequired>
     );
   };
+
+  WithPageAuthRequired.getLayout = Page.getLayout;
 
   return WithPageAuthRequired;
 };
