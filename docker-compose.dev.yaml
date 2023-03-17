@@ -137,18 +137,56 @@ services:
   booking:
     build:
       context: ./services/booking
-      dockerfile: Dockerfile.dev
+      target: dev
     environment:
       - PORT=80
       - HOST=booking
-      - DATABASE_URL=file:./data/booking.development.db
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
       - DEBUG=true
     networks:
       - network
     volumes:
       - ./services/booking:/app
       - /app/node_modules
-      - ./persistence/booking/db:/app/data
+    depends_on:
+      booking-db:
+        condition: service_healthy
+
+  booking-studio:
+    build:
+      context: ./services/booking
+      target: studio
+    environment:
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
+      - PRISMA_STUDIO_PORT=5555
+    ports:
+      - "5555"
+    networks:
+      - network
+    volumes:
+      - ./services/booking:/app
+      - /app/node_modules
+    depends_on:
+      booking-db:
+        condition: service_healthy
+
+  booking-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=booking
+      - POSTGRES_USER=booking
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    volumes:
+      - ./persistence/booking/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "booking", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
 
   gateway:
     build: ./gateway

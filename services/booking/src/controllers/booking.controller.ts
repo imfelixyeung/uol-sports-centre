@@ -1,8 +1,12 @@
 import express from 'express';
 import {z} from 'zod';
-import {CreateBookingDTO, UpdateBookingDTO} from '../dto/booking.dto';
-import logger from '../lib/logger';
-import bookingService from '../services/booking.service';
+import {CreateBookingDTO, UpdateBookingDTO} from '@/dto/booking.dto';
+import logger from '@/lib/logger';
+import bookingService from '@/services/booking.service';
+import {PaginatedBookings} from '@/types/responses';
+import paginationSchema from '@/schema/pagination';
+import {id, timestamp} from '@/schema';
+import NotFoundError from '@/errors/notFound';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -27,20 +31,8 @@ class BookingController {
 
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
-      limit: z
-        .string()
-        .transform(limit => parseInt(limit))
-        .refine(limit => !Number.isNaN(limit), {
-          message: 'Non-numeric limit parameter supplied',
-        })
-        .optional(),
-      page: z
-        .string()
-        .transform(page => parseInt(page))
-        .refine(page => !Number.isNaN(page), {
-          message: 'Non-numeric page parameter supplied',
-        })
-        .optional(),
+      ...paginationSchema,
+      user: id('user id').optional(),
     });
 
     // ensure the query params abide by that schema
@@ -52,9 +44,34 @@ class BookingController {
         error: query.error,
       });
 
+    let bookings: PaginatedBookings | Error;
+    if (query.data.user !== undefined) {
+      const filter = {...query.data, user: query.data.user};
+      bookings = await bookingService.getUserBookings(filter).catch(err => {
+        logger.error(
+          `Error getting bookings from user ${query.data.user}: ${err}`
+        );
+        return new Error(err);
+      });
+    } else {
+      bookings = await bookingService
+        .get({limit: query.data.limit, page: query.data.page})
+        .catch(err => {
+          logger.error(`Error getting bookings: ${err}`);
+          return new Error(err);
+        });
+    }
+
+    if (bookings instanceof Error) {
+      return res.status(500).json({
+        status: 'error',
+        error: bookings,
+      });
+    }
+
     return res.status(200).send({
       status: 'OK',
-      bookings: await bookingService.get(query.data.limit, query.data.page),
+      ...bookings,
     });
   }
 
@@ -69,10 +86,9 @@ class BookingController {
     // get post body information
     const createBookingBodySchema = z.object({
       userId: z.number(),
-      facilityId: z.number(),
+      eventId: z.number(),
       transactionId: z.number(),
-      startTime: z.string().transform(time => new Date(time)),
-      duration: z.number(),
+      starts: z.string().transform(time => new Date(time)),
     });
 
     // ensure the request params abide by that schema
@@ -86,15 +102,17 @@ class BookingController {
 
     // create the new booking
     const bookingData: CreateBookingDTO = body.data;
-    const newBooking = await bookingService.create(bookingData);
+    const newBooking = await bookingService.create(bookingData).catch(err => {
+      logger.error(`Unable to create booking: ${err}`);
+      return new Error(err);
+    });
 
-    // check has created
-    if (newBooking === null)
+    if (newBooking instanceof Error) {
       return res.status(500).send({
         status: 'error',
-        message: 'Unable to create booking',
+        error: 'Unable to create booking',
       });
-
+    }
     // after passing all the above checks, the booking should be okay
     return res.status(200).send({
       status: 'OK',
@@ -112,12 +130,7 @@ class BookingController {
 
     // create a schema, outlining what we expect from params
     const paramSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -130,13 +143,24 @@ class BookingController {
       });
 
     // try find the booking
-    const booking = await bookingService.getById(params.data.id);
-    if (booking === null) {
-      // if it is null, it was not found in the database
-      return res.status(404).json({
-        status: 'error',
-        message: 'Booking not found',
-      });
+    const booking = await bookingService.getById(params.data.id).catch(err => {
+      logger.error(`Unable to get booking ${params.data.id}: ${err}`);
+      return new Error(err);
+    });
+
+    if (booking instanceof Error) {
+      if (booking instanceof NotFoundError) {
+        // if it is null, it was not found in the database
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).json({
+          status: 'error',
+          error: booking,
+        });
+      }
     }
 
     // after passing all the above checks, the booking should be okay
@@ -159,19 +183,13 @@ class BookingController {
       userId: z.number().optional(),
       facilityId: z.number().optional(),
       transactionId: z.number().optional(),
-      startTime: z
+      starts: z
         .string()
         .transform(time => new Date(time))
         .optional(),
-      duration: z.number().optional(),
     });
     const updateBookingParamsSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -192,13 +210,18 @@ class BookingController {
 
     // create the new booking
     const bookingData: UpdateBookingDTO = {id: params.data.id, ...body.data};
-    const updatedBooking = await bookingService.update(bookingData);
+    const updatedBooking = await bookingService
+      .update(bookingData)
+      .catch(err => {
+        logger.error(`Error updating booking ${params.data.id}: ${err}`);
+        return new Error(err);
+      });
 
     // check has created
-    if (updatedBooking === null)
+    if (updatedBooking instanceof Error)
       return res.status(500).send({
         status: 'error',
-        message: 'Unable to create booking',
+        error: 'Unable to update booking',
       });
 
     // after passing all the above checks, the booking should be okay
@@ -217,12 +240,7 @@ class BookingController {
     logger.debug('Received deleteBookingById request');
 
     const deleteBookingParamsSchema = z.object({
-      id: z
-        .string()
-        .transform(id => parseInt(id))
-        .refine(id => !Number.isNaN(id), {
-          message: 'Non-number id supplied',
-        }),
+      id: id('booking id'),
     });
 
     // ensure the request params abide by that schema
@@ -234,10 +252,112 @@ class BookingController {
         error: params.error,
       });
 
+    const booking = await bookingService
+      .deleteById(params.data.id)
+      .catch(err => {
+        logger.error(`Error deleting booking ${params.data.id}: ${err}`);
+        return new Error(err);
+      });
+
+    if (booking instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: booking,
+      });
+    }
+
     return res.status(200).send({
       status: 'OK',
-      message: 'Deleted booking',
-      booking: await bookingService.deleteById(params.data.id),
+      booking,
+    });
+  }
+
+  /**
+   * Get available booking slots based on filter variables
+   *
+   * @memberof BookingController
+   */
+  async getAvailableBookings(req: express.Request, res: express.Response) {
+    const availableBookingQuerySchema = z
+      .object({
+        ...paginationSchema,
+        start: timestamp.default(`${new Date().setHours(0, 0, 0, 0)}`),
+        end: timestamp.default(`${new Date().setHours(23, 59, 59, 999)}`),
+        facility: id('facility id').optional(),
+        activity: id('activity id').optional(),
+      })
+      .superRefine(({start, end}, ctx) => {
+        if (start === end) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `The start and end filters cannot match: ${start} ${end}`,
+          });
+        }
+      });
+
+    const query = availableBookingQuerySchema.safeParse(req.query);
+    if (!query.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: query.error,
+      });
+
+    const availableBookings = await bookingService
+      .getAvailableBookings(query.data)
+      .catch(err => {
+        logger.error(`Error getting available bookings: ${err}`);
+        return new Error(err);
+      });
+
+    if (availableBookings instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: availableBookings.message,
+      });
+    }
+
+    return res.status(200).send({
+      status: 'OK',
+      availableBookings,
+      metadata: {
+        count: availableBookings.length,
+      },
+    });
+  }
+
+  /**
+   * The endpoint called when the user wants to book a booking
+   *
+   * @memberof BookingController
+   */
+  async bookBooking(req: express.Request, res: express.Response) {
+    const bookQuerySchema = z.object({
+      starts: timestamp,
+      event: id('event id'),
+      user: id('user id'),
+    });
+
+    const query = bookQuerySchema.safeParse(req.query);
+    if (!query.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: query.error,
+      });
+
+    const booking = await bookingService.book(query.data);
+
+    if (booking instanceof Error) {
+      return res.status(400).send({
+        status: 'error',
+        error: booking.message,
+      });
+    }
+
+    return res.status(200).send({
+      status: 'OK',
+      booking,
     });
   }
 }
