@@ -43,6 +43,15 @@ jobs:
       - name: Run ci tests in docker
         run: make ci-status
 
+  users-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-users
+
   facilities-ci-checks:
     runs-on: ubuntu-latest
     strategy:
