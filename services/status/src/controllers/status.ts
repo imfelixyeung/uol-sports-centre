@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {getLatestReport, getStatusHistory} from '../services/status';
+import {getLatestReport, getStatusHistory} from '~/services/status';
 
 const getReport = async (req: Request, res: Response) => {
   try {
