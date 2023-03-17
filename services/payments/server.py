@@ -6,7 +6,7 @@ import stripe
 
 from database import check_health, init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
 
-from payments import make_a_purchase, get_payment_manager
+from payments import make_a_purchase, get_payment_manager, apply_discount
 
 from flask import Flask, json, request, jsonify, redirect, render_template
 
@@ -34,6 +34,12 @@ def get_index():
                 "subscription")
     add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     return render_template("index.html")
+
+
+@app.route("/apply-discount", methods = ["POST"])
+def get_discount():
+    """Get the discounted product's price after applying a discount to it"""
+    return apply_discount("subscription-test", "membership")
 
 
 @app.route("/checkout-session", methods=["POST"])

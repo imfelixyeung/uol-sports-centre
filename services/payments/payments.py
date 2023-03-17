@@ -79,6 +79,24 @@ def change_price(new_price: str, product_name: str):
     update_price(product_name, new_price)
 
 
+def apply_discount(product_name, discount_type: str) -> float:
+    '''Applies a discount to a product based on the discount condition'''
+
+    # Get the original price of the product
+    product_price = get_product(product_name)[2]
+
+    # Apply the discount based on the condition
+    if discount_type == 'membership':
+        # 10% discount for members
+        product_price *= 0.9
+    elif discount_type == 'weekly':
+        # 20% discount for weekly purchases
+        product_price *= 0.8
+
+    # Round the discounted price to 2 decimal places
+    return round(product_price, 2)
+
+
 def get_payment_manager(user_id: int):
     '''Returns portal session for payments and subscription'''
     # Get the Stripe customer ID for the current user from the database
