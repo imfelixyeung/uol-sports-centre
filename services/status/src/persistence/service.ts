@@ -1,4 +1,4 @@
-import {db} from '../utils/db';
+import {db} from '~/utils/db';
 
 export class ServiceRegistry {
   static async addService(service: string) {

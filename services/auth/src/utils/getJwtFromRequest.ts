@@ -1,5 +1,5 @@
 import {Request} from 'express';
-import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
+import {JsonWebToken, jsonWebTokenSchema} from '~/schema/jwt';
 
 export const getJwtFromRequest = (req: Request) => {
   const authorisation = req.headers.authorization;
