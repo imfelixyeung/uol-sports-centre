@@ -86,10 +86,10 @@ def apply_discount(product_name, discount_type: str) -> float:
     product_price = get_product(product_name)[2]
 
     # Apply the discount based on the condition
-    if discount_type == 'membership':
+    if discount_type == "membership":
         # 10% discount for members
         product_price *= 0.9
-    elif discount_type == 'weekly':
+    elif discount_type == "weekly":
         # 20% discount for weekly purchases
         product_price *= 0.8
 
