@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import jwt_decode from 'jwt-decode';
+import {useRouter} from 'next/router';
 import type {FC, PropsWithChildren} from 'react';
 import {useCallback, useEffect} from 'react';
 import {
@@ -15,6 +16,7 @@ import type {
   Tokens,
 } from '~/redux/services/types/auth';
 import {AuthContext} from './context';
+import {useAuth} from './hooks/useAuth';
 import {useStorage} from './hooks/useStorage';
 
 useLoginMutation;
@@ -156,4 +158,37 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
+  const auth = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (auth.session) return;
+
+      const path = router.asPath;
+
+      void router.push(`/auth/login?redirect=${encodeURIComponent(path)}`);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [auth.session, router]);
+
+  if (!auth.session) return <></>;
+  return <>{children}</>;
+};
+
+// function inspired by auth0 nextjs's withPageAuthRequired function
+export const withPageAuthRequired = <T extends {} = {}>(Page: FC<T>): FC<T> => {
+  const WithPageAuthRequired = (props: T) => {
+    return (
+      <PageAuthRequired>
+        <Page {...props} />
+      </PageAuthRequired>
+    );
+  };
+
+  return WithPageAuthRequired;
 };

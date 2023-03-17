@@ -94,19 +94,9 @@ services:
     environment:
       - PORT=80
       - HOST=users
+      - DATABASE_URL=postgresql://users:mysecretpassword@users-database:5432/prod
     networks:
       - network
-
-  booking:
-    build: ./services/booking
-    environment:
-      - PORT=80
-      - HOST=booking
-      - DATABASE_URL=file:./data/booking.production.db
-    networks:
-      - network
-    volumes:
-      - ./persistence/booking/db:/app/data
 
   users-database:
     image: postgres
@@ -119,6 +109,38 @@ services:
       - network
     volumes:
       - ./persistence/users/db:/var/lib/postgresql/data
+
+  booking:
+    build:
+      context: ./services/booking
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/prod
+    networks:
+      - network
+    depends_on:
+      booking-db:
+        condition: service_healthy
+
+  booking-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=booking
+      - POSTGRES_USER=booking
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/booking/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "booking", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
 
   gateway:
     build: ./gateway

@@ -13,20 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-        working-directory: ./services/web
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: ./services/web
-
-      - name: Lint code base with GTS
-        run: pnpm run ci
-        working-directory: ./services/web
+      - name: Run ci tests in docker
+        run: make ci-web
 
   auth-ci-checks:
     runs-on: ubuntu-latest
@@ -54,6 +42,57 @@ jobs:
 
       - name: Run ci tests in docker
         run: make ci-status
+
+  booking-ci-checks:
+    runs-on: ubuntu-latest
+    env:
+      HOST: localhost
+      PORT: 12345
+      DEBUG: false
+      DATABASE_URL: file:./dev.db
+
+    strategy:
+      matrix:
+        node-version: [18, 19]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: services/booking/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./services/booking
+
+      - name: Run linter
+        run: pnpm run lint
+        working-directory: ./services/booking
+
+      - name: Build
+        run: pnpm run build
+        working-directory: ./services/booking
+
+      - name: Test
+        run: pnpm run test
+        working-directory: ./services/booking
+
+  users-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-users
 
   facilities-ci-checks:
     runs-on: ubuntu-latest
