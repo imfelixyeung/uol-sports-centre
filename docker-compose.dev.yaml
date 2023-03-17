@@ -183,7 +183,7 @@ services:
       - ./persistence/booking/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: ["CMD", "pg_isready", "-U", "booking", "-d", "prod"]
+      test: ["CMD", "pg_isready", "-U", "booking", "-d", "dev"]
       interval: 5s
       timeout: 15s
       retries: 5
