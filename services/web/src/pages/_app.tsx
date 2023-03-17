@@ -3,8 +3,8 @@
 import clsx from 'clsx';
 import {type AppType} from 'next/dist/shared/lib/utils';
 import {Saira, Saira_Condensed} from 'next/font/google';
-import {Toaster} from 'react-hot-toast';
 import {Provider} from 'react-redux';
+import CustomToaster from '~/components/CustomToaster';
 import {Layout} from '~/components/Layout';
 import {AuthProvider} from '~/providers/auth';
 import {UserProvider} from '~/providers/user';
@@ -39,7 +39,7 @@ const MyApp: AppType = ({Component, pageProps}) => {
           <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
         </AuthProvider>
       </Provider>
-      <Toaster />
+      <CustomToaster />
     </div>
   );
 };
