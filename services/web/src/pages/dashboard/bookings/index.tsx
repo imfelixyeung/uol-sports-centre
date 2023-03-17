@@ -27,6 +27,7 @@ const DashboardBookingsPage = () => {
         <main className="grow bg-white text-black">
           <div className="container py-8">
             <Bookings
+              bookings={[]} // TODO: populate data
               title={
                 <Typography.h2 styledAs="h1" uppercase>
                   Your Bookings
