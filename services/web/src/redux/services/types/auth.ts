@@ -5,6 +5,7 @@ export interface Credentials {
 
 export interface DecodedJsonWebToken {
   user: {
+    id: number;
     email: string;
     role: string;
   };

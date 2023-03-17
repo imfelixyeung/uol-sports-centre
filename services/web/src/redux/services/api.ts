@@ -17,6 +17,11 @@ import type {
   FacilityTimesResponse,
 } from './types/facilities';
 import type {StatusReportResponse} from './types/status';
+import type {
+  UsersCreateRequest,
+  UsersCreateResponse,
+  UsersViewFullRecordResponse,
+} from './types/users';
 
 interface Token {
   token: string;
@@ -27,7 +32,7 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api',
   }),
-  tagTypes: [],
+  tagTypes: ['User'],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -99,6 +104,20 @@ export const api = createApi({
     getFacilityActivity: builder.query<FacilityActivityResponse, number>({
       query: activityId => `/facilities/activities/${activityId}`,
     }),
+
+    getUserRecord: builder.query<UsersViewFullRecordResponse, number>({
+      query: userId => `/users/${userId}/viewFullRecord`,
+      providesTags: ['User'],
+    }),
+
+    createUser: builder.mutation<UsersCreateResponse, UsersCreateRequest>({
+      query: user => ({
+        url: '/users/createUser',
+        method: 'POST',
+        body: user,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -115,4 +134,6 @@ export const {
   useGetFacilityActivityQuery,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
+  useGetUserRecordQuery,
+  useCreateUserMutation,
 } = api;
