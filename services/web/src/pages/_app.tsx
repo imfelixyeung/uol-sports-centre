@@ -7,6 +7,7 @@ import {Toaster} from 'react-hot-toast';
 import {Provider} from 'react-redux';
 import {Layout} from '~/components/Layout';
 import {AuthProvider} from '~/providers/auth';
+import {UserProvider} from '~/providers/user';
 import {store} from '~/redux/store';
 
 import '~/styles/globals.css';
@@ -34,7 +35,9 @@ const MyApp: AppType = ({Component, pageProps}) => {
       id="app"
     >
       <Provider store={store}>
-        <AuthProvider>{getLayout(<Component {...pageProps} />)}</AuthProvider>
+        <AuthProvider>
+          <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
+        </AuthProvider>
       </Provider>
       <Toaster />
     </div>
