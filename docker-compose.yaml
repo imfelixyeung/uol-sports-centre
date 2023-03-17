@@ -94,6 +94,7 @@ services:
     environment:
       - PORT=80
       - HOST=users
+      - DATABASE_URL=postgresql://users:mysecretpassword@users-database:5432/prod
     networks:
       - network
 
