@@ -3,7 +3,7 @@ import UserDBA from '../services/dba';
 import {CreateUserDBA, EditUserDBA} from './dbRequests';
 
 export async function error(errorMessage: string) {
-  throw new Error(errorMessage);
+  return new Error(errorMessage);
 }
 
 export async function editMembership(userData: EditUserDBA) {
