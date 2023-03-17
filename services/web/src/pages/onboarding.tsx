@@ -109,13 +109,14 @@ const OnboardingPage: NextPageWithLayout = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [createUser] = useCreateUserMutation();
   const auth = useAuth();
-  const user = useUser();
+  const {user} = useUser();
   const router = useRouter();
   const step = onboardingSteps[currentStep - 1];
   const redirectTo = useRedirectTo();
 
   useEffect(() => {
     if (!user) return;
+    console.log({user});
     void router.push(redirectTo);
   }, [user, redirectTo, router]);
 
