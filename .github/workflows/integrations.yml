@@ -13,20 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-        working-directory: ./services/web
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: ./services/web
-
-      - name: Lint code base with GTS
-        run: pnpm run ci
-        working-directory: ./services/web
+      - name: Run ci tests in docker
+        run: make ci-web
 
   auth-ci-checks:
     runs-on: ubuntu-latest
