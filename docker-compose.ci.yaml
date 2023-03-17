@@ -1,6 +1,11 @@
 version: "3"
 
 services:
+  web:
+    build:
+      context: ./services/web
+      target: ci
+
   auth:
     build:
       context: ./services/auth
@@ -9,6 +14,11 @@ services:
   status:
     build:
       context: ./services/status
+      target: ci
+
+  users:
+    build:
+      context: ./services/users
       target: ci
 
   docs:

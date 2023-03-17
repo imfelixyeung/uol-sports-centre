@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {HealthCheckRegistry} from '../persistence/health-check';
 import {ServiceRegistry} from '../persistence/service';
+import {healthCheckSchema} from '../schema/health-check';
 import {ServiceStatusSnapshot} from '../types/status';
 
 const getServiceHealthCheck = async (
@@ -9,21 +10,44 @@ const getServiceHealthCheck = async (
   const serviceHealthCheckEndpoint = `http://${service}/health`;
 
   const timestamp = Date.now();
+
+  const createSnapshot = (
+    statusStr: ServiceStatusSnapshot['status'],
+    statusCode: number
+  ) => ({
+    service,
+    status: statusStr,
+    statusCode: statusCode,
+    timestamp,
+  });
+
   try {
-    const {status} = await axios(serviceHealthCheckEndpoint, {
+    const {status, data} = await axios(serviceHealthCheckEndpoint, {
       // only throw errors if connection fails
       validateStatus: () => true,
     });
 
-    // service is running phenomenally
-    if (status === 200)
-      return {service, status: 'up', statusCode: status, timestamp};
+    if (status !== 200) {
+      // service is returning invalid status code but is still running
+      return createSnapshot('degraded', status);
+    }
 
-    // service is running but not as good as it should be
-    return {service, status: 'degraded', statusCode: status, timestamp};
+    const parsedData = healthCheckSchema.safeParse(data);
+    if (!parsedData.success) {
+      // service is returning invalid data but is still running
+      return createSnapshot('degraded', status);
+    }
+
+    if (parsedData.data.status === 'degraded') {
+      // service is running but not as good as it should be
+      return createSnapshot('degraded', status);
+    }
+
+    // service is running phenomenally
+    return createSnapshot('up', status);
   } catch (error) {
     // unable to reach service, service is considered down
-    return {service, status: 'down', statusCode: 503, timestamp};
+    return createSnapshot('down', 503);
   }
 };
 

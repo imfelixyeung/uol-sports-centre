@@ -1,5 +1,5 @@
 import {ErrorRequestHandler, RequestHandler} from 'express';
-import logger from '../lib/logger';
+import logger from '@/lib/logger';
 
 export const notFoundHandler: RequestHandler = (req, res) => {
   res.status(404).json({status: 'error', message: 'resource not found'});
