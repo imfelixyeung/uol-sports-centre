@@ -1,7 +1,8 @@
 import express from 'express';
-import bookingRouter from './router/booking';
-import healthRouter from './router/health';
-import {notFoundHandler, serverErrorHandler} from './router/error';
+import bookingRouter from '@/router/booking';
+import healthRouter from '@/router/health';
+import eventRouter from '@/router/event';
+import {notFoundHandler, serverErrorHandler} from '@/router/error';
 
 /**
  * Creates the express server
@@ -14,6 +15,7 @@ export const createServer = (): express.Express => {
 
   // routers
   app.use('/bookings', bookingRouter);
+  app.use('/events', eventRouter);
   app.use('/health', healthRouter);
 
   // error handling

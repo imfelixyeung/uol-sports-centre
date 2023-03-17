@@ -8,6 +8,14 @@ import type {
   RegisterRequest,
   RegisterResponse,
 } from './types/auth';
+import type {
+  FacilitiesResponse,
+  FacilityActivitiesResponse,
+  FacilityActivityResponse,
+  FacilityResponse,
+  FacilityTimeResponse,
+  FacilityTimesResponse,
+} from './types/facilities';
 import type {StatusReportResponse} from './types/status';
 
 interface Token {
@@ -67,6 +75,30 @@ export const api = createApi({
     getStatusReport: builder.query<StatusReportResponse, void>({
       query: () => '/status/report',
     }),
+
+    getFacilities: builder.query<FacilitiesResponse, void>({
+      query: () => '/facilities/facilities/',
+    }),
+
+    getFacility: builder.query<FacilityResponse, number>({
+      query: facilityId => `/facilities/facilities/${facilityId}`,
+    }),
+
+    getFacilityTimes: builder.query<FacilityTimesResponse, void>({
+      query: () => '/facilities/times/',
+    }),
+
+    getFacilityTime: builder.query<FacilityTimeResponse, number>({
+      query: timeId => `/facilities/times/${timeId}`,
+    }),
+
+    getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
+      query: () => '/facilities/activities/',
+    }),
+
+    getFacilityActivity: builder.query<FacilityActivityResponse, number>({
+      query: activityId => `/facilities/activities/${activityId}`,
+    }),
   }),
 });
 
@@ -77,4 +109,10 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useGetFacilitiesQuery,
+  useGetFacilityQuery,
+  useGetFacilityActivitiesQuery,
+  useGetFacilityActivityQuery,
+  useGetFacilityTimesQuery,
+  useGetFacilityTimeQuery,
 } = api;
