@@ -13,6 +13,10 @@ dev:
 
 ci: ci-auth ci-docs ci-status
 
+ci-web:
+	docker compose -f docker-compose.ci.yaml build web
+	docker compose -f docker-compose.ci.yaml run web
+
 ci-auth:
 	docker compose -f docker-compose.ci.yaml build auth
 	docker compose -f docker-compose.ci.yaml run auth
@@ -24,6 +28,10 @@ ci-docs:
 ci-status:
 	docker compose -f docker-compose.ci.yaml build status
 	docker compose -f docker-compose.ci.yaml run status
+
+ci-users:
+	docker compose -f docker-compose.ci.yaml build users
+	docker compose -f docker-compose.ci.yaml run users
 
 clean:
 	docker compose down

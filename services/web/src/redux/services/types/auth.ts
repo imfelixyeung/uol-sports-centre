@@ -4,7 +4,10 @@ export interface Credentials {
 }
 
 export interface DecodedJsonWebToken {
-  email: string;
+  user: {
+    email: string;
+    role: string;
+  };
   type: 'access';
   iat: number;
   exp: number;

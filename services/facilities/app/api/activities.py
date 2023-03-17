@@ -77,6 +77,14 @@ class ActivitiesRouter:
     # Get data from body of post request
     data = request.json
 
+    # Make sure we have correct data types for integer values
+    try:
+      capacity = int(data.get("capacity"))
+      duration = int(data.get("duration"))
+    except ValueError:
+      # Catch value error and return a failed response code before continuing
+      return {"status": "Failed", "message": "Invalid input"}, 400
+
     # Check that the supplied foreign key existss
     if not Facility.query.get(int(data.get("facility_id"))):
       # Catch value error and return a failed response code before continuing
@@ -84,8 +92,8 @@ class ActivitiesRouter:
 
     # Add the supplied object to the data base
     addition = Activity(name=data.get("name"),
-                        duration=data.get("duration"),
-                        capacity=data.get("capacity"),
+                        duration=duration,
+                        capacity=capacity,
                         facility_id=data.get("facility_id"))
 
     if not addition:
