@@ -1,7 +1,7 @@
 import AuthPage from '~/components/Auth/AuthPage';
+import type {NextPageWithLayout} from '~/types/NextPage';
 
-const LoginPage = () => {
-  return <AuthPage variant="login" />;
-};
+const LoginPage: NextPageWithLayout = () => <AuthPage variant="login" />;
+LoginPage.getLayout = AuthPage.getLayout;
 
 export default LoginPage;
