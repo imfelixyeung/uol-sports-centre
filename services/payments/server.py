@@ -36,7 +36,7 @@ def get_index():
     return render_template("index.html")
 
 
-@app.route("/apply-discount", methods = ["POST"])
+@app.route("/apply-discount", methods=["POST"])
 def get_discount():
     """Get the discounted product's price after applying a discount to it"""
     return apply_discount("subscription-test", "membership")
