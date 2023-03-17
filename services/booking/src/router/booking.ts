@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 
-import BookingController from '../controllers/booking.controller';
+import BookingController from '@/controllers/booking.controller';
 
 const bookingRouter: Router = express.Router();
 
@@ -10,11 +10,17 @@ bookingRouter.get('/', BookingController.getBookings);
 // create new booking
 bookingRouter.post('/', BookingController.createBooking);
 
+// get available booking slots
+bookingRouter.get('/availability', BookingController.getAvailableBookings);
+
+// user book booking
+bookingRouter.post('/book', BookingController.bookBooking);
+
 // get specific booking
 bookingRouter.get('/:id', BookingController.getBookingById);
 
 // update specific booking
-bookingRouter.post('/:id', BookingController.updateBookingById);
+bookingRouter.put('/:id', BookingController.updateBookingById);
 
 // delete specific booking
 bookingRouter.delete('/:id', BookingController.deleteBookingById);

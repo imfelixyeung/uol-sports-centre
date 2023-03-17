@@ -519,6 +519,9 @@ paths:
           name: limit
           schema:
             type: number
+            maximum: 256
+            minimum: 1
+            format: int32
           required: false
           example: 10
 
@@ -526,6 +529,8 @@ paths:
           name: page
           schema:
             type: number
+            minimum: 1
+            format: int32
           required: false
           example: 1
       responses:
@@ -544,6 +549,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
 
     post:
       tags:
@@ -562,27 +569,23 @@ paths:
                 userId:
                   type: number
                   description: The user the booking relates to
-                facilityId:
+                eventId:
                   type: number
-                  description: The facility that the booking relates to
+                  description: The event that the booking relates to
                 transactionId:
                   type: number
                   description: The transaction linked with this booking
                 starts:
                   type: string
                   description: the start time of the booking
-                duration:
-                  type: string
-                  description: the length of time of the booking in minutes
             examples:
               example:
                 summary: Example
                 value:
                   userId: 1
-                  facilityId: 1
+                  eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
-                  duration: 60
 
       responses:
         "200":
@@ -590,8 +593,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Booking"
-        "405":
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+        "400":
           description: Invalid input
 
   /booking/bookings/{bookingId}:
@@ -623,6 +633,9 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
     put:
       tags:
         - booking
@@ -647,32 +660,23 @@ paths:
                 userId:
                   type: number
                   description: The user the booking relates to
-                facilityId:
+                eventId:
                   type: number
-                  description: The facility that the booking relates to
+                  description: The event that the booking relates to
                 transactionId:
                   type: number
                   description: The transaction linked with this booking
                 starts:
                   type: string
                   description: the start time of the booking
-                duration:
-                  type: string
-                  description: the length of time of the booking in minutes
             examples:
               example:
                 summary: Example
                 value:
                   userId: 1
-                  facilityId: 1
+                  eventId: 1
                   transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
-                  duration: 60
-              twoHourDuration:
-                summary: 120 minute duration
-                description: Update the specified booking with a 120 minute duration
-                value:
-                  duration: 120
       responses:
         "200":
           description: Successful operation returns the updated booking
@@ -687,6 +691,9 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
     delete:
       tags:
         - booking
@@ -715,6 +722,241 @@ paths:
                     description: Whether the operation was a success or whether there were any errors
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
+  /booking/bookings/availability:
+    get:
+      tags:
+        - booking
+      summary: Returns possible bookings
+      description: Returns an array of possible bookings depending on supplied parameters
+      operationId: getAvailableBookings
+      parameters:
+        - in: query
+          name: limit
+          description: Max number of bookings to return in one query
+          schema:
+            type: number
+            maximum: 256
+            minimum: 1
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: page
+          description: Page of results to return
+          schema:
+            type: number
+            minimum: 1
+            format: int32
+          required: false
+          example: 1
+
+        - in: query
+          name: start
+          description: Start timestamp in milliseconds
+          schema:
+            type: number
+            minimum: 1
+            maximum: 2147483647
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: end
+          description: End timestamp in milliseconds
+          schema:
+            type: number
+            minimum: 1
+            maximum: 2147483647
+            format: int32
+          required: false
+          example: 1
+
+        - in: query
+          name: activity
+          description: Activity id to filter by
+          schema:
+            type: number
+            maximum: 256
+            minimum: 1
+            format: int32
+          required: false
+          example: 10
+
+        - in: query
+          name: facility
+          description: Facility id to filter by
+          schema:
+            type: number
+            minimum: 1
+            format: int32
+          required: false
+          example: 1
+
+      responses:
+        "200":
+          description: Successful operation returns the booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  availableBookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PossibleBooking"
+                  metadata:
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                        example: 1
+        "400":
+          description: Invalid input
+
+  /booking/bookings/book:
+    post:
+      tags:
+        - booking
+      summary: The method called to book a booking for a user
+      description: Returns the booking if successful
+      operationId: bookBooking
+      requestBody:
+        description: book a booking
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: number
+                  description: The event that the booking relates to
+                eventId:
+                  type: number
+                  description: The event that the booking relates to
+                starts:
+                  type: string
+                  description: the start time of the booking
+            examples:
+              example:
+                summary: Example
+                value:
+                  userId: 1
+                  eventId: 1
+                  starts: "2023-03-02T10:00:00.000Z"
+      responses:
+        "200":
+          description: Successful operation returns the booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  booking:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
+  /booking/events:
+    get:
+      tags:
+        - booking
+      summary: Returns all events
+      description: Returns all the events
+      operationId: getEvents
+      responses:
+        "200":
+          description: Successful operation returns the array of events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  events:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid input
+
+    post:
+      tags:
+        - booking
+      summary: Add a new event
+      description: Add a new event
+      operationId: addevent
+      requestBody:
+        description: Create a new event
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The user the event relates to
+                activityId:
+                  type: number
+                  description: The event that the event relates to
+                day:
+                  type: number
+                  description: The transaction linked with this event
+                time:
+                  type: number
+                  description: the start time of the event
+                duration:
+                  type: number
+                  description: the length of time of the event in minutes
+                type:
+                  type: string
+                  enum: ["OPEN_USE", "TEAM_EVENT", "SESSION"]
+            examples:
+              example:
+                summary: Example
+                value:
+                  name: "Event name"
+                  activityId: 1
+                  day: 1
+                  time: 480
+                  duration: 60
+                  type: "OPEN_USE"
+
+      responses:
+        "200":
+          description: Successful operation returns the new event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                    description: Whether the operation was a success or whether there were any errors
+                  event:
+                    $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid input
 
   /facilities/facilities:
     get:
@@ -740,7 +982,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of facilities
+          description: Successful operation returns the array of facilities
           content:
             application/json:
               schema:
@@ -905,7 +1147,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of opening times
+          description: Successful operation returns the array of opening times
           content:
             application/json:
               schema:
@@ -1078,7 +1320,7 @@ paths:
 
       responses:
         "200":
-          description: Successful operation retuns the array of activities
+          description: Successful operation returns the array of activities
           content:
             application/json:
               schema:
@@ -1226,6 +1468,26 @@ paths:
                     description: More detail on the result of the operation
                   activity:
                     $ref: "#/components/schemas/Activity"
+  /facilities/health:
+    get:
+      tags:
+        - facility
+      summary: Returns the status of the microservice
+      description: Returns status of the microservice
+      operationId: get_health
+
+      responses:
+        "200":
+          description: Returns healthy or degraded based on the connection to the database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                    description: Returns healthy or degraded based on the status of connecting to the database.
 
 components:
   securitySchemes:
@@ -1326,25 +1588,22 @@ components:
           type: number
           description: Booking ID
           example: 1
+        userId:
+          type: number
+          description: User ID
+          example: 1
+        eventId:
+          type: number
+          description: Event ID
+          example: 1
         transactionId:
           type: number
           description: Transaction ID
-          example: 1
-        facilityId:
-          type: number
-          description: Facility ID
-          example: 1
-        userID:
-          type: number
-          description: User ID
           example: 1
         starts:
           type: string
           description: Start time of the booking
           example: "2023-03-02T10:00:00.000Z"
-        duration:
-          type: number
-          description: Length of the booking
         created:
           type: string
           description: When the booking was created
@@ -1353,6 +1612,65 @@ components:
           type: string
           description: When the booking was last updated
           example: "2023-03-02T10:00:00.000Z"
+
+    PossibleBooking:
+      type: object
+      properties:
+        starts:
+          type: string
+          description: Start time of the booking
+          example: "2023-03-02T10:00:00.000Z"
+        duration:
+          type: number
+          description: Length of the booking
+          example: 60
+        event:
+          type: object
+          $ref: "#/components/schemas/Event"
+        capacity:
+          type: object
+          properties:
+            current:
+              type: number
+              description: current number of bookings for current event
+              example: 15
+            max:
+              type: number
+              description: maximum number of bookings for the current event
+              example: 30
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Event ID
+          example: 1
+        name:
+          type: string
+          description: Name of the event
+          example: 1
+        activityId:
+          type: number
+          description: Activity ID
+          example: 1
+        day:
+          type: number
+          description: The Day with 0 being Monday and 6 being Sunday
+          example: 1
+        time:
+          type: number
+          description: Start time of the event as minutes since 00:00
+          example: 480
+        duration:
+          type: number
+          description: Length of the booking in minutes
+          example: 60
+        type:
+          type: string
+          enum: ["OPEN_USE", "TEAM_EVENT", "SESSION"]
+          description: Type of event
+          example: "OPEN_USE"
 
     Facility:
       type: object
