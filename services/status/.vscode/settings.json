@@ -1,0 +1,13 @@
+{
+  // inspired by https://github.com/vercel/next.js/blob/canary/.vscode/settings.json
+
+  // Foramttign with Prettier
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  // Auto fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  }
+}

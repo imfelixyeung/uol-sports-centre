@@ -1,10 +1,15 @@
 import axios from 'axios';
-import {HealthCheckRegistry} from '../persistence/health-check';
-import {ServiceRegistry} from '../persistence/service';
-import {healthCheckSchema} from '../schema/health-check';
-import {ServiceStatusSnapshot} from '../types/status';
+import {HealthCheckRegistry} from '~/persistence/health-check';
+import {ServiceRegistry} from '~/persistence/service';
+import {healthCheckSchema} from '~/schema/health-check';
+import {ServiceStatusSnapshot} from '~/types/status';
 
-const getServiceHealthCheck = async (
+/**
+ * attempts to query the service's health check endpoint
+ * @param service id of the service to check
+ * @returns information about the service's health
+ */
+export const getServiceHealthCheck = async (
   service: string
 ): Promise<ServiceStatusSnapshot> => {
   const serviceHealthCheckEndpoint = `http://${service}/health`;
@@ -22,9 +27,9 @@ const getServiceHealthCheck = async (
   });
 
   try {
-    const {status, data} = await axios(serviceHealthCheckEndpoint, {
+    const {status, data} = await axios.get(serviceHealthCheckEndpoint, {
       // only throw errors if connection fails
-      validateStatus: () => true,
+      validateStatus: () => true, // ensures errors are thrown only if connection fails
     });
 
     if (status !== 200) {
@@ -51,6 +56,10 @@ const getServiceHealthCheck = async (
   }
 };
 
+/**
+ * queries all registered services' health check endpoint
+ * @returns health check info for all registered services
+ */
 export const getServicesHealthCheck = async () => {
   // get reports for all services
   const services = await ServiceRegistry.getServices();

@@ -4,7 +4,7 @@ import {
   credentialsSchema,
   rememberMeSchema,
   resetPasswordSchema,
-} from '../schema/credentials';
+} from '~/schema/credentials';
 import {
   getSessionFromToken,
   refreshAccessToken,
@@ -12,7 +12,7 @@ import {
   resetPassword,
   signInWithCredentials,
   signOutToken,
-} from '../services/auth';
+} from '~/services/auth';
 
 const postLogin = createController({
   bodySchema: credentialsSchema.merge(rememberMeSchema),
