@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import {RefreshTokenRegistry} from '../persistence/refresh-tokens';
-import {TokenRegistry} from '../persistence/tokens';
-import {UserRegistry} from '../persistence/users';
-import {Credentials, ResetPassword} from '../schema/credentials';
-import {JsonWebToken} from '../schema/jwt';
+import {RefreshTokenRegistry} from '~/persistence/refresh-tokens';
+import {TokenRegistry} from '~/persistence/tokens';
+import {UserRegistry} from '~/persistence/users';
+import {Credentials, ResetPassword} from '~/schema/credentials';
+import {JsonWebToken} from '~/schema/jwt';
 
 /**
  * signs a user in with their credentials
@@ -115,7 +115,7 @@ export const resetPassword = async (options: ResetPassword) => {
  */
 export const getSessionFromToken = async (token: JsonWebToken) => {
   try {
-    const decoded = TokenRegistry.verifyToken(token);
+    const decoded = await TokenRegistry.verifyToken(token);
     return decoded;
   } catch (error) {
     throw new Error('Malformed token');
@@ -140,14 +140,8 @@ export const refreshAccessToken = async (
   token: JsonWebToken,
   refreshToken: string
 ) => {
-  const verified = !!(
-    (await TokenRegistry.verifyToken(token)) &&
-    (await RefreshTokenRegistry.verifyRefreshToken(refreshToken))
-  );
-
-  if (!verified) {
-    throw new Error('Malformed token or refresh token');
-  }
+  await TokenRegistry.verifyToken(token);
+  await RefreshTokenRegistry.verifyRefreshToken(refreshToken);
 
   // success, create tokens
   const newToken = await TokenRegistry.renewToken(token);

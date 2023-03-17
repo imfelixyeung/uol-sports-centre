@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {createController} from '.';
-import {USER_ROLES} from '../config';
-import {getUserById, getUsers, updateUserById} from '../services/users';
+import {USER_ROLES} from '~/config';
+import {getUserById, getUsers, updateUserById} from '~/services/users';
 
 const usersControllers = {
   getUsers: createController({

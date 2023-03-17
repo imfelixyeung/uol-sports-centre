@@ -1,6 +1,6 @@
 import {Prisma} from '@prisma/client';
-import {Credentials} from '../schema/credentials';
-import {db} from '../utils/db';
+import {Credentials} from '~/schema/credentials';
+import {db} from '~/utils/db';
 
 export class UserRegistry {
   static async getAllUsers(pagination: {skip: number; take: number}) {
