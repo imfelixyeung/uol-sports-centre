@@ -28,17 +28,8 @@ export const UserProvider: FC<PropsWithChildren> = ({children}) => {
     skip: userId === null,
   });
 
-  console.log(userData);
-
   const user =
     userId !== null && !userData.isError ? userData.data?.user ?? null : null;
-
-  console.log({
-    authUserId: userId,
-    authUser: auth.session?.user,
-    normalUserId: user?.id,
-    normalUser: user,
-  });
 
   return (
     <UserContext.Provider
@@ -58,7 +49,6 @@ export const UserOnboardingRequired: FC<PropsWithChildren> = ({children}) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (user) return;
-      console.log({user});
 
       const path = router.asPath;
 
