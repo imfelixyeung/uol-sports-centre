@@ -4,8 +4,14 @@ import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {useGetAvailableBookingsQuery} from '~/redux/services/api';
 
 const DashboardBookingsPage = () => {
+  const availableBookingsData = useGetAvailableBookingsQuery({});
+  const availableBookings = availableBookingsData.data?.availableBookings;
+
+  if (!availableBookings) return null; // TODO: handle loading, error states
+
   return (
     <>
       <Seo title="Dashboard" />
@@ -55,6 +61,12 @@ const DashboardBookingsPage = () => {
               </label>
             </div>
             <Bookings
+              bookings={availableBookings.map(booking => ({
+                datetime: new Date(booking.starts),
+                capacity: booking.capacity,
+                duration: booking.duration,
+                name: booking.event.name,
+              }))}
               title={
                 <Typography.h2 styledAs="h1" uppercase>
                   Available Sessions

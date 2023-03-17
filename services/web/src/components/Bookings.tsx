@@ -5,6 +5,7 @@ import BookingActivity from '~/components/BookingActivity';
 import CalendarIcon from '~/components/Icons/CalendarIcon';
 import GridIcon from '~/components/Icons/GridIcon';
 import ListIcon from '~/components/Icons/ListIcon';
+import type {BookingCapacity} from '~/redux/services/types/bookings';
 import Button from './Button';
 import IconToggleGroup from './IconToggleGroup';
 
@@ -18,9 +19,15 @@ type View = (typeof availableViews)[number]['id'];
 
 interface BookingsProps {
   title: ReactNode;
+  bookings: {
+    datetime: Date;
+    capacity?: BookingCapacity;
+    duration: number;
+    name: string;
+  }[];
 }
 
-const Bookings: FC<BookingsProps> = ({title}) => {
+const Bookings: FC<BookingsProps> = ({title, bookings}) => {
   const [currentView, setCurrentView] = useState<View>(defaultView);
 
   return (
@@ -45,48 +52,18 @@ const Bookings: FC<BookingsProps> = ({title}) => {
           currentView === 'calendar' && 'hidden'
         )}
       >
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
-        <BookingActivity
-          datetime={new Date('2023-01-01 00:00')}
-          name="Facility Name"
-          facility="Facility"
-          variant={currentView === 'grid' ? 'card' : 'tile'}
-          action={<Button intent="secondary">Edit</Button>}
-        />
+        {bookings.map((booking, index) => (
+          <BookingActivity
+            key={index}
+            datetime={new Date(booking.datetime)}
+            capacity={booking.capacity}
+            duration={booking.duration}
+            name={booking.name}
+            facility="Facility"
+            variant={currentView === 'grid' ? 'card' : 'tile'}
+            action={<Button intent="secondary">Edit</Button>}
+          />
+        ))}
       </div>
       {currentView === 'calendar' && (
         <div className="mt-3 min-h-[16rem] bg-black" />

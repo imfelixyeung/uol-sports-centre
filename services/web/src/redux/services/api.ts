@@ -9,6 +9,10 @@ import type {
   RegisterResponse,
 } from './types/auth';
 import type {
+  BookingAvailabilityRequest,
+  BookingAvailabilityResponse,
+} from './types/bookings';
+import type {
   FacilitiesResponse,
   FacilityActivitiesResponse,
   FacilityActivityResponse,
@@ -32,7 +36,7 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api',
   }),
-  tagTypes: ['User'],
+  tagTypes: ['User', 'BookingAvailability'],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -118,6 +122,33 @@ export const api = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+
+    getAvailableBookings: builder.query<
+      BookingAvailabilityResponse,
+      BookingAvailabilityRequest
+    >({
+      query: ({
+        page = null,
+        limit = null,
+        start = null,
+        end = null,
+        activityId = null,
+        facilityId = null,
+      }) => {
+        const search = new URLSearchParams();
+        if (page) search.set('page', `${page}`);
+        if (limit) search.set('limit', `${limit}`);
+        if (start) search.set('start', `${start}`);
+        if (end) search.set('end', `${end}`);
+        if (activityId) search.set('activityId', `${activityId}`);
+        if (facilityId) search.set('facilityId', `${facilityId}`);
+
+        return {
+          url: `/booking/bookings/availability?${search.toString()}`,
+        };
+      },
+      providesTags: ['BookingAvailability'],
+    }),
   }),
 });
 
@@ -136,4 +167,5 @@ export const {
   useGetFacilityTimeQuery,
   useGetUserRecordQuery,
   useCreateUserMutation,
+  useGetAvailableBookingsQuery,
 } = api;

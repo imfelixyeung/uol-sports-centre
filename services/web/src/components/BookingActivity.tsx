@@ -1,17 +1,25 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 import type {FC, ReactNode} from 'react';
+import type {BookingCapacity} from '~/redux/services/types/bookings';
 import CalendarIcon from './Icons/CalendarIcon';
 import ClockIcon from './Icons/ClockIcon';
 import CounterIcon from './Icons/CounterIcon';
 import Typography from './Typography';
+
+dayjs.extend(durationPlugin);
+dayjs.extend(relativeTimePlugin);
 
 interface BookingActivityProps {
   variant?: 'card' | 'tile' | 'page';
   name: string;
   facility: string;
   datetime: Date;
+  capacity?: BookingCapacity;
   action?: ReactNode;
+  duration?: number;
 }
 
 const BookingActivity: FC<BookingActivityProps> = ({
@@ -20,6 +28,8 @@ const BookingActivity: FC<BookingActivityProps> = ({
   datetime,
   action,
   facility,
+  capacity,
+  duration,
 }) => {
   const metadata = (
     <div
@@ -32,14 +42,18 @@ const BookingActivity: FC<BookingActivityProps> = ({
         <CalendarIcon className="h-5" />
         {dayjs(datetime).format('DD/MM/YYYY HH:mm')}
       </Typography.p>
-      <Typography.p styledAs="subtext" className="flex items-center gap-2">
-        <CounterIcon className="h-5" />
-        {'12/156 slots available'}
-      </Typography.p>
-      <Typography.p styledAs="subtext" className="flex items-center gap-2">
-        <ClockIcon className="h-5" />
-        {'-- minutes'}
-      </Typography.p>
+      {capacity && (
+        <Typography.p styledAs="subtext" className="flex items-center gap-2">
+          <CounterIcon className="h-5" />
+          {`${capacity.max - capacity.current}/${capacity.max} slots available`}
+        </Typography.p>
+      )}
+      {duration && (
+        <Typography.p styledAs="subtext" className="flex items-center gap-2">
+          <ClockIcon className="h-5" />
+          {dayjs.duration({minutes: duration}).humanize()}
+        </Typography.p>
+      )}
     </div>
   );
 
