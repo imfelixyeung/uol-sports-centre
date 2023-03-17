@@ -25,7 +25,7 @@ dev:
 
 test:
 	source environment/bin/activate
-	python3 -m coverage run facilities_test.py
+	python3 -m coverage run -m pytest
 	python3 -m coverage report
 
 lint:

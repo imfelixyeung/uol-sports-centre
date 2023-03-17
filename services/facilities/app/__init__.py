@@ -2,7 +2,7 @@ import logging
 from flask import Flask
 
 from app.admin import Admin
-from app.api import ActivitiesRouter, FacilitiesRouter, OpenTimesRouter
+from app.api import ActivitiesRouter, FacilitiesRouter, OpenTimesRouter, HealthRouter
 from app.database import setup_migration, db
 
 
@@ -28,10 +28,12 @@ def create_app(testing=False, config={}) -> Flask:
   activities_router = ActivitiesRouter(app, db)
   facilities_router = FacilitiesRouter(app, db)
   open_times_router = OpenTimesRouter(app, db)
+  health_router = HealthRouter(app, db)
 
   app.register_blueprint(activities_router.blueprint)
   app.register_blueprint(facilities_router.blueprint)
   app.register_blueprint(open_times_router.blueprint)
+  app.register_blueprint(health_router.blueprint)
 
   # Return the flask application
   return app
