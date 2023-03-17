@@ -5,8 +5,13 @@ import Card from '~/components/Card';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
+import {withPageAuthRequired} from '~/providers/auth';
+import {withUserOnboardingRequired} from '~/providers/user';
+import {useUser} from '~/providers/user/hooks/useUser';
 
 const UserDashboardPage = () => {
+  const {user} = useUser();
+
   const navSection = (
     <section className="my-16">
       <div className="flex flex-wrap justify-between gap-3">
@@ -72,7 +77,7 @@ const UserDashboardPage = () => {
       <Seo title="Dashboard" />
       <div>
         <PageHero
-          title="Hello {first_name}!"
+          title={`Hello ${user?.firstName ?? ''}!`}
           subtitle="Welcome to a sports centre"
         />
         <main className="bg-white text-black">
@@ -96,4 +101,6 @@ const UserDashboardPage = () => {
   );
 };
 
-export default UserDashboardPage;
+export default withPageAuthRequired(
+  withUserOnboardingRequired(UserDashboardPage)
+);
