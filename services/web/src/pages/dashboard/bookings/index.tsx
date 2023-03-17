@@ -4,6 +4,8 @@ import {buttonStyles} from '~/components/Button';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
+import {withPageAuthRequired} from '~/providers/auth';
+import {withUserOnboardingRequired} from '~/providers/user';
 
 const DashboardBookingsPage = () => {
   return (
@@ -38,4 +40,6 @@ const DashboardBookingsPage = () => {
   );
 };
 
-export default DashboardBookingsPage;
+export default withPageAuthRequired(
+  withUserOnboardingRequired(DashboardBookingsPage)
+);
