@@ -33,10 +33,10 @@ export interface BookingAvailabilityResponse {
 }
 
 export interface BookingAvailabilityRequest {
-  limit?: number;
-  page?: number;
-  start?: number;
-  end?: number;
-  activityId?: number;
-  facilityId?: number;
+  limit?: number | undefined;
+  page?: number | undefined;
+  start?: number | undefined;
+  end?: number | undefined;
+  activityId?: number | undefined;
+  facilityId?: number | undefined;
 }
