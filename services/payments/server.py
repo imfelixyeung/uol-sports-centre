@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 
-from database import check_health, init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
+from database import check_health, init_database, add_customer, get_purchases, add_purchase, update_expiry # pylint: disable=line-too-long
 
 from payments import make_a_purchase, get_payment_manager, apply_discount, change_price
 
@@ -23,23 +23,18 @@ def get_index():
     """Gets the index for which it shows a subscription for now"""
     init_database()
     add_customer(467468, stripe.Customer.create().stripe_id)
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
-                "subscription")
-    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     return render_template("index.html")
 
 
 @app.route("/apply-discount", methods=["POST"])
-def get_discount():
+def get_discount(product_name, discount_code):
     """Get the discounted product's price after applying a discount to it"""
-    return apply_discount("subscription-test", "membership")
+    return apply_discount(product_name, discount_code)
 
 
 @app.route("/checkout-session", methods=["POST"])
-def redirect_checkout():
+def redirect_checkout(products, payment_mode):
     """It redicrects the checkout"""
-    products = ["subscription-test", "product-2"]
-    payment_mode = "subscription"
     return make_a_purchase(467468, products, payment_mode)
 
 
