@@ -1,7 +1,13 @@
+import {useGetFacilitiesQuery} from '~/redux/services/api';
 import {ProductCarousel} from '../ProductCarousel';
 import Typography from '../Typography';
 
 const Facilities = () => {
+  const facilitiesData = useGetFacilitiesQuery();
+  const facilities = facilitiesData.data;
+
+  if (!facilities) return null; // TODO: handle loading and error
+
   return (
     <div className="bg-white text-black">
       <div className="container flex flex-col gap-6 py-8">
@@ -9,29 +15,13 @@ const Facilities = () => {
           {'/// Facilities'}
         </Typography.h2>
         <ProductCarousel
-          products={[
-            {
-              image: '/assets/images/pexels-jim-de-ramos-1263349.jpg',
-              name: 'Swimming Pool',
-              description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
-              url: '#',
-            },
-            {
-              image: '/assets/images/pexels-max-rahubovskiy-7031706.jpg',
-              name: 'Fitness Room',
-              description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
-              url: '#',
-            },
-            {
-              image: '/assets/images/pexels-artem-podrez-7648084.jpg',
-              name: 'Squash Courts',
-              description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
-              url: '#',
-            },
-          ]}
+          products={facilities.map(facility => ({
+            image: '/assets/images/patterns/card.svg', // TODO: get image from facilities api
+            name: facility.name,
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
+            url: '#',
+          }))}
         />
       </div>
     </div>
