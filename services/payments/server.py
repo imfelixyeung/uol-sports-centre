@@ -6,7 +6,7 @@ import stripe
 
 from database import check_health, init_database, add_customer, add_product, get_purchases, add_purchase, update_expiry
 
-from payments import make_a_purchase, get_payment_manager, apply_discount
+from payments import make_a_purchase, get_payment_manager, apply_discount, change_price
 
 from flask import Flask, json, request, jsonify, redirect, render_template
 
@@ -16,6 +16,7 @@ app = Flask(__name__, static_url_path="", static_folder="public")
 
 stripe.api_key = env.STRIPE_API_KEY
 stripe_webhook = env.STRIPE_WEBHOOK_KEY
+
 
 @app.route("/", methods=["GET"])
 def get_index():
@@ -88,15 +89,15 @@ def webhook_received():
                 expiry = 1
                 if item.price.recurring.interval == "year":
                     expiry = 12
-                update_expiry(customer, product,
-                              str(datetime.now() + relativedelta(months=expiry)))
+                update_expiry(
+                    customer, product,
+                    str(datetime.now() + relativedelta(months=expiry)))
     elif event_type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")
     return "ok"
 
 
-# Endpoint to retreieve purchased products for a customer
 @app.route("/purchased-products/<int:userID>", methods=["GET"])
 def get_purchased_products(user_id: int):
     """Retrieve all purchased products for a given user"""
@@ -108,6 +109,21 @@ def get_purchased_products(user_id: int):
 def customer_portal():
     """Generate a Stripe customer portal URL for the current user"""
     return redirect(get_payment_manager(467468), code=303)
+
+
+@app.route("/change-price", methods=["POST"])
+def change_product_price():
+    """End point for changing the price for managemnet uses"""
+    # Getting the new price and product name
+    data = request.get_json()
+
+    new_price = data["new_price"]
+    product_name = data["product_name"]
+
+    # Calling the change_price function
+    change_price(new_price, product_name)
+
+    return 200
 
 
 @app.route("/health")

@@ -262,6 +262,26 @@ paths:
         "200":
           description: OK
 
+  /payments/apply-discount:
+    post:
+      tags:
+        - payments
+      description: "Applies a discount to a certain product"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/change-price:
+    post:
+      tags:
+        - payments
+      description: "Allows the user with management authority to change price"
+
+      responses:
+        "200":
+          description: OK
+
   /payments/webhook:
     post:
       tags:
