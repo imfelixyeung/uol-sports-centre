@@ -96,8 +96,11 @@ def webhook_received():
         for item in invoice["lines"]["data"]:
             product = item["price"]["product"]
             if stripe.Product.retrieve(product).object == "subscription":
+                expiry = 1
+                if item.price.recurring.interval == "year":
+                    exipry = 12
                 update_expiry(customer, product,
-                              str(datetime.now() + relativedelta(months=1)))
+                              str(datetime.now() + relativedelta(months=expiry)))
     elif event_type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")
