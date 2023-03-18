@@ -103,6 +103,19 @@ def get_product(product_name: str):
     return product
 
 
+def get_pricing_lists():
+    """Returns pricing lists of products"""
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    products = cur.execute("""SELECT productName, price FROM products""").fetchall()
+    con.close()
+
+    if not products:
+        return None
+    else:
+        return products
+
+
 def get_purchases(user_id: int):
     """Function to get a; the purchases for a specific user"""
     con = sqlite3.connect("database.db")
@@ -115,6 +128,7 @@ def get_purchases(user_id: int):
 
 
 def check_health() -> bool:
+    """Gets the health of the database"""
     try:
         # tries to connect to db
         connection = sqlite3.connect("database.db")
