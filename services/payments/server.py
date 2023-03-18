@@ -85,19 +85,19 @@ def webhook_received():
                 add_purchase(session.customer, purchased_item.price.product,
                              transaction_time, expiry_time)
             else:
-                add_purchase(session.customer, purchased_item.product,
+                add_purchase(session.customer, purchased_item.price.product,
                              transaction_time)
         print("Payment succeeded!")
 
     elif event_type == "invoice.paid":
         #Renews exipry of purchased subscription when paid
         invoice = event["data"]["object"]
-        product = invoice["price"]["product"]
         customer = invoice["customer"]
-
-        if stripe.Product.retrieve(product).object == "subscription":
-            update_expiry(customer, product,
-                          str(datetime.now() + relativedelta(months=1)))
+        for item in invoice["lines"]["data"]:
+            product = item["price"]["product"]
+            if stripe.Product.retrieve(product).object == "subscription":
+                update_expiry(customer, product,
+                              str(datetime.now() + relativedelta(months=1)))
     elif event_type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")
