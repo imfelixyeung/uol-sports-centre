@@ -17,15 +17,6 @@ app = Flask(__name__, static_url_path="", static_folder="public")
 stripe.api_key = env.STRIPE_API_KEY
 stripe_webhook = env.STRIPE_WEBHOOK_KEY
 
-#Creating a test card for our use
-card = {
-    "number": "4242424242424242",
-    "exp_month": 12,
-    "exp_year": 2024,
-    "cvc": "123"
-}
-
-
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
