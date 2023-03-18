@@ -55,9 +55,7 @@ def redirect_checkout():
 def webhook_received():
     """Provisions purchased product to user, after successful payment"""
 
-    # pylint: disable=line-too-long
     webhook_secret = stripe_webhook
-    # pylint: enable=line-too-long
 
     request_data = json.loads(request.data)
     if webhook_secret:
@@ -65,14 +63,14 @@ def webhook_received():
         event = stripe.Webhook.construct_event(payload=request.data,
                                                sig_header=signature,
                                                secret=webhook_secret)
-        event_type = event["type"]
+        event_type = event.type
 
     else:
-        event_type = request_data["type"]
+        event_type = request_data.type
 
     if event_type == "checkout.session.completed":
         session = stripe.checkout.Session.retrieve(
-            event["data"]["object"]["id"],
+            event.data.object.id,
             expand=["line_items"],
         )
 
@@ -91,14 +89,14 @@ def webhook_received():
 
     elif event_type == "invoice.paid":
         #Renews exipry of purchased subscription when paid
-        invoice = event["data"]["object"]
-        customer = invoice["customer"]
-        for item in invoice["lines"]["data"]:
-            product = item["price"]["product"]
+        invoice = event.data.object
+        customer = invoice.customer
+        for item in invoice.lines.data:
+            product = item.price.product
             if stripe.Product.retrieve(product).object == "subscription":
                 expiry = 1
                 if item.price.recurring.interval == "year":
-                    exipry = 12
+                    expiry = 12
                 update_expiry(customer, product,
                               str(datetime.now() + relativedelta(months=expiry)))
     elif event_type == "customer.subscription.deleted":
