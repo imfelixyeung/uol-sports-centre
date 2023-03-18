@@ -15,6 +15,7 @@ import env
 app = Flask(__name__, static_url_path="", static_folder="public")
 
 stripe.api_key = env.STRIPE_API_KEY
+stripe_webhook = env.STRIPE_WEBHOOK_KEY
 
 #Creating a test card for our use
 card = {
@@ -55,7 +56,7 @@ def webhook_received():
     """Provisions purchased product to user, after successful payment"""
 
     # pylint: disable=line-too-long
-    webhook_secret = "whsec_de3f267a8bf26130bdfb026bf70488c16ce2dcaa63ddec8dd807ac408d63af8a"
+    webhook_secret = stripe_webhook
     # pylint: enable=line-too-long
 
     request_data = json.loads(request.data)

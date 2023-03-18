@@ -15,6 +15,7 @@ load_dotenv(os.path.join(dirtoenv, ".env"))
 
 STRIPE_API_KEY = os.getenv("STRIPE_API")
 APP_PORT_STRING = os.getenv("APP_PORT")
+STRIPE_WEBHOOK_KEY = os.getenv("STRIPE_WEBHOOK")
 DEBUG = os.getenv("DEBUG") in ["True", "true"]
 
 # Docker defaults unset environment variables to empty strings
@@ -26,6 +27,10 @@ if not STRIPE_API_KEY or STRIPE_API_KEY == "":
 
 if not APP_PORT_STRING or APP_PORT_STRING == "":
     print("Error: 'APP_PORT' environment variable is not set")
+    sys.exit(1)
+
+if not STRIPE_WEBHOOK_KEY or STRIPE_WEBHOOK_KEY == "":
+    print("Error: 'STRIPE_WEBHOOK' environment variable is not set")
     sys.exit(1)
 
 try:
