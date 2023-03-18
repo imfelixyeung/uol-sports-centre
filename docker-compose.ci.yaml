@@ -31,6 +31,7 @@ services:
       context: ./services/payments
       target: ci
     environment:
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
       - STRIPE_API=${STRIPE_API}
       - APP_PORT=${APP_PORT}
 
