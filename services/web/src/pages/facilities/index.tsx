@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import FancyChevronPageNav from '~/components/FancyChevronPageNav';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
 import {
@@ -19,6 +20,13 @@ const FacilitiesPage = () => {
   return (
     <div className="flex grow flex-col">
       <PageHero title="Facilities" />
+      <FancyChevronPageNav
+        image="/assets/images/pexels-alexey-komissarov-9022679.jpg"
+        links={facilities.map(facility => ({
+          label: facility.name,
+          url: `/facilities/${facility.id}`,
+        }))}
+      />
       <div className="grow">
         {facilities.map((facility, index) => {
           const reverse = index % 2 === 0;
@@ -30,7 +38,7 @@ const FacilitiesPage = () => {
             <div
               key={facility.id}
               className={clsx(
-                reverse ? 'text-whitee bg-black' : 'bg-white text-black'
+                reverse ? 'bg-white text-black' : 'bg-black text-white'
               )}
             >
               <div className="container py-16">
