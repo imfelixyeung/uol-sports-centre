@@ -4,7 +4,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 
-from database import check_health, init_database, add_customer, get_purchases, add_purchase, update_expiry # pylint: disable=line-too-long
+from database import (check_health, init_database, add_customer, get_purchases,
+                      add_purchase, update_expiry)
 
 from payments import make_a_purchase, get_payment_manager, apply_discount, change_price
 

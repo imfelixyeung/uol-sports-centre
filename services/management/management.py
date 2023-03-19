@@ -88,4 +88,3 @@ def get_health():
     #     return 200
     # else:
     #     return 'not ok', 500
-    pass
