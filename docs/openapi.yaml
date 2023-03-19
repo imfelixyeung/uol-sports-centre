@@ -302,6 +302,16 @@ paths:
         "200":
           description: OK
 
+  /payments/refund:
+    post:
+      tags:
+        - payments
+      description: "Refunds a purchase for the customer accessing it"
+
+      responses:
+        "200":
+          description: OK
+
   /payments/customer-portal:
     get:
       tags:

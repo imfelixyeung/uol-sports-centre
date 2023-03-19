@@ -94,6 +94,15 @@ def get_user(user_id: int):
     return find_user
 
 
+def delete_order(order_id: int) -> None:
+    """Function to delete a specific purchase by its order ID"""
+    con = sqlite3.connect(DATABASE_URL)
+    cur = con.cursor()
+    cur.execute("""DELETE FROM orders WHERE orderID = ?""", [order_id])
+    con.commit()
+    con.close()
+
+
 def get_product(product_name: str):
     """Function to get the product by its product name from the database"""
     con = sqlite3.connect(DATABASE_URL)
@@ -127,7 +136,20 @@ def get_purchases(user_id: int):
         """SELECT * FROM orders
     JOIN products ON orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()
+    con.close()
     return purchased_products
+
+
+def get_purchase(order_id: int):
+    """Function to get a specific purchase by its order ID"""
+    con = sqlite3.connect(DATABASE_URL)
+    cur = con.cursor()
+    purchase = cur.execute(
+        """SELECT * FROM orders
+    JOIN products ON orders.productID = products.productID
+    WHERE orders.orderID = ?""", [order_id]).fetchall()
+    con.close()
+    return purchase
 
 
 def check_health() -> bool:

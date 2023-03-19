@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 import stripe
 
 from database import (check_health, init_database, add_customer, get_purchases,
-                      add_purchase, update_expiry)
+                      add_purchase, update_expiry, get_purchase, delete_order)
 
 from payments import make_a_purchase, get_payment_manager, apply_discount, change_price
 
@@ -120,6 +120,39 @@ def change_product_price():
     change_price(new_price, product_name)
 
     return 200
+
+
+@app.route("/refund", methods=["POST"])
+def refund():
+    """Endpoint to process refunds"""
+
+    #Get the orderID and amount to refund frmo the request data
+    data = request.get_json()
+
+    order_id = data.get("order_id")
+    refund_amount = data.get("refund_amount")
+
+    # Retrieve the purchase information from the database
+    purchase = get_purchase(order_id)
+
+    # Checks if the purchase exists
+    if not purchase:
+        return jsonify({"error": "Purchase not found."}), 404
+
+    # Refund the payment using Stripe API
+    try:
+        stripe.Refund.create(
+            payment_intent=purchase["payment_intent"],
+            amount=refund_amount,
+            refund_application_fee=True,
+        )
+    except stripe.error.StripeError as refund_error:
+        return jsonify({"error": str(refund_error)}), 400
+
+    # For now, delete order
+    delete_order(order_id)
+
+    return jsonify({"message": "Refund processed successfully."}), 200
 
 
 @app.route("/health")
