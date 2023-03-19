@@ -1,5 +1,6 @@
 import {useRouter} from 'next/router';
 import Json from '~/components/Json';
+import OpeningHours from '~/components/OpeningHours';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
 import {
@@ -32,8 +33,12 @@ const FacilitiesPage = () => {
           <Typography.h2>Data</Typography.h2>
           <Json data={facility} />
 
-          <Typography.h2>Opening Times</Typography.h2>
-          <Json data={facilityTimes} />
+          <Typography.h2>Opening Hours</Typography.h2>
+          {facilityTimes ? (
+            <OpeningHours openingHours={facilityTimes} />
+          ) : (
+            'Loading...'
+          )}
 
           <Typography.h2>Activities</Typography.h2>
           <Json data={facilityActivities} />

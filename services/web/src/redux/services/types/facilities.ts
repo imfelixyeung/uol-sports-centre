@@ -10,8 +10,8 @@ export interface FacilityTime {
   id: number;
   facility_id: number;
   day: string;
-  opening_time: null;
-  closing_time: null;
+  opening_time: number;
+  closing_time: number;
 }
 
 export interface Facility {
