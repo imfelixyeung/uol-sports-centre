@@ -7,13 +7,7 @@ import {db} from '~/utils/db';
 export const getHealth = async () => {
   const databaseHealth = await getDatabaseHealth();
   return {
-    healthy: databaseHealth,
-    services: [
-      {
-        name: 'database',
-        healthy: databaseHealth,
-      },
-    ],
+    status: databaseHealth ? 'healthy' : 'degraded',
   };
 };
 
