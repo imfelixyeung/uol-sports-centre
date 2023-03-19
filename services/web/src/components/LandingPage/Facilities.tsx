@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {useGetFacilitiesQuery} from '~/redux/services/api';
 import {ProductCarousel} from '../ProductCarousel';
 import Typography from '../Typography';
@@ -12,7 +13,7 @@ const Facilities = () => {
     <div className="bg-white text-black">
       <div className="container flex flex-col gap-6 py-8">
         <Typography.h2 styledAs="h1" uppercase>
-          {'/// Facilities'}
+          <Link href="/facilities">{'/// Facilities'}</Link>
         </Typography.h2>
         <ProductCarousel
           products={facilities.map(facility => ({
@@ -20,7 +21,7 @@ const Facilities = () => {
             name: facility.name,
             description:
               'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
-            url: '#',
+            url: `/facilities/${facility.id}`,
           }))}
         />
       </div>
