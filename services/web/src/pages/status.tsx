@@ -4,6 +4,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import ms from 'ms';
 import type {FC} from 'react';
 import Seo from '~/components/Seo';
+import {StatusOverview} from '~/components/Status';
 import Typography from '~/components/Typography';
 import {useGetStatusReportQuery} from '~/redux/services/api';
 import type {ServiceStatus} from '~/redux/services/types/status';
@@ -23,7 +24,10 @@ const StatusPage = () => {
     <>
       <Seo title="Status" />
       <div className="container my-16">
-        <Typography.h1>Service Status</Typography.h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Typography.h1>Service Status</Typography.h1>
+          <StatusOverview />
+        </div>
         <div className="mt-8 flex flex-wrap gap-3 [&>*]:grow">
           {report.map(serviceStatus => {
             return (
