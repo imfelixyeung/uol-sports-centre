@@ -5,14 +5,16 @@ from typing import Optional
 import sqlite3
 import os
 
+from config import DATABASE_SCHEMA_URL, DATABASE_URL
+
 # Get absolute path of directory for payments
-dirtopayments = os.path.dirname(os.path.abspath(__file__))
-sqlPath = os.path.join(dirtopayments, "paymentSchema.sql")
+dir_to_payments = os.path.dirname(os.path.abspath(__file__))
+sqlPath = os.path.join(dir_to_payments, DATABASE_SCHEMA_URL)
 
 
 def init_database() -> None:
     """Initialise database from schema"""
-    connection = sqlite3.connect("database.db")
+    connection = sqlite3.connect(DATABASE_URL)
     with open(sqlPath, encoding="utf-8") as schema:
         connection.executescript(schema.read())
     connection.close()
@@ -20,7 +22,7 @@ def init_database() -> None:
 
 def add_product(name: str, product_id: str, price: str, product_type: str):
     """Adds a new product to the database"""
-    connection = sqlite3.connect("database.db")
+    connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
                 (product_id, name, price, product_type))
@@ -32,7 +34,7 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
 
 def update_price(product_name: str, new_price: str):
     """Updates the price of a given product to a given price"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     cur.execute("""UPDATE products SET price = ? WHERE productName = ?""",
                 (new_price, product_name))
@@ -42,7 +44,7 @@ def update_price(product_name: str, new_price: str):
 
 def update_expiry(stripe_user: str, product_id: str, expiry_date: str):
     '''Updates the expiry date of a subscription'''
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     user_id = cur.execute(
         '''SELECT userID FROM customers WHERE
@@ -56,7 +58,7 @@ def update_expiry(stripe_user: str, product_id: str, expiry_date: str):
 
 def add_customer(user_id: int, stripe_id: str):
     """Function to add a new customer to the database"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     cur.execute("INSERT INTO customers VALUES (?, ?)", (user_id, stripe_id))
     con.commit()
@@ -68,7 +70,7 @@ def add_purchase(customer_id: str,
                  purchase_date: str,
                  expiry: Optional[str] = None):
     """Function that adds a new purchase to the database"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     if expiry is not None:
         cur.execute(
@@ -84,7 +86,7 @@ def add_purchase(customer_id: str,
 
 def get_user(user_id: int):
     """Function that finds the user in the database"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     find_user = cur.execute("""SELECT * FROM customers WHERE
     userID = ?""", [user_id]).fetchone()
@@ -94,7 +96,7 @@ def get_user(user_id: int):
 
 def get_product(product_name: str):
     """Function to get the product by its product name from the database"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     product = cur.execute(
         """SELECT * FROM products WHERE
@@ -105,7 +107,7 @@ def get_product(product_name: str):
 
 def get_pricing_lists():
     """Returns pricing lists of products"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     products = cur.execute(
         """SELECT productName, price FROM products""").fetchall()
@@ -119,7 +121,7 @@ def get_pricing_lists():
 
 def get_purchases(user_id: int):
     """Function to get a; the purchases for a specific user"""
-    con = sqlite3.connect("database.db")
+    con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     purchased_products = cur.execute(
         """SELECT * FROM orders
@@ -132,7 +134,7 @@ def check_health() -> bool:
     """Gets the health of the database"""
     try:
         # tries to connect to db
-        connection = sqlite3.connect("database.db")
+        connection = sqlite3.connect(DATABASE_URL)
         cursor = connection.cursor()
 
         # try executing a simple query

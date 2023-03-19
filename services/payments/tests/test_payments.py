@@ -5,6 +5,7 @@ import os
 
 import urllib.request
 import stripe
+from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 import path  # pylint: disable=unused-import
 
@@ -22,8 +23,8 @@ from interfaces import create_checkout
 
 def create_test_database():
     """Createst the database for the tests"""
-    connection = sqlite3.connect("database.db")
-    with open("paymentTestSchema.sql", encoding="utf-8") as schema:
+    connection = sqlite3.connect(DATABASE_URL)
+    with open(DATABASE_SCHEMA_TEST_URL, encoding="utf-8") as schema:
         connection.executescript(schema.read())
     connection.close()
 
@@ -60,7 +61,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
         add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
                     "subscription")
-        connection = sqlite3.connect("database.db")
+        connection = sqlite3.connect(DATABASE_URL)
         cur = connection.cursor()
 
         #Fetch products from database
@@ -87,7 +88,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #Update price of product
         change_price(10, "product-test")
 
-        connection = sqlite3.connect("database.db")
+        connection = sqlite3.connect(DATABASE_URL)
         cur = connection.cursor()
 
         #Fetch product price from database
@@ -168,7 +169,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Remove the database file after running all tests"""
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect(DATABASE_URL)
         conn.execute("DROP TABLE IF EXISTS orders")
         conn.execute("DROP TABLE IF EXISTS products")
         conn.execute("DROP TABLE IF EXISTS customers")
