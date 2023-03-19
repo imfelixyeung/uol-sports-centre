@@ -2,6 +2,7 @@ import {Field, Form, Formik} from 'formik';
 import type {FC} from 'react';
 import {useState} from 'react';
 import Bookings from '~/components/Bookings';
+import FormikAutoSubmit from '~/components/FormikAutoSubmit';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
@@ -89,7 +90,8 @@ const BookingFilterForm: FC<{
         actions.setSubmitting(false);
       }}
     >
-      <Form className="mb-8 grid grid-cols-2 gap-3 bg-black p-8 text-white md:grid-cols-3 lg:grid-cols-6">
+      <Form className="mb-8 grid grid-cols-2 gap-3 bg-black p-8 text-white lg:grid-cols-4">
+        <FormikAutoSubmit />
         <label className="flex grow flex-col">
           <span>From</span>
           <Field
@@ -138,7 +140,6 @@ const BookingFilterForm: FC<{
             ))}
           </Field>
         </label>
-        <button type="submit">Submit</button>
       </Form>
     </Formik>
   );
