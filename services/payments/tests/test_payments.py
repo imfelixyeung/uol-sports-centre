@@ -141,8 +141,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Assert valid checkout URL response
         session_url = create_checkout(new_customer.stripe_id, "product-test")
-        session_code = urllib.request.urlopen(session_url).getcode()
-        self.assertEqual(session_code, 200)
+
+        with urllib.request.urlopen(session_url) as response:
+            self.assertEqual(response.getcode(), 200)
 
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
@@ -160,8 +161,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Assert valid portal URL response
         session_url = get_payment_manager(111)
-        session_code = urllib.request.urlopen(session_url).getcode()
-        self.assertEqual(session_code, 200)
+        with urllib.request.urlopen(session_url) as response:
+            self.assertEqual(response.getcode(), 200)
 
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
