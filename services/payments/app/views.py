@@ -3,7 +3,7 @@ Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
-from flask import json, request, jsonify, redirect, render_template
+from flask import request, jsonify, redirect, render_template
 
 from app import app
 from app.database import (check_health, add_customer, get_purchases,
@@ -14,7 +14,6 @@ from app.payments import make_a_purchase, get_payment_manager, apply_discount, c
 import env
 
 stripe.api_key = env.STRIPE_API_KEY
-stripe_webhook = env.STRIPE_WEBHOOK_KEY
 
 
 @app.route("/", methods=["GET"])
@@ -40,20 +39,12 @@ def redirect_checkout(products, payment_mode):
 def webhook_received():
     """Provisions purchased product to user, after successful payment"""
 
-    webhook_secret = stripe_webhook
+    signature = request.headers.get("stripe-signature")
+    event = stripe.Webhook.construct_event(payload=request.data,
+                                           sig_header=signature,
+                                           secret=env.STRIPE_WEBHOOK_KEY)
 
-    request_data = json.loads(request.data)
-    if webhook_secret:
-        signature = request.headers.get("stripe-signature")
-        event = stripe.Webhook.construct_event(payload=request.data,
-                                               sig_header=signature,
-                                               secret=webhook_secret)
-        event_type = event.type
-
-    else:
-        event_type = request_data.type
-
-    if event_type == "checkout.session.completed":
+    if event.type == "checkout.session.completed":
         session = stripe.checkout.Session.retrieve(
             event.data.object.id,
             expand=["line_items"],
@@ -72,7 +63,7 @@ def webhook_received():
                              transaction_time)
         print("Payment succeeded!")
 
-    elif event_type == "invoice.paid":
+    elif event.type == "invoice.paid":
         #Renews exipry of purchased subscription when paid
         invoice = event.data.object
         customer = invoice.customer
@@ -85,7 +76,7 @@ def webhook_received():
                 update_expiry(
                     customer, product,
                     str(datetime.now() + relativedelta(months=expiry)))
-    elif event_type == "customer.subscription.deleted":
+    elif event.type == "customer.subscription.deleted":
         #Remove subscription from user
         print("Subscription deleted")
     return "ok"
