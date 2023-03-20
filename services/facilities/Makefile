@@ -30,7 +30,12 @@ test:
 
 lint:
 	source environment/bin/activate
+	# Run yapf recursive, diffs, verbose over the app dir
+	yapf -rdvv app/
+	# Run pylint (google's reccomendation)
+	python3 -m pylint --rc-file pylintrc ./*.py
+
+fix:
+	source environment/bin/activate
 	# Run yapf recursive, in place, verbose over the app dir
 	yapf -rivv app/
-	# Run pylint (google's reccomendation)
-	python3 -m pylint --rc-file pylintrc --list-msgs
