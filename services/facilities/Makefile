@@ -31,11 +31,11 @@ test:
 lint:
 	source environment/bin/activate
 	# Run yapf recursive, diffs, verbose over the app dir
-	yapf -rdvv app/
+	yapf -rd -vv ./*.py ./app ./tests
 	# Run pylint (google's reccomendation)
-	python3 -m pylint --rc-file pylintrc ./*.py
+	python3 -m pylint --rc-file pylintrc ./*.py ./app ./tests
 
 fix:
 	source environment/bin/activate
 	# Run yapf recursive, in place, verbose over the app dir
-	yapf -rivv app/
+	yapf -rivv ./*.py ./app ./tests
