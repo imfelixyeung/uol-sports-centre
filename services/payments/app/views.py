@@ -9,9 +9,8 @@ from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
                           delete_order, add_product)
-from app.payments import (make_a_purchase, get_payment_manager,
-                          apply_discount, change_price,
-                          change_discount_amount)
+from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
+                          change_price, change_discount_amount)
 
 import env
 
