@@ -22,6 +22,6 @@ format-check:
 	yapf --recursive --diff --verbose --style google .
 
 lint:
-	pylint --rc-file pylintrc ./*.py
+	pylint --rc-file pylintrc ./**/*.py
 
 ci: type-check format-check lint test
