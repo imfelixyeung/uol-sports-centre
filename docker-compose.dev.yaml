@@ -206,6 +206,7 @@ services:
     networks:
       - network
     volumes:
+      - ./persistence/payments/data:/app/data
       - ./services/payments:/app
     depends_on:
       - stripe-cli
