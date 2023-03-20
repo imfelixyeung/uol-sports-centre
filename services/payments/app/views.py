@@ -9,7 +9,9 @@ from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
                           delete_order, add_product)
-from app.payments import make_a_purchase, get_payment_manager, apply_discount, change_price
+from app.payments import (make_a_purchase, get_payment_manager,
+                          apply_discount, change_price,
+                          change_discount_amount)
 
 import env
 
@@ -26,10 +28,16 @@ def get_index():
     return render_template("index.html")
 
 
-@app.route("/apply-discount", methods=["POST"])
+@app.route("/discount/apply", methods=["POST"])
 def get_discount(product_name, discount_code):
     """Get the discounted product's price after applying a discount to it"""
     return apply_discount(product_name, discount_code)
+
+
+@app.route("/management/discount/change", methods=["GET"])
+def change_discount(amount):
+    """Retrieves the new discount amount and changes it"""
+    return change_discount_amount(amount)
 
 
 @app.route("/checkout-session", methods=["POST"])

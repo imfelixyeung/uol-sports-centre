@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import stripe
+#import requests
 from flask import redirect
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
@@ -38,6 +39,10 @@ def make_a_purchase(user_id: int,
         stripe_user = get_user(user_id)
 
     line_items = []
+
+    #api_url = "http://gateway/api/booking/bookings?user={userid}&start={start_date}&end={end_date}"
+
+    #response = requests.get(api_url)
 
     for product in products:
         # Gets the product ID and price from the products table
@@ -95,6 +100,14 @@ def apply_discount(product_name, discount_type: str) -> float:
 
     # Round the discounted price to 2 decimal places
     return round(product_price, 2)
+
+
+def change_discount_amount(amount: float):
+    """Chanes the discount amount set for 3 or more bookings in a period of seven days"""
+    stripe.Coupon.modify(
+        "VOz7neAM",
+        metadata={"percent_off": amount},
+    )
 
 
 def get_payment_manager(user_id: int):

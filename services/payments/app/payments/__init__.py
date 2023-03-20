@@ -7,4 +7,5 @@ from .payments import (
     change_price,
     apply_discount,
     get_payment_manager,
+    change_discount_amount
 )

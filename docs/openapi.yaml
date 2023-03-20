@@ -262,7 +262,7 @@ paths:
         "200":
           description: OK
 
-  /payments/apply-discount:
+  /payments/discout/apply:
     post:
       tags:
         - payments
@@ -297,6 +297,16 @@ paths:
       tags:
         - payments
       description: "Retrieves all purchased products for a given user"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/management/discount/change:
+    get:
+      tags:
+        - payments
+      description: "Enables a user with management authority to change the discount amount"
 
       responses:
         "200":
