@@ -7,13 +7,13 @@ help:
 	@echo "make ci: runs scripts for CI"
 
 start:
-	python server.py
+	flask run
 
 dev:
-	python server.py
+	flask --debug run --reload
 
 test:
-	python tests/test_payments.py
+	pytest
 
 type-check:
 	mypy server.py

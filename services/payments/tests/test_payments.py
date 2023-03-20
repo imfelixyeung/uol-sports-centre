@@ -10,16 +10,16 @@ import path  # pylint: disable=unused-import
 
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
-from server import app
+from app import app
 
-from payments import change_price
-from payments import get_payment_manager
+from app.payments import change_price
+from app.payments import get_payment_manager
 
-from database import init_database
-from database import add_product
-from database import add_customer
+from app.database import init_database
+from app.database import add_product
+from app.database import add_customer
 
-from interfaces import create_checkout
+from app.interfaces import create_checkout
 
 
 def create_test_database():

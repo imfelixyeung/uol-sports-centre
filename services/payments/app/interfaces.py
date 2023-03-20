@@ -1,10 +1,10 @@
 """Module that presents interface to the payment microservice"""
 from datetime import datetime
 
-from database import get_product
+from app.database import get_product
 
 import stripe
-import env
+import env as env
 
 LOCAL_DOMAIN = f"http://localhost:{env.APP_PORT}"
 

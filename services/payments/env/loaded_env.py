@@ -7,11 +7,8 @@ import sys
 import os
 from dotenv import load_dotenv
 
-# Get absolute path of directory where .env is
-dir_to_env = os.path.dirname(os.path.abspath(__file__))
-
-# Load .env file from base directory
-load_dotenv(os.path.join(dir_to_env, ".env"))
+# Load .env file
+load_dotenv()
 
 STRIPE_API_KEY = os.getenv("STRIPE_API")
 APP_PORT_STRING = os.getenv("APP_PORT")

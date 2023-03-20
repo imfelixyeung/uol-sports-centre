@@ -4,16 +4,16 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 
-from database import (check_health, init_database, add_customer, get_purchases,
-                      add_purchase, update_expiry, get_purchase, delete_order)
+from app.database import (check_health, add_customer, get_purchases,
+                          add_purchase, update_expiry, get_purchase,
+                          delete_order)
 
-from payments import make_a_purchase, get_payment_manager, apply_discount, change_price
+from app.payments import make_a_purchase, get_payment_manager, apply_discount, change_price
+from app import app
 
-from flask import Flask, json, request, jsonify, redirect, render_template
+from flask import json, request, jsonify, redirect, render_template
 
 import env
-
-app = Flask(__name__, static_url_path="", static_folder="public")
 
 stripe.api_key = env.STRIPE_API_KEY
 stripe_webhook = env.STRIPE_WEBHOOK_KEY
@@ -22,7 +22,6 @@ stripe_webhook = env.STRIPE_WEBHOOK_KEY
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
-    init_database()
     add_customer(467468, stripe.Customer.create().stripe_id)
     return render_template("index.html")
 
@@ -159,7 +158,3 @@ def refund():
 def get_health():
     """Gets the health of the microservice"""
     return {"status": "healthy" if check_health() else "degraded"}
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=env.APP_PORT, debug=env.DEBUG)
