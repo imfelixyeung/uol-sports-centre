@@ -8,7 +8,7 @@ from flask import request, jsonify, redirect, render_template
 from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
-                          delete_order)
+                          delete_order, add_product)
 from app.payments import make_a_purchase, get_payment_manager, apply_discount, change_price
 
 import env
@@ -19,6 +19,9 @@ stripe.api_key = env.STRIPE_API_KEY
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                "subscription")
+    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     add_customer(467468, stripe.Customer.create().stripe_id)
     return render_template("index.html")
 
@@ -30,8 +33,10 @@ def get_discount(product_name, discount_code):
 
 
 @app.route("/checkout-session", methods=["POST"])
-def redirect_checkout(products, payment_mode):
+def redirect_checkout():  #(products, payment_mode):
     """It redicrects the checkout"""
+    products = ["subscription-test", "product-2"]
+    payment_mode = "subscription"
     return make_a_purchase(467468, products, payment_mode)
 
 
@@ -43,7 +48,7 @@ def webhook_received():
 
     #Stripe signature verification
     try:
-        event = stripe.Webhook.construct_event(payload=request.data, 
+        event = stripe.Webhook.construct_event(payload=request.data,
                                                sig_header=signature,
                                                secret=env.STRIPE_WEBHOOK_KEY)
     except ValueError as payload_error:

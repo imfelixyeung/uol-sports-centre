@@ -6,7 +6,7 @@
 #   https://google.github.io/styleguide/pylintrc
 
 [MASTER]
-init-hhok="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
+#init-hhok="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
 # Files or directories to be skipped. They should be base names, not paths.
 ignore=third_party
 

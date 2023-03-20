@@ -1,5 +1,4 @@
-"""Holds the configuration for the application
-"""
+"""Holds the configuration for the application"""
 
 DATABASE_URL = "data/database.db"
 DATABASE_SCHEMA_URL = "paymentSchema.sql"

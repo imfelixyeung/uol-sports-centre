@@ -45,7 +45,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #asserting that the added product matches the expected result
         self.assertEqual(product_stripe.name, "product-test")
         self.assertEqual(price.unit_amount_decimal, "500")
-    
+
     def test_make_a_purchase(self):
         """tests if a purchase can be made correctly"""
         init_database()
@@ -62,8 +62,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         add_customer(111, new_customer.stripe_id)
 
         #Make a purchase with multiple products
-        products = ['product-test', 'product-subscription']
-        make_a_purchase(111, products, 'subscription')
+        products = ["product-test", "product-subscription"]
+        make_a_purchase(111, products, "subscription")
 
         #Check if products added
         purchased_products = get_purchases(111)
