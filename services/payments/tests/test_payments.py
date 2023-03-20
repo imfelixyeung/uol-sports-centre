@@ -62,7 +62,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         add_customer(111, new_customer.stripe_id)
 
         #Make a purchase with multiple products
-        products = ["product-test", "product-subscription"]
+        products = ["product-test", "subscription-test"]
         make_a_purchase(111, products, "subscription")
 
         #Check if products added
