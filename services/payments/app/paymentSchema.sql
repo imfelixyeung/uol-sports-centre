@@ -4,7 +4,10 @@ CREATE TABLE products (
     productID TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
-    productType TEXT NOT NULL
+    productType TEXT 
+    CHECK( productType IN ('subscription', 'payment') ) NOT NULL,
+    productClass TEXT 
+    CHECK( productClass IN ('facility', 'activity', 'session')) NOT NULL
 );
 
 DROP TABLE IF EXISTS orders;
