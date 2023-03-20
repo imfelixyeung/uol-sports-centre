@@ -14,6 +14,11 @@ sqlPath = os.path.join(dir_to_payments, DATABASE_SCHEMA_URL)
 
 def init_database() -> None:
     """Initialise database from schema"""
+
+    # Create the data directory if not exists
+    # Solution by https://stackoverflow.com/a/12517490
+    os.makedirs(os.path.dirname(DATABASE_URL), exist_ok=True)
+
     connection = sqlite3.connect(DATABASE_URL)
     with open(sqlPath, encoding="utf-8") as schema:
         connection.executescript(schema.read())
