@@ -312,6 +312,16 @@ paths:
         "200":
           description: OK
 
+  /payments/management/sales:
+    get:
+      tags:
+        - payments
+      description: "Returns the sales of the past week as dictionaries"
+
+      responses:
+        "200":
+          description: OK
+
   /payments/refund:
     post:
       tags:

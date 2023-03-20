@@ -1,6 +1,6 @@
 """Payments Microservice:
 Provides functionality for making payments for subscriptions"""
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import stripe
 from flask import request, jsonify, redirect, render_template
@@ -30,14 +30,46 @@ def get_index():
 @app.route("/discount/apply", methods=["POST"])
 def get_discount(product_name):
     """Get the discounted product's price after applying a discount to it"""
-    return apply_discount(product_name)
+    return jsonify(apply_discount(product_name))
 
 
 @app.route("/management/discount/change", methods=["GET"])
 def change_discount(amount):
     """Retrieves the new discount amount and changes it"""
-    return change_discount_amount(amount)
+    return jsonify(change_discount_amount(amount))
 
+
+@app.route("/management/sales", methods=["GET"])
+def get_sales():
+    """Gets sales data for a week"""
+
+    # Retrieve sales data from stripe
+    start_date = datetime.now() - timedelta(days=7)
+    end_date = datetime.now()
+
+    charges = stripe.Charge.list(
+        created={
+            "gte": int(start_date.timestamp()),
+            "lte": int(end_date.timestamp()),
+        }
+    )
+
+    # Prcess data for graphing
+    sales_data = {}
+
+    for charge in charges["data"]:
+        charge_data = datetime.fromtimestamp(charge["created"].strftime("%Y-%m-%d"))
+
+        if charge_data not in sales_data:
+            sales_data[charge_data] = 0
+        sales_data[charge_data] += charge["amount"]
+
+    # Convert sales data to dictionaries to return
+    dates = list(sales_data.keys())
+    sales = list(sales_data.values())
+
+    # Return the sales data as dictionaries
+    return jsonify({'dates': dates, 'sales': sales})
 
 @app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():  #(products, payment_mode):
