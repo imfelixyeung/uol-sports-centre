@@ -28,9 +28,9 @@ def get_index():
 
 
 @app.route("/discount/apply", methods=["POST"])
-def get_discount(product_name, discount_code):
+def get_discount(product_name):
     """Get the discounted product's price after applying a discount to it"""
-    return apply_discount(product_name, discount_code)
+    return apply_discount(product_name)
 
 
 @app.route("/management/discount/change", methods=["GET"])
