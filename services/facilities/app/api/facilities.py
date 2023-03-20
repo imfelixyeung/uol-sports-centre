@@ -1,11 +1,13 @@
+"""Module for accessing the facilities database"""
 import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
-from app.createDictionaries import make_facility
+from app.create_dictionaries import make_facility
 
 
 class FacilitiesRouter:
+  """router to access the /facilities endpoints"""
 
   def __init__(self, app: Flask, db: SQLAlchemy) -> None:
     self.logger = logging.getLogger("app.facilities")
@@ -157,9 +159,6 @@ class FacilitiesRouter:
 
     return_value.status_code = 200
     return return_value
-
-
-# Database constraint in flask in order to delete items from database
 
   def delete_facility(self, facility_id: int):
     to_delete = Facility.query.get(facility_id)

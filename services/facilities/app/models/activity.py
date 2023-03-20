@@ -1,3 +1,4 @@
+"""Model for the Activity table"""
 from app.database import db
 
 

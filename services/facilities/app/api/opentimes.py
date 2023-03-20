@@ -1,11 +1,13 @@
+"""Module fo accessing the open_times table"""
 import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import OpenTime, Facility
-from app.createDictionaries import make_open_time
+from app.create_dictionaries import make_open_time
 
 
 class OpenTimesRouter:
+  """Router for accessing the /times endpoints"""
 
   def __init__(self, app: Flask, db: SQLAlchemy) -> None:
     self.logger = logging.getLogger("app.opentimes")

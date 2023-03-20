@@ -1,8 +1,11 @@
-import json, unittest, os
+"""Module for testing the facilities functions"""
+import json
+import unittest
+import os
 from app import create_app
 from app.database import db
 from app.models.facility import Facility
-from app.createDictionaries import make_facility
+from app.create_dictionaries import make_facility
 
 ############ FACILITIES TESTS ############
 

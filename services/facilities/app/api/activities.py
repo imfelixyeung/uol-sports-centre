@@ -1,11 +1,13 @@
+"""Module for accessing the activities database"""
 import logging
 from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Activity, Facility
-from app.createDictionaries import make_activity
+from app.create_dictionaries import make_activity
 
 
 class ActivitiesRouter:
+  """router to access the /activities endpoints"""
 
   def __init__(self, app: Flask, db: SQLAlchemy) -> None:
     self.logger = logging.getLogger("app.activities")
