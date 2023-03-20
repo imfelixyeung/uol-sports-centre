@@ -16,7 +16,7 @@ test:
 	pytest
 
 type-check:
-	mypy server.py
+	mypy run.py
 
 format-check:
 	yapf --recursive --diff --verbose --style google .
