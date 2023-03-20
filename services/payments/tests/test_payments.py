@@ -72,7 +72,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
 
-
     def test_add_product(self):
         """Testing the functionality of adding products"""
         init_database()

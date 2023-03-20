@@ -43,9 +43,9 @@ def webhook_received():
 
     #Stripe signature verification
     try:
-        event = stripe.Webhook.construct_event(
-        payload=request.data, sig_header=signature,
-        secret=env.STRIPE_WEBHOOK_KEY)
+        event = stripe.Webhook.construct_event(payload=request.data, 
+                                               sig_header=signature,
+                                               secret=env.STRIPE_WEBHOOK_KEY)
     except ValueError as payload_error:
         #Invalid Payload
         return jsonify({"Invalid Payload": str(payload_error)}), 400
