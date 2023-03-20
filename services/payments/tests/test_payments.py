@@ -9,8 +9,8 @@ import stripe
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 from app import app
-from app.payments import change_price, get_payment_manager
-from app.database import init_database, add_product, add_customer
+from app.payments import change_price, get_payment_manager, make_a_purchase
+from app.database import init_database, add_product, add_customer, get_purchases
 from app.interfaces import create_checkout
 
 
@@ -32,7 +32,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.product_price = 50.00
         self.user_id = 467468
 
-    def test_make_purchasable_test(self):
+    def test_make_purchasable(self):
         """tests if it can make a test product purchasable"""
         #payments.MakePurchasable('product-test', 5.0, 'test-type')
 
@@ -45,12 +45,39 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         #asserting that the added product matches the expected result
         self.assertEqual(product_stripe.name, "product-test")
         self.assertEqual(price.unit_amount_decimal, "500")
+    
+    def test_make_a_purchase(self):
+        """tests if a purchase can be made correctly"""
+        init_database()
+
+        #Add test products to database
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                    "subscription")
+
+        #Make a new temp customer on Stripe
+        new_customer = stripe.Customer.create()
+
+        #Add customer to database
+        add_customer(111, new_customer.stripe_id)
+
+        #Make a purchase with multiple products
+        products = ['product-test', 'product-subscription']
+        make_a_purchase(111, products, 'subscription')
+
+        #Check if products added
+        purchased_products = get_purchases(111)
+        self.assertEqual(len(purchased_products), 2)
+
+        #Delete temp customer
+        stripe.Customer.delete(new_customer.stripe_id)
+
 
     def test_add_product(self):
         """Testing the functionality of adding products"""
         init_database()
 
-        #Add test products to the databse
+        #Add test products to the database
         add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
         add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
                     "subscription")
@@ -59,7 +86,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Fetch products from database
         test_1 = cur.execute(
-            """SELECT productName FROM products 
+            """SELECT productName FROM products
         WHERE productId LIKE ?""", ["prod_NUNazbUQcwZQaU"]).fetchall()
         test_2 = cur.execute(
             """SELECT productName FROM products
@@ -86,7 +113,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Fetch product price from database
         test_1 = cur.execute(
-            '''SELECT productID, price FROM products 
+            '''SELECT productID, price FROM products
         WHERE productName LIKE ?''', ["product-test"]).fetchone()
         connection.close()
 
