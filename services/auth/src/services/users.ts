@@ -1,8 +1,8 @@
 import {User} from '@prisma/client';
-import {UserRole} from '../config';
-import {UserRegistry} from '../persistence/users';
+import {UserRole} from '~/config';
+import {UserRegistry} from '~/persistence/users';
 
-const userWithoutPassword = (user: User | null) => {
+export const userWithoutPassword = (user: User | null) => {
   if (!user) return null;
 
   const {createdAt, email, id, role, updatedAt} = user;

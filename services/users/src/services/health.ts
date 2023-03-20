@@ -5,13 +5,7 @@ export const getHealth = async () => {
   // Check the database health
   const databaseHealth = await getDatabaseHealth();
   return {
-    healthy: databaseHealth,
-    services: [
-      {
-        name: 'database',
-        healthy: databaseHealth,
-      },
-    ],
+    status: databaseHealth ? 'healthy' : 'degraded',
   };
 };
 

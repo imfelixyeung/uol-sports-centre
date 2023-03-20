@@ -13,7 +13,7 @@ export const getServerSideProps: GetServerSideProps = context => {
   res.setHeader('Content-Type', 'application/json');
   res.write(
     JSON.stringify({
-      success: true, // we are healthy as long as we are running
+      status: 'healthy', // we are healthy as long as we are running
     })
   );
   res.end();

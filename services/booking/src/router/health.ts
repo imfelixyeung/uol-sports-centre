@@ -9,8 +9,7 @@ healthRouter.get('/', async (req, res) => {
   const isHealthy = healthStatus.database && healthStatus.service;
 
   return res.status(200).json({
-    status: isHealthy ? 'OK' : 'Degraded',
-    services: healthStatus,
+    status: isHealthy ? 'healthy' : 'degraded',
   });
 });
 

@@ -1,22 +1,17 @@
-import express from 'express';
-import {env} from './env/index.js';
-import statusRouter from './routers/status.js';
-import healthRouter from './routers/health.js';
 import cron from 'node-cron';
+import {createApp} from './app';
+import {
+  CRON_EXPRESSION_PURGE,
+  CRON_EXPRESSION_SNAPSHOT,
+} from './config/index.js';
+import {env} from './env/index.js';
 import {
   registerServices,
   removeOldHealthCheckSnapshots,
   takeServicesHealthCheckSnapshot,
 } from './services/status.js';
-import {
-  CRON_EXPRESSION_PURGE,
-  CRON_EXPRESSION_SNAPSHOT,
-} from './config/index.js';
 
-const app = express();
-
-app.use('/', statusRouter);
-app.use('/health', healthRouter);
+const app = createApp();
 
 registerServices([
   'auth',

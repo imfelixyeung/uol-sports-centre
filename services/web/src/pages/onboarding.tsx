@@ -1,12 +1,18 @@
 import clsx from 'clsx';
 import {Field, Form, Formik, useFormikContext} from 'formik';
+import {useRouter} from 'next/router';
 import type {FC, PropsWithChildren} from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as yup from 'yup';
 import AppIcon from '~/components/AppIcon/AppIcon';
+import useRedirectTo from '~/components/Auth/hooks/useRedirectTo';
 import Button from '~/components/Button';
 import Typography from '~/components/Typography';
+import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
+import {useUser} from '~/providers/user/hooks/useUser';
+import {useCreateUserMutation} from '~/redux/services/api';
 import type {NextPageWithLayout} from '~/types/NextPage';
 
 interface OnboardingStep {
@@ -16,6 +22,7 @@ interface OnboardingStep {
     name: string;
     label: string;
     required?: boolean;
+    disabled?: boolean;
   }[];
   validationSchema: unknown;
 }
@@ -34,6 +41,7 @@ const onboardingSteps: OnboardingStep[] = [
         name: 'middleName',
         label: 'Middle Name(s)',
         required: false,
+        disabled: true,
       },
       {
         name: 'lastName',
@@ -43,19 +51,21 @@ const onboardingSteps: OnboardingStep[] = [
       {
         name: 'dateOfBirth',
         label: 'Date of Birth',
-        required: true,
+        required: false,
+        disabled: true,
       },
       {
         name: 'phoneNumber',
         label: 'Phone Number',
         required: false,
+        disabled: true,
       },
     ],
     validationSchema: yup.object({
       firstName: yup.string().required('First name is required'),
       middleName: yup.string(),
       lastName: yup.string().required('Last name is required'),
-      dateOfBirth: yup.string().required('Date of birth is required'),
+      dateOfBirth: yup.string(),
       phoneNumber: yup.string(),
     }),
   },
@@ -67,16 +77,19 @@ const onboardingSteps: OnboardingStep[] = [
         name: 'emergencyPreferredName',
         label: 'Preferred Name',
         required: false,
+        disabled: true,
       },
       {
         name: 'emergencyPhoneNumber',
         label: 'Phone Number',
         required: false,
+        disabled: true,
       },
       {
         name: 'emergencyEmail',
         label: 'Email Address',
         required: false,
+        disabled: true,
       },
     ],
     validationSchema: yup.object({
@@ -94,7 +107,18 @@ const onboardingSteps: OnboardingStep[] = [
 
 const OnboardingPage: NextPageWithLayout = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [createUser] = useCreateUserMutation();
+  const auth = useAuth();
+  const {user} = useUser();
+  const router = useRouter();
   const step = onboardingSteps[currentStep - 1];
+  const redirectTo = useRedirectTo();
+
+  useEffect(() => {
+    if (!user) return;
+    console.log({user});
+    void router.push(redirectTo);
+  }, [user, redirectTo, router]);
 
   if (!step) return <>Something went wrong</>;
 
@@ -122,7 +146,10 @@ const OnboardingPage: NextPageWithLayout = () => {
       </aside>
       <main className="grow bg-white py-16 px-8 text-black">
         <Formik
-          initialValues={{undefined}}
+          initialValues={{
+            firstName: '',
+            lastName: '',
+          }}
           onSubmit={async (values, actions) => {
             await actions.validateForm();
             if (!isLastStep) {
@@ -131,7 +158,22 @@ const OnboardingPage: NextPageWithLayout = () => {
               return;
             }
 
-            toast.success('Onboarding complete!');
+            await toast
+              .promise(
+                createUser({
+                  id: auth.session!.user.id,
+                  firstName: values.firstName,
+                  lastName: values.lastName,
+                }).unwrap(),
+                {
+                  loading: 'Onboarding...',
+                  success: 'Onboarding success!',
+                  error: 'Something went wrong...',
+                }
+              )
+              .then(() => void router.push('/dashboard'))
+              .catch(() => null);
+
             actions.setSubmitting(false);
           }}
           validationSchema={step.validationSchema}
@@ -146,6 +188,7 @@ const OnboardingPage: NextPageWithLayout = () => {
                     name={field.name}
                     label={field.label}
                     required={field.required}
+                    disabled={field.disabled}
                   />
                 ))}
               </div>
@@ -174,8 +217,6 @@ const OnboardingPage: NextPageWithLayout = () => {
 OnboardingPage.getLayout = page => (
   <div className="flex min-h-screen flex-col">{page}</div>
 );
-
-export default OnboardingPage;
 
 const OnboardingWhyBox: FC<PropsWithChildren> = ({children}) => {
   return (
@@ -214,11 +255,15 @@ const OnboardingField: FC<{
   name: string;
   label: string;
   required?: boolean;
-}> = ({name, label, required = false}) => {
+  disabled?: boolean;
+}> = ({name, label, required = false, disabled = false}) => {
   const context = useFormikContext<Record<string, string>>();
 
   return (
-    <label htmlFor={name} className="flex grow flex-col">
+    <label
+      htmlFor={name}
+      className={clsx('flex grow flex-col', disabled && 'opacity-20')}
+    >
       <span>
         {label}
         {required && '*'}
@@ -227,6 +272,7 @@ const OnboardingField: FC<{
         id={name}
         name={name}
         className="border-2 border-black/20 bg-[#fff] p-2 text-black"
+        disabled={disabled}
       />
       {context.submitCount !== 0 && context.errors[name] && (
         <span className="text-red-600">{context.errors[name]}</span>
@@ -234,3 +280,5 @@ const OnboardingField: FC<{
     </label>
   );
 };
+
+export default withPageAuthRequired(OnboardingPage);
