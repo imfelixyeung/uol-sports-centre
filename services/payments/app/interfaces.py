@@ -15,9 +15,9 @@ def create_checkout(stripe_id: str,
     "Create checkout session for purchasing bookings/subscriptions using Stripe"
     product = get_product(product_name)
 
-    product_type = 'payment'
-    if product[3] == 'subscription':
-        product_type = 'subscription'
+    product_type = "payment"
+    if product[3] == "subscription":
+        product_type = "subscription"
 
     if not product:
         # handle the case where no product was found
