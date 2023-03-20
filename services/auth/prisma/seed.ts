@@ -1,0 +1,39 @@
+import {PrismaClient} from '@prisma/client';
+import {UserRole} from '~/config';
+import {registerWithCredentials} from '~/services/auth';
+import {updateUserById} from '~/services/users';
+const db = new PrismaClient();
+
+const roles: UserRole[] = ['admin', 'employee', 'user'];
+const PASSWORD = '6789Password9876';
+
+const seed = async () => {
+  const usersCount = await db.user.count();
+  if (usersCount > 0) return console.log('Already previously seeded');
+
+  const emails = roles.map(role => `${role}@example.com`);
+
+  const registrationPromises = emails.map(email =>
+    registerWithCredentials({email, password: PASSWORD}, {rememberMe: false})
+  );
+
+  await Promise.all(registrationPromises);
+
+  const users = await db.user.findMany();
+  const updateRolePromises = users.map(user => {
+    const role = user.email.split('@')[0] as UserRole;
+    return updateUserById(user.id, {role});
+  });
+
+  await Promise.all(updateRolePromises);
+};
+
+seed()
+  .then(async () => {
+    await db.$disconnect();
+    console.log('Seed complete');
+  })
+  .catch(async error => {
+    await db.$disconnect();
+    throw error;
+  });
