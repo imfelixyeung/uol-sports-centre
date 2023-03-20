@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
-export type {UserRole} from '@prisma/client';
+export {UserRole} from '@prisma/client';
 
 const ACCESS_JWT_EXPIRES_IN = '15m';
 const SHORT_REFRESH_JWT_EXPIRES_IN = '24h';

@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {USER_ROLES} from '~/config';
+import {UserRole} from '~/config';
 
 export const jsonWebTokenSchema = z
   .string()
@@ -9,7 +9,7 @@ export const jsonWebTokenPayloadSchema = z.object({
   user: z.object({
     id: z.number(),
     email: z.string(),
-    role: z.enum(USER_ROLES),
+    role: z.nativeEnum(UserRole),
   }),
   type: z.literal('access'),
 });
