@@ -38,11 +38,20 @@ def redirect_checkout(products, payment_mode):
 @app.route("/webhook", methods=["POST"])
 def webhook_received():
     """Provisions purchased product to user, after successful payment"""
-
+    event = None
     signature = request.headers.get("stripe-signature")
-    event = stripe.Webhook.construct_event(payload=request.data,
-                                           sig_header=signature,
-                                           secret=env.STRIPE_WEBHOOK_KEY)
+
+    #Stripe signature verification
+    try:
+        event = stripe.Webhook.construct_event(
+        payload=request.data, sig_header=signature,
+        secret=env.STRIPE_WEBHOOK_KEY)
+    except ValueError as payload_error:
+        #Invalid Payload
+        return jsonify({"Invalid Payload": str(payload_error)}), 400
+    except stripe.error.SignatureVerificationError as signature_error:
+        #Invalid Signature
+        return jsonify({"Invalid Signature": str(signature_error)}), 400
 
     if event.type == "checkout.session.completed":
         session = stripe.checkout.Session.retrieve(
