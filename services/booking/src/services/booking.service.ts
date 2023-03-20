@@ -212,8 +212,10 @@ class BookingService {
     const numDays = Math.floor(
       (filter.end - filter.start) / (24 * 60 * 60 * 1000)
     );
-    if (numDays > 100)
-      return new Error('Too many days between specified date range');
+    if (numDays > 14)
+      return new Error(
+        'Too many days between specified date range. Max date range is 14 days (2 weeks)'
+      );
 
     // generate list of all possible bookings (not necessarily available)
     let possibleBookings = await this.generatePossibleBookings(filter).catch(
