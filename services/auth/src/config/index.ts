@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
-
-export const USER_ROLES = ['user', 'employee', 'admin'] as const;
+export type {UserRole} from '@prisma/client';
 
 const ACCESS_JWT_EXPIRES_IN = '15m';
 const SHORT_REFRESH_JWT_EXPIRES_IN = '24h';
@@ -24,5 +23,3 @@ export const ACCESS_JWT_SIGN_OPTIONS: jwt.SignOptions = {
 export const REFRESH_JWT_SIGN_OPTIONS: jwt.SignOptions = {
   ...JWT_SIGN_OPTIONS,
 };
-
-export type UserRole = (typeof USER_ROLES)[number];
