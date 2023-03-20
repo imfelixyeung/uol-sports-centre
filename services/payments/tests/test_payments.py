@@ -6,8 +6,6 @@ import os
 import urllib.request
 import stripe
 
-import path  # pylint: disable=unused-import
-
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 from app import app
