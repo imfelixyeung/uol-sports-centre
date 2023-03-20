@@ -1,9 +1,12 @@
-import json, unittest, os
+"""Module for testing the open time functions"""
+import json
+import unittest
+import os
 from app import create_app
 from app.database import db
 from app.models.facility import Facility
 from app.models.opentime import OpenTime
-from app.createDictionaries import make_open_time
+from app.create_dictionaries import make_open_time
 
 # Create app for testing
 basedir = os.path.abspath(os.path.dirname(__file__))

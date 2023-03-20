@@ -1,3 +1,4 @@
+"""Module for checking the health of the microservice"""
 import logging
 from flask import Flask, Blueprint
 from app.models import Facility, OpenTime, Activity
@@ -5,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 class HealthRouter:
+  """Router for the health endpoint"""
 
   def __init__(self, app: Flask, db: SQLAlchemy) -> None:
     self.logger = logging.getLogger("app.health")
