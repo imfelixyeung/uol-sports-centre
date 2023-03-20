@@ -3,7 +3,6 @@
 from datetime import datetime
 import stripe
 #import requests
-from flask import redirect
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -66,7 +65,7 @@ def make_a_purchase(user_id: int,
         cancel_url=success_url,
     )
 
-    return redirect(session.url, code=303)
+    return session.url
 
 
 def change_price(new_price: str, product_name: str):

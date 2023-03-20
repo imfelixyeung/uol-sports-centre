@@ -76,7 +76,7 @@ def redirect_checkout():  #(products, payment_mode):
     """It redicrects the checkout"""
     products = ["subscription-test", "product-2"]
     payment_mode = "subscription"
-    return make_a_purchase(467468, products, payment_mode)
+    return jsonify(make_a_purchase(467468, products, payment_mode))
 
 
 @app.route("/webhook", methods=["POST"])
