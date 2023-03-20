@@ -17,7 +17,7 @@ def create_checkout(stripe_id: str,
 
     product_type = 'payment'
     if product[3] == 'subscription':
-        productType = 'subscription'
+        product_type = 'subscription'
 
     if not product:
         # handle the case where no product was found
