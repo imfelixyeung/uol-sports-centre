@@ -3,15 +3,13 @@ Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
+from flask import json, request, jsonify, redirect, render_template
 
+from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
                           delete_order)
-
 from app.payments import make_a_purchase, get_payment_manager, apply_discount, change_price
-from app import app
-
-from flask import json, request, jsonify, redirect, render_template
 
 import env
 

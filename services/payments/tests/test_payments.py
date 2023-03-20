@@ -9,14 +9,8 @@ import stripe
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 from app import app
-
-from app.payments import change_price
-from app.payments import get_payment_manager
-
-from app.database import init_database
-from app.database import add_product
-from app.database import add_customer
-
+from app.payments import change_price, get_payment_manager
+from app.database import init_database, add_product, add_customer
 from app.interfaces import create_checkout
 
 

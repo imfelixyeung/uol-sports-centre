@@ -5,8 +5,8 @@ import stripe
 from flask import redirect
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
-
-from app.database import add_product, get_user, get_product, add_customer, add_purchase, update_price
+from app.database import (add_product, get_user, get_product, add_customer,
+                          add_purchase, update_price)
 
 
 def make_purchasable(product_name: str,
