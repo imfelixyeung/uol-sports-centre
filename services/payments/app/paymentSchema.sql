@@ -5,7 +5,7 @@ CREATE TABLE products (
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT 
-    CHECK( productType IN ('facility', 'activity', 'session', 'membership')) NOT NULL
+    CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL
 );
 
 DROP TABLE IF EXISTS orders;

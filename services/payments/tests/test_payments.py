@@ -51,7 +51,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to database
-        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
         add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
                     "subscription")
 
@@ -77,7 +77,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the database
-        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
         add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
                     "subscription")
         connection = sqlite3.connect(DATABASE_URL)
@@ -102,7 +102,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         init_database()
 
         #Add test products to the databse
-        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
         #Update price of product
         change_price(10, "product-test")
@@ -136,7 +136,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         new_customer = stripe.Customer.create()
 
         #Add test product to payments service
-        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "payment")
+        add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
         #Assert valid checkout URL response
         session_url = create_checkout(new_customer.stripe_id, "product-test")

@@ -15,13 +15,17 @@ def create_checkout(stripe_id: str,
     "Create checkout session for purchasing bookings/subscriptions using Stripe"
     product = get_product(product_name)
 
+    productType = 'payment'
+    if product[3] == 'subscription':
+        productType = 'subscription'
+
     if not product:
         # handle the case where no product was found
         return None
 
     checkout_session = stripe.checkout.Session.create(
         success_url=success_url,
-        mode=product[3],
+        mode=productType,
         expires_at=int(datetime.timestamp(datetime.now())) + 1800,
         customer=stripe_id,
         line_items=[
