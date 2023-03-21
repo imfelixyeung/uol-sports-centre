@@ -1,8 +1,8 @@
 """Modues provides functionality to make products purchasable or edit prices"""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import stripe
-#import requests
+import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -37,21 +37,53 @@ def make_a_purchase(user_id: int,
         add_customer(user_id, new_customer.stripe_id)
         stripe_user = get_user(user_id)
 
+    # Stores all the products that are about to be purchased
     line_items = []
 
-    #api_url = "http://gateway/api/booking/bookings?user={userid}&start={start_date}&end={end_date}"
+    # The start date and end date to check if three or more bookings were made for this customer
+    start_date = int(round(datetime.now().timestamp() * 1000))
+    end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
 
-    #response = requests.get(api_url)
+    bookings_array = (
+        f"http://gateway/api/booking/bookings"
+        f"?user={user_id}"
+        f"&start={start_date}"
+        f"&end={end_date}"
+    )
+
+    response = requests.get(bookings_array, timeout=10)
+
+    # Count the number of bookings made for the current customer in the last 7 days
+    bookings_count = len(response.json())
 
     for product in products:
         # Gets the product ID and price from the products table
         product_id = get_product(product)[0]
+        product_name = get_product(product)[1]
+        product_type = get_product(product)[3]
 
-        line_item = {
-            "price": stripe.Product.retrieve(product_id).default_price,
-            "quantity": 1,
-        }
-        line_items.append(line_item)
+        if product_type == "session":
+            bookings_count += 1
+
+        # Gets the product price from the products table
+        product_price = stripe.Product.retrieve(product_id).default_price
+
+        # Apply a discount if there have been more than 2 bookings for the current customer
+        if bookings_count > 2:
+            discounted_price = apply_discount(product_name)
+
+            line_item = {
+                "price": discounted_price,
+                "quantity": 1,
+            }
+            line_items.append(line_item)
+
+        else:
+            line_item = {
+                "price": product_price,
+                "quantity": 1,
+            }
+            line_items.append(line_item)
 
         # Creates a new row in the purchased products table
         add_purchase(stripe_user[0], product_id, str(datetime.now()))
