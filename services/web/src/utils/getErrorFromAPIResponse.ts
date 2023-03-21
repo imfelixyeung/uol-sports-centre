@@ -8,7 +8,6 @@ const errorResponseSchema = z.object({
 });
 
 const getErrorFromAPIResponse = (response: unknown) => {
-  console.log('response', response);
   const parsed = errorResponseSchema.safeParse(response);
   if (!parsed.success) return null;
 
