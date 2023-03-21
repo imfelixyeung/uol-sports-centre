@@ -136,7 +136,7 @@ def apply_discount(product_name):
 
 
 def change_discount_amount(amount: float):
-    """Chanes the discount amount set for 3 or more bookings in a period of seven days"""
+    """Changes the discount amount set for 3 or more bookings in a period of seven days"""
     stripe.Coupon.modify(
         "VOz7neAM",
         metadata={"percent_off": amount},
@@ -154,4 +154,14 @@ def get_payment_manager(user_id: int):
 
 def pricing_list(product_type: str):
     """Returns pricing list for the chosen product type"""
-    return get_pricing_lists(product_type)
+    pricing_list = get_pricing_lists(product_type)
+    total = 0
+    for product in pricing_list:
+        total += product[1]
+    return {
+        'length' : len(pricing_list),
+        'total' : total,
+        'products' : {
+            product[0]: product[1] for product in pricing_list
+        }
+    }
