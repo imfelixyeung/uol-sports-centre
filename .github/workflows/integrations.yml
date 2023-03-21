@@ -120,3 +120,7 @@ jobs:
       - name: Run tests
         run: make test
         working-directory: ./services/facilities
+
+      - name: Run linters
+        run: make lint
+        working-directory: ./services/facilities
