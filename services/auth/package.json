@@ -11,11 +11,15 @@
     "fix": "gts fix",
     "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --packages=external",
     "start": "pnpm db:push && node dist/index.js",
-    "dev": "pnpm db:push && tsx watch --clear-screen=false src/index.ts",
+    "dev": "pnpm db:push && pnpm db:seed && tsx watch --clear-screen=false src/index.ts",
     "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
     "test": "jest --ci",
     "test-watch": "jest --watch",
     "ci": "pnpm type-check && pnpm lint && pnpm test && pnpm build"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
