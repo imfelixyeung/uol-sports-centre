@@ -38,7 +38,7 @@ class BookingService {
    *
    * @memberof BookingService
    */
-  async get(filter: PaginationFilter = {}) {
+  async get(filter: PaginationFilter & TimeLimitFilter = {}) {
     logger.debug(`Get bookings, limit: ${filter.limit}, page: ${filter.page}`);
 
     return await bookingDao.getBookings(filter);

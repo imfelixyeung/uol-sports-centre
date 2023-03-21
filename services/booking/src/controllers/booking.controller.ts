@@ -32,6 +32,8 @@ class BookingController {
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
       ...paginationSchema,
+      start: timestamp.optional(),
+      end: timestamp.optional(),
       user: id('user id').optional(),
     });
 
@@ -54,12 +56,10 @@ class BookingController {
         return new Error(err);
       });
     } else {
-      bookings = await bookingService
-        .get({limit: query.data.limit, page: query.data.page})
-        .catch(err => {
-          logger.error(`Error getting bookings: ${err}`);
-          return new Error(err);
-        });
+      bookings = await bookingService.get(query.data).catch(err => {
+        logger.error(`Error getting bookings: ${err}`);
+        return new Error(err);
+      });
     }
 
     if (bookings instanceof Error) {
