@@ -1,3 +1,6 @@
+"""Module to convert a database object to a python dictionary"""
+
+
 # Function to generate a facilities dictionary for JSON output
 def make_facility(facility):
   return {
@@ -8,13 +11,13 @@ def make_facility(facility):
 
 
 # Function to generate an OpenTimes dictionary for JSON output
-def make_open_time(openTime):
+def make_open_time(open_time):
   return {
-      "id": openTime.id,
-      "day": openTime.day,
-      "opening_time": openTime.opening_time,
-      "closing_time": openTime.closing_time,
-      "facility_id": openTime.facility_id
+      "id": open_time.id,
+      "day": open_time.day,
+      "opening_time": open_time.opening_time,
+      "closing_time": open_time.closing_time,
+      "facility_id": open_time.facility_id
   }
 
 

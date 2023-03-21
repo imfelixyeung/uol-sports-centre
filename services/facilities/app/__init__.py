@@ -1,3 +1,4 @@
+"""Initializes the instance of the facilities flask app"""
 import logging
 from flask import Flask
 
@@ -6,7 +7,7 @@ from app.api import ActivitiesRouter, FacilitiesRouter, OpenTimesRouter, HealthR
 from app.database import setup_migration, db
 
 
-def create_app(testing=False, config={}) -> Flask:
+def create_app(testing=False, config=None) -> Flask:
   logging.basicConfig(level=logging.DEBUG)
   # Setup flask
   app = Flask(__name__)
