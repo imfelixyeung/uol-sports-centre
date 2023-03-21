@@ -123,12 +123,13 @@ def get_product(product_name: str):
     return product
 
 
-def get_pricing_lists():
+def get_pricing_lists(product_type: str):
     """Returns pricing lists of products"""
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     products = cur.execute(
-        """SELECT productName, price FROM products""").fetchall()
+        """SELECT productName, price FROM products WHERE productType =
+        ?"""[product_type]).fetchall()
     con.close()
 
     if not products:

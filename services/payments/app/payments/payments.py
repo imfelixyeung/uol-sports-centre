@@ -6,7 +6,7 @@ import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
-                          add_purchase, update_price)
+                          add_purchase, update_price, get_pricing_lists)
 
 
 def make_purchasable(product_name: str,
@@ -151,3 +151,7 @@ def get_payment_manager(user_id: int):
     #Return portal for customer
     portal_session = create_portal(stripe_customer_id)
     return portal_session.url
+
+def pricing_list(product_type: str):
+    """Returns pricing list for the chosen product type"""
+    return get_pricing_lists(product_type)
