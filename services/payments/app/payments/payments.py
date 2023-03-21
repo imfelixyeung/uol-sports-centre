@@ -6,7 +6,8 @@ import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
-                          add_purchase, update_price, get_pricing_lists)
+                          add_purchase, update_price, get_pricing_lists, 
+                          get_purchases, update_expiry)
 
 
 def make_purchasable(product_name: str,
@@ -159,9 +160,16 @@ def pricing_list(product_type: str):
     for product in pricing_list:
         total += product[1]
     return {
-        'length' : len(pricing_list),
-        'total' : total,
+        'quantity' : len(pricing_list),
+        'prices_total' : total,
         'products' : {
             product[0]: product[1] for product in pricing_list
         }
     }
+
+def cancel_subscription(user_id: int):
+    """Cancels membership for given user in Stripe"""
+    stripe_user = get_user(user_id)[1]
+    customer = stripe.Customer.retrieve(stripe_user)
+    subscription = customer.subscriptions.data[0].id
+    stripe.Subscription.delete(subscription)

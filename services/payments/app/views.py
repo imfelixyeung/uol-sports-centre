@@ -131,6 +131,10 @@ def webhook_received():
                     str(datetime.now() + relativedelta(months=expiry)))
     elif event.type == "customer.subscription.deleted":
         #Remove subscription from user
+        subscription = event.data.object
+        customer = subscription.customer
+        product = subscription.items.data[1].price.product
+        update_expiry(customer, product, str(datetime.now()))
         print("Subscription deleted")
     return "ok"
 

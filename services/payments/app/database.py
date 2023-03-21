@@ -143,8 +143,9 @@ def get_purchases(user_id: int):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     purchased_products = cur.execute(
-        """SELECT * FROM orders
-    JOIN products ON orders.productID = products.productID
+    """SELECT orderID, productID, productType, purchaseDate, 
+    expiryDate FROM orders JOIN products ON 
+    orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()
     con.close()
     return purchased_products
