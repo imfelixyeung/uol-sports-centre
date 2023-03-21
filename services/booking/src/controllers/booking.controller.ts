@@ -181,7 +181,7 @@ class BookingController {
     // get post body information
     const updateBookingBodySchema = z.object({
       userId: z.number().optional(),
-      facilityId: z.number().optional(),
+      eventId: z.number().optional(),
       transactionId: z.number().optional(),
       starts: z
         .string()
@@ -332,13 +332,13 @@ class BookingController {
    * @memberof BookingController
    */
   async bookBooking(req: express.Request, res: express.Response) {
-    const bookQuerySchema = z.object({
+    const bookBodySchema = z.object({
       starts: timestamp,
       event: id('event id'),
       user: id('user id'),
     });
 
-    const query = bookQuerySchema.safeParse(req.query);
+    const query = bookBodySchema.safeParse(req.body);
     if (!query.success)
       return res.status(400).json({
         status: 'error',
