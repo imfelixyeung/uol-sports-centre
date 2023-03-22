@@ -1,13 +1,13 @@
 """Modues provides functionality to make products purchasable or edit prices"""
 
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 import stripe
 import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
                           add_purchase, update_price, get_pricing_lists,
-                          get_purchases, update_expiry)
+                          get_purchases)
 
 
 def make_purchasable(product_name: str,
@@ -30,7 +30,7 @@ def make_a_purchase(user_id: int,
                     success_url=LOCAL_DOMAIN):
     '''redirects user to stripe checkout for chosen subscription'''
     stripe_user = get_user(user_id)
-    if stripe_user == None:
+    if stripe_user is None:
 
         stripe_user = get_user(user_id)
         new_customer = stripe.Customer.create(
@@ -161,14 +161,14 @@ def get_payment_manager(user_id: int):
 
 def pricing_list(product_type: str):
     """Returns pricing list for the chosen product type"""
-    price_list = get_pricing_lists(product_type)
+    price_list_array = get_pricing_lists(product_type)
     total = 0
-    for product in price_list:
+    for product in price_list_array:
         total += product[1]
     return {
         'quantity': len(pricing_list),
         'prices_total': total,
-        'products': {product[0]: product[1] for product in price_list}
+        'products': {product[0]: product[1] for product in price_list_array}
     }
 
 

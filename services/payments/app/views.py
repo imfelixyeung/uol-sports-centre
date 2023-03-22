@@ -1,14 +1,14 @@
 """Payments Microservice:
 Provides functionality for making payments for subscriptions"""
-from datetime import datetime, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 from flask import request, jsonify, redirect, render_template
 
 from app import app
-from app.database import (check_health, add_customer, get_purchases,
+from app.database import (check_health, get_purchases,
                           add_purchase, update_expiry, get_purchase,
-                          delete_order, add_product, get_sales, get_pricing_lists)
+                          delete_order, get_sales, get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
                           change_price, change_discount_amount)
 

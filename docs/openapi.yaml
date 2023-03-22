@@ -306,7 +306,7 @@ paths:
     get:
       tags:
         - payments
-      description: """Returns pricing list for the chosen product type"""
+      description: "Returns pricing list for the chosen product type"
 
       responses:
         "200":
@@ -322,11 +322,11 @@ paths:
         "200":
           description: OK
 
-  /payments/management/sales:
+  /payments/management/sales/<string:product_type>:
     get:
       tags:
         - payments
-      description: "Returns the sales of the past week as dictionaries"
+      description: "Returns the sales of the past week as dictionaries for the specified product type"
 
       responses:
         "200":
