@@ -161,14 +161,14 @@ def get_payment_manager(user_id: int):
 
 def pricing_list(product_type: str):
     """Returns pricing list for the chosen product type"""
-    pricing_list = get_pricing_lists(product_type)
+    price_list = get_pricing_lists(product_type)
     total = 0
-    for product in pricing_list:
+    for product in price_list:
         total += product[1]
     return {
         'quantity': len(pricing_list),
         'prices_total': total,
-        'products': {product[0]: product[1] for product in pricing_list}
+        'products': {product[0]: product[1] for product in price_list}
     }
 
 
