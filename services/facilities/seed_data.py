@@ -1,3 +1,4 @@
+"""Module to place data into app.db if data does not already exist"""
 from app.models import Facility, OpenTime, Activity
 from app import create_app
 from app.database import db
@@ -9,7 +10,7 @@ def seed_facilities():
   with app.app_context():
     seed_check = Facility.query.get(1)
 
-    if (not seed_check):
+    if not seed_check:
       swimming_pool = Facility(name="Swimming Pool", capacity=30)
       fitness_room = Facility(name="Fitness Room", capacity=35)
       squash_court1 = Facility(name="Squash Court 1", capacity=4)

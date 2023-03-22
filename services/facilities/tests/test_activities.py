@@ -1,9 +1,12 @@
-import json, unittest, os
+"""Module for testing the activities functions"""
+import json
+import unittest
+import os
 from app import create_app
 from app.database import db
 from app.models.facility import Facility
 from app.models.activity import Activity
-from app.createDictionaries import make_activity
+from app.create_dictionaries import make_activity
 
 # Create app for testing
 basedir = os.path.abspath(os.path.dirname(__file__))

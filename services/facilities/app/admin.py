@@ -1,3 +1,4 @@
+"""Module to set up flask admin for Debugging purposes"""
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin as FlaskAdmin
@@ -7,6 +8,7 @@ from app.models import Activity, Facility, OpenTime
 
 
 class Admin:
+  """Admin class to set up flask admin"""
 
   def __init__(self, app: Flask, db: SQLAlchemy):
     # save references to app and db

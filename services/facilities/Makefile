@@ -10,7 +10,7 @@ help:
 
 start:
 	python3 -m flask db upgrade
-	python3 seedData.py
+	python3 seed_data.py
 	python3 -m flask run
 
 setup-dev:
@@ -30,7 +30,12 @@ test:
 
 lint:
 	source environment/bin/activate
-	# Run yapf recursive, in place, verbose over the app dir
-	yapf -rivv app/
+	# Run yapf recursive, diffs, verbose over the app dir
+	yapf -rd -vv ./*.py ./app ./tests
 	# Run pylint (google's reccomendation)
-	python3 -m pylint --rc-file pylintrc --list-msgs
+	python3 -m pylint --rc-file pylintrc ./*.py ./app ./tests
+
+fix:
+	source environment/bin/activate
+	# Run yapf recursive, in place, verbose over the app dir
+	yapf -rivv ./*.py ./app ./tests

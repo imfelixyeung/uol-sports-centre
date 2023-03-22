@@ -654,19 +654,25 @@ paths:
         - in: query
           name: limit
           schema:
-            type: number
+            type: integer
             maximum: 256
             minimum: 1
-            format: int32
           required: false
           example: 10
 
         - in: query
           name: page
           schema:
-            type: number
+            type: integer
             minimum: 1
-            format: int32
+          required: false
+          example: 1
+
+        - in: query
+          name: user
+          schema:
+            type: integer
+            minimum: 1
           required: false
           example: 1
       responses:
@@ -685,6 +691,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Booking"
+                  metadata:
+                    $ref: "#/components/schemas/BookingPagination"
         "400":
           description: Invalid input
 
@@ -703,13 +711,13 @@ paths:
               type: object
               properties:
                 userId:
-                  type: number
+                  type: integer
                   description: The user the booking relates to
                 eventId:
-                  type: number
+                  type: integer
                   description: The event that the booking relates to
                 transactionId:
-                  type: number
+                  type: integer
                   description: The transaction linked with this booking
                 starts:
                   type: string
@@ -751,7 +759,7 @@ paths:
         - in: path
           name: bookingId
           schema:
-            type: number
+            type: integer
           required: true
           example: 1
 
@@ -782,7 +790,7 @@ paths:
         - in: path
           name: bookingId
           schema:
-            type: number
+            type: integer
           required: true
           example: 1
       requestBody:
@@ -794,13 +802,13 @@ paths:
               type: object
               properties:
                 userId:
-                  type: number
+                  type: integer
                   description: The user the booking relates to
                 eventId:
-                  type: number
+                  type: integer
                   description: The event that the booking relates to
                 transactionId:
-                  type: number
+                  type: integer
                   description: The transaction linked with this booking
                 starts:
                   type: string
@@ -840,7 +848,7 @@ paths:
         - in: path
           name: bookingId
           schema:
-            type: number
+            type: integer
           required: true
           example: 1
 
@@ -871,12 +879,11 @@ paths:
       parameters:
         - in: query
           name: limit
-          description: Max number of bookings to return in one query
+          description: Max integer of bookings to return in one query
           schema:
-            type: number
+            type: integer
             maximum: 256
             minimum: 1
-            format: int32
           required: false
           example: 10
 
@@ -884,9 +891,8 @@ paths:
           name: page
           description: Page of results to return
           schema:
-            type: number
+            type: integer
             minimum: 1
-            format: int32
           required: false
           example: 1
 
@@ -894,10 +900,9 @@ paths:
           name: start
           description: Start timestamp in milliseconds
           schema:
-            type: number
+            type: integer
             minimum: 1
             maximum: 2147483647
-            format: int32
           required: false
           example: 10
 
@@ -905,10 +910,9 @@ paths:
           name: end
           description: End timestamp in milliseconds
           schema:
-            type: number
+            type: integer
             minimum: 1
             maximum: 2147483647
-            format: int32
           required: false
           example: 1
 
@@ -916,10 +920,9 @@ paths:
           name: activity
           description: Activity id to filter by
           schema:
-            type: number
+            type: integer
             maximum: 256
             minimum: 1
-            format: int32
           required: false
           example: 10
 
@@ -927,9 +930,8 @@ paths:
           name: facility
           description: Facility id to filter by
           schema:
-            type: number
+            type: integer
             minimum: 1
-            format: int32
           required: false
           example: 1
 
@@ -953,7 +955,7 @@ paths:
                     type: object
                     properties:
                       count:
-                        type: number
+                        type: integer
                         example: 1
         "400":
           description: Invalid input
@@ -974,10 +976,10 @@ paths:
               type: object
               properties:
                 userId:
-                  type: number
+                  type: integer
                   description: The event that the booking relates to
                 eventId:
-                  type: number
+                  type: integer
                   description: The event that the booking relates to
                 starts:
                   type: string
@@ -1052,13 +1054,13 @@ paths:
                   type: string
                   description: The user the event relates to
                 activityId:
-                  type: number
+                  type: integer
                   description: The event that the event relates to
                 day:
-                  type: number
+                  type: integer
                   description: The transaction linked with this event
                 time:
-                  type: number
+                  type: integer
                   description: the start time of the event
                 duration:
                   type: number
@@ -1721,19 +1723,19 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
           description: Booking ID
           example: 1
         userId:
-          type: number
+          type: integer
           description: User ID
           example: 1
         eventId:
-          type: number
+          type: integer
           description: Event ID
           example: 1
         transactionId:
-          type: number
+          type: integer
           description: Transaction ID
           example: 1
         starts:
@@ -1757,7 +1759,7 @@ components:
           description: Start time of the booking
           example: "2023-03-02T10:00:00.000Z"
         duration:
-          type: number
+          type: integer
           description: Length of the booking
           example: 60
         event:
@@ -1767,19 +1769,39 @@ components:
           type: object
           properties:
             current:
-              type: number
+              type: integer
               description: current number of bookings for current event
               example: 15
             max:
-              type: number
+              type: integer
               description: maximum number of bookings for the current event
               example: 30
+
+    BookingPagination:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of elements
+          example: 1
+        limit:
+          type: integer
+          description: The maximum number of elements to be returned in one query
+          example: 25
+        page:
+          type: integer
+          description: The current page of results that has been returned
+          example: 1
+        pageCount:
+          type: integer
+          description: The maximum number of pages for the results
+          example: 1
 
     Event:
       type: object
       properties:
         id:
-          type: number
+          type: integer
           description: Event ID
           example: 1
         name:
@@ -1787,19 +1809,19 @@ components:
           description: Name of the event
           example: 1
         activityId:
-          type: number
+          type: integer
           description: Activity ID
           example: 1
         day:
-          type: number
+          type: integer
           description: The Day with 0 being Monday and 6 being Sunday
           example: 1
         time:
-          type: number
+          type: integer
           description: Start time of the event as minutes since 00:00
           example: 480
         duration:
-          type: number
+          type: integer
           description: Length of the booking in minutes
           example: 60
         type:
