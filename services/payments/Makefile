@@ -7,10 +7,10 @@ help:
 	@echo "make ci: runs scripts for CI"
 
 start:
-	flask run
+	flask run -p 80 -h 0.0.0.0
 
 dev:
-	flask --debug run --reload
+	flask --debug run --reload -p 80 -h 0.0.0.0
 
 test:
 	pytest

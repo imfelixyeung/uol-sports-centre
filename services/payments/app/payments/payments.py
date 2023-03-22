@@ -74,7 +74,7 @@ def make_a_purchase(user_id: int,
             discounted_price = apply_discount(product_name)
 
             line_item = {
-                "price": discounted_price,
+                "price": product_price,
                 "quantity": 1,
             }
             line_items.append(line_item)
@@ -89,6 +89,8 @@ def make_a_purchase(user_id: int,
         # Creates a new row in the purchased products table
         add_purchase(stripe_user[0], product_id, str(datetime.now()))
 
+    return("\n\n\n\n\n\n\n" + success_url)
+
     session = stripe.checkout.Session.create(
         customer=stripe_user[1],
         payment_method_types=["card"],
@@ -97,7 +99,7 @@ def make_a_purchase(user_id: int,
         success_url=success_url,
         cancel_url=success_url,
     )
-
+    
     return session.url
 
 
@@ -127,7 +129,7 @@ def apply_discount(product_name):
         coupon = stripe.Coupon.retrieve("VOz7neAM")
 
         if coupon.valid:
-            product_price = product_price * (1 - coupon.percent_off / 100)
+            product_price = float(product_price) * (1 - coupon.percent_off / 100)
 
     except stripe.error.StripeError as error_coupon:
         return error_coupon

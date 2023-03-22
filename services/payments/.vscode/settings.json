@@ -5,5 +5,9 @@
   "python.linting.enabled": true,
   "python.linting.pylintPath": "pylint",
   "python.linting.pylintEnabled": true,
-  "python.linting.pylintArgs": ["--rc-file", "pylintrc"]
+  "python.linting.pylintArgs": [
+    "--rc-file",
+    "pylintrc"
+  ],
+  "python.analysis.typeCheckingMode": "basic"
 }
