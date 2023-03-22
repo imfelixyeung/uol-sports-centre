@@ -1,6 +1,6 @@
 """Modues provides functionality to make products purchasable or edit prices"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import stripe
 import requests
 
@@ -8,7 +8,6 @@ from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
                           add_purchase, update_price, get_pricing_lists, 
                           get_purchases, update_expiry)
-
 
 def make_purchasable(product_name: str,
                      product_price: str,
@@ -69,22 +68,22 @@ def make_a_purchase(user_id: int,
         # Gets the product price from the products table
         product_price = stripe.Product.retrieve(product_id).default_price
 
+        #Checks user has purchased a subscription
+        membership = False
+        purchases = get_purchases(user_id)
+        for purchase in purchases:
+            if purchase[2] == 'subscription' and datetime.now() < time.strptime(purchase[4]):
+                membership = True
+
         # Apply a discount if there have been more than 2 bookings for the current customer
-        if bookings_count > 2:
-            discounted_price = apply_discount(product_name)
+        if bookings_count > 2 or membership:
+            product_price = apply_discount(product_name, membership)
 
-            line_item = {
-                "price": product_price,
-                "quantity": 1,
-            }
-            line_items.append(line_item)
-
-        else:
-            line_item = {
-                "price": product_price,
-                "quantity": 1,
-            }
-            line_items.append(line_item)
+        line_item = {
+            "price": product_price,
+            "quantity": 1,
+        }
+        line_items.append(line_item)
 
         # Creates a new row in the purchased products table
         add_purchase(stripe_user[0], product_id, str(datetime.now()))
@@ -118,7 +117,7 @@ def change_price(new_price: str, product_name: str):
     update_price(product_name, new_price)
 
 
-def apply_discount(product_name):
+def apply_discount(product_name: str, membership: bool):
     '''Applies a discount to a product based on the discount condition'''
 
     # Get the original price of the product
@@ -127,6 +126,8 @@ def apply_discount(product_name):
     # Apply the discount
     try:
         coupon = stripe.Coupon.retrieve("VOz7neAM")
+        if membership:
+            coupon = stripe.Coupon.retrieve("L1rD3SEB")
 
         if coupon.valid:
             product_price = float(product_price) * (1 - coupon.percent_off / 100)

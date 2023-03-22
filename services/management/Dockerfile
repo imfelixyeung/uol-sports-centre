@@ -15,7 +15,7 @@ FROM base as ci
 CMD [ "make", "ci" ]
 
 # Development target
-FROM base as prod
+FROM base as dev
 EXPOSE ${PORT}
 CMD [ "make", "dev" ]
 
