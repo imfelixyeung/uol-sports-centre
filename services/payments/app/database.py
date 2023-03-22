@@ -4,6 +4,7 @@ from typing import Optional
 
 import sqlite3
 import os
+import stripe
 
 from config import DATABASE_SCHEMA_URL, DATABASE_URL
 
@@ -19,10 +20,19 @@ def init_database() -> None:
     # Solution by https://stackoverflow.com/a/12517490
     os.makedirs(os.path.dirname(DATABASE_URL), exist_ok=True)
 
+    if os.path.isfile(DATABASE_URL):
+        return
+
     connection = sqlite3.connect(DATABASE_URL)
     with open(sqlPath, encoding="utf-8") as schema:
         connection.executescript(schema.read())
+
     connection.close()
+
+    add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
+                   "subscription")
+    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
+    add_customer(467468, stripe.Customer.create().stripe_id)
 
 
 def add_product(name: str, product_id: str, price: str, product_type: str):
@@ -116,9 +126,11 @@ def get_product(product_name: str):
     """Function to get the product by its product name from the database"""
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
+
     product = cur.execute(
         """SELECT * FROM products WHERE
     productName LIKE ?""", [product_name]).fetchone()
+    
     con.close()
     return product
 
@@ -143,7 +155,7 @@ def get_purchases(user_id: int):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     purchased_products = cur.execute(
-    """SELECT orderID, productID, productType, purchaseDate, 
+    """SELECT orderID, products.productID, productType, purchaseDate, 
     expiryDate FROM orders JOIN products ON 
     orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()

@@ -20,10 +20,10 @@ stripe.api_key = env.STRIPE_API_KEY
 @app.route("/", methods=["GET"])
 def get_index():
     """Gets the index for which it shows a subscription for now"""
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
-                 "subscription")
-    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
-    add_customer(467468, stripe.Customer.create().stripe_id)
+    # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
+                #   "subscription")
+    #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
+    #add_customer(467468, stripe.Customer.create().stripe_id)
     return render_template("index.html")
 
 
@@ -74,8 +74,8 @@ def get_sales():
 @app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():  #(products, payment_mode):
     """It redicrects the checkout"""
-    products = ["subscription-test", "product-2"]
-    payment_mode = "subscription"
+    products = ["product-test"]
+    payment_mode = "payment"
     return make_a_purchase(467468, products, payment_mode)
 
 

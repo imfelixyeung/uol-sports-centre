@@ -29,8 +29,9 @@ def make_a_purchase(user_id: int,
                     success_url=LOCAL_DOMAIN):
     '''redirects user to stripe checkout for chosen subscription'''
     stripe_user = get_user(user_id)
+    if stripe_user == None:
 
-    if len(stripe_user[1]) == 0:
+        stripe_user = get_user(user_id)
         new_customer = stripe.Customer.create(
             #get user details from user microservice
         )
@@ -66,29 +67,27 @@ def make_a_purchase(user_id: int,
             bookings_count += 1
 
         # Gets the product price from the products table
-        product_price = stripe.Product.retrieve(product_id).default_price
+        product_price = stripe.Price.retrieve(product_id)#.default_price
 
         #Checks user has purchased a subscription
         membership = False
         purchases = get_purchases(user_id)
         for purchase in purchases:
-            if purchase[2] == 'subscription' and datetime.now() < time.strptime(purchase[4]):
+            if purchase[2] == 'subscription': #and datetime.now() < time.strptime(purchase[4]):
                 membership = True
 
         # Apply a discount if there have been more than 2 bookings for the current customer
-        if bookings_count > 2 or membership:
-            product_price = apply_discount(product_name, membership)
+        #if bookings_count > 2 or membership:
+         #   product_price = apply_discount(product_name, membership)
 
         line_item = {
-            "price": product_price,
+            "price": product_price.stripe_id,
             "quantity": 1,
         }
         line_items.append(line_item)
 
         # Creates a new row in the purchased products table
         add_purchase(stripe_user[0], product_id, str(datetime.now()))
-
-    return("\n\n\n\n\n\n\n" + success_url)
 
     session = stripe.checkout.Session.create(
         customer=stripe_user[1],
