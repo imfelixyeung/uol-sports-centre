@@ -6,8 +6,9 @@ import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
-                          add_purchase, update_price, get_pricing_lists, 
+                          add_purchase, update_price, get_pricing_lists,
                           get_purchases, update_expiry)
+
 
 def make_purchasable(product_name: str,
                      product_price: str,
@@ -43,14 +44,13 @@ def make_a_purchase(user_id: int,
 
     # The start date and end date to check if three or more bookings were made for this customer
     start_date = int(round(datetime.now().timestamp() * 1000))
-    end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
+    end_date = int(
+        round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
 
-    bookings_array = (
-        f"http://gateway/api/booking/bookings"
-        f"?user={user_id}"
-        f"&start={start_date}"
-        f"&end={end_date}"
-    )
+    bookings_array = (f"http://gateway/api/booking/bookings"
+                      f"?user={user_id}"
+                      f"&start={start_date}"
+                      f"&end={end_date}")
 
     response = requests.get(bookings_array, timeout=10)
 
@@ -97,7 +97,7 @@ def make_a_purchase(user_id: int,
         success_url=success_url,
         cancel_url=success_url,
     )
-    
+
     return session.url
 
 
@@ -129,7 +129,8 @@ def apply_discount(product_name: str, membership: bool):
             coupon = stripe.Coupon.retrieve("L1rD3SEB")
 
         if coupon.valid:
-            product_price = float(product_price) * (1 - coupon.percent_off / 100)
+            product_price = float(product_price) * (1 -
+                                                    coupon.percent_off / 100)
 
     except stripe.error.StripeError as error_coupon:
         return error_coupon
@@ -155,6 +156,7 @@ def get_payment_manager(user_id: int):
     portal_session = create_portal(stripe_customer_id)
     return portal_session.url
 
+
 def pricing_list(product_type: str):
     """Returns pricing list for the chosen product type"""
     pricing_list = get_pricing_lists(product_type)
@@ -162,12 +164,11 @@ def pricing_list(product_type: str):
     for product in pricing_list:
         total += product[1]
     return {
-        'quantity' : len(pricing_list),
-        'prices_total' : total,
-        'products' : {
-            product[0]: product[1] for product in pricing_list
-        }
+        'quantity': len(pricing_list),
+        'prices_total': total,
+        'products': {product[0]: product[1] for product in pricing_list}
     }
+
 
 def cancel_subscription(user_id: int):
     """Cancels membership for given user in Stripe"""

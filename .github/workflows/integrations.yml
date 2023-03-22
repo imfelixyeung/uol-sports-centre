@@ -121,6 +121,11 @@ jobs:
         run: make test
         working-directory: ./services/facilities
 
+      - name: Run linters
+        run: make lint
+        working-directory: ./services/facilities
+
+
   payments-ci-checks:
     runs-on: ubuntu-latest
     steps:
@@ -147,3 +152,4 @@ jobs:
 
       - name: Run ci tests in docker
         run: make ci-management
+

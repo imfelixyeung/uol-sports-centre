@@ -1,3 +1,4 @@
+"""Module to configure new flask app"""
 import os
 
 # Set up secret key for testinguse

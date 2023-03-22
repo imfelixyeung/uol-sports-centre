@@ -92,7 +92,8 @@ def add_purchase(customer_id: str,
     if expiry is not None:
         cur.execute(
             """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
-        VALUES (?, ?, ?, ?)""", (customer_id, product_id, purchase_date, expiry))
+        VALUES (?, ?, ?, ?)""",
+            (customer_id, product_id, purchase_date, expiry))
 
     # If it is not
     else:
