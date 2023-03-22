@@ -144,7 +144,7 @@ def change_product_price():
 
     return 200
 
-@app.route("/get-prices/<str:product_type>", methods=["GET"])
+@app.route("/get-prices/<string:product_type>", methods=["GET"])
 def get_prices(product_type: str):
     """Retrieve pricing list of specified product type"""
     return jsonify(get_pricing_lists(product_type))
