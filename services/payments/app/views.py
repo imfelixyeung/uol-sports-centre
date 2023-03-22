@@ -33,7 +33,7 @@ def get_discount(product_name):
     return jsonify(apply_discount(product_name))
 
 
-@app.route("/management/discount/change", methods=["GET"])
+@app.route("/management/discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
     """Retrieves the new discount amount and changes it"""
     return jsonify(change_discount_amount(amount))
@@ -58,7 +58,8 @@ def get_sales():
     sales_data = {}
 
     for charge in charges["data"]:
-        charge_data = datetime.fromtimestamp(charge["created"].strftime("%Y-%m-%d"))
+        charge_data = datetime.utcfromtimestamp(
+            charge["created"]).strftime("%Y-%m-%d")
 
         if charge_data not in sales_data:
             sales_data[charge_data] = 0
@@ -70,6 +71,7 @@ def get_sales():
 
     # Return the sales data as dictionaries
     return jsonify({'dates': dates, 'sales': sales})
+
 
 @app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():  #(products, payment_mode):
@@ -139,7 +141,7 @@ def webhook_received():
     return "ok"
 
 
-@app.route("/purchased-products/<int:userID>", methods=["GET"])
+@app.route("/purchased-products/<int:user_id>", methods=["GET"])
 def get_purchased_products(user_id: int):
     """Retrieve all purchased products for a given user"""
     purchased_products = get_purchases(user_id)

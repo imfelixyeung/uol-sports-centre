@@ -146,6 +146,8 @@ def change_discount_amount(amount: float):
         metadata={"percent_off": amount},
     )
 
+    return "SUCCESSS"
+
 
 def get_payment_manager(user_id: int):
     '''Returns portal session for payments and subscription'''
