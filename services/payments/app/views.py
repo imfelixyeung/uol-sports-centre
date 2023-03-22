@@ -8,7 +8,7 @@ from flask import request, jsonify, redirect, render_template
 from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
-                          delete_order, add_product)
+                          delete_order, add_product, get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
                           change_price, change_discount_amount)
 
@@ -28,9 +28,9 @@ def get_index():
 
 
 @app.route("/discount/apply", methods=["POST"])
-def get_discount(product_name):
+def get_discount(product_name, membership):
     """Get the discounted product's price after applying a discount to it"""
-    return jsonify(apply_discount(product_name))
+    return jsonify(apply_discount(product_name, membership))
 
 
 @app.route("/management/discount/change/<int:amount>", methods=["GET"])
@@ -167,6 +167,11 @@ def change_product_price():
     change_price(new_price, product_name)
 
     return 200
+
+@app.route("/get-prices/<str:product_type>", methods=["GET"])
+def get_prices(product_type: str):
+    """Retrieve pricing list of specified product type"""
+    return jsonify(get_pricing_lists(product_type))
 
 
 @app.route("/refund", methods=["POST"])

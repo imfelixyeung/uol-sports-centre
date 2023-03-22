@@ -302,6 +302,16 @@ paths:
         "200":
           description: OK
 
+  /get-prices/<str:product_type>:
+    get:
+      tags:
+        - payments
+      description: """Returns pricing list for the chosen product type"""
+
+      responses:
+        "200":
+          description: OK
+
   /payments/management/discount/change:
     get:
       tags:
