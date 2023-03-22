@@ -6,9 +6,9 @@ import stripe
 from flask import request, jsonify, redirect, render_template
 
 from app import app
-from app.database import (check_health, get_purchases,
-                          add_purchase, update_expiry, get_purchase,
-                          delete_order, get_sales, get_pricing_lists)
+from app.database import (check_health, get_purchases, add_purchase,
+                          update_expiry, get_purchase, delete_order, get_sales,
+                          get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
                           change_price, change_discount_amount)
 
@@ -21,7 +21,7 @@ stripe.api_key = env.STRIPE_API_KEY
 def get_index():
     """Gets the index for which it shows a subscription for now"""
     # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-                #   "subscription")
+    #   "subscription")
     #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     #add_customer(467468, stripe.Customer.create().stripe_id)
     return render_template("index.html")
@@ -42,7 +42,7 @@ def change_discount(amount):
 @app.route("/management/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
     """Function that retrieves the sales from the last 7 days for a given product type"""
-    jsonify(get_sales(product_type))
+    return jsonify(get_sales(product_type))
 
 
 @app.route("/checkout-session", methods=["POST"])
@@ -139,6 +139,7 @@ def change_product_price():
     change_price(new_price, product_name)
 
     return 200
+
 
 @app.route("/get-prices/<string:product_type>", methods=["GET"])
 def get_prices(product_type: str):
