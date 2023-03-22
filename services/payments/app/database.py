@@ -1,6 +1,7 @@
 """Module that interacts with the database of payments"""
 
 from typing import Optional
+from datetime import datetime, timedelta
 
 import sqlite3
 import os
@@ -45,6 +46,39 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
     connection.commit()
     connection.close()
     return last_row_id
+
+
+def get_sales(product_type: str):
+    con = sqlite3.connect(DATABASE_URL)
+    cur = con.cursor()
+
+    # Find products of the given product type
+    products = cur.execute(
+        """SELECT productID, productName, productType, price FROM products WHERE productType = ?""",
+        [product_type]).fetchall()
+
+    sales = []
+
+    # get sales for each product
+    for product in products:
+        product_sales = cur.execute(
+            "SELECT COUNT(*), SUM(products.price) FROM orders "
+            "JOIN products ON orders.productID = products.productID "
+            "WHERE orders.productID = ? AND orders.purchaseDate BETWEEN ? AND ?",
+            (product[0], datetime.now() - timedelta(days=7), datetime.now())
+        ).fetchone()
+        
+        if product_sales[0]:
+            sales.append({
+                "product_name": product[1],
+                "product_type": product[2],
+                "units_sold": product_sales[0],
+                "total_sales": product_sales[1]
+            })
+    con.close()
+
+    # Return sales amount
+    return sales
 
 
 def update_price(product_name: str, new_price: str):
@@ -92,8 +126,7 @@ def add_purchase(customer_id: str,
     if expiry is not None:
         cur.execute(
             """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
-        VALUES (?, ?, ?, ?)""",
-            (customer_id, product_id, purchase_date, expiry))
+        VALUES (?, ?, ?, ?)""", (customer_id, product_id, purchase_date, expiry))
 
     # If it is not
     else:

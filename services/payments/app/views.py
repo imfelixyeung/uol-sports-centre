@@ -8,7 +8,7 @@ from flask import request, jsonify, redirect, render_template
 from app import app
 from app.database import (check_health, add_customer, get_purchases,
                           add_purchase, update_expiry, get_purchase,
-                          delete_order, add_product)
+                          delete_order, add_product, get_sales)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
                           change_price, change_discount_amount)
 
@@ -39,38 +39,14 @@ def change_discount(amount):
     return jsonify(change_discount_amount(amount))
 
 
-@app.route("/management/sales", methods=["GET"])
-def get_sales():
-    """Gets sales data for a week"""
+@app.route("/management/sales/<string:product_type>", methods=["GET"])
+def get_sales_lastweek(product_type: str):
+    """Function that retrieves the sales from the last 7 days for a given product type"""
+    if len(get_sales(product_type)) == 0:
+        return jsonify("No items bought of this type in the past 7 days.")
 
-    # Retrieve sales data from stripe
-    start_date = datetime.now() - timedelta(days=7)
-    end_date = datetime.now()
-
-    charges = stripe.Charge.list(
-        created={
-            "gte": int(start_date.timestamp()),
-            "lte": int(end_date.timestamp()),
-        }
-    )
-
-    # Prcess data for graphing
-    sales_data = {}
-
-    for charge in charges["data"]:
-        charge_data = datetime.utcfromtimestamp(
-            charge["created"]).strftime("%Y-%m-%d")
-
-        if charge_data not in sales_data:
-            sales_data[charge_data] = 0
-        sales_data[charge_data] += charge["amount"]
-
-    # Convert sales data to dictionaries to return
-    dates = list(sales_data.keys())
-    sales = list(sales_data.values())
-
-    # Return the sales data as dictionaries
-    return jsonify({'dates': dates, 'sales': sales})
+    else:
+        return jsonify(get_sales(product_type))
 
 
 @app.route("/checkout-session", methods=["POST"])
