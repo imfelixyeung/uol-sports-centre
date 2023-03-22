@@ -31,7 +31,7 @@ def init_database() -> None:
     connection.close()
 
     add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-                   "subscription")
+                "subscription")
     add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     add_customer(467468, stripe.Customer.create().stripe_id)
 
@@ -54,7 +54,8 @@ def get_sales(product_type: str):
 
     # Find products of the given product type
     products = cur.execute(
-        """SELECT productID, productName, productType, price FROM products WHERE productType = ?""",
+        """SELECT productID, productName, productType, 
+        price FROM products WHERE productType = ?""",
         [product_type]).fetchall()
 
     sales = []
@@ -64,10 +65,11 @@ def get_sales(product_type: str):
         product_sales = cur.execute(
             "SELECT COUNT(*), SUM(products.price) FROM orders "
             "JOIN products ON orders.productID = products.productID "
-            "WHERE orders.productID = ? AND orders.purchaseDate BETWEEN ? AND ?",
-            (product[0], datetime.now() - timedelta(days=7), datetime.now())
-        ).fetchone()
-        
+            "WHERE orders.productID = ? "
+            "AND orders.purchaseDate BETWEEN ? AND ?",
+            (product[0], datetime.now() - timedelta(days=7),
+             datetime.now())).fetchone()
+
         if product_sales[0]:
             sales.append({
                 "product_name": product[1],
@@ -126,7 +128,8 @@ def add_purchase(customer_id: str,
     if expiry is not None:
         cur.execute(
             """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
-        VALUES (?, ?, ?, ?)""", (customer_id, product_id, purchase_date, expiry))
+        VALUES (?, ?, ?, ?)""",
+            (customer_id, product_id, purchase_date, expiry))
 
     # If it is not
     else:
@@ -164,7 +167,7 @@ def get_product(product_name: str):
     product = cur.execute(
         """SELECT * FROM products WHERE
     productName LIKE ?""", [product_name]).fetchone()
-    
+
     con.close()
     return product
 
@@ -174,8 +177,8 @@ def get_pricing_lists(product_type: str):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     products = cur.execute(
-        """SELECT productName, price FROM products WHERE productType =
-        ?"""[product_type]).fetchall()
+        """SELECT productName, price FROM products WHERE productType = ?""",
+        [product_type]).fetchall()
     con.close()
 
     if not products:
@@ -189,7 +192,7 @@ def get_purchases(user_id: int):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     purchased_products = cur.execute(
-    """SELECT orderID, products.productID, productType, purchaseDate, 
+        """SELECT orderID, products.productID, productType, purchaseDate, 
     expiryDate FROM orders JOIN products ON 
     orders.productID = products.productID
     WHERE orders.userID = ?""", [user_id]).fetchall()
