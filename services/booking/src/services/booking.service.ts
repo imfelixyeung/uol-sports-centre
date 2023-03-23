@@ -8,7 +8,11 @@ import {
 } from '@/dto/booking.dto';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
-import {PaginationFilter, TimeLimitFilter} from '@/types';
+import {
+  PaginationFilter,
+  RequiredTimeLimitFilter,
+  TimeLimitFilter,
+} from '@/types';
 import {ActivitiesResponse, ActivityResponse} from '@/types/external';
 
 /**
@@ -97,7 +101,7 @@ class BookingService {
    * @memberof BookingService
    */
   private async generatePossibleBookings(
-    filter: {facility?: number; activity?: number} & TimeLimitFilter
+    filter: {facility?: number; activity?: number} & RequiredTimeLimitFilter
   ) {
     // first we will get the events that fit within the specified filters
     const validEvents = await eventDao.getEvents(filter).catch(err => {
@@ -124,6 +128,9 @@ class BookingService {
 
     const possibleBookings: PossibleBookingDTO[] = [];
 
+    let currentDay = validEvents[0].day;
+    let currentDayCount = 0;
+
     // for each event, generate a list of possible bookings
     validEvents.forEach(event => {
       const activity = activities.find(a => a.id === event.activityId);
@@ -134,17 +141,26 @@ class BookingService {
         return; // continue
       }
 
+      // count days between this instance of the event and the start of the filter
+      if (currentDay !== event.day) {
+        currentDay = event.day;
+        currentDayCount++;
+      }
+
       const timeSlots = event.duration / activity.duration;
 
       // for each timeslot, generate a possible booking
       for (let i = 0; i < timeSlots; i++) {
         // calculate start and end time, then check whether they fit within the bounds
-        const bookingStartTime = new Date(filter.start ?? new Date()).setHours(
-          0,
-          event.time + i * activity.duration,
-          0,
-          0
-        );
+        const bookingStartTime =
+          new Date(filter.start).setHours(
+            0,
+            event.time + i * activity.duration,
+            0,
+            0
+          ) +
+          currentDayCount * 24 * 60 * 60 * 1000;
+
         const bookingEndTime = bookingStartTime + activity.duration * 60 * 1000;
 
         // if booking starts before the filter or booking ends after the filter,
