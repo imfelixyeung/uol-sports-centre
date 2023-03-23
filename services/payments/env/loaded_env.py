@@ -5,8 +5,8 @@ If .env is available, loads it into the environment.
 
 import sys
 import os
-from dotenv import load_dotenv
 import typing
+from dotenv import load_dotenv
 
 # Load .env file
 load_dotenv()
