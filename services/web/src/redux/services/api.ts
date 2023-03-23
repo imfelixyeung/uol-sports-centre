@@ -168,8 +168,8 @@ export const api = createApi({
         if (limit) search.set('limit', `${limit}`);
         if (start) search.set('start', `${start}`);
         if (end) search.set('end', `${end}`);
-        if (activityId) search.set('activityId', `${activityId}`);
-        if (facilityId) search.set('facilityId', `${facilityId}`);
+        if (activityId) search.set('activity', `${activityId}`);
+        if (facilityId) search.set('facility', `${facilityId}`);
 
         return {
           url: `/booking/bookings/availability?${search.toString()}`,
