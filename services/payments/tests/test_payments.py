@@ -2,6 +2,7 @@
 import unittest
 import sqlite3
 import os
+import time
 
 import urllib.request
 import stripe
@@ -31,6 +32,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.product_name = "product-test"
         self.product_price = 50.00
         self.user_id = 467468
+        self.start_time = time.monotonic()
 
     def test_make_purchasable(self):
         """tests if it can make a test product purchasable"""
@@ -188,6 +190,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        elapsed_time = time.monotonic() - self.start_time
+        if elapsed_time < 5:
+            time.sleep(5 - elapsed_time)
+
         """Remove the database file after running all tests"""
         conn = sqlite3.connect(DATABASE_URL)
         conn.execute("DROP TABLE IF EXISTS orders")

@@ -42,7 +42,7 @@ def change_discount(amount):
 @app.route("/management/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
     """Function that retrieves the sales from the last 7 days for a given product type"""
-    jsonify(get_sales(product_type))
+    return jsonify(get_sales(product_type))
 
 
 @app.route("/checkout-session", methods=["POST"])
