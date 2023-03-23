@@ -32,6 +32,8 @@ class BookingController {
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
       ...paginationSchema,
+      start: timestamp.optional(),
+      end: timestamp.optional(),
       user: id('user id').optional(),
     });
 
@@ -54,12 +56,10 @@ class BookingController {
         return new Error(err);
       });
     } else {
-      bookings = await bookingService
-        .get({limit: query.data.limit, page: query.data.page})
-        .catch(err => {
-          logger.error(`Error getting bookings: ${err}`);
-          return new Error(err);
-        });
+      bookings = await bookingService.get(query.data).catch(err => {
+        logger.error(`Error getting bookings: ${err}`);
+        return new Error(err);
+      });
     }
 
     if (bookings instanceof Error) {
@@ -181,7 +181,7 @@ class BookingController {
     // get post body information
     const updateBookingBodySchema = z.object({
       userId: z.number().optional(),
-      facilityId: z.number().optional(),
+      eventId: z.number().optional(),
       transactionId: z.number().optional(),
       starts: z
         .string()
@@ -332,13 +332,13 @@ class BookingController {
    * @memberof BookingController
    */
   async bookBooking(req: express.Request, res: express.Response) {
-    const bookQuerySchema = z.object({
+    const bookBodySchema = z.object({
       starts: timestamp,
       event: id('event id'),
       user: id('user id'),
     });
 
-    const query = bookQuerySchema.safeParse(req.query);
+    const query = bookBodySchema.safeParse(req.body);
     if (!query.success)
       return res.status(400).json({
         status: 'error',
