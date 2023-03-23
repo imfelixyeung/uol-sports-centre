@@ -252,7 +252,7 @@ paths:
         "200":
           description: OK
 
-  /payments/checkout-session:
+  /payments/checkout-session/<int:user_id>:
     post:
       tags:
         - payments
@@ -312,7 +312,7 @@ paths:
         "200":
           description: OK
 
-  /payments/management/discount/change:
+  /payments/management/discount/change/<int:amount>:
     get:
       tags:
         - payments
@@ -342,7 +342,7 @@ paths:
         "200":
           description: OK
 
-  /payments/customer-portal:
+  /payments/customer-portal/<int:user_id>:
     get:
       tags:
         - payments
