@@ -3,12 +3,13 @@ Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
+from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, render_template
 
 from app import app
-from app.database import (check_health, get_purchases,
-                          add_purchase, update_expiry, get_purchase,
-                          delete_order, get_sales, get_pricing_lists)
+from app.database import (check_health, get_purchases, add_purchase,
+                          update_expiry, get_purchase, delete_order, get_sales,
+                          get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
                           change_price, change_discount_amount)
 
@@ -21,7 +22,7 @@ stripe.api_key = env.STRIPE_API_KEY
 def get_index():
     """Gets the index for which it shows a subscription for now"""
     # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-                #   "subscription")
+    #   "subscription")
     #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
     #add_customer(467468, stripe.Customer.create().stripe_id)
     return render_template("index.html")
@@ -45,12 +46,12 @@ def get_sales_lastweek(product_type: str):
     return jsonify(get_sales(product_type))
 
 
-@app.route("/checkout-session", methods=["POST"])
-def redirect_checkout():  #(products, payment_mode):
+@app.route("/checkout-session/<int:user_id>", methods=["POST"])
+def redirect_checkout(user_id, products, payment_mode):
     """It redicrects the checkout"""
-    products = ["product-test"]
-    payment_mode = "payment"
-    return make_a_purchase(467468, products, payment_mode)
+    #products = ["product-test"]
+    #payment_mode = "payment"
+    return make_a_purchase(user_id, products, payment_mode)
 
 
 @app.route("/webhook", methods=["POST"])
@@ -58,6 +59,9 @@ def webhook_received():
     """Provisions purchased product to user, after successful payment"""
     event = None
     signature = request.headers.get("stripe-signature")
+
+    if not signature:
+        return {"message": "signature missing"}
 
     #Stripe signature verification
     try:
@@ -67,7 +71,7 @@ def webhook_received():
     except ValueError as payload_error:
         #Invalid Payload
         return jsonify({"Invalid Payload": str(payload_error)}), 400
-    except stripe.error.SignatureVerificationError as signature_error:
+    except stripe_errors.SignatureVerificationError as signature_error:
         #Invalid Signature
         return jsonify({"Invalid Signature": str(signature_error)}), 400
 
@@ -120,10 +124,10 @@ def get_purchased_products(user_id: int):
     return jsonify(purchased_products)
 
 
-@app.route("/customer-portal", methods=["GET"])
-def customer_portal():
+@app.route("/customer-portal/<int:user_id>", methods=["GET"])
+def customer_portal(user_id: int):
     """Generate a Stripe customer portal URL for the current user"""
-    return redirect(get_payment_manager(467468), code=303)
+    return redirect(get_payment_manager(user_id), code=303)
 
 
 @app.route("/change-price", methods=["POST"])
@@ -138,7 +142,8 @@ def change_product_price():
     # Calling the change_price function
     change_price(new_price, product_name)
 
-    return 200
+    return {"message": "Price changed successfully"}
+
 
 @app.route("/get-prices/<string:product_type>", methods=["GET"])
 def get_prices(product_type: str):
@@ -170,7 +175,7 @@ def refund():
             amount=refund_amount,
             refund_application_fee=True,
         )
-    except stripe.error.StripeError as refund_error:
+    except stripe_errors.StripeError as refund_error:
         return jsonify({"error": str(refund_error)}), 400
 
     # For now, delete order
