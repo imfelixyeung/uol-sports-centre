@@ -24,6 +24,10 @@ import type {StatusReportResponse} from './types/status';
 import type {
   UsersCreateRequest,
   UsersCreateResponse,
+  UsersUpdateFirstNameRequest,
+  UsersUpdateFirstNameResponse,
+  UsersUpdateLastNameRequest,
+  UsersUpdateLastNameResponse,
   UsersViewFullRecordResponse,
 } from './types/users';
 
@@ -123,6 +127,30 @@ export const api = createApi({
       invalidatesTags: ['User'],
     }),
 
+    updateUserFirstName: builder.mutation<
+      UsersUpdateFirstNameResponse,
+      UsersUpdateFirstNameRequest
+    >({
+      query: user => ({
+        url: `/users/${user.id}/updateFirstName`,
+        method: 'PUT',
+        body: {firstName: user.firstName},
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    updateUserLastName: builder.mutation<
+      UsersUpdateLastNameResponse,
+      UsersUpdateLastNameRequest
+    >({
+      query: user => ({
+        url: `/users/${user.id}/updateSurname`,
+        method: 'PUT',
+        body: {lastName: user.lastName},
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     getAvailableBookings: builder.query<
       BookingAvailabilityResponse,
       BookingAvailabilityRequest
@@ -167,5 +195,7 @@ export const {
   useGetFacilityTimeQuery,
   useGetUserRecordQuery,
   useCreateUserMutation,
+  useUpdateUserFirstNameMutation,
+  useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
 } = api;
