@@ -3,6 +3,7 @@ Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
+from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, render_template
 
 from app import app
@@ -59,6 +60,9 @@ def webhook_received():
     event = None
     signature = request.headers.get("stripe-signature")
 
+    if not signature:
+        return {"message": "signature missing"}
+
     #Stripe signature verification
     try:
         event = stripe.Webhook.construct_event(payload=request.data,
@@ -67,7 +71,7 @@ def webhook_received():
     except ValueError as payload_error:
         #Invalid Payload
         return jsonify({"Invalid Payload": str(payload_error)}), 400
-    except stripe.error.SignatureVerificationError as signature_error:
+    except stripe_errors.SignatureVerificationError as signature_error:
         #Invalid Signature
         return jsonify({"Invalid Signature": str(signature_error)}), 400
 
@@ -138,7 +142,7 @@ def change_product_price():
     # Calling the change_price function
     change_price(new_price, product_name)
 
-    return 200
+    return {"message": "Price changed successfully"}
 
 
 @app.route("/get-prices/<string:product_type>", methods=["GET"])
@@ -171,7 +175,7 @@ def refund():
             amount=refund_amount,
             refund_application_fee=True,
         )
-    except stripe.error.StripeError as refund_error:
+    except stripe_errors.StripeError as refund_error:
         return jsonify({"error": str(refund_error)}), 400
 
     # For now, delete order

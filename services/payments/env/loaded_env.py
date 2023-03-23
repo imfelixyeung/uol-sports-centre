@@ -6,13 +6,14 @@ If .env is available, loads it into the environment.
 import sys
 import os
 from dotenv import load_dotenv
+import typing
 
 # Load .env file
 load_dotenv()
 
-STRIPE_API_KEY = os.getenv("STRIPE_API")
-APP_PORT_STRING = os.getenv("APP_PORT")
-STRIPE_WEBHOOK_KEY = os.getenv("STRIPE_WEBHOOK")
+STRIPE_API_KEY = typing.cast(str, os.getenv("STRIPE_API"))
+APP_PORT_STRING = typing.cast(str, os.getenv("APP_PORT"))
+STRIPE_WEBHOOK_KEY = typing.cast(str, os.getenv("STRIPE_WEBHOOK"))
 DEBUG = os.getenv("DEBUG") in ["True", "true"]
 
 # Docker defaults unset environment variables to empty strings

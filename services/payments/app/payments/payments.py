@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 import stripe
+from stripe import error as stripe_errors
 import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
@@ -13,7 +14,7 @@ from app.database import (add_product, get_user, get_product, add_customer,
 def make_purchasable(product_name: str,
                      product_price: str,
                      product_type="payment"):
-    '''Make a chosen product purchasable through adding to stripe and DB'''
+    """Make a chosen product purchasable through adding to stripe and DB"""
 
     #Adding product to stripe
     product = stripe.Product.create(name=product_name)
@@ -28,7 +29,7 @@ def make_a_purchase(user_id: int,
                     products: list[str],
                     payment_mode: str,
                     success_url=LOCAL_DOMAIN):
-    '''redirects user to stripe checkout for chosen subscription'''
+    """redirects user to stripe checkout for chosen subscription"""
     stripe_user = get_user(user_id)
     if stripe_user is None:
 
@@ -54,7 +55,8 @@ def make_a_purchase(user_id: int,
 
     response = requests.get(bookings_array, timeout=10)
 
-    # Count the number of bookings made for the current customer in the last 7 days
+    # Count the number of bookings made for the
+    # current customer in the last 7 days
     bookings_count = len(response.json())
 
     for product in products:
@@ -67,18 +69,19 @@ def make_a_purchase(user_id: int,
             bookings_count += 1
 
         # Gets the product price from the products table
-        product_price = stripe.Price.retrieve(product_id)#.default_price
+        product_price = stripe.Price.retrieve(product_id)  #.default_price
 
-        #Checks user has purchased a subscription
+        # Checks user has purchased a subscription
         membership = False
         purchases = get_purchases(user_id)
         for purchase in purchases:
-            if purchase[2] == 'subscription': #and datetime.now() < time.strptime(purchase[4]):
+            if purchase[2] == "subscription":
+                # and datetime.now() < time.strptime(purchase[4]):
                 membership = True
 
         # Apply a discount if there have been more than 2 bookings for the current customer
-        #if bookings_count > 2 or membership:
-         #   product_price = apply_discount(product_name, membership)
+        # if bookings_count > 2 or membership:
+        #    product_price = apply_discount(product_name, membership)
 
         line_item = {
             "price": product_price.stripe_id,
@@ -102,7 +105,7 @@ def make_a_purchase(user_id: int,
 
 
 def change_price(new_price: str, product_name: str):
-    '''Changes price of specified product for management microservice'''
+    """Changes price of specified product for management microservice"""
     product = get_product(product_name)
 
     old_stripe_price = stripe.Product.retrieve(product[0]).default_price
@@ -117,7 +120,7 @@ def change_price(new_price: str, product_name: str):
 
 
 def apply_discount(product_name: str, membership: bool):
-    '''Applies a discount to a product based on the discount condition'''
+    """Applies a discount to a product based on the discount condition"""
 
     # Get the original price of the product
     product_price = get_product(product_name)[2]
@@ -132,7 +135,7 @@ def apply_discount(product_name: str, membership: bool):
             product_price = float(product_price) * (1 -
                                                     coupon.percent_off / 100)
 
-    except stripe.error.StripeError as error_coupon:
+    except stripe_errors.StripeError as error_coupon:
         return error_coupon
 
     # Round the discounted price to 2 decimal places
@@ -140,7 +143,10 @@ def apply_discount(product_name: str, membership: bool):
 
 
 def change_discount_amount(amount: float):
-    """Changes the discount amount set for 3 or more bookings in a period of seven days"""
+    """
+    Changes the discount amount set for 3
+    or more bookings in a period of seven days
+    """
     stripe.Coupon.modify(
         "VOz7neAM",
         metadata={"percent_off": amount},
@@ -150,7 +156,7 @@ def change_discount_amount(amount: float):
 
 
 def get_payment_manager(user_id: int):
-    '''Returns portal session for payments and subscription'''
+    """Returns portal session for payments and subscription"""
     # Get the Stripe customer ID for the current user from the database
     stripe_customer_id = get_user(user_id)[1]
 
@@ -163,12 +169,16 @@ def pricing_list(product_type: str):
     """Returns pricing list for the chosen product type"""
     price_list_array = get_pricing_lists(product_type)
     total = 0
+
+    if not price_list_array:
+        return {"quantity": 0, "prices_total": 0, "products": {}}
+
     for product in price_list_array:
         total += product[1]
     return {
-        'quantity': len(pricing_list),
-        'prices_total': total,
-        'products': {product[0]: product[1] for product in price_list_array}
+        "quantity": len(price_list_array),
+        "prices_total": total,
+        "products": {product[0]: product[1] for product in price_list_array}
     }
 
 
