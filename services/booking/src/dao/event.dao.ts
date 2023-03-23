@@ -1,8 +1,10 @@
 import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
 import NotFoundError from '@/errors/notFound';
+import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
+import {ActivitiesResponse} from '@/types/external';
 
 /**
  * The Event DAO (Data Access Object) is used to abstract the underlying
@@ -22,6 +24,42 @@ class EventDAO {
    */
   async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
     logger.debug('Getting events');
+
+    // if filter.facility is provided, get the activities for that facility
+    let activityIds: number[] = [];
+
+    if (filter.facility) {
+      const activities = await httpClient
+        .get<ActivitiesResponse>(
+          'http://gateway/api/facilities/activities?page=1&limit=1000'
+        )
+        .catch(err => {
+          logger.error(err);
+          return new Error(err);
+        });
+
+      if (activities instanceof Error) return activities;
+
+      activities.forEach(activity => {
+        if (activity.facility_id === filter.facility) {
+          activityIds.push(activity.id);
+        }
+      });
+    }
+
+    if (filter.activity) {
+      // if filter.activity is provided and filter.facility is not, add filter.activity
+      if (!filter.facility) {
+        activityIds.push(filter.activity);
+      } else {
+        // set activityIds to the union of filter.activity and activityIds
+        if (activityIds.includes(filter.activity)) {
+          activityIds = [filter.activity];
+        } else {
+          activityIds = [];
+        }
+      }
+    }
 
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
@@ -75,7 +113,9 @@ class EventDAO {
         const events = await prisma.event
           .findMany({
             where: {
-              activityId: filter.activity,
+              activityId: {
+                in: activityIds,
+              },
               day,
               type: filter.type,
             },
