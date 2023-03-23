@@ -11,6 +11,7 @@ import type {BookingCapacity} from '~/redux/services/types/bookings';
 import {datesBetween} from '~/utils/datesBetween';
 import Button from './Button';
 import IconToggleGroup from './IconToggleGroup';
+import ScrollArea from './ScrollArea';
 import Typography from './Typography';
 dayjs.extend(localizedFormatPlugin);
 
@@ -19,7 +20,7 @@ const availableViews = [
   {id: 'list', name: 'List View', Icon: ListIcon},
   {id: 'calendar', name: 'Calendar View', Icon: CalendarIcon},
 ] as const;
-const defaultView: View = 'grid';
+const defaultView: View = 'calendar';
 type View = (typeof availableViews)[number]['id'];
 
 interface BookingsProps {
@@ -71,7 +72,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
         ))}
       </div>
       {currentView === 'calendar' && (
-        <div className="mt-3 bg-black text-white">
+        <div className="mt-3">
           <BookingsCalendarView bookings={bookings} />
         </div>
       )}
@@ -98,11 +99,11 @@ const BookingsCalendarView: FC<{
   const hours = Array.from({length: 24}, (_, index) => index);
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <ScrollArea>
+      <table className="mb-3 w-full bg-black text-white">
         <thead>
           <tr>
-            <th className="p-2">{'Date/Time'}</th>
+            <th className="sticky left-0 z-50 bg-black p-2">{'Date/Time'}</th>
             {hours.map(hour => (
               <th key={hour} className="p-2">
                 {hour}
@@ -113,7 +114,9 @@ const BookingsCalendarView: FC<{
         <tbody>
           {dates.map(date => (
             <tr key={date.toISOString()}>
-              <th>{dayjs(date).format('ll')}</th>
+              <th className="sticky left-0 z-50 bg-black p-2">
+                {dayjs(date).format('ll')}
+              </th>
               {hours.map(hour => {
                 const starts = dayjs(date).add(hour, 'hour');
                 const bookingsMatching = bookings.filter(
@@ -121,8 +124,8 @@ const BookingsCalendarView: FC<{
                     booking.datetime.getTime() === starts.toDate().getTime()
                 );
                 return (
-                  <td key={hour} className="bg-white p-3 text-black">
-                    <div className="flex flex-col gap-3">
+                  <td key={hour} className="bg-white p-3 align-top text-black">
+                    <div className="flex h-full flex-col gap-3">
                       {bookingsMatching.map((booking, index) => (
                         <BookingActivity
                           key={index}
@@ -132,7 +135,12 @@ const BookingsCalendarView: FC<{
                           name={booking.name}
                           facility="Facility"
                           variant="tile"
-                          action={<Button intent="secondary">Edit</Button>}
+                          action={
+                            <>
+                              <Button intent="secondary">Book</Button>
+                              <Button intent="secondary">Add</Button>
+                            </>
+                          }
                         />
                       ))}
                       {bookingsMatching.length === 0 && (
@@ -148,7 +156,7 @@ const BookingsCalendarView: FC<{
           ))}
         </tbody>
       </table>
-    </div>
+    </ScrollArea>
   );
 };
 
