@@ -26,23 +26,30 @@ class EventDAO {
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
     if (filter.start && filter.end) {
-      // for each date, starting from the start and adding 1 day each iteration
-      // until greater than the end date
+      // loop through each day between the start and end dates, inclusive
+      const startDate = new Date(filter.start).setHours(0, 0, 0, 0);
+      const endDate = new Date(filter.end).setHours(23, 59, 59, 999);
       for (
-        let dt = new Date(filter.start);
-        dt <= new Date(filter.end);
-        dt.setDate(dt.getDate() + 1)
+        let date = startDate;
+        date <= endDate;
+        date = new Date(date).setDate(new Date(date).getDate() + 1)
       ) {
         // add numerical representation of the day (0-6) to array
         // in js 0 is sunday however we want the days to start from monday
-
-        let day = new Date(dt).getDay();
+        let day = new Date(date).getDay();
         day = day === 0 ? 6 : day - 1;
         days.push(day);
       }
     } else {
       // default to all events in a week
       days.push(...Array.from(Array(7).keys()));
+    }
+
+    // add missing final day
+    if (filter.end) {
+      // we use the normal js representation of the day (0-6) here since it is already 1 day ahead
+      const day = new Date(filter.end).getDay();
+      days.push(day);
     }
 
     const allEvents: EventDTO[] = [];
