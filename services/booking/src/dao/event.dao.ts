@@ -26,31 +26,36 @@ class EventDAO {
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
     if (filter.start && filter.end) {
-      // loop through each day between the start and end dates, inclusive
-      const startDate = new Date(filter.start).setHours(0, 0, 0, 0);
-      const endDate = new Date(filter.end).setHours(23, 59, 59, 999);
-      for (
-        let date = startDate;
-        date <= endDate;
-        date = new Date(date).setDate(new Date(date).getDate() + 1)
-      ) {
-        // add numerical representation of the day (0-6) to array
-        // in js 0 is sunday however we want the days to start from monday
-        let day = new Date(date).getDay();
-        day = day === 0 ? 6 : day - 1;
-        days.push(day);
-      }
+      const startDate = new Date(filter.start);
+      const endDate = new Date(filter.end);
+
+      // get a list of dates between the start and end dates (inclusive) as values of 0-6
+      days.push(
+        ...Array.from(
+          Array(
+            Math.floor((endDate.getTime() - startDate.getTime()) / 86400000) + 1
+          ).keys()
+        ).map(i => new Date(startDate.getTime() + i * 86400000).getDay())
+      );
     } else {
       // default to all events in a week
       days.push(...Array.from(Array(7).keys()));
     }
 
-    // add missing final day
-    if (filter.end) {
-      // we use the normal js representation of the day (0-6) here since it is already 1 day ahead
-      const day = new Date(filter.end).getDay();
-      days.push(day);
+    // add missing final day if it isnt the final day in the array
+    if (filter.end && days[days.length - 1] !== new Date(filter.end).getDay()) {
+      days.push(new Date(filter.end).getDay());
     }
+
+    // add first day if it isnt the first day in the array
+    if (filter.start && days[0] !== new Date(filter.start).getDay()) {
+      days.unshift(new Date(filter.start).getDay());
+    }
+
+    // shift all of the days so that monday is 0
+    days.forEach((day, index) => {
+      days[index] = day === 0 ? 6 : day - 1;
+    });
 
     const allEvents: EventDTO[] = [];
     const eventsByDay: (Error | EventDTO[] | null)[] = [
