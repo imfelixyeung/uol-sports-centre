@@ -45,6 +45,8 @@ interface BookingsProps {
 
 const Bookings: FC<BookingsProps> = ({title, bookings}) => {
   const [currentView, setCurrentView] = useState<View>(defaultView);
+  const dispatch = useAppDispatch();
+  const basket = useAppSelector(selectBookings);
 
   return (
     <>
@@ -68,18 +70,52 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
           currentView === 'calendar' && 'hidden'
         )}
       >
-        {bookings.map((booking, index) => (
-          <BookingActivity
-            key={index}
-            datetime={new Date(booking.datetime)}
-            capacity={booking.capacity}
-            duration={booking.duration}
-            name={booking.name}
-            facility="Facility"
-            variant={currentView === 'grid' ? 'card' : 'tile'}
-            action={<Button intent="secondary">Edit</Button>}
-          />
-        ))}
+        {bookings.map((booking, index) => {
+          const {availableBooking} = booking;
+
+          const inBasket =
+            availableBooking &&
+            basket.find(
+              booking =>
+                booking.starts === availableBooking.starts &&
+                booking.event.id === availableBooking.event.id
+            );
+          return (
+            <BookingActivity
+              key={index}
+              datetime={new Date(booking.datetime)}
+              capacity={booking.capacity}
+              duration={booking.duration}
+              name={booking.name}
+              facility="Facility"
+              variant={currentView === 'grid' ? 'card' : 'tile'}
+              action={
+                availableBooking ? (
+                  <>
+                    <Button intent="primary">Book</Button>
+                    {inBasket ? (
+                      <Button
+                        intent="secondary"
+                        onClick={() =>
+                          dispatch(removeBooking(availableBooking))
+                        }
+                      >
+                        Remove
+                      </Button>
+                    ) : (
+                      <Button
+                        intent="secondary"
+                        onClick={() => dispatch(addBooking(availableBooking))}
+                      >
+                        Add
+                      </Button>
+                    )}
+                  </>
+                ) : null
+              }
+            />
+          );
+        })}
       </div>
       {currentView === 'calendar' && (
         <div className="mt-3">
@@ -162,7 +198,7 @@ const BookingsCalendarView: FC<{
                             action={
                               availableBooking ? (
                                 <>
-                                  <Button intent="secondary">Book</Button>
+                                  <Button intent="primary">Book</Button>
                                   {inBasket ? (
                                     <Button
                                       intent="secondary"
