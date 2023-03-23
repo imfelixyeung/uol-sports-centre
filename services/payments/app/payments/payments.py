@@ -87,8 +87,10 @@ def make_a_purchase(user_id: int,
         # Apply a discount if there have been more than 2 bookings for the current customer
         if bookings_count > 2 or membership:
             line_item = {
-                "unit_amount": apply_discount(product_price.stripe_id, membership),
-                "quantity": 1,
+                "unit_amount": 
+                    apply_discount(product_price.stripe_id, membership),
+                "quantity": 
+                    1,
             }
 
         else:
@@ -106,11 +108,8 @@ def make_a_purchase(user_id: int,
 
             response_users =requests.post(
                 f"http://gateway/api/users/{user_id}/updateMembersip", 
-                json={
-                    "membership": product_name
-                },
-                timeout = 5
-            )
+                json={"membership": product_name},
+                timeout = 5)
 
             if response_users.status_code != 200:
                 return response_users.status_code
@@ -215,12 +214,9 @@ def cancel_subscription(user_id: int):
     subscription = f"{customer.subscriptions.data[0].id}"
     stripe.Subscription.delete(subscription)
 
-    response_users =requests.post(
+    response_users = requests.post(
         f"http://gateway/api/users/{user_id}/updateMembersip", 
-        json={
-            "membership": subscription
-        },
-        timeout = 5
-    )
+        json={"membership": subscription},
+        timeout = 5)
 
     return response_users.status_code
