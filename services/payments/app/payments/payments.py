@@ -59,13 +59,19 @@ def make_a_purchase(user_id: int,
     # current customer in the last 7 days
     bookings_count = len(response.json())
 
+    update_subscription = False
+
     for product in products:
         # Gets the product ID and price from the products table
         product_id = get_product(product)[0]
+        product_name = get_product(product)[1]
         product_type = get_product(product)[3]
 
         if product_type == "session":
             bookings_count += 1
+
+        if product_type == "subscription":
+            update_subscription = True
 
         # Gets the product price from the products table
         product_price = stripe.Price.retrieve(product_id)  #.default_price
@@ -95,6 +101,20 @@ def make_a_purchase(user_id: int,
 
         # Creates a new row in the purchased products table
         add_purchase(stripe_user[0], product_id, str(datetime.now()))
+
+        if update_subscription is True:
+
+            response_users =requests.post(f"http://gateway/api/users/?user={user_id}"
+                f"updateMembersip", json={
+                "membership": product_name
+                },
+                timeout = 5
+            )
+
+            if response_users.status_code is not 200:
+                return response_users.status_code
+
+            update_subscription = False
 
     session = stripe.checkout.Session.create(
         customer=stripe_user[1],
@@ -179,6 +199,7 @@ def pricing_list(product_type: str):
 
     for product in price_list_array:
         total += product[1]
+
     return {
         "quantity": len(price_list_array),
         "prices_total": total,
@@ -192,3 +213,12 @@ def cancel_subscription(user_id: int):
     customer = stripe.Customer.retrieve(stripe_user)
     subscription = customer.subscriptions.data[0].id
     stripe.Subscription.delete(subscription)
+
+    response_users =requests.post(f"http://gateway/api/users/?user={user_id}"
+        f"updateMembersip", json={
+        "membership": subscription
+        },
+        timeout = 5
+    )
+
+    return response_users.status_code
