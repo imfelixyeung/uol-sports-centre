@@ -1,13 +1,16 @@
 import {Field, Form, Formik} from 'formik';
 import type {FC} from 'react';
 import {useState} from 'react';
+import BookingActivity from '~/components/BookingActivity';
 import Bookings from '~/components/Bookings';
+import Button from '~/components/Button';
 import FormikAutoSubmit from '~/components/FormikAutoSubmit';
 import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
-import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {removeBooking, selectBookings} from '~/redux/features/basket';
+import {useAppDispatch, useAppSelector} from '~/redux/hooks';
 import {
   useGetAvailableBookingsQuery,
   useGetFacilitiesQuery,
@@ -39,12 +42,9 @@ const NewBookingsPage = () => {
                 capacity: booking.capacity,
                 duration: booking.duration,
                 name: booking.event.name,
+                availableBooking: booking,
               }))}
-              title={
-                <Typography.h2 styledAs="h1" uppercase>
-                  Available Sessions
-                </Typography.h2>
-              }
+              title={<SelectedBookingsDropdown />}
             />
           </div>
         </main>
@@ -142,5 +142,33 @@ const BookingFilterForm: FC<{
         </label>
       </Form>
     </Formik>
+  );
+};
+
+const SelectedBookingsDropdown: FC = () => {
+  const bookings = useAppSelector(selectBookings);
+  const dispatch = useAppDispatch();
+  return (
+    <>
+      {bookings.map((booking, index) => (
+        <BookingActivity
+          key={index}
+          datetime={new Date(booking.starts)}
+          capacity={booking.capacity}
+          duration={booking.duration}
+          name={booking.event.name}
+          facility="Facility"
+          variant="tile"
+          action={
+            <Button
+              intent="secondary"
+              onClick={() => dispatch(removeBooking(booking))}
+            >
+              Remove
+            </Button>
+          }
+        />
+      ))}
+    </>
   );
 };

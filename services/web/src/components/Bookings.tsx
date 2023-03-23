@@ -7,7 +7,16 @@ import BookingActivity from '~/components/BookingActivity';
 import CalendarIcon from '~/components/Icons/CalendarIcon';
 import GridIcon from '~/components/Icons/GridIcon';
 import ListIcon from '~/components/Icons/ListIcon';
-import type {BookingCapacity} from '~/redux/services/types/bookings';
+import {
+  addBooking,
+  removeBooking,
+  selectBookings,
+} from '~/redux/features/basket';
+import {useAppDispatch, useAppSelector} from '~/redux/hooks';
+import type {
+  AvailableBooking,
+  BookingCapacity,
+} from '~/redux/services/types/bookings';
 import {datesBetween} from '~/utils/datesBetween';
 import Button from './Button';
 import IconToggleGroup from './IconToggleGroup';
@@ -30,6 +39,7 @@ interface BookingsProps {
     capacity?: BookingCapacity;
     duration: number;
     name: string;
+    availableBooking?: AvailableBooking;
   }[];
 }
 
@@ -39,7 +49,6 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
   return (
     <>
       <div className="flex flex-wrap justify-between">
-        <div>{title}</div>
         <IconToggleGroup
           items={availableViews.map(view => ({
             Icon: view.Icon,
@@ -49,6 +58,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
           value={currentView}
           onValueChange={setCurrentView}
         />
+        <div>{title}</div>
       </div>
       <div
         className={clsx(
@@ -86,6 +96,7 @@ const BookingsCalendarView: FC<{
     capacity?: BookingCapacity;
     duration: number;
     name: string;
+    availableBooking?: AvailableBooking;
   }[];
 }> = ({bookings}) => {
   const calendarStart = Math.min(
@@ -97,6 +108,8 @@ const BookingsCalendarView: FC<{
 
   const dates = datesBetween(new Date(calendarStart), new Date(calendarEnd));
   const hours = Array.from({length: 24}, (_, index) => index);
+  const dispatch = useAppDispatch();
+  const basket = useAppSelector(selectBookings);
 
   return (
     <ScrollArea>
@@ -126,23 +139,57 @@ const BookingsCalendarView: FC<{
                 return (
                   <td key={hour} className="bg-white p-3 align-top text-black">
                     <div className="flex h-full flex-col gap-3">
-                      {bookingsMatching.map((booking, index) => (
-                        <BookingActivity
-                          key={index}
-                          datetime={new Date(booking.datetime)}
-                          capacity={booking.capacity}
-                          duration={booking.duration}
-                          name={booking.name}
-                          facility="Facility"
-                          variant="tile"
-                          action={
-                            <>
-                              <Button intent="secondary">Book</Button>
-                              <Button intent="secondary">Add</Button>
-                            </>
-                          }
-                        />
-                      ))}
+                      {bookingsMatching.map((booking, index) => {
+                        const {availableBooking} = booking;
+
+                        const inBasket =
+                          availableBooking &&
+                          basket.find(
+                            booking =>
+                              booking.starts === availableBooking.starts &&
+                              booking.event.id === availableBooking.event.id
+                          );
+
+                        return (
+                          <BookingActivity
+                            key={index}
+                            datetime={new Date(booking.datetime)}
+                            capacity={booking.capacity}
+                            duration={booking.duration}
+                            name={booking.name}
+                            facility="Facility"
+                            variant="tile"
+                            action={
+                              availableBooking ? (
+                                <>
+                                  <Button intent="secondary">Book</Button>
+                                  {inBasket ? (
+                                    <Button
+                                      intent="secondary"
+                                      onClick={() =>
+                                        dispatch(
+                                          removeBooking(availableBooking)
+                                        )
+                                      }
+                                    >
+                                      Remove
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      intent="secondary"
+                                      onClick={() =>
+                                        dispatch(addBooking(availableBooking))
+                                      }
+                                    >
+                                      Add
+                                    </Button>
+                                  )}
+                                </>
+                              ) : null
+                            }
+                          />
+                        );
+                      })}
                       {bookingsMatching.length === 0 && (
                         <Typography.p styledAs="smallP">
                           No bookings available at {starts.format('lll')}
