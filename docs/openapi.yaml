@@ -356,11 +356,11 @@ paths:
     get:
       tags:
         - payments
-          description: "Cancels existing membership for the given user"
+      description: "Cancels existing membership for the given user"
 
-          responses:
-            "200":
-              description: OK
+      responses:
+        "200":
+          description: OK
 
   /payments/health:
     get:
