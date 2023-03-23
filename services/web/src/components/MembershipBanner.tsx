@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import {useUser} from '~/providers/user/hooks/useUser';
-import Button from './Button';
+import {buttonStyles} from './Button';
 import Typography from './Typography';
 
 const MembershipBanner = () => {
@@ -16,7 +17,12 @@ const MembershipBanner = () => {
       </div>
       <Typography.p>Allows for x free bookings per week</Typography.p>
       <div className="flex justify-end">
-        <Button intent="primary">Manage Membership</Button>
+        <Link
+          className={buttonStyles({intent: 'primary'})}
+          href="/dashboard/profile/membership"
+        >
+          Manage Membership
+        </Link>
       </div>
     </div>
   );
