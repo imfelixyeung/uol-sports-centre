@@ -46,12 +46,12 @@ def get_sales_lastweek(product_type: str):
     return jsonify(get_sales(product_type))
 
 
-@app.route("/checkout-session", methods=["POST"])
-def redirect_checkout():  #(products, payment_mode):
+@app.route("/checkout-session/<int:user_id>", methods=["POST"])
+def redirect_checkout(user_id, products, payment_mode):
     """It redicrects the checkout"""
-    products = ["product-test"]
-    payment_mode = "payment"
-    return make_a_purchase(467468, products, payment_mode)
+    #products = ["product-test"]
+    #payment_mode = "payment"
+    return make_a_purchase(user_id, products, payment_mode)
 
 
 @app.route("/webhook", methods=["POST"])
@@ -124,10 +124,10 @@ def get_purchased_products(user_id: int):
     return jsonify(purchased_products)
 
 
-@app.route("/customer-portal", methods=["GET"])
-def customer_portal():
+@app.route("/customer-portal/<int:user_id>", methods=["GET"])
+def customer_portal(user_id: int):
     """Generate a Stripe customer portal URL for the current user"""
-    return redirect(get_payment_manager(467468), code=303)
+    return redirect(get_payment_manager(user_id), code=303)
 
 
 @app.route("/change-price", methods=["POST"])

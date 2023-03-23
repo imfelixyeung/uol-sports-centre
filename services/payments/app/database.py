@@ -49,6 +49,7 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
 
 
 def get_sales(product_type: str):
+    """It returns the sale of the given product type as dictionaries"""
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
 

@@ -38,8 +38,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #retrieving the added product from Stripe
         products = stripe.Product.list()
-        product_stripe = next((p for p in products if p.name == "product-test"),
-                              None)
+        product_stripe = next(
+            (p for p in products if p.name == "subscription-test"), None)
         price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
 
         #asserting that the added product matches the expected result
@@ -105,7 +105,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
         #Update price of product
-        change_price(10, "product-test")
+        change_price("10", "product-test")
 
         connection = sqlite3.connect(DATABASE_URL)
         cur = connection.cursor()
@@ -125,7 +125,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.assertEqual(stripe_price.unit_amount, 1000)
 
         #Reset price
-        change_price(5, "product-test")
+        change_price("5", "product-test")
 
     def test_create_checkout_success(self):
         """Tests the create checkout functionality for the success case"""

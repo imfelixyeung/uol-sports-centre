@@ -62,7 +62,6 @@ def make_a_purchase(user_id: int,
     for product in products:
         # Gets the product ID and price from the products table
         product_id = get_product(product)[0]
-        product_name = get_product(product)[1]
         product_type = get_product(product)[3]
 
         if product_type == "session":
@@ -80,13 +79,18 @@ def make_a_purchase(user_id: int,
                 membership = True
 
         # Apply a discount if there have been more than 2 bookings for the current customer
-        # if bookings_count > 2 or membership:
-        #    product_price = apply_discount(product_name, membership)
+        if bookings_count > 2 or membership:
+            line_item = {
+                "unit_amount": apply_discount(product_price.stripe_id, membership),
+                "quantity": 1,
+            }
 
-        line_item = {
-            "price": product_price.stripe_id,
-            "quantity": 1,
-        }
+        else:
+            line_item = {
+                "price": product_price.stripe_id,
+                "quantity": 1,
+            }
+
         line_items.append(line_item)
 
         # Creates a new row in the purchased products table
