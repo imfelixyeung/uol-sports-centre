@@ -106,10 +106,10 @@ def make_a_purchase(user_id: int,
 
         if update_subscription is True:
 
-            response_users =requests.post(
+            response_users = requests.post(
                 f"http://gateway/api/users/{user_id}/updateMembersip", 
                 json={"membership": product_name},
-                timeout = 5)
+                timeout=5)
 
             if response_users.status_code != 200:
                 return response_users.status_code
@@ -217,6 +217,6 @@ def cancel_subscription(user_id: int):
     response_users = requests.post(
         f"http://gateway/api/users/{user_id}/updateMembersip", 
         json={"membership": subscription},
-        timeout = 5)
+        timeout=5)
 
     return response_users.status_code
