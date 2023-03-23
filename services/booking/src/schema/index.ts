@@ -1,9 +1,9 @@
 import {z} from 'zod';
 
 export const id = (description: string) =>
-  z
-    .string()
-    .transform(uid => parseInt(uid))
+  z.coerce
+    .number()
+    .gt(0)
     .refine(uid => !Number.isNaN(uid), {
       message: `Non-numeric ${description} supplied`,
     });
