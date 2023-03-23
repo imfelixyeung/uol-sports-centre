@@ -17,7 +17,7 @@
     "studio": "prisma studio",
     "dev": "pnpm db:push && pnpm seed && tsx watch --clear-screen=false src/index.ts",
     "build": "swc ./src -d build",
-    "serve": "pnpm db:push && pnpm seed && node ./build/index.js"
+    "serve": "pnpm db:push && pnpm seed && node build/index.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
