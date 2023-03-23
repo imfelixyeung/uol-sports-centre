@@ -104,9 +104,10 @@ def make_a_purchase(user_id: int,
 
         if update_subscription is True:
 
-            response_users =requests.post(f"http://gateway/api/users/?user={user_id}"
-                f"updateMembersip", json={
-                "membership": product_name
+            response_users =requests.post(
+                f"http://gateway/api/users/?user={user_id}/updateMembersip", 
+                json={
+                    "membership": product_name
                 },
                 timeout = 5
             )
@@ -214,9 +215,10 @@ def cancel_subscription(user_id: int):
     subscription = customer.subscriptions.data[0].id
     stripe.Subscription.delete(subscription)
 
-    response_users =requests.post(f"http://gateway/api/users/?user={user_id}"
-        f"updateMembersip", json={
-        "membership": subscription
+    response_users =requests.post(
+        f"http://gateway/api/users/?user={user_id}/updateMembersip", 
+        json={
+            "membership": subscription
         },
         timeout = 5
     )
