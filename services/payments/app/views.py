@@ -150,7 +150,7 @@ def get_prices(product_type: str):
     """Retrieve pricing list of specified product type"""
     return jsonify(get_pricing_lists(product_type))
 
-@app.route("cancel-membership/<int: user_id>", methods=["GET"])
+@app.route("/cancel-membership/<int:user_id>", methods=["GET"])
 def cancel_membership(user_id: int):
     """Cancels existing membership for the given user"""
     return jsonify(cancel_subscription(user_id))
