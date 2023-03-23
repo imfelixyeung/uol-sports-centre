@@ -11,7 +11,8 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_purchase, delete_order, get_sales,
                           get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
-                          change_price, change_discount_amount)
+                          change_price, change_discount_amount, 
+                          cancel_subscription)
 
 import env
 
@@ -113,7 +114,6 @@ def webhook_received():
         customer = subscription.customer
         product = subscription.items.data[1].price.product
         update_expiry(customer, product, str(datetime.now()))
-        print("Subscription deleted")
     return "ok"
 
 
@@ -149,6 +149,12 @@ def change_product_price():
 def get_prices(product_type: str):
     """Retrieve pricing list of specified product type"""
     return jsonify(get_pricing_lists(product_type))
+
+@app.route("cancel-membership/<int: user_id>", methods=["GET"])
+def cancel_membership(user_id: int):
+    """Cancels existing membership for the given user"""
+    return jsonify(cancel_subscription(user_id))
+
 
 
 @app.route("/refund", methods=["POST"])
