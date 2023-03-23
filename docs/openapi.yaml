@@ -352,7 +352,7 @@ paths:
         "200":
           description: OK
 
-  /payments/cancel-membership/<int: user_id>:
+  /payments/cancel-membership/<int:user_id>:
     get:
       tags:
         - payments
