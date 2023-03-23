@@ -13,7 +13,7 @@ const users: User[] = [
     id: 0,
     email: 'example@example.com',
     password: 'hash',
-    role: 'user',
+    role: 'USER',
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -21,7 +21,7 @@ const users: User[] = [
     id: 1,
     email: 'example2@example.com',
     password: 'hash',
-    role: 'user',
+    role: 'USER',
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -72,7 +72,7 @@ describe('updateUserById', () => {
     dbMock.user.findUnique.mockResolvedValue(users[0]);
     dbMock.user.update.mockResolvedValue(users[0]);
 
-    const result = await updateUserById(0, {role: 'admin'});
+    const result = await updateUserById(0, {role: 'ADMIN'});
 
     expect(result).toEqual(userWithoutPassword(users[0]));
     expect(dbMock.user.update).toBeCalled();

@@ -4,7 +4,7 @@ import {registerWithCredentials} from '~/services/auth';
 import {updateUserById} from '~/services/users';
 const db = new PrismaClient();
 
-const roles: UserRole[] = ['admin', 'employee', 'user'];
+const roles: UserRole[] = ['ADMIN', 'EMPLOYEE', 'USER'];
 const PASSWORD = '6789Password9876';
 
 const seed = async () => {

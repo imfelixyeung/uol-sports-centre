@@ -42,6 +42,7 @@ export const createController = <
       if (!token)
         return res.status(401).json({
           success: false,
+          message: 'Missing token',
         });
 
       const payload = await TokenRegistry.verifyToken(token).catch(() => null);
