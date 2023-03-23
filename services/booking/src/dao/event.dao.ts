@@ -26,24 +26,36 @@ class EventDAO {
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
     if (filter.start && filter.end) {
-      // for each date, starting from the start and adding 1 day each iteration
-      // until greater than the end date
-      for (
-        let dt = new Date(filter.start);
-        dt <= new Date(filter.end);
-        dt.setDate(dt.getDate() + 1)
-      ) {
-        // add numerical representation of the day (0-6) to array
-        // in js 0 is sunday however we want the days to start from monday
+      const startDate = new Date(filter.start);
+      const endDate = new Date(filter.end);
 
-        let day = new Date(dt).getDay();
-        day = day === 0 ? 6 : day - 1;
-        days.push(day);
-      }
+      // get a list of dates between the start and end dates (inclusive) as values of 0-6
+      days.push(
+        ...Array.from(
+          Array(
+            Math.floor((endDate.getTime() - startDate.getTime()) / 86400000) + 1
+          ).keys()
+        ).map(i => new Date(startDate.getTime() + i * 86400000).getDay())
+      );
     } else {
       // default to all events in a week
       days.push(...Array.from(Array(7).keys()));
     }
+
+    // add missing final day if it isnt the final day in the array
+    if (filter.end && days[days.length - 1] !== new Date(filter.end).getDay()) {
+      days.push(new Date(filter.end).getDay());
+    }
+
+    // add first day if it isnt the first day in the array
+    if (filter.start && days[0] !== new Date(filter.start).getDay()) {
+      days.unshift(new Date(filter.start).getDay());
+    }
+
+    // shift all of the days so that monday is 0
+    days.forEach((day, index) => {
+      days[index] = day === 0 ? 6 : day - 1;
+    });
 
     const allEvents: EventDTO[] = [];
     const eventsByDay: (Error | EventDTO[] | null)[] = [
