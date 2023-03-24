@@ -4,15 +4,19 @@ import sqlite3
 # import os
 
 # import urllib.request
-# import stripe
+import stripe
 
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
-# from app import app
-# from app.payments import get_payment_manager, make_a_purchase
-# from app.database import (init_database, add_product, add_customer,
-#                             get_purchases, delete_product, update_price,
-#                             delete_customer)
+from app import app
+from app.payments import make_a_purchase  #,get_payment_manager
+from app.database import (
+    init_database,
+    add_product,
+    add_customer,
+    get_purchases,
+    delete_product,  #update_price,
+    delete_customer)
 # from app.interfaces import create_checkout
 
 
@@ -37,54 +41,54 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_yes(self):
     self.assertEqual(1, 1)
 
-  # def test_make_purchasable(self):
-  #     """tests if it can make a test product purchasable"""
-  #     #payments.MakePurchasable('product-test', 5.0, 'test-type')
+  def test_make_purchasable(self):
+    """tests if it can make a test product purchasable"""
+    #payments.MakePurchasable('product-test', 5.0, 'test-type')
 
-  #     #retrieving the added product from Stripe
-  #     products = stripe.Product.list()
-  #     product_stripe = next(
-  #         (p for p in products if p.name == "subscription-test"), None)
-  #     price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
+    #retrieving the added product from Stripe
+    products = stripe.Product.list()
+    product_stripe = next(
+        (p for p in products if p.name == "subscription-test"), None)
+    price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
 
-  #     #asserting that the added product matches the expected result
-  #     self.assertEqual(product_stripe.name, "subscription-test")
-  #     self.assertEqual(price.unit_amount_decimal, "1500")
+    #asserting that the added product matches the expected result
+    self.assertEqual(product_stripe.name, "subscription-test")
+    self.assertEqual(price.unit_amount_decimal, "1500")
 
-  # def test_make_a_purchase(self):
-  #     """tests if a purchase can be made correctly"""
-  #     init_database()
+  def test_make_a_purchase(self):
+    """tests if a purchase can be made correctly"""
+    init_database()
 
-  #     #Add test products to database
-  #     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-  #     add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
-  #                 "subscription")
+    #Add test products to database
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                "subscription")
 
-  #     #Make a new temp customer on Stripe
-  #     new_customer = stripe.Customer.create()
+    #Make a new temp customer on Stripe
+    new_customer = stripe.Customer.create()
 
-  #     #Add customer to database
-  #     add_customer(111, new_customer.stripe_id)
+    #Add customer to database
+    add_customer(111, new_customer.stripe_id)
 
-  #     #Make a purchase with multiple products
-  #     products = ["product-test", "subscription-test"]
-  #     make_a_purchase(111, products, "subscription")
+    #Make a purchase with multiple products
+    products = ["product-test", "subscription-test"]
+    make_a_purchase(111, products, "subscription")
 
-  #     #Check if products added
-  #     purchased_products = get_purchases(111)
-  #     self.assertEqual(len(purchased_products), 2)
+    #Check if products added
+    purchased_products = get_purchases(111)
+    self.assertEqual(len(purchased_products), 2)
 
-  #     #Delete temp customer
-  #     stripe.Customer.delete(new_customer.stripe_id)
-  #     delete_customer(111, new_customer.stripe_id)
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
+    delete_customer(111, new_customer.stripe_id)
 
-  #     delete_product("prod_NUNazbUQcwZQaU")
-  #     delete_product("prod_NUNbPMJPMIEvWk")
+    delete_product("prod_NUNazbUQcwZQaU")
+    delete_product("prod_NUNbPMJPMIEvWk")
 
   # def test_add_product(self):
-  #     """Testing the functionality of adding products"""
+  #      """Testing the functionality of adding products"""
   #     init_database()
-
+  #
   #     #Add test products to the database
   #     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
   #     add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
@@ -193,15 +197,15 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   #def webhookReceived_test(self):
   #a = 1
 
-  # @classmethod
-  # def tearDownClass(cls):
-  #     """Remove the database file after running all tests"""
-  #     conn = sqlite3.connect(DATABASE_URL)
-  #     conn.execute("DROP TABLE IF EXISTS orders")
-  #     conn.execute("DROP TABLE IF EXISTS products")
-  #     conn.execute("DROP TABLE IF EXISTS customers")
-  #     conn.commit()
-  #     conn.close()
+  #@classmethod
+  #def tearDownClass(cls):
+  #  """Remove the database file after running all tests"""
+  #  conn = sqlite3.connect(DATABASE_URL)
+  #  conn.execute("DROP TABLE IF EXISTS orders")
+  #  conn.execute("DROP TABLE IF EXISTS products")
+  #  conn.execute("DROP TABLE IF EXISTS customers")
+  #  conn.commit()
+  #  conn.close()
 
 
 if __name__ == "__main__":

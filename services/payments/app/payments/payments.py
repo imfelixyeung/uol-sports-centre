@@ -73,7 +73,7 @@ def make_a_purchase(user_id: int,
       update_subscription = True
 
     # Gets the product price from the products table
-    product_price = stripe.Price.retrieve(product_id)  #.default_price
+    product_price = stripe.Product.retrieve(product_id).default_price
 
     # Checks user has purchased a subscription
     membership = False
@@ -86,13 +86,13 @@ def make_a_purchase(user_id: int,
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
       line_item = {
-          "unit_amount": apply_discount(product_price.stripe_id, membership),
+          "unit_amount": apply_discount(product_name, membership),
           "quantity": 1,
       }
 
     else:
       line_item = {
-          "price": product_price.stripe_id,
+          "price": product_price,
           "quantity": 1,
       }
 
@@ -104,7 +104,7 @@ def make_a_purchase(user_id: int,
     if update_subscription is True:
 
       response_users = requests.post(
-          f"http://gateway/api/users/{user_id}/updateMembersip",
+          f"http://gateway/api/users/{user_id}/updateMembership",
           json={"membership": product_name},
           timeout=5)
 
@@ -211,7 +211,7 @@ def cancel_subscription(user_id: int):
   stripe.Subscription.delete(subscription)
 
   response_users = requests.post(
-      f"http://gateway/api/users/{user_id}/updateMembersip",
+      f"http://gateway/api/users/{user_id}/updateMembership",
       json={"membership": subscription},
       timeout=5)
 

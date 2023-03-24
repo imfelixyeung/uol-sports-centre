@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS products;
 
 CREATE TABLE products (
-    product_id TEXT PRIMARY KEY,
+    productID TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT 
@@ -11,19 +11,19 @@ CREATE TABLE products (
 DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
-    order_id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    product_id TEXT NOT NULL,
+    orderID INTEGER PRIMARY KEY,
+    userID INTEGER NOT NULL,
+    productID TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT, 
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    FOREIGN KEY (productID) REFERENCES products(productID)
 );
 
 DROP TABLE IF EXISTS customers;
 
 CREATE TABLE customers (
-    user_id INTEGER NOT NULL, 
-    stripe_id TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES orders(user_id),
-    PRIMARY KEY (user_id, stripe_id)
+    userID INTEGER NOT NULL, 
+    stripeID TEXT NOT NULL,
+    FOREIGN KEY (userID) REFERENCES orders(userID),
+    PRIMARY KEY (userID, stripeID)
 )

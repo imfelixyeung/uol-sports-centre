@@ -20,8 +20,8 @@ def init_database() -> None:
   # Solution by https://stackoverflow.com/a/12517490
   os.makedirs(os.path.dirname(DATABASE_URL), exist_ok=True)
 
-  if os.path.isfile(DATABASE_URL):
-    return
+  #if os.path.isfile(DATABASE_URL):
+  #return
 
   connection = sqlite3.connect(DATABASE_URL)
   with open(sqlPath, encoding="utf-8") as schema:
@@ -51,7 +51,7 @@ def delete_product(product_id: str):
   """Deletes a product from the database"""
   connection = sqlite3.connect(DATABASE_URL)
   cur = connection.cursor()
-  cur.execute("DELETE FROM products WHERE productID = ?", (product_id,))
+  cur.execute("DELETE FROM products WHERE product_id = ?", (product_id,))
   connection.commit()
   connection.close()
 
@@ -63,7 +63,7 @@ def get_sales(product_type: str):
 
   # Find products of the given product type
   products = cur.execute(
-      """SELECT productID, productName, productType, 
+      """SELECT product_id, productName, productType, 
         price FROM products WHERE productType = ?""",
       [product_type]).fetchall()
 
@@ -73,8 +73,8 @@ def get_sales(product_type: str):
   for product in products:
     product_sales = cur.execute(
         "SELECT COUNT(*), SUM(products.price) FROM orders "
-        "JOIN products ON orders.productID = products.productID "
-        "WHERE orders.productID = ? "
+        "JOIN products ON orders.product_id = products.product_id "
+        "WHERE orders.product_id = ? "
         "AND orders.purchaseDate BETWEEN ? AND ?",
         (product[0], datetime.now() - timedelta(days=7),
          datetime.now())).fetchone()
@@ -107,11 +107,11 @@ def update_expiry(stripe_user: str, product_id: str, expiry_date: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   user_id = cur.execute(
-      '''SELECT userID FROM customers WHERE
-                         stripeID = ?''', (stripe_user)).fetchone()
+      '''SELECT user_id FROM customers WHERE
+                         stripe_id = ?''', (stripe_user)).fetchone()
   cur.execute(
-      """UPDATE orders SET expiryDate = ? WHERE productID = ? 
-                AND userID = ?""", (expiry_date, product_id, user_id))
+      """UPDATE orders SET expiryDate = ? WHERE product_id = ? 
+                AND user_id = ?""", (expiry_date, product_id, user_id))
   con.commit()
   con.close()
 
@@ -146,14 +146,14 @@ def add_purchase(customer_id: str,
   # Case when expiry date is provided
   if expiry is not None:
     cur.execute(
-        """INSERT INTO orders (userID, productID, purchaseDate, expiryDate)
+        """INSERT INTO orders (user_id, product_id, purchaseDate, expiryDate)
         VALUES (?, ?, ?, ?)""",
         (customer_id, product_id, purchase_date, expiry))
 
   # If it is not
   else:
     cur.execute(
-        """INSERT INTO orders (userID, productID, purchaseDate)
+        """INSERT INTO orders (user_id, product_id, purchaseDate)
         VALUES (?, ?, ?)""", (customer_id, product_id, purchase_date))
   con.commit()
   con.close()
@@ -164,7 +164,7 @@ def get_user(user_id: int):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   find_user = cur.execute("""SELECT * FROM customers WHERE
-    userID = ?""", [user_id]).fetchone()
+    user_id = ?""", [user_id]).fetchone()
   con.close()
   return find_user
 
@@ -173,7 +173,7 @@ def delete_order(order_id: int) -> None:
   """Function to delete a specific purchase by its order ID"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  cur.execute("""DELETE FROM orders WHERE orderID = ?""", [order_id])
+  cur.execute("""DELETE FROM orders WHERE order_id = ?""", [order_id])
   con.commit()
   con.close()
 
@@ -211,10 +211,10 @@ def get_purchases(user_id: int):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   purchased_products = cur.execute(
-      """SELECT orderID, products.productID, productType, purchaseDate, 
+      """SELECT order_id, products.product_id, productType, purchaseDate, 
     expiryDate FROM orders JOIN products ON 
-    orders.productID = products.productID
-    WHERE orders.userID = ?""", [user_id]).fetchall()
+    orders.product_id = products.product_id
+    WHERE orders.user_id = ?""", [user_id]).fetchall()
   con.close()
   return purchased_products
 
@@ -225,8 +225,8 @@ def get_purchase(order_id: int):
   cur = con.cursor()
   purchase = cur.execute(
       """SELECT * FROM orders
-    JOIN products ON orders.productID = products.productID
-    WHERE orders.orderID = ?""", [order_id]).fetchone()
+    JOIN products ON orders.product_id = products.product_id
+    WHERE orders.order_id = ?""", [order_id]).fetchone()
   con.close()
   return purchase
 
