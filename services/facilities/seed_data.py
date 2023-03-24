@@ -38,8 +38,7 @@ def seed_facilities():
           name="Studio",
           capacity=25,
           description=
-          "A studio featuring a wide range of classes for all your fitness needs."
-      )
+          "A studio featuring a wide range of classes for your fitness needs.")
       db.session.add(swimming_pool)
       db.session.add(fitness_room)
       db.session.add(squash_court1)
