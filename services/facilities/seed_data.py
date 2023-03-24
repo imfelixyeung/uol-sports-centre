@@ -11,13 +11,35 @@ def seed_facilities():
     seed_check = Facility.query.get(1)
 
     if not seed_check:
-      swimming_pool = Facility(name="Swimming Pool", capacity=30)
-      fitness_room = Facility(name="Fitness Room", capacity=35)
-      squash_court1 = Facility(name="Squash Court 1", capacity=4)
-      squash_court2 = Facility(name="Squash Court 2", capacity=4)
-      sports_hall = Facility(name="Sports Hall", capacity=45)
-      climbing_hall = Facility(name="Climbing Wall", capacity=22)
-      studio = Facility(name="Studio", capacity=25)
+      swimming_pool = Facility(name="Swimming Pool",
+                               capacity=30,
+                               description="A swimming pool fit for 30 people.")
+      fitness_room = Facility(
+          name="Fitness Room",
+          capacity=35,
+          description="A suite that can answer all your fitness needs.")
+      squash_court1 = Facility(name="Squash Court 1",
+                               capacity=4,
+                               description="First of two squash courts.")
+      squash_court2 = Facility(name="Squash Court 2",
+                               capacity=4,
+                               description="Second of two squash courts.")
+      sports_hall = Facility(
+          name="Sports Hall",
+          capacity=45,
+          description="A large sports hall to accomodate for many activities.")
+      climbing_hall = Facility(
+          name="Climbing Wall",
+          capacity=22,
+          description=
+          "A wall featuring a range of obstacles and varying difficulty levels."
+      )
+      studio = Facility(
+          name="Studio",
+          capacity=25,
+          description=
+          "A studio featuring a wide range of classes for all your fitness needs."
+      )
       db.session.add(swimming_pool)
       db.session.add(fitness_room)
       db.session.add(squash_court1)
