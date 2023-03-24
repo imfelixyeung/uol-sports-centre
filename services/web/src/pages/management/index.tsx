@@ -144,6 +144,7 @@ const UpdateFacilityForm = () => {
   return (
     <>
       <select
+        className="border-2 border-black/20 bg-[#fff] p-2 text-black"
         value={selectedFacilityId ?? 'null'}
         onChange={e => setSelectedFacilityId(parseInt(e.target.value))}
       >
@@ -239,6 +240,7 @@ const UpdateActivityForm = () => {
   return (
     <>
       <select
+        className="border-2 border-black/20 bg-[#fff] p-2 text-black"
         value={selectedActivityId ?? 'null'}
         onChange={e => setSelectedActivityId(parseInt(e.target.value))}
       >
