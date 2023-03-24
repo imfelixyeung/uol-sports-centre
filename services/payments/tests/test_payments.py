@@ -34,6 +34,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #     self.product_price = 50.00
     #     self.user_id = 467468
 
+    def test_yes(self):
+        self.assertEqual(1, 1)
+
     # def test_make_purchasable(self):
     #     """tests if it can make a test product purchasable"""
     #     #payments.MakePurchasable('product-test', 5.0, 'test-type')
