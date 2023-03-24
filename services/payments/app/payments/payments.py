@@ -112,7 +112,7 @@ def make_a_purchase(user_id: int,
                 timeout=5)
 
             if response_users.status_code != 200:
-                return {}
+                return {"error": "sth wrong"}
 
             update_subscription = False
 

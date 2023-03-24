@@ -130,7 +130,7 @@ def delete_customer(user_id: int, stripe_id: str):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     cur.execute("DELETE FROM customers WHERE user_id = ? AND stripe_id = ?",
-        (user_id, stripe_id))
+                (user_id, stripe_id))
     con.commit()
     con.close()
 
@@ -226,7 +226,7 @@ def get_purchase(order_id: int):
     purchase = cur.execute(
         """SELECT * FROM orders
     JOIN products ON orders.productID = products.productID
-    WHERE orders.orderID = ?""", [order_id]).fetchall()
+    WHERE orders.orderID = ?""", [order_id]).fetchone()
     con.close()
     return purchase
 

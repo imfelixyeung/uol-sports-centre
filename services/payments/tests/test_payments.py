@@ -48,7 +48,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #     self.assertEqual(product_stripe.name, "subscription-test")
     #     self.assertEqual(price.unit_amount_decimal, "1500")
 
-
     # def test_make_a_purchase(self):
     #     """tests if a purchase can be made correctly"""
     #     init_database()
@@ -79,7 +78,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #     delete_product("prod_NUNazbUQcwZQaU")
     #     delete_product("prod_NUNbPMJPMIEvWk")
 
-
     # def test_add_product(self):
     #     """Testing the functionality of adding products"""
     #     init_database()
@@ -107,7 +105,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #     delete_product("prod_NUNazbUQcwZQaU")
     #     delete_product("prod_NUNbPMJPMIEvWk")
 
-
     # def test_change_price(self):
     #     """Tests the change price functionality"""
     #     #initialise database
@@ -133,7 +130,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #     # Delete added product
     #     delete_product("prod_NUNazbUQcwZQaU")
-
 
     # def test_create_checkout_success(self):
     #     """Tests the create checkout functionality for the success case"""
