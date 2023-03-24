@@ -19,9 +19,6 @@ tags:
   - name: payments
     description: Payments microservice
 
-  - name: management
-    description: Management microservice
-
   - name: status
     description: status microservice
 
@@ -367,26 +364,6 @@ paths:
       tags:
         - payments
       description: "Returns the health of the payments service"
-
-      responses:
-        "200":
-          $ref: "#/components/responses/HealthCheck"
-
-  /management/staff/<int:staff_id>:
-    put:
-      tags:
-        - management
-      description: "Manage the status of a "
-
-      responses:
-        "200":
-          $ref: "#/components/responses/HealthCheck"
-
-  /management/health:
-    get:
-      tags:
-        - management
-      description: "Returns the health of the management service"
 
       responses:
         "200":

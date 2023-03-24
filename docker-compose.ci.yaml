@@ -34,8 +34,3 @@ services:
       - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
       - STRIPE_API=${STRIPE_API}
       - APP_PORT=${APP_PORT}
-
-  management:
-    build:
-      context: ./services/management
-      target: ci
