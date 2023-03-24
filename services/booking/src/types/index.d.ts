@@ -20,3 +20,5 @@ export interface TimeLimitFilter {
   start?: number;
   end?: number;
 }
+
+export type RequiredTimeLimitFilter = Required<TimeLimitFilter>;

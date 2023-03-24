@@ -8,7 +8,11 @@ import {
 } from '@/dto/booking.dto';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
-import {PaginationFilter, TimeLimitFilter} from '@/types';
+import {
+  PaginationFilter,
+  RequiredTimeLimitFilter,
+  TimeLimitFilter,
+} from '@/types';
 import {ActivitiesResponse, ActivityResponse} from '@/types/external';
 
 /**
@@ -97,7 +101,7 @@ class BookingService {
    * @memberof BookingService
    */
   private async generatePossibleBookings(
-    filter: {facility?: number; activity?: number} & TimeLimitFilter
+    filter: {facility?: number; activity?: number} & RequiredTimeLimitFilter
   ) {
     // first we will get the events that fit within the specified filters
     const validEvents = await eventDao.getEvents(filter).catch(err => {
@@ -124,53 +128,72 @@ class BookingService {
 
     const possibleBookings: PossibleBookingDTO[] = [];
 
-    // for each event, generate a list of possible bookings
-    validEvents.forEach(event => {
-      const activity = activities.find(a => a.id === event.activityId);
-      if (!activity) {
-        logger.error(
-          `Unable to find activity id ${event.activityId} in activities`
-        );
-        return; // continue
-      }
+    logger.debug(
+      `Generating possible bookings for ${validEvents.length} events`
+    );
+    // check if there are any valid events
+    if (validEvents.length > 0) {
+      let currentDay = validEvents[0].day;
+      let currentDayCount = 0;
 
-      const timeSlots = event.duration / activity.duration;
+      // for each event, generate a list of possible bookings
+      validEvents.forEach(event => {
+        const activity = activities.find(a => a.id === event.activityId);
+        if (!activity) {
+          logger.error(
+            `Unable to find activity id ${event.activityId} in activities`
+          );
+          return; // continue
+        }
 
-      // for each timeslot, generate a possible booking
-      for (let i = 0; i < timeSlots; i++) {
-        // calculate start and end time, then check whether they fit within the bounds
-        const bookingStartTime = new Date(filter.start ?? new Date()).setHours(
-          0,
-          event.time + i * activity.duration,
-          0,
-          0
-        );
-        const bookingEndTime = bookingStartTime + activity.duration * 60 * 1000;
+        // count days between this instance of the event and the start of the filter
+        if (currentDay !== event.day) {
+          currentDay = event.day;
+          currentDayCount++;
+        }
 
-        // if booking starts before the filter or booking ends after the filter,
-        // we dont add it as a possible booking
+        const timeSlots = event.duration / activity.duration;
 
-        if (
-          (filter.start && bookingStartTime < filter.start) ||
-          (filter.end && bookingEndTime > filter.end)
-        )
-          continue;
+        // for each timeslot, generate a possible booking
+        for (let i = 0; i < timeSlots; i++) {
+          // calculate start and end time, then check whether they fit within the bounds
+          const bookingStartTime =
+            new Date(filter.start).setHours(
+              0,
+              event.time + i * activity.duration,
+              0,
+              0
+            ) +
+            currentDayCount * 24 * 60 * 60 * 1000;
 
-        const possibleBooking: PossibleBookingDTO = {
-          starts: new Date(bookingStartTime).toISOString(),
-          duration: activity.duration,
-          event,
-          ...(event.type === 'OPEN_USE' && {
-            capacity: {
-              current: 0,
-              max: activity.capacity,
-            },
-          }),
-        };
+          const bookingEndTime =
+            bookingStartTime + activity.duration * 60 * 1000;
 
-        possibleBookings.push(possibleBooking);
-      }
-    });
+          // if booking starts before the filter or booking ends after the filter,
+          // we dont add it as a possible booking
+
+          if (
+            (filter.start && bookingStartTime < filter.start) ||
+            (filter.end && bookingEndTime > filter.end)
+          )
+            continue;
+
+          const possibleBooking: PossibleBookingDTO = {
+            starts: new Date(bookingStartTime).toISOString(),
+            duration: activity.duration,
+            event,
+            ...(event.type === 'OPEN_USE' && {
+              capacity: {
+                current: 0,
+                max: activity.capacity,
+              },
+            }),
+          };
+
+          possibleBookings.push(possibleBooking);
+        }
+      });
+    }
 
     return possibleBookings;
   }
@@ -205,7 +228,7 @@ class BookingService {
       ..._filter,
     };
 
-    logger.debug(`Get available bookings filters: ${filter}`);
+    logger.debug(`Get available bookings filters: ${JSON.stringify(filter)}`);
 
     // lets check how many days are between the start and the end to make sure
     // we dont generate way too many responses

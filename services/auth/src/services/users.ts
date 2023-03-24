@@ -9,15 +9,21 @@ export const userWithoutPassword = (user: User | null) => {
   return {id, email, role, createdAt, updatedAt};
 };
 
-export const getUsers = async (options: {
-  pageIndex: number;
-  pageSize: number;
-}) => {
+export const getUsers = async (
+  options: {
+    pageIndex: number;
+    pageSize: number;
+  },
+  filters: {role?: UserRole} = {}
+) => {
   const {pageIndex, pageSize} = options;
-  const users = await UserRegistry.getAllUsers({
-    skip: pageIndex * pageSize,
-    take: pageSize,
-  });
+  const users = await UserRegistry.getAllUsers(
+    {
+      skip: pageIndex * pageSize,
+      take: pageSize,
+    },
+    filters
+  );
   return users.map(userWithoutPassword);
 };
 

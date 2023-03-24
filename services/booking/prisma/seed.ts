@@ -37,6 +37,15 @@ async function main() {
       duration: 12 * 60, // 12hrs
       type: 'OPEN_USE',
     });
+
+    poolEvents.push({
+      activityId: KnownActivities.PoolLaneSwim,
+      name: 'Pool Lane Swimming',
+      day,
+      time: 8 * 60, // 8am
+      duration: 12 * 60, // 12hrs
+      type: 'OPEN_USE',
+    });
   }
 
   // Fri 8am-10am
@@ -59,10 +68,28 @@ async function main() {
     type: 'OPEN_USE',
   });
 
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 4,
+    time: 10 * 60, // 10am
+    duration: 10 * 60, // 10hrs
+    type: 'OPEN_USE',
+  });
+
   // Sat 8am - 8pm
   poolEvents.push({
     activityId: KnownActivities.PoolOpenUse,
     name: 'Pool Open Use',
+    day: 5,
+    time: 8 * 60, // 8am
+    duration: 12 * 60, // 12hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
     day: 5,
     time: 8 * 60, // 8am
     duration: 12 * 60, // 12hrs
@@ -83,6 +110,15 @@ async function main() {
   poolEvents.push({
     activityId: KnownActivities.PoolOpenUse,
     name: 'Pool Open Use',
+    day: 6,
+    time: 10 * 60, // 10am
+    duration: 10 * 60, // 10hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
     day: 6,
     time: 10 * 60, // 10am
     duration: 10 * 60, // 10hrs

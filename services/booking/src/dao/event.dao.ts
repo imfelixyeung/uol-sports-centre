@@ -1,8 +1,10 @@
 import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
 import NotFoundError from '@/errors/notFound';
+import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
+import {ActivitiesResponse} from '@/types/external';
 
 /**
  * The Event DAO (Data Access Object) is used to abstract the underlying
@@ -23,27 +25,85 @@ class EventDAO {
   async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
     logger.debug('Getting events');
 
+    // if filter.facility is provided, get the activities for that facility
+    let activityIds: number[] = [];
+
+    if (filter.facility) {
+      const activities = await httpClient
+        .get<ActivitiesResponse>(
+          'http://gateway/api/facilities/activities?page=1&limit=1000'
+        )
+        .catch(err => {
+          logger.error(err);
+          return new Error(err);
+        });
+
+      if (activities instanceof Error) return activities;
+
+      activities.forEach(activity => {
+        if (activity.facility_id === filter.facility) {
+          activityIds.push(activity.id);
+        }
+      });
+
+      logger.debug(`Activity ids in facility: ${JSON.stringify(activityIds)}`);
+    }
+
+    if (filter.activity) {
+      // if filter.activity is provided and filter.facility is not, add filter.activity
+      if (!filter.facility) {
+        activityIds.push(filter.activity);
+      } else {
+        // set activityIds to the union of filter.activity and activityIds
+        if (activityIds.includes(filter.activity)) {
+          activityIds = [filter.activity];
+        } else {
+          activityIds = [];
+        }
+      }
+    }
+
+    logger.debug(`Activity ids: ${JSON.stringify(activityIds)}`);
+
+    if (
+      (filter.facility !== undefined || filter.activity !== undefined) &&
+      activityIds.length === 0
+    )
+      return [];
+
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
     if (filter.start && filter.end) {
-      // for each date, starting from the start and adding 1 day each iteration
-      // until greater than the end date
-      for (
-        let dt = new Date(filter.start);
-        dt <= new Date(filter.end);
-        dt.setDate(dt.getDate() + 1)
-      ) {
-        // add numerical representation of the day (0-6) to array
-        // in js 0 is sunday however we want the days to start from monday
+      const startDate = new Date(filter.start);
+      const endDate = new Date(filter.end);
 
-        let day = new Date(dt).getDay();
-        day = day === 0 ? 6 : day - 1;
-        days.push(day);
-      }
+      // get a list of dates between the start and end dates (inclusive) as values of 0-6
+      days.push(
+        ...Array.from(
+          Array(
+            Math.floor((endDate.getTime() - startDate.getTime()) / 86400000) + 1
+          ).keys()
+        ).map(i => new Date(startDate.getTime() + i * 86400000).getDay())
+      );
     } else {
       // default to all events in a week
       days.push(...Array.from(Array(7).keys()));
     }
+
+    // add missing final day if it isnt the final day in the array
+    if (filter.end && days[days.length - 1] !== new Date(filter.end).getDay()) {
+      days.push(new Date(filter.end).getDay());
+    }
+
+    // add first day if it isnt the first day in the array
+    if (filter.start && days[0] !== new Date(filter.start).getDay()) {
+      days.unshift(new Date(filter.start).getDay());
+    }
+
+    // shift all of the days so that monday is 0
+    days.forEach((day, index) => {
+      days[index] = day === 0 ? 6 : day - 1;
+    });
 
     const allEvents: EventDTO[] = [];
     const eventsByDay: (Error | EventDTO[] | null)[] = [
@@ -63,7 +123,12 @@ class EventDAO {
         const events = await prisma.event
           .findMany({
             where: {
-              activityId: filter.activity,
+              activityId:
+                activityIds.length > 0
+                  ? {
+                      in: activityIds,
+                    }
+                  : undefined,
               day,
               type: filter.type,
             },

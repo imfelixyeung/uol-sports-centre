@@ -27,7 +27,7 @@ const user: User = {
   id: 0,
   email: userCredentials.email,
   password: bcrypt.hashSync(userCredentials.password, 10),
-  role: 'user',
+  role: 'USER',
   createdAt: new Date(),
   updatedAt: new Date(),
 };

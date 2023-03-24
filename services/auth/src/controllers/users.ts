@@ -1,26 +1,27 @@
+import {UserRole} from '@prisma/client';
 import {z} from 'zod';
-import {createController} from '.';
-import {USER_ROLES} from '~/config';
 import {getUserById, getUsers, updateUserById} from '~/services/users';
+import {createController} from '.';
 
 const usersControllers = {
   getUsers: createController({
     querySchema: z.object({
       pageIndex: z.number().int().gte(0).default(0),
       pageSize: z.coerce.number().int().gte(1).default(20),
+      role: z.nativeEnum(UserRole).optional(),
     }),
     authRequired: true,
-    roleRequired: ['admin'],
+    roleRequired: ['ADMIN'],
     controller: async ({query}) => {
-      const {pageIndex, pageSize} = query;
-      const users = await getUsers({pageIndex, pageSize});
+      const {pageIndex, pageSize, role} = query;
+      const users = await getUsers({pageIndex, pageSize}, {role});
       return users;
     },
   }),
   getUser: createController({
     querySchema: z.object({userId: z.coerce.number()}),
     authRequired: true,
-    roleRequired: ['admin'],
+    roleRequired: ['ADMIN'],
     controller: async ({query}) => {
       const {userId} = query;
       const user = await getUserById(userId);
@@ -30,10 +31,10 @@ const usersControllers = {
   patchUser: createController({
     querySchema: z.object({userId: z.coerce.number()}),
     bodySchema: z.object({
-      role: z.enum(USER_ROLES),
+      role: z.nativeEnum(UserRole),
     }),
     authRequired: true,
-    roleRequired: ['admin'],
+    roleRequired: ['ADMIN'],
     controller: async ({query, body}) => {
       const {userId} = query;
 

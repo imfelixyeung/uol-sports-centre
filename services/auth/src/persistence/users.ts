@@ -1,11 +1,20 @@
 import {Prisma} from '@prisma/client';
+import {UserRole} from '~/config';
 import {Credentials} from '~/schema/credentials';
 import {db} from '~/utils/db';
 
 export class UserRegistry {
-  static async getAllUsers(pagination: {skip: number; take: number}) {
+  static async getAllUsers(
+    pagination: {skip: number; take: number},
+    filters: {role?: UserRole} = {}
+  ) {
     const {skip, take} = pagination;
-    const users = await db.user.findMany({skip, take});
+    const {role} = filters;
+    const users = await db.user.findMany({
+      skip,
+      take,
+      where: {role},
+    });
     return users;
   }
 
