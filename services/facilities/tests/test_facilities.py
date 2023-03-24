@@ -30,7 +30,9 @@ class FacilitiesTests(unittest.TestCase):
     with app.app_context():
       db.create_all()
 
-      facility_test_case = Facility(name="Football", capacity=20)
+      facility_test_case = Facility(name="Football",
+                                    capacity=20,
+                                    description="A football pitch")
       db.session.add(facility_test_case)
       db.session.commit()
 
@@ -50,7 +52,8 @@ class FacilitiesTests(unittest.TestCase):
           "facility": {
               "id": 1,
               "name": "Football",
-              "capacity": 20
+              "capacity": 20,
+              "description": "A football pitch"
           }
       }
 
@@ -64,18 +67,21 @@ class FacilitiesTests(unittest.TestCase):
       response = self.app.post("/facilities/",
                                json={
                                    "name": "Tennis Court",
-                                   "capacity": int(6)
+                                   "capacity": int(6),
+                                   "description": "A tennis court"
                                })
 
       check_query = Facility.query.get(2)
 
       check_data = make_facility(check_query)
 
-      self.assertDictEqual({
-          "id": 2,
-          "name": "Tennis Court",
-          "capacity": 6
-      }, check_data)
+      self.assertDictEqual(
+          {
+              "id": 2,
+              "name": "Tennis Court",
+              "capacity": 6,
+              "description": "A tennis court"
+          }, check_data)
 
       response_data = json.loads(response.data)
 
@@ -92,18 +98,21 @@ class FacilitiesTests(unittest.TestCase):
       response = self.app.put("/facilities/1",
                               json={
                                   "name": "Football Pitch",
-                                  "capacity": 25
+                                  "capacity": 25,
+                                  "description": "A great football pitch"
                               })
 
       check_query = Facility.query.get(1)
 
       check_data = make_facility(check_query)
 
-      self.assertDictEqual({
-          "id": 1,
-          "name": "Football Pitch",
-          "capacity": 25
-      }, check_data)
+      self.assertDictEqual(
+          {
+              "id": 1,
+              "name": "Football Pitch",
+              "capacity": 25,
+              "description": "A great football pitch"
+          }, check_data)
 
       response_data = json.loads(response.data)
 
