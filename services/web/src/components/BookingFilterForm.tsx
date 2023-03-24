@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {Field, Form, Formik} from 'formik';
 import type {FC} from 'react';
 import {
@@ -20,12 +21,24 @@ const BookingFilterForm: FC<{
 
   if (!facilities || !activities) return null; // TODO: handle loading, error states
 
+  const now = dayjs().set('hour', 0).set('minute', 0).set('second', 0);
+  const twoWeeksFromNow = now
+    .add(2, 'week')
+    .set('hour', 23)
+    .set('minute', 59)
+    .set('second', 59);
+  const defaultStart = now.format('YYYY-MM-DDTHH:mm');
+  const defaultEnd = twoWeeksFromNow.format('YYYY-MM-DDTHH:mm');
+
   const initialValues: {
     start?: string;
     end?: string;
     activity?: number;
     facility?: number;
-  } = {};
+  } = {
+    start: defaultStart,
+    end: defaultEnd,
+  };
 
   return (
     <Formik
@@ -48,11 +61,19 @@ const BookingFilterForm: FC<{
             name="start"
             type="datetime-local"
             className="p-2 text-black"
+            min={defaultStart}
+            max={defaultEnd}
           />
         </label>
         <label className="flex grow flex-col">
           <span>To</span>
-          <Field name="end" type="datetime-local" className="p-2 text-black" />
+          <Field
+            name="end"
+            type="datetime-local"
+            className="p-2 text-black"
+            min={defaultStart}
+            max={defaultEnd}
+          />
         </label>
         <label className="flex grow flex-col">
           <span>Activity</span>
