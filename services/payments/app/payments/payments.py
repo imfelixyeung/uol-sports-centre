@@ -61,6 +61,7 @@ def make_a_purchase(user_id: int,
   bookings_count = 6
 
   update_subscription = False
+  discount = []
 
   for product in products:
     # Gets the product ID and price from the products table
@@ -87,16 +88,12 @@ def make_a_purchase(user_id: int,
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
-      line_item = {
-          "unit_amount": apply_discount(product_name, membership),
-          "quantity": 1,
-      }
+      discount = [{'coupon': apply_discount(product_name, membership)}]
 
-    else:
-      line_item = {
-          "price": product_price,
-          "quantity": 1,
-      }
+    line_item = {
+        "price": product_price,
+        "quantity": 1,
+    }
 
     line_items.append(line_item)
 
@@ -121,6 +118,7 @@ def make_a_purchase(user_id: int,
       payment_method_types=["card"],
       line_items=line_items,
       mode=payment_mode,
+      discounts=discount,
       success_url=success_url,
       cancel_url=success_url,
   )
@@ -155,14 +153,11 @@ def apply_discount(product_name: str, membership: bool):
     if membership:
       coupon = stripe.Coupon.retrieve("L1rD3SEB")
 
-    if coupon.valid:
-      product_price = float(product_price) * (1 - coupon.percent_off / 100)
-
   except stripe_errors.StripeError as error_coupon:
     return error_coupon
 
   # Round the discounted price to 2 decimal places
-  return round(product_price, 2)
+  return coupon
 
 
 def change_discount_amount(amount: float):
