@@ -281,8 +281,7 @@ max-module-lines=99999
 # PEP 8.  Here, we use 2 spaces, for conformity with many open-sourced Google
 # projects (like TensorFlow).
 
-# Modified to 4 spaces, ignoring the above comment.
-indent-string="    "
+indent-string="  "
 
 # Number of spaces of indent required inside a hanging  or continued line.
 indent-after-paren=4

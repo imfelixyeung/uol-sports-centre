@@ -20,19 +20,19 @@ DEBUG = os.getenv("DEBUG") in ["True", "true"]
 # Will need to check if they are not empty strings on top of None
 
 if not STRIPE_API_KEY:
-    print("Error: 'STRIPE_API' environment variable is not set")
-    sys.exit(1)
+  print("Error: 'STRIPE_API' environment variable is not set")
+  sys.exit(1)
 
 if not APP_PORT_STRING:
-    print("Error: 'APP_PORT' environment variable is not set")
-    sys.exit(1)
+  print("Error: 'APP_PORT' environment variable is not set")
+  sys.exit(1)
 
 if not STRIPE_WEBHOOK_KEY:
-    print("Error: 'STRIPE_WEBHOOK' environment variable is not set")
-    sys.exit(1)
+  print("Error: 'STRIPE_WEBHOOK' environment variable is not set")
+  sys.exit(1)
 
 try:
-    APP_PORT = int(APP_PORT_STRING)
+  APP_PORT = int(APP_PORT_STRING)
 except ValueError:
-    print("APP_PORT environment variable is not an integer")
-    sys.exit(1)
+  print("APP_PORT environment variable is not an integer")
+  sys.exit(1)
