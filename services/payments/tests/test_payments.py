@@ -1,14 +1,13 @@
 '''Unit testing for payments microservice'''
 import unittest
 import sqlite3
-# import os
 
 import urllib.request
 import stripe
 
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
-#from app import app
+from app import app
 from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
                           get_purchases, delete_product, update_price,
@@ -27,9 +26,11 @@ def create_test_database():
 class TestingPaymentsMicroservice(unittest.TestCase):
   """Testing the payments microservice"""
 
-  # def setUp(self):
-  #     app.testing = True
-  #     self.client = app.test_client()
+  def setUp(self):
+    #     app.testing = True
+    self.client = app.test_client()
+    self.maxDiff = None
+
   #     self.product_name = "product-test"
   #     self.product_price = 50.00
   #     self.user_id = 467468
@@ -172,18 +173,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
-
-  # def test_get_index(self):
-  #     """Test if the get_index() function returns a 200 status code"""
-  #     file_path = os.path.abspath(
-  #         os.path.join(os.path.dirname(__file__), "test_index.html"))
-
-  #     with open(file_path, encoding="utf-8") as file:
-  #         html = file.read()
-  #     response = self.client.get("/")
-  #     self.assertEqual(response.status_code, 200)
-  #     self.assertIn("text/html", response.content_type)
-  #     self.assertEqual(response.data.decode("utf-8"), html)
 
   #test redirectCheckout()
   #def redirectCheckout_test(self):
