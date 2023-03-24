@@ -32,7 +32,9 @@ class OpenTimeTests(unittest.TestCase):
     with app.app_context():
       db.create_all()
 
-      facility_test_case = Facility(name="Football", capacity=20)
+      facility_test_case = Facility(name="Football",
+                                    capacity=20,
+                                    description="A great football pitch")
       open_time_test_case = OpenTime(day="Monday",
                                      opening_time=660,
                                      closing_time=990,

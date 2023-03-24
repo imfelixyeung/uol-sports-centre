@@ -118,7 +118,7 @@ async function main() {
 
   poolEvents.push({
     activityId: KnownActivities.PoolLaneSwim,
-    name: 'Pool Open Use',
+    name: 'Pool Lane Swimming',
     day: 6,
     time: 10 * 60, // 10am
     duration: 10 * 60, // 10hrs

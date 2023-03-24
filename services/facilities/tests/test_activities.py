@@ -32,7 +32,9 @@ class ActivitiesTests(unittest.TestCase):
     with app.app_context():
       db.create_all()
 
-      facility_test_case = Facility(name="Football", capacity=20)
+      facility_test_case = Facility(name="Football",
+                                    capacity=20,
+                                    description="A great football pitch")
       activity_test_case = Activity(name="Swimming Lesson",
                                     duration=30,
                                     capacity=20,

@@ -78,6 +78,7 @@ class FacilitiesRouter:
     # Get data from body of post request
     data = request.json
     name = data.get("name")
+    description = data.get("description")
     try:
       capacity = int(data.get("capacity"))
     except ValueError:
@@ -85,7 +86,9 @@ class FacilitiesRouter:
       return {"status": "Failed", "message": "Invalid input"}, 400
 
     # Add the supplied object to the data base
-    new_facility = Facility(name=name, capacity=capacity)
+    new_facility = Facility(name=name,
+                            capacity=capacity,
+                            description=description)
 
     # If facility not added for any reason respond failed
     if not new_facility:
@@ -143,6 +146,10 @@ class FacilitiesRouter:
     if "capacity" in data:
       update_check = True
       to_update.capacity = int(data.get("capacity"))
+
+    if "description" in data:
+      update_check = True
+      to_update.description = data.get("description")
 
     # If the update check is still false return error as
     # user input is incorrect

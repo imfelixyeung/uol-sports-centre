@@ -1021,6 +1021,7 @@ paths:
                 value:
                   name: "Football Pitch"
                   capacity: 30
+                  description: "A football pitch"
       responses:
         "200":
           description: Successful operation returns the new facility
@@ -1709,6 +1710,10 @@ components:
           type: number
           description: Capacity of facility
           example: 30
+        description:
+          type: string
+          description: A description of the facility
+          example: "A swimming pool fitting 30 people"
 
     OpenTime:
       type: object
