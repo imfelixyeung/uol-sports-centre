@@ -302,7 +302,7 @@ paths:
         "200":
           description: OK
 
-  /get-prices/<str:product_type>:
+  /payments/get-prices/<str:product_type>:
     get:
       tags:
         - payments

@@ -11,7 +11,7 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_purchase, delete_order, get_sales,
                           get_pricing_lists)
 from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
-                          change_price, change_discount_amount, 
+                          change_price, change_discount_amount,
                           cancel_subscription)
 
 import env
@@ -154,7 +154,6 @@ def get_prices(product_type: str):
 def cancel_membership(user_id: int):
     """Cancels existing membership for the given user"""
     return jsonify(cancel_subscription(user_id))
-
 
 
 @app.route("/refund", methods=["POST"])
