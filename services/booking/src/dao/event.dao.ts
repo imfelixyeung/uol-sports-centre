@@ -113,9 +113,12 @@ class EventDAO {
         const events = await prisma.event
           .findMany({
             where: {
-              activityId: {
-                in: activityIds,
-              },
+              activityId:
+                activityIds.length > 0
+                  ? {
+                      in: activityIds,
+                    }
+                  : undefined,
               day,
               type: filter.type,
             },
