@@ -43,20 +43,22 @@ def make_a_purchase(user_id: int,
   # Stores all the products that are about to be purchased
   line_items = []
 
+  #FOR NOW - Temporarirly removing microservice dependencies
   #The start date and end date used for filtering
-  start_date = int(round(datetime.now().timestamp() * 1000))
-  end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
+  #start_date = int(round(datetime.now().timestamp() * 1000))
+  #end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000)
 
-  bookings_array = (f"http://gateway/api/booking/bookings"
-                    f"?user={user_id}"
-                    f"&start={start_date}"
-                    f"&end={end_date}")
+  #bookings_array = (f"http://gateway/api/booking/bookings"
+  #                  f"?user={user_id}"
+  #                  f"&start={start_date}"
+  #                  f"&end={end_date}")
 
-  response = requests.get(bookings_array, timeout=10)
+  #response = requests.get(bookings_array, timeout=10)
 
   # Count the number of bookings made for the
   # current customer in the last 7 days
-  bookings_count = len(response.json())
+  #bookings_count = len(response.json())
+  bookings_count = 6
 
   update_subscription = False
 
@@ -103,13 +105,14 @@ def make_a_purchase(user_id: int,
 
     if update_subscription is True:
 
-      response_users = requests.post(
-          f"http://gateway/api/users/{user_id}/updateMembership",
-          json={"membership": product_name},
-          timeout=5)
+      #FOR NOW - Temporarirly removing microservice dependencies
+      #response_users = requests.post(
+      #    f"http://gateway/api/users/{user_id}/updateMembership",
+      #    json={"membership": product_name},
+      #    timeout=5)
 
-      if response_users.status_code != 200:
-        return {"error": "sth wrong"}
+      #if response_users.status_code != 200:
+      #  return {"error": "sth wrong"}
 
       update_subscription = False
 
@@ -210,9 +213,11 @@ def cancel_subscription(user_id: int):
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 
-  response_users = requests.post(
-      f"http://gateway/api/users/{user_id}/updateMembership",
-      json={"membership": subscription},
-      timeout=5)
+  #FOR NOW - Temporarirly removing microservice dependencies
+  #response_users = requests.post(
+  #    f"http://gateway/api/users/{user_id}/updateMembership",
+  #    json={"membership": subscription},
+  #    timeout=5)
 
-  return response_users.status_code
+  #return response_users.status_code
+  return 200
