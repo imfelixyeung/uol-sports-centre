@@ -10,9 +10,8 @@ from app import app
 from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_purchase, delete_order, get_sales,
                           get_pricing_lists)
-from app.payments import (make_a_purchase, get_payment_manager, apply_discount,
-                          change_price, change_discount_amount,
-                          cancel_subscription)
+from app.payments import (make_a_purchase, get_payment_manager, change_price,
+                          change_discount_amount, cancel_subscription)
 
 import env
 
@@ -27,12 +26,6 @@ def get_index():
   #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
   #add_customer(467468, stripe.Customer.create().stripe_id)
   return render_template("index.html")
-
-
-@app.route("/discount/apply", methods=["POST"])
-def get_discount(product_name, membership):
-  """Get the discounted product's price after applying a discount to it"""
-  return jsonify(apply_discount(product_name, membership))
 
 
 @app.route("/management/discount/change/<int:amount>", methods=["GET"])
