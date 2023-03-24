@@ -19,7 +19,7 @@ type-check:
 	mypy run.py
 
 format-check:
-	yapf --recursive --diff --verbose --style google .
+	yapf --recursive --diff --verbose --style google --exclude 'venv/**/*' .
 
 lint:
 	pylint --rc-file pylintrc ./**/*.py
