@@ -11,9 +11,13 @@ import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {
+  useCreateFacilityActivityMutation,
+  useCreateFacilityMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
   useUpdateAuthUserMutation,
+  useUpdateFacilityActivityMutation,
+  useUpdateFacilityMutation,
 } from '~/redux/services/api';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
 
@@ -108,14 +112,19 @@ const UpdateDiscountForm = () => {
 };
 
 const AddFacilityForm = () => {
+  const [createFacility] = useCreateFacilityMutation();
   return (
     <Formik
       initialValues={{name: '', capacity: 0}}
-      onSubmit={(values, actions) => {
+      onSubmit={async (values, actions) => {
         const {name, capacity} = values;
+        await toast.promise(createFacility({name, capacity}), {
+          loading: 'Adding facility...',
+          success: 'Facility added',
+          error: 'Something went wrong',
+        });
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Facility Name" required name="name" />
@@ -129,6 +138,7 @@ const AddFacilityForm = () => {
 };
 
 const UpdateFacilityForm = () => {
+  const [updateFacility] = useUpdateFacilityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
     null
@@ -164,13 +174,18 @@ const UpdateFacilityForm = () => {
             name: selectedFacility?.name ?? '',
             capacity: selectedFacility?.capacity ?? 0,
           }}
-          onSubmit={(values, actions) => {
+          onSubmit={async (values, actions) => {
             const {name, capacity} = values;
+            await toast.promise(
+              updateFacility({id: selectedFacilityId, name, capacity}),
+              {
+                loading: 'Updating facility...',
+                success: 'Facility updated',
+                error: 'Something went wrong',
+              }
+            );
             actions.setSubmitting(false);
           }}
-          validationSchema={Yup.object({
-            userId: Yup.number().required('Required'),
-          })}
         >
           <Form>
             <FormField label="Facility Name" required name="name" />
@@ -186,15 +201,29 @@ const UpdateFacilityForm = () => {
 };
 
 const AddActivityForm = () => {
+  const [createActivity] = useCreateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const facilities = facilitiesData.data;
   if (!facilities) return null;
 
   return (
     <Formik
-      initialValues={{name: '', duration: 60, capacity: '', facilityId: 0}}
-      onSubmit={(values, actions) => {
-        const {name, capacity} = values;
+      initialValues={{name: '', duration: 60, capacity: 0, facilityId: 0}}
+      onSubmit={async (values, actions) => {
+        const {name, capacity, duration, facilityId} = values;
+        await toast.promise(
+          createActivity({
+            name,
+            capacity,
+            duration,
+            facility_id: facilityId,
+          }),
+          {
+            loading: 'Adding new activity...',
+            success: 'New activity added',
+            error: 'Something went wrong',
+          }
+        );
         actions.setSubmitting(false);
       }}
       validationSchema={Yup.object({userId: Yup.number().required('Required')})}
@@ -220,6 +249,7 @@ const AddActivityForm = () => {
 };
 
 const UpdateActivityForm = () => {
+  const [updateActivity] = useUpdateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const activitiesData = useGetFacilityActivitiesQuery();
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(
@@ -234,8 +264,6 @@ const UpdateActivityForm = () => {
   const selectedActivity = activities.find(
     activity => activity.id === selectedActivityId
   );
-
-  if (!selectedActivity) return null;
 
   return (
     <>
@@ -259,18 +287,29 @@ const UpdateActivityForm = () => {
         <Formik
           enableReinitialize
           initialValues={{
-            name: selectedActivity.name,
-            duration: selectedActivity.duration,
-            capacity: selectedActivity.capacity,
-            facilityId: selectedActivity.facility_id,
+            name: selectedActivity?.name ?? '',
+            duration: selectedActivity?.duration ?? 0,
+            capacity: selectedActivity?.capacity ?? 0,
+            facilityId: selectedActivity?.facility_id ?? -1,
           }}
-          onSubmit={(values, actions) => {
-            const {name, capacity} = values;
+          onSubmit={async (values, actions) => {
+            const {capacity, duration, facilityId, name} = values;
+            await toast.promise(
+              updateActivity({
+                capacity,
+                duration,
+                facility_id: facilityId,
+                name,
+                id: selectedActivityId,
+              }).unwrap(),
+              {
+                loading: 'Updating activity',
+                success: 'Activity updated',
+                error: 'Failed to update activity',
+              }
+            );
             actions.setSubmitting(false);
           }}
-          validationSchema={Yup.object({
-            userId: Yup.number().required('Required'),
-          })}
         >
           <Form>
             <FormField label="Facility" required name="facilityId" as="select">
@@ -285,7 +324,7 @@ const UpdateActivityForm = () => {
             <FormField label="Activity Duration" required name="duration" />
             <FormField label="Activity Capacity" required name="capacity" />
             <Button type="submit" intent="primary">
-              Add
+              Amend
             </Button>
           </Form>
         </Formik>

@@ -14,12 +14,20 @@ import type {
   BookingAvailabilityResponse,
 } from './types/bookings';
 import type {
+  CreateFacilityActivityRequest,
+  CreateFacilityActivityResponse,
+  CreateFacilityRequest,
+  CreateFacilityResponse,
   FacilitiesResponse,
   FacilityActivitiesResponse,
   FacilityActivityResponse,
   FacilityResponse,
   FacilityTimeResponse,
   FacilityTimesResponse,
+  UpdateFacilityActivityRequest,
+  UpdateFacilityActivityResponse,
+  UpdateFacilityRequest,
+  UpdateFacilityResponse,
 } from './types/facilities';
 import type {StatusReportResponse} from './types/status';
 import type {
@@ -41,7 +49,13 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api',
   }),
-  tagTypes: ['User', 'BookingAvailability'],
+  tagTypes: [
+    'User',
+    'BookingAvailability',
+    'Facility',
+    'FacilityActivity',
+    'FacilityTime',
+  ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -101,26 +115,80 @@ export const api = createApi({
 
     getFacilities: builder.query<FacilitiesResponse, void>({
       query: () => '/facilities/facilities/',
+      providesTags: ['Facility'],
     }),
 
     getFacility: builder.query<FacilityResponse, number>({
       query: facilityId => `/facilities/facilities/${facilityId}`,
+      providesTags: ['Facility'],
+    }),
+
+    createFacility: builder.mutation<
+      CreateFacilityResponse,
+      CreateFacilityRequest
+    >({
+      query: facility => ({
+        url: '/facilities/facilities/',
+        body: facility,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Facility'],
+    }),
+
+    updateFacility: builder.mutation<
+      UpdateFacilityResponse,
+      UpdateFacilityRequest
+    >({
+      query: ({id, ...facility}) => ({
+        url: `/facilities/facilities/${id}`,
+        body: facility,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Facility'],
     }),
 
     getFacilityTimes: builder.query<FacilityTimesResponse, void>({
       query: () => '/facilities/times/',
+      providesTags: ['FacilityTime'],
     }),
 
     getFacilityTime: builder.query<FacilityTimeResponse, number>({
       query: timeId => `/facilities/times/${timeId}`,
+      providesTags: ['FacilityTime'],
     }),
 
     getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
       query: () => '/facilities/activities/',
+      providesTags: ['FacilityActivity'],
     }),
 
     getFacilityActivity: builder.query<FacilityActivityResponse, number>({
       query: activityId => `/facilities/activities/${activityId}`,
+      providesTags: ['FacilityActivity'],
+    }),
+
+    updateFacilityActivity: builder.mutation<
+      UpdateFacilityActivityResponse,
+      UpdateFacilityActivityRequest
+    >({
+      query: ({id, ...activity}) => ({
+        url: `/facilities/activities/${id}`,
+        body: activity,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['FacilityActivity'],
+    }),
+
+    createFacilityActivity: builder.mutation<
+      CreateFacilityActivityResponse,
+      CreateFacilityActivityRequest
+    >({
+      query: activity => ({
+        url: '/facilities/activities/',
+        body: activity,
+        method: 'POST',
+      }),
+      invalidatesTags: ['FacilityActivity'],
     }),
 
     getUserRecord: builder.query<UsersViewFullRecordResponse, number>({
@@ -200,8 +268,12 @@ export const {
   useUpdateAuthUserMutation,
   useGetFacilitiesQuery,
   useGetFacilityQuery,
+  useCreateFacilityMutation,
+  useUpdateFacilityMutation,
   useGetFacilityActivitiesQuery,
   useGetFacilityActivityQuery,
+  useCreateFacilityActivityMutation,
+  useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
   useGetUserRecordQuery,
