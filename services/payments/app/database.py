@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 import sqlite3
 import os
-import stripe
 
 from config import DATABASE_SCHEMA_URL, DATABASE_URL
 
@@ -30,10 +29,10 @@ def init_database() -> None:
 
     connection.close()
 
-    add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-                "subscription")
-    add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
-    add_customer(467468, stripe.Customer.create().stripe_id)
+    # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
+    #             "subscription")
+    # add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
+    # add_customer(467468, stripe.Customer.create().stripe_id)
 
 
 def add_product(name: str, product_id: str, price: str, product_type: str):
@@ -130,7 +129,8 @@ def delete_customer(user_id: int, stripe_id: str):
     """Function to delete a customer from the database"""
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
-    cur.execute("DELETE FROM customers WHERE user_id = ? AND stripe_id = ?", (user_id, stripe_id))
+    cur.execute("DELETE FROM customers WHERE user_id = ? AND stripe_id = ?",
+        (user_id, stripe_id))
     con.commit()
     con.close()
 
