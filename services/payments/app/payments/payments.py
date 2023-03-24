@@ -88,7 +88,7 @@ def make_a_purchase(user_id: int,
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
-      discount = [{'coupon': apply_discount(product_name, membership)}]
+      discount = [{"coupon": apply_discount(membership)}]
 
     line_item = {
         "price": product_price,
@@ -141,7 +141,7 @@ def change_price(new_price: str, product_name: str):
   update_price(product_name, new_price)
 
 
-def apply_discount(product_name: str, membership: bool):
+def apply_discount(membership: bool):
   """Applies a discount to a product based on the discount condition"""
 
   # Get the original price of the product

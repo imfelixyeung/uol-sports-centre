@@ -10,13 +10,9 @@ from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 #from app import app
 from app.payments import make_a_purchase  #,get_payment_manager
-from app.database import (
-    init_database,
-    add_product,
-    add_customer,
-    get_purchases,
-    delete_product,  #update_price,
-    delete_customer)
+from app.database import (init_database, add_product, add_customer,
+                          get_purchases, delete_product, update_price,
+                          delete_customer)
 # from app.interfaces import create_checkout
 
 
@@ -112,31 +108,31 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     delete_product("prod_NUNazbUQcwZQaU")
     delete_product("prod_NUNbPMJPMIEvWk")
 
-  # def test_change_price(self):
-  #     """Tests the change price functionality"""
-  #     #initialise database
-  #     init_database()
+  def test_change_price(self):
+    """Tests the change price functionality"""
+    #initialise database
+    init_database()
 
-  #     #Add test products to the databse
-  #     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    #Add test products to the databse
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
-  #     #Update price of product
-  #     update_price("product-test", "10")
+    #Update price of product
+    update_price("product-test", "10")
 
-  #     connection = sqlite3.connect(DATABASE_URL)
-  #     cur = connection.cursor()
+    connection = sqlite3.connect(DATABASE_URL)
+    cur = connection.cursor()
 
-  #     #Fetch product price from database
-  #     test_1 = cur.execute(
-  #         '''SELECT productID, price FROM products
-  #     WHERE productName LIKE ?''', ["product-test"]).fetchone()
-  #     connection.close()
+    #Fetch product price from database
+    test_1 = cur.execute(
+        '''SELECT product_id, price FROM products
+    WHERE productName LIKE ?''', ["product-test"]).fetchone()
+    connection.close()
 
-  #     #Assert correct price
-  #     self.assertEqual(test_1[1], "10")
+    #Assert correct price
+    self.assertEqual(test_1[1], "10")
 
-  #     # Delete added product
-  #     delete_product("prod_NUNazbUQcwZQaU")
+    # Delete added product
+    delete_product("prod_NUNazbUQcwZQaU")
 
   # def test_create_checkout_success(self):
   #     """Tests the create checkout functionality for the success case"""
