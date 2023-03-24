@@ -7,6 +7,7 @@ import type {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  UpdateUserRoleRequest,
 } from './types/auth';
 import type {
   BookingAvailabilityRequest,
@@ -82,6 +83,15 @@ export const api = createApi({
         method: 'POST',
         body: data,
         headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    updateAuthUser: builder.mutation<void, UpdateUserRoleRequest & Token>({
+      query: ({token, role, userId}) => ({
+        url: `/auth/users/${userId}`,
+        method: 'PATCH',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {role},
       }),
     }),
 
@@ -187,6 +197,7 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useUpdateAuthUserMutation,
   useGetFacilitiesQuery,
   useGetFacilityQuery,
   useGetFacilityActivitiesQuery,

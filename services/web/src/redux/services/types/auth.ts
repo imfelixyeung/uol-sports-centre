@@ -55,3 +55,8 @@ export interface GetSessionResponse {
   success: boolean;
   data: DecodedJsonWebToken;
 }
+
+export interface UpdateUserRoleRequest {
+  userId: number;
+  role: AuthUserRole;
+}
