@@ -43,7 +43,7 @@ def make_a_purchase(user_id: int,
     # Stores all the products that are about to be purchased
     line_items = []
 
-    # The start date and end date to check if three or more bookings were made for this customer
+    #The start date and end date used for filtering
     start_date = int(round(datetime.now().timestamp() * 1000))
     end_date = int(
         round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
@@ -84,12 +84,12 @@ def make_a_purchase(user_id: int,
                 # and datetime.now() < time.strptime(purchase[4]):
                 membership = True
 
-        # Apply a discount if there have been more than 2 bookings for the current customer
+        #Apply a discount if more than 2 bookings were made
         if bookings_count > 2 or membership:
             line_item = {
-                "unit_amount": 
+                "unit_amount":
                     apply_discount(product_price.stripe_id, membership),
-                "quantity": 
+                "quantity":
                     1,
             }
 
@@ -107,12 +107,12 @@ def make_a_purchase(user_id: int,
         if update_subscription is True:
 
             response_users = requests.post(
-                f"http://gateway/api/users/{user_id}/updateMembersip", 
+                f"http://gateway/api/users/{user_id}/updateMembersip",
                 json={"membership": product_name},
                 timeout=5)
 
             if response_users.status_code != 200:
-                return response_users.status_code
+                return {}
 
             update_subscription = False
 
@@ -215,7 +215,7 @@ def cancel_subscription(user_id: int):
     stripe.Subscription.delete(subscription)
 
     response_users = requests.post(
-        f"http://gateway/api/users/{user_id}/updateMembersip", 
+        f"http://gateway/api/users/{user_id}/updateMembersip",
         json={"membership": subscription},
         timeout=5)
 
