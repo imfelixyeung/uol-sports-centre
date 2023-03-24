@@ -145,7 +145,7 @@ def apply_discount(product_name: str, membership: bool):
   """Applies a discount to a product based on the discount condition"""
 
   # Get the original price of the product
-  product_price = get_product(product_name)[2]
+  #product_price = get_product(product_name)[2]
 
   # Apply the discount
   try:

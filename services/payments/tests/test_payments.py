@@ -85,32 +85,32 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     delete_product("prod_NUNazbUQcwZQaU")
     delete_product("prod_NUNbPMJPMIEvWk")
 
-  # def test_add_product(self):
-  #      """Testing the functionality of adding products"""
-  #     init_database()
-  #
-  #     #Add test products to the database
-  #     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-  #     add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
-  #                 "subscription")
-  #     connection = sqlite3.connect(DATABASE_URL)
-  #     cur = connection.cursor()
+  def test_add_product(self):
+    """Testing the functionality of adding products"""
+    init_database()
 
-  #     #Fetch products from database
-  #     test_1 = cur.execute(
-  #         """SELECT productName FROM products
-  #     WHERE productId LIKE ?""", ["prod_NUNazbUQcwZQaU"]).fetchall()
-  #     test_2 = cur.execute(
-  #         """SELECT productName FROM products
-  #     WHERE productId LIKE ?""", ["prod_NUNbPMJPMIEvWk"]).fetchall()
-  #     connection.close()
+    #Add test products to the database
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                "subscription")
+    connection = sqlite3.connect(DATABASE_URL)
+    cur = connection.cursor()
 
-  #     #Assert correct products
-  #     self.assertEqual(test_1[0][0], "product-test")
-  #     self.assertEqual(test_2[0][0], "subscription-test")
+    #Fetch products from database
+    test_1 = cur.execute(
+        """SELECT productName FROM products
+      WHERE product_id LIKE ?""", ["prod_NUNazbUQcwZQaU"]).fetchall()
+    test_2 = cur.execute(
+        """SELECT productName FROM products
+      WHERE product_id LIKE ?""", ["prod_NUNbPMJPMIEvWk"]).fetchall()
+    connection.close()
 
-  #     delete_product("prod_NUNazbUQcwZQaU")
-  #     delete_product("prod_NUNbPMJPMIEvWk")
+    #Assert correct products
+    self.assertEqual(test_1[0][0], "product-test")
+    self.assertEqual(test_2[0][0], "subscription-test")
+
+    delete_product("prod_NUNazbUQcwZQaU")
+    delete_product("prod_NUNbPMJPMIEvWk")
 
   # def test_change_price(self):
   #     """Tests the change price functionality"""
