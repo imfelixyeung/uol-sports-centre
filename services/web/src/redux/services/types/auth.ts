@@ -1,3 +1,6 @@
+export const authUserRoles = ['USER', 'EMPLOYEE', 'MANAGER', 'ADMIN'] as const;
+export type AuthUserRole = (typeof authUserRoles)[number];
+
 export interface Credentials {
   email: string;
   password: string;
@@ -7,7 +10,7 @@ export interface DecodedJsonWebToken {
   user: {
     id: number;
     email: string;
-    role: string;
+    role: AuthUserRole;
   };
   type: 'access';
   iat: number;

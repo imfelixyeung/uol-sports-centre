@@ -12,6 +12,7 @@ import {
   useRegisterMutation,
 } from '~/redux/services/api';
 import type {
+  AuthUserRole,
   Credentials,
   DecodedJsonWebToken,
   Tokens,
@@ -164,7 +165,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
 
 export const PageAuthRequired: FC<
   PropsWithChildren<{
-    rolesAllowed?: string[];
+    rolesAllowed?: AuthUserRole[];
   }>
 > = ({children, rolesAllowed}) => {
   const auth = useAuth();
@@ -192,7 +193,7 @@ export const PageAuthRequired: FC<
 export const withPageAuthRequired = <T extends {} = {}>(
   Page: NextPageWithLayout,
   options: {
-    rolesAllowed?: string[];
+    rolesAllowed?: AuthUserRole[];
   } = {}
 ): NextPageWithLayout<T> => {
   const WithPageAuthRequired: NextPageWithLayout<T> = (props: T) => {
