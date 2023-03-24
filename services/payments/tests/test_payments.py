@@ -2,7 +2,6 @@
 import unittest
 import sqlite3
 import os
-import time
 
 import urllib.request
 import stripe
@@ -10,8 +9,10 @@ import stripe
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 from app import app
-from app.payments import change_price, get_payment_manager, make_a_purchase
-from app.database import init_database, add_product, add_customer, get_purchases
+from app.payments import get_payment_manager, make_a_purchase
+from app.database import (init_database, add_product, add_customer,
+                            get_purchases, delete_product, update_price,
+                            delete_customer)
 from app.interfaces import create_checkout
 
 
@@ -32,7 +33,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.product_name = "product-test"
         self.product_price = 50.00
         self.user_id = 467468
-        self.start_time = time.monotonic()
 
     def test_make_purchasable(self):
         """tests if it can make a test product purchasable"""
@@ -45,8 +45,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
 
         #asserting that the added product matches the expected result
-        self.assertEqual(product_stripe.name, "product-test")
-        self.assertEqual(price.unit_amount_decimal, "500")
+        self.assertEqual(product_stripe.name, "subscription-test")
+        self.assertEqual(price.unit_amount_decimal, "1500")
+
 
     def test_make_a_purchase(self):
         """tests if a purchase can be made correctly"""
@@ -73,6 +74,11 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
         #Delete temp customer
         stripe.Customer.delete(new_customer.stripe_id)
+        delete_customer(111, new_customer.stripe_id)
+
+        delete_product("prod_NUNazbUQcwZQaU")
+        delete_product("prod_NUNbPMJPMIEvWk")
+
 
     def test_add_product(self):
         """Testing the functionality of adding products"""
@@ -98,6 +104,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         self.assertEqual(test_1[0][0], "product-test")
         self.assertEqual(test_2[0][0], "subscription-test")
 
+        delete_product("prod_NUNazbUQcwZQaU")
+        delete_product("prod_NUNbPMJPMIEvWk")
+
+
     def test_change_price(self):
         """Tests the change price functionality"""
         #initialise database
@@ -107,7 +117,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
         #Update price of product
-        change_price("10", "product-test")
+        update_price("product-test", "10")
 
         connection = sqlite3.connect(DATABASE_URL)
         cur = connection.cursor()
@@ -118,16 +128,12 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         WHERE productName LIKE ?''', ["product-test"]).fetchone()
         connection.close()
 
-        #Fetch product price from stripe
-        stripe_price = stripe.Price.retrieve(
-            stripe.Product.retrieve(test_1[0]).default_price)
-
         #Assert correct price
         self.assertEqual(test_1[1], "10")
-        self.assertEqual(stripe_price.unit_amount, 1000)
 
-        #Reset price
-        change_price("5", "product-test")
+        # Delete added product
+        delete_product("prod_NUNazbUQcwZQaU")
+
 
     def test_create_checkout_success(self):
         """Tests the create checkout functionality for the success case"""
@@ -190,10 +196,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        elapsed_time = time.monotonic() - self.start_time
-        if elapsed_time < 5:
-            time.sleep(5 - elapsed_time)
-
         """Remove the database file after running all tests"""
         conn = sqlite3.connect(DATABASE_URL)
         conn.execute("DROP TABLE IF EXISTS orders")

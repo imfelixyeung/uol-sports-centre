@@ -48,6 +48,15 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
     return last_row_id
 
 
+def delete_product(product_id: str):
+    """Deletes a product from the database"""
+    connection = sqlite3.connect(DATABASE_URL)
+    cur = connection.cursor()
+    cur.execute("DELETE FROM products WHERE productID = ?", (product_id,))
+    connection.commit()
+    connection.close()
+
+
 def get_sales(product_type: str):
     """It returns the sale of the given product type as dictionaries"""
     con = sqlite3.connect(DATABASE_URL)
@@ -113,6 +122,15 @@ def add_customer(user_id: int, stripe_id: str):
     con = sqlite3.connect(DATABASE_URL)
     cur = con.cursor()
     cur.execute("INSERT INTO customers VALUES (?, ?)", (user_id, stripe_id))
+    con.commit()
+    con.close()
+
+
+def delete_customer(user_id: int, stripe_id: str):
+    """Function to delete a customer from the database"""
+    con = sqlite3.connect(DATABASE_URL)
+    cur = con.cursor()
+    cur.execute("DELETE FROM customers WHERE user_id = ? AND stripe_id = ?", (user_id, stripe_id))
     con.commit()
     con.close()
 
