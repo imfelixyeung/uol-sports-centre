@@ -3,6 +3,7 @@ import jwt_decode from 'jwt-decode';
 import {useRouter} from 'next/router';
 import type {FC, PropsWithChildren} from 'react';
 import {useCallback, useEffect} from 'react';
+import PageHero from '~/components/PageHero';
 import {
   useGetSessionQuery,
   useLoginMutation,
@@ -161,7 +162,11 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
   );
 };
 
-export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
+export const PageAuthRequired: FC<
+  PropsWithChildren<{
+    rolesAllowed?: string[];
+  }>
+> = ({children, rolesAllowed}) => {
   const auth = useAuth();
   const router = useRouter();
 
@@ -178,16 +183,21 @@ export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
   }, [auth.session, router]);
 
   if (!auth.session) return <></>;
+  if (rolesAllowed && !rolesAllowed.includes(auth.session.user.role))
+    return <PageHero title="Insufficient permission" />;
   return <>{children}</>;
 };
 
 // function inspired by auth0 nextjs's withPageAuthRequired function
 export const withPageAuthRequired = <T extends {} = {}>(
-  Page: NextPageWithLayout
+  Page: NextPageWithLayout,
+  options: {
+    rolesAllowed?: string[];
+  } = {}
 ): NextPageWithLayout<T> => {
   const WithPageAuthRequired: NextPageWithLayout<T> = (props: T) => {
     return (
-      <PageAuthRequired>
+      <PageAuthRequired rolesAllowed={options.rolesAllowed}>
         <Page {...props} />
       </PageAuthRequired>
     );
