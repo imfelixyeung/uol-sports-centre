@@ -19,10 +19,12 @@ const SelectedBookingsDropdown: FC = () => {
     <>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <Button intent="primary" outline className="gap-3">
-            <span>Selected ({bookings.length})</span>
-            <ChevronDownIcon className="h-3" />
-          </Button>
+          <div>
+            <Button intent="primary" outline className="gap-3">
+              <span>Selected ({bookings.length})</span>
+              <ChevronDownIcon className="h-3" />
+            </Button>
+          </div>
         </Popover.Trigger>
         <Popover.Anchor />
         <Popover.Portal>
