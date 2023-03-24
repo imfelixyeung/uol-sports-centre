@@ -1,5 +1,6 @@
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
+import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
 import Button from '~/components/Button';
@@ -9,34 +10,38 @@ import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
-import {useUpdateAuthUserMutation} from '~/redux/services/api';
+import {
+  useGetFacilitiesQuery,
+  useGetFacilityActivitiesQuery,
+  useUpdateAuthUserMutation,
+} from '~/redux/services/api';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
 
 const ManagementPage: NextPage = () => {
   return (
-    <div>
+    <>
       <PageHero title="Managemer Dashboard" />
-      <section className="container">
+      <section className="container flex flex-col gap-3 py-8">
         <Typography.h2>Amend Prices</Typography.h2>
         <form action="">Form</form>
         <Typography.h2>Change discount amount</Typography.h2>
-        <form action="">Form</form>
+        <UpdateDiscountForm />
         <Typography.h2>Add new employee</Typography.h2>
         <AddNewEmployeeForm />
         <Typography.h2>Add facility</Typography.h2>
-        <form action="">Form</form>
+        <AddFacilityForm />
         <Typography.h2>Amend facility</Typography.h2>
-        <form action="">Form</form>
+        <UpdateFacilityForm />
         <Typography.h2>Add activity</Typography.h2>
-        <form action="">Form</form>
+        <AddActivityForm />
         <Typography.h2>Amend activity</Typography.h2>
-        <form action="">Form</form>
+        <UpdateActivityForm />
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
         <Typography.h3>Total facility bookings</Typography.h3>
         <Typography.h3>Total activity bookings</Typography.h3>
       </section>
-    </div>
+    </>
   );
 };
 
@@ -78,5 +83,211 @@ const AddNewEmployeeForm = () => {
         </Button>
       </Form>
     </Formik>
+  );
+};
+
+const UpdateDiscountForm = () => {
+  const discount = 0.15;
+  return (
+    <Formik
+      initialValues={{discount}}
+      onSubmit={(values, actions) => {
+        const {discount} = values;
+        actions.setSubmitting(false);
+      }}
+      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
+    >
+      <Form>
+        <FormField label="Discount" required name="discount" />
+        <Button type="submit" intent="primary">
+          Update
+        </Button>
+      </Form>
+    </Formik>
+  );
+};
+
+const AddFacilityForm = () => {
+  return (
+    <Formik
+      initialValues={{name: '', capacity: 0}}
+      onSubmit={(values, actions) => {
+        const {name, capacity} = values;
+        actions.setSubmitting(false);
+      }}
+      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
+    >
+      <Form>
+        <FormField label="Facility Name" required name="name" />
+        <FormField label="Facility Capacity" required name="capacity" />
+        <Button type="submit" intent="primary">
+          Add
+        </Button>
+      </Form>
+    </Formik>
+  );
+};
+
+const UpdateFacilityForm = () => {
+  const facilitiesData = useGetFacilitiesQuery();
+  const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
+    null
+  );
+
+  if (!facilitiesData.data) return null;
+  const facilities = facilitiesData.data;
+
+  const selectedFacility = facilities.find(
+    facility => facility.id === selectedFacilityId
+  );
+
+  return (
+    <>
+      <select
+        value={selectedFacilityId ?? 'null'}
+        onChange={e => setSelectedFacilityId(parseInt(e.target.value))}
+      >
+        <option value="null" disabled>
+          Select a facility
+        </option>
+        {facilities.map(facility => (
+          <option value={facility.id} key={facility.id}>
+            {facility.name}
+          </option>
+        ))}
+      </select>
+      {selectedFacilityId !== null && (
+        <Formik
+          enableReinitialize
+          initialValues={{
+            name: selectedFacility?.name ?? '',
+            capacity: selectedFacility?.capacity ?? 0,
+          }}
+          onSubmit={(values, actions) => {
+            const {name, capacity} = values;
+            actions.setSubmitting(false);
+          }}
+          validationSchema={Yup.object({
+            userId: Yup.number().required('Required'),
+          })}
+        >
+          <Form>
+            <FormField label="Facility Name" required name="name" />
+            <FormField label="Facility Capacity" required name="capacity" />
+            <Button type="submit" intent="primary">
+              Update
+            </Button>
+          </Form>
+        </Formik>
+      )}
+    </>
+  );
+};
+
+const AddActivityForm = () => {
+  const facilitiesData = useGetFacilitiesQuery();
+  const facilities = facilitiesData.data;
+  if (!facilities) return null;
+
+  return (
+    <Formik
+      initialValues={{name: '', duration: 60, capacity: '', facilityId: 0}}
+      onSubmit={(values, actions) => {
+        const {name, capacity} = values;
+        actions.setSubmitting(false);
+      }}
+      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
+    >
+      <Form>
+        <FormField label="Facility" required name="facilityId" as="select">
+          <option value="">Select a facility</option>
+          {facilities.map(facility => (
+            <option key={facility.id} value={facility.id}>
+              {facility.name}
+            </option>
+          ))}
+        </FormField>
+        <FormField label="Activity Name" required name="name" />
+        <FormField label="Activity Duration" required name="duration" />
+        <FormField label="Activity Capacity" required name="capacity" />
+        <Button type="submit" intent="primary">
+          Add
+        </Button>
+      </Form>
+    </Formik>
+  );
+};
+
+const UpdateActivityForm = () => {
+  const facilitiesData = useGetFacilitiesQuery();
+  const activitiesData = useGetFacilityActivitiesQuery();
+  const [selectedActivityId, setSelectedActivityId] = useState<number | null>(
+    null
+  );
+
+  const facilities = facilitiesData.data;
+  const activities = activitiesData.data;
+
+  if (!facilities || !activities) return null;
+
+  const selectedActivity = activities.find(
+    activity => activity.id === selectedActivityId
+  );
+
+  if (!selectedActivity) return null;
+
+  return (
+    <>
+      <select
+        value={selectedActivityId ?? 'null'}
+        onChange={e => setSelectedActivityId(parseInt(e.target.value))}
+      >
+        <option value="null" disabled>
+          Select activity to amend
+        </option>
+        {activities.map(activity => {
+          return (
+            <option value={activity.id} key={activity.id}>
+              {activity.name}
+            </option>
+          );
+        })}
+      </select>
+      {selectedActivityId !== null && (
+        <Formik
+          enableReinitialize
+          initialValues={{
+            name: selectedActivity.name,
+            duration: selectedActivity.duration,
+            capacity: selectedActivity.capacity,
+            facilityId: selectedActivity.facility_id,
+          }}
+          onSubmit={(values, actions) => {
+            const {name, capacity} = values;
+            actions.setSubmitting(false);
+          }}
+          validationSchema={Yup.object({
+            userId: Yup.number().required('Required'),
+          })}
+        >
+          <Form>
+            <FormField label="Facility" required name="facilityId" as="select">
+              <option value="">Select a facility</option>
+              {facilities.map(facility => (
+                <option key={facility.id} value={facility.id}>
+                  {facility.name}
+                </option>
+              ))}
+            </FormField>
+            <FormField label="Activity Name" required name="name" />
+            <FormField label="Activity Duration" required name="duration" />
+            <FormField label="Activity Capacity" required name="capacity" />
+            <Button type="submit" intent="primary">
+              Add
+            </Button>
+          </Form>
+        </Formik>
+      )}
+    </>
   );
 };
