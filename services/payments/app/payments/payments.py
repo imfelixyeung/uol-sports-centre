@@ -47,7 +47,7 @@ def make_a_purchase(user_id: int,
   start_date = int(round(datetime.now().timestamp() * 1000))
   end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
 
-  bookings_array = (f"{LOCAL_DOMAIN}/api/booking/bookings"
+  bookings_array = (f"http://gateway/api/booking/bookings"
                     f"?user={user_id}"
                     f"&start={start_date}"
                     f"&end={end_date}")
@@ -104,7 +104,7 @@ def make_a_purchase(user_id: int,
     if update_subscription is True:
 
       response_users = requests.post(
-          f"{LOCAL_DOMAIN}/api/users/{user_id}/updateMembership",
+          f"http://gateway/api/users/{user_id}/updateMembership",
           json={"membership": product_name},
           timeout=5)
 
@@ -211,7 +211,7 @@ def cancel_subscription(user_id: int):
   stripe.Subscription.delete(subscription)
 
   response_users = requests.post(
-      f"{LOCAL_DOMAIN}/api/users/{user_id}/updateMembership",
+      f"http://gateway/api/users/{user_id}/updateMembership",
       json={"membership": subscription},
       timeout=5)
 
