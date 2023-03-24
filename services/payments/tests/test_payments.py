@@ -8,7 +8,7 @@ import stripe
 
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
-from app import app
+#from app import app
 from app.payments import make_a_purchase  #,get_payment_manager
 from app.database import (
     init_database,
