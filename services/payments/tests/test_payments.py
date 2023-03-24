@@ -29,11 +29,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def setUp(self):
     #     app.testing = True
     self.client = app.test_client()
-    self.maxDiff = None
-
-  #     self.product_name = "product-test"
-  #     self.product_price = 50.00
-  #     self.user_id = 467468
+    #     self.product_name = "product-test"
+    #     self.product_price = 50.00
+    #     self.user_id = 467468
 
   def test_yes(self):
     self.assertEqual(1, 1)
