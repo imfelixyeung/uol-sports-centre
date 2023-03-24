@@ -3,7 +3,7 @@ import unittest
 import sqlite3
 # import os
 
-# import urllib.request
+import urllib.request
 import stripe
 
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
@@ -13,7 +13,7 @@ from app.payments import make_a_purchase  #,get_payment_manager
 from app.database import (init_database, add_product, add_customer,
                           get_purchases, delete_product, update_price,
                           delete_customer)
-# from app.interfaces import create_checkout
+from app.interfaces import create_checkout
 
 
 def create_test_database():
@@ -134,25 +134,25 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     # Delete added product
     delete_product("prod_NUNazbUQcwZQaU")
 
-  # def test_create_checkout_success(self):
-  #     """Tests the create checkout functionality for the success case"""
-  #     #initialise Database
-  #     init_database()
+  def test_create_checkout_success(self):
+    """Tests the create checkout functionality for the success case"""
+    #initialise Database
+    init_database()
 
-  #     #Create temp new customer on stripe
-  #     new_customer = stripe.Customer.create()
+    #Create temp new customer on stripe
+    new_customer = stripe.Customer.create()
 
-  #     #Add test product to payments service
-  #     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    #Add test product to payments service
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
-  #     #Assert valid checkout URL response
-  #     session_url = create_checkout(new_customer.stripe_id, "product-test")
+    #Assert valid checkout URL response
+    session_url = create_checkout(new_customer.stripe_id, "product-test")
 
-  #     with urllib.request.urlopen(session_url) as response:
-  #         self.assertEqual(response.getcode(), 200)
+    with urllib.request.urlopen(session_url) as response:
+      self.assertEqual(response.getcode(), 200)
 
-  #     #Delete temp customer
-  #     stripe.Customer.delete(new_customer.stripe_id)
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
 
   # def test_customer_portal(self):
   #     """Tests the customer portal functionality"""
