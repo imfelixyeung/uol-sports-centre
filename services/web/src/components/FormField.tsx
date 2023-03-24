@@ -1,19 +1,25 @@
 import clsx from 'clsx';
 import {Field, useFormikContext} from 'formik';
-import type {FC} from 'react';
+import type {FC, PropsWithChildren, ReactHTML} from 'react';
+import {useId} from 'react';
 
-const FormField: FC<{
-  name: string;
-  label: string;
-  required?: boolean;
-  disabled?: boolean;
-}> = ({name, label, required = false, disabled = false}) => {
+const FormField: FC<
+  PropsWithChildren<{
+    name: string;
+    label: string;
+    required?: boolean;
+    disabled?: boolean;
+    as?: keyof ReactHTML;
+  }>
+> = ({name, label, required = false, disabled = false, as: is, children}) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const context = useFormikContext<Record<string, string>>();
+  const id = useId();
+  const htmlId = `${id}-${name}`;
 
   return (
     <label
-      htmlFor={name}
+      htmlFor={htmlId}
       className={clsx('flex grow flex-col', disabled && 'opacity-20')}
     >
       <span>
@@ -21,11 +27,14 @@ const FormField: FC<{
         {required && '*'}
       </span>
       <Field
-        id={name}
+        id={htmlId}
         name={name}
         className="border-2 border-black/20 bg-[#fff] p-2 text-black"
         disabled={disabled}
-      />
+        as={is}
+      >
+        {children}
+      </Field>
       {context.submitCount !== 0 && context.errors[name] && (
         <span className="text-red-600">{context.errors[name]}</span>
       )}
