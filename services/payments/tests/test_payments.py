@@ -9,7 +9,7 @@ import stripe
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 #from app import app
-from app.payments import make_a_purchase  #,get_payment_manager
+from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
                           get_purchases, delete_product, update_price,
                           delete_customer)
@@ -154,24 +154,24 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
 
-  # def test_customer_portal(self):
-  #     """Tests the customer portal functionality"""
-  #     #initialise Database
-  #     init_database()
+  def test_customer_portal(self):
+    """Tests the customer portal functionality"""
+    #initialise Database
+    init_database()
 
-  #     #Create temp new customer on stripe
-  #     new_customer = stripe.Customer.create()
+    #Create temp new customer on stripe
+    new_customer = stripe.Customer.create()
 
-  #     #Add customer to database with '111' as ID
-  #     add_customer(111, new_customer.stripe_id)
+    #Add customer to database with '111' as ID
+    add_customer(111, new_customer.stripe_id)
 
-  #     #Assert valid portal URL response
-  #     session_url = get_payment_manager(111)
-  #     with urllib.request.urlopen(session_url) as response:
-  #         self.assertEqual(response.getcode(), 200)
+    #Assert valid portal URL response
+    session_url = get_payment_manager(111)
+    with urllib.request.urlopen(session_url) as response:
+      self.assertEqual(response.getcode(), 200)
 
-  #     #Delete temp customer
-  #     stripe.Customer.delete(new_customer.stripe_id)
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
 
   # def test_get_index(self):
   #     """Test if the get_index() function returns a 200 status code"""
