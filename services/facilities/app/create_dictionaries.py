@@ -6,7 +6,8 @@ def make_facility(facility):
   return {
       "id": facility.id,
       "name": facility.name,
-      "capacity": facility.capacity
+      "capacity": facility.capacity,
+      "description": facility.description
   }
 
 
