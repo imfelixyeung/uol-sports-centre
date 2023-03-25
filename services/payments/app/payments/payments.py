@@ -1,9 +1,8 @@
 """Modues provides functionality to make products purchasable or edit prices"""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 import stripe
 from stripe import error as stripe_errors
-import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,

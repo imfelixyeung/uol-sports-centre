@@ -1,6 +1,7 @@
 '''Unit testing for payments microservice'''
 import unittest
 import sqlite3
+import json
 
 import urllib.request
 import stripe
@@ -32,9 +33,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #     self.product_name = "product-test"
     #     self.product_price = 50.00
     #     self.user_id = 467468
-
-  def test_yes(self):
-    self.assertEqual(1, 1)
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
@@ -132,6 +130,26 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     # Delete added product
     delete_product("prod_NUNazbUQcwZQaU")
+
+  def test_get_prices(self):
+    """Test that gets the pricing list"""
+
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+
+    with app.test_client() as client:
+      response = client.get("/get-prices/session")
+
+      assert response.status_code == 200
+      assert response.content_type == "application/json"
+
+      data = json.loads(response.data)
+      assert isinstance(data, list)
+
+      print(data)
+
+      assert len(data) == 1
+      assert data[0]["productName"] == "product-test"
+      assert data[0]["price"] == "5"
 
   def test_create_checkout_success(self):
     """Tests the create checkout functionality for the success case"""
