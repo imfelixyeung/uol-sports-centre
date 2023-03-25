@@ -3,6 +3,7 @@
 from datetime import datetime
 import stripe
 from stripe import error as stripe_errors
+import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -22,6 +23,27 @@ def make_purchasable(product_name: str,
                       product=product.stripe_id)
   #Adding product to database
   add_product(product_name, product.stripe_id, product_price, product_type)
+
+
+def send_receipt(user_id: int, session_id: str):
+  """Sends a receipt to the given user for the given session"""
+  stripe_user = get_user(user_id)
+
+  # Get the payment intent ID from the stripe session
+  session = stripe.checkout.Session.retrieve(session_id)
+  payment_intent_id = session.payment_intent
+  """The following is commented out for now in order to not return any errors"""
+  # Get the customer email through endpoint call
+  # response = requests.get(f"http://gateway/api/auth/{user_id}", timeout=5)
+
+  # data = response.json()
+  # email_address = data["data"]["email"]
+
+  # # Send the receipt email to customer
+  # stripe.PaymentIntent.confirm(
+  #     payment_intent_id,
+  #     receipt_email=email_address,
+  # )
 
 
 def make_a_purchase(user_id: int,
@@ -121,6 +143,8 @@ def make_a_purchase(user_id: int,
       success_url=success_url,
       cancel_url=success_url,
   )
+
+  # send_receipt(user_id, session.id)
 
   return session.url
 
