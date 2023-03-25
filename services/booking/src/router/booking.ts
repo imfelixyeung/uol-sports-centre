@@ -1,8 +1,14 @@
 import express, {Router} from 'express';
+import {expressjwt as jwt} from 'express-jwt';
 
 import BookingController from '@/controllers/booking.controller';
+import {jwtArgs} from '@/middleware/auth';
+import {authErrorHandler} from './error';
 
 const bookingRouter: Router = express.Router();
+
+bookingRouter.use(jwt(jwtArgs));
+bookingRouter.use(authErrorHandler);
 
 // get all bookings
 bookingRouter.get('/', BookingController.getBookings);

@@ -143,6 +143,7 @@ services:
       - HOST=booking
       - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
       - DEBUG=true
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     volumes:
