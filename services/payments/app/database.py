@@ -156,8 +156,8 @@ def add_purchase(customer_id: str,
     cur.execute(
         """INSERT INTO orders (user_id, product_id, 
         purchaseDate, expiryDate, chargeID, reciept_pdf)
-        VALUES (?, ?, ?, ?, ?)""", (customer_id, product_id, purchase_date,
-                                    expiry, charge_id, invoice_pdf))
+        VALUES (?, ?, ?, ?, ?, ?)""", (customer_id, product_id, purchase_date,
+                                       expiry, charge_id, invoice_pdf))
 
   # If it is not
   else:
