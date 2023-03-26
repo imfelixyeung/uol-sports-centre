@@ -4,7 +4,7 @@ CREATE TABLE products (
     productID TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
-    productType TEXT 
+    productType TEXT
     CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL
 );
 
@@ -15,7 +15,8 @@ CREATE TABLE orders (
     userID INTEGER NOT NULL,
     productID TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
-    expiryDate TEXT, 
+    expiryDate TEXT,
+    chargeID TEXT NOT NULL, 
     FOREIGN KEY (productID) REFERENCES products(productID)
 );
 

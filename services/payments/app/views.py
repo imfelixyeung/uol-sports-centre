@@ -115,10 +115,12 @@ def webhook_received():
       item_type = stripe.Product.retrieve(purchased_item.price.product).object
       if item_type == "subscription":
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, expiry_time)
+                     transaction_time, expiry_time,
+                     session.payment_intent.charges.data[0].id)
       else:
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time)
+                     transaction_time,
+                     session.payment_intent.charges.data[0].id)
     return make_response("", 200)
 
   elif event.type == "invoice.paid":

@@ -2,6 +2,7 @@
 import unittest
 import sqlite3
 import json
+from unittest.mock import patch, MagicMock
 
 import urllib.request
 import stripe
@@ -12,7 +13,7 @@ from app import app
 from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
                           get_purchases, delete_product, update_price,
-                          delete_customer)
+                          delete_customer, get_purchase)
 from app.interfaces import create_checkout
 
 
@@ -62,6 +63,19 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Add customer to database
     add_customer(111, new_customer.stripe_id)
+
+    # Add test card to the customer
+    card_token = stripe.Token.create(card={
+        "number": "4242424242424242",
+        "exp_month": 12,
+        "exp_year": 2024,
+        "cvc": "123",
+    },)
+
+    card = stripe.Customer.create_source(new_customer.id, source=card_token)
+
+    # Link the card to the customer
+    stripe.Customer.modify(new_customer.id, default_source=card.id)
 
     #Make a purchase with multiple products
     products = ["product-test", "subscription-test"]
@@ -145,8 +159,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       data = json.loads(response.data)
       assert isinstance(data, list)
 
-      print(data)
-
       assert len(data) == 1
       assert data[0]["productName"] == "product-test"
       assert data[0]["price"] == "5"
@@ -190,23 +202,49 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
 
-  #test redirectCheckout()
-  #def redirectCheckout_test(self):
-  # a = 1
+  # @patch("app.database.get_purchase")
+  # @patch.object(stripe.Refund, "create")
+  # def test_refund(self, mock_refund_create, mock_get_purchase):
+  #   """Testing the /refund endpoint"""
 
-  #test webhookReceived()
-  #def webhookReceived_test(self):
-  #a = 1
+  #   # Create an instance of the Flask test client
+  #   client = app.test_client()
 
-  #@classmethod
-  #def tearDownClass(cls):
-  #  """Remove the database file after running all tests"""
-  #  conn = sqlite3.connect(DATABASE_URL)
-  #  conn.execute("DROP TABLE IF EXISTS orders")
-  #  conn.execute("DROP TABLE IF EXISTS products")
-  #  conn.execute("DROP TABLE IF EXISTS customers")
-  #  conn.commit()
-  #  conn.close()
+  #   # Define the test data
+  #   test_data = {"order_id": 1, "refund_amount": 5}
+
+  #   # Create a mock purchase object with a valid payment_intent field
+  #   mock_purchase = {
+  #       "order_id": 1,
+  #       "product_id": 1,
+  #   }
+
+  #   # Mock the get_purchase() function to return the mock purchase object
+  #   mock_get_purchase.return_value = mock_purchase
+
+  #   # Mocking the get_purchase function for a sample purchase
+  #   with patch("app.database.get_purchase", mock_get_purchase):
+
+  #     # Make the request to the refund endpoint
+  #     response = client.post("/refund",
+  #                            data=json.dumps(test_data),
+  #                            content_type="application/json")
+
+  #     print("response data: ", response.data)
+  #     print("response status code: ", response.status_code)
+
+  #     # Check that the refund was created successfully
+  #     mock_refund_create.assert_called_once_with(amount=5,
+  #                                                refund_application_fee=True)
+
+  #     # Check that the order was deleted
+  #     mock_get_purchase.assert_called_once_with(1)
+
+  #     # Check that the endpoint returned a success status code
+  #     assert response.status_code == 200
+
+  #     # Check that the enndpoint returned the expected response body
+  #     assert response.json == {"message": "Refund processed successfully."}
 
 
 if __name__ == "__main__":
