@@ -79,11 +79,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Make a purchase with multiple products
     products = ["product-test", "subscription-test"]
-    make_a_purchase(111, products, "subscription")
+    response = make_a_purchase(111, products, "subscription")
 
-    #Check if products added
-    purchased_products = get_purchases(111)
-    self.assertEqual(len(purchased_products), 2)
+    # Check if session URL is returned
+    self.assertIsNotNone(response)
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)

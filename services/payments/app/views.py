@@ -120,14 +120,27 @@ def webhook_received():
     #Add purchase to database, inserting relavant fields for product type
     for purchased_item in session.line_items.data:
       item_type = stripe.Product.retrieve(purchased_item.price.product).object
+
+      price_object = stripe.Price.retrieve(purchased_item.price)
+
+      # Charge to be processed at webhook
+      charge_amount = price_object.unit_amount
+
+      # Create a new charge for the product
+      charge = stripe.Charge.create(
+          amount=charge_amount,
+          currency="usd",
+          customer=session.customer,
+          description=purchased_item.price.product,
+      )
+
       if item_type == "subscription":
         add_purchase(session.customer, purchased_item.price.product,
                      transaction_time, expiry_time, invoice.invoice_pdf,
-                     session.payment_intent.charges.data[0].id)
+                     charge.id)
       else:
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, invoice.invoice_pdf,
-                     session.payment_intent.charges.data[0].id)
+                     transaction_time, invoice.invoice_pdf, charge.id)
     return make_response("", 200)
 
   #Update subscription if invoice has been paid

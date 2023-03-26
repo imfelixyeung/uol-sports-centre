@@ -120,19 +120,6 @@ def make_a_purchase(user_id: int,
 
     line_items.append(line_item)
 
-    #price_object = stripe.Price.retrieve(product_price)
-
-    #Charge to be processed at webhook
-    #charge_amount = price_object.unit_amount
-
-    # Create a new charge for the product
-    #charge = stripe.Charge.create(
-    #    amount=charge_amount,
-    #    currency="usd",
-    #    customer=stripe_user[1],
-    #    description=product_name,
-    #)
-
     # Creates a new row in the purchased products table
     #add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
 
