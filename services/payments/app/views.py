@@ -2,6 +2,7 @@
 Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import jwt
 import stripe
 from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, make_response
@@ -21,21 +22,61 @@ stripe.api_key = env.STRIPE_API_KEY
 @app.route("/management/discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
   """Retrieves the new discount amount and changes it"""
-  return jsonify(change_discount_amount(amount))
+  auth = request.headers.get("Authorization")
+
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  secret_key = "your-secret-key"
+  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
+      "role"] == "MANAGER":
+    return jsonify(change_discount_amount(amount))
+
+  else:
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/management/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
   """Function that retrieves the sales from the last 
     7 days for a given product type"""
-  return jsonify(get_sales(product_type))
+
+  auth = request.headers.get("Authorization")
+
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  secret_key = "your-secret-key"
+  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
+      "role"] == "MANAGER":
+    return jsonify(get_sales(product_type))
+
+  else:
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/checkout-session/<int:user_id>", methods=["POST"])
-def redirect_checkout(user_id, products, payment_mode):
+def redirect_checkout():
   """It returns an url for checkout"""
-  #products = ["product-test"]
-  #payment_mode = "payment"
+  # Getting the required data through json
+  data = request.get_json()
+
+  user_id = data["user_id"]
+  products = data["products"]
+  payment_mode = data["payment_mode"]
+
   return make_a_purchase(user_id, products, payment_mode)
 
 
@@ -102,10 +143,33 @@ def webhook_received():
 
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
-def get_purchased_products(user_id: int):
+def get_purchased_products():
   """Retrieve all purchased products for a given user"""
-  purchased_products = get_purchases(user_id)
-  return jsonify(purchased_products)
+
+  # Getting the required data through json
+  data = request.get_json()
+
+  user_id = data["user_id"]
+
+  auth = request.headers.get("Authorization")
+
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  secret_key = "your-secret-key"
+  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
+      "role"] == "MANAGER":
+    purchased_products = get_purchases(user_id)
+    return jsonify(purchased_products)
+
+  else:
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/customer-portal/<int:user_id>", methods=["GET"])
@@ -114,19 +178,37 @@ def customer_portal(user_id: int):
   return redirect(get_payment_manager(user_id), code=303)
 
 
-@app.route("/change-price", methods=["POST"])
+@app.route("/management/change-price", methods=["POST"])
 def change_product_price():
   """End point for changing the price for managemnet uses"""
-  # Getting the new price and product name
-  data = request.get_json()
 
-  new_price = data["new_price"]
-  product_name = data["product_name"]
+  auth = request.headers.get("Authorization")
 
-  # Calling the change_price function
-  change_price(new_price, product_name)
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
 
-  return {"message": "Price changed successfully"}
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  secret_key = "your-secret-key"
+  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
+      "role"] == "MANAGER":
+    # Getting the new price and product name
+    data = request.get_json()
+
+    new_price = data["new_price"]
+    product_name = data["product_name"]
+
+    # Calling the change_price function
+    change_price(new_price, product_name)
+
+    return jsonify({"message": "Price changed successfully"})
+
+  else:
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/get-prices/<string:product_type>", methods=["GET"])
