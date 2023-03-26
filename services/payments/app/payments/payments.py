@@ -43,8 +43,11 @@ def send_receipt(user_id: int, session_id: str):
   # )
 
 
-def get_reciept():
-  """Get recept pdf download"""
+#Returns the pdf download link for a receipt, given the order ID
+def get_receipt(order_id: int):
+  """Get receipt for pdf download"""
+  purchase = get_purchases(order_id)
+  return purchase[5]
 
 
 def make_a_purchase(user_id: int,

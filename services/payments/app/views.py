@@ -134,6 +134,7 @@ def webhook_received():
           description=purchased_item.price.product,
       )
 
+      #If item is a subscription, add an expiry date
       if item_type == "subscription":
         add_purchase(session.customer, purchased_item.price.product,
                      transaction_time, expiry_time, invoice.invoice_pdf,
@@ -250,7 +251,7 @@ def cancel_membership(user_id: int):
   return jsonify(cancel_subscription(user_id))
 
 
-@app.route("/refund", methods=["POST"])
+@app.route("/refund/<int:booking_id>", methods=["POST"])
 def refund():
   """Endpoint to process refunds"""
 
