@@ -4,7 +4,7 @@ import {Event} from '@prisma/client';
 
 import {createServer} from '@/server';
 
-import {prismaMock} from './mock/prisma';
+import {prismaMock} from '../mock/prisma';
 import {Status} from '@/types';
 import {EventDTO} from '@/dto/event.dto';
 

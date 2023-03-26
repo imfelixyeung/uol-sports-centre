@@ -1,6 +1,6 @@
 import {Booking} from '@prisma/client';
-import {prismaMock} from './mock/prisma';
-import {httpClientMock} from './mock/httpClient';
+import {prismaMock} from '../mock/prisma';
+import {httpClientMock} from '../mock/httpClient';
 
 import bookingService from '@/services/booking.service';
 import {
