@@ -9,7 +9,7 @@ import {bookingToDTO} from '@/dto/booking.dto';
 
 const prisma = new PrismaClient();
 
-const BASE_URL = 'http://booking-server';
+const BASE_URL = 'http://gateway/api/booking';
 const USER_TOKEN = jwt.sign(
   {
     user: {
@@ -451,6 +451,8 @@ describe('Test GET /bookings/availability', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
   });
+
+  it('should have more tests', async () => {});
 });
 
 describe('Test POST /bookings/book', () => {
@@ -532,4 +534,6 @@ describe('Test POST /bookings/book', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
   });
+
+  it('should have more tests', async () => {});
 });

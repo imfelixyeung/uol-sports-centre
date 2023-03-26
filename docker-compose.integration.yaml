@@ -15,18 +15,6 @@ services:
       - ./services/web:/app
       - /app/node_modules
 
-  facilities:
-    build:
-      context: ./services/facilities
-      dockerfile: Dockerfile.dev
-    environment:
-      - FLASK_RUN_PORT=80
-      - FLASK_RUN_HOST=facilities
-    networks:
-      - network
-    volumes:
-      - ./services/facilities:/app
-
   auth:
     build:
       context: ./services/auth
@@ -134,6 +122,18 @@ services:
       timeout: 5s
       retries: 5
 
+  facilities:
+    build:
+      context: ./services/facilities
+      dockerfile: Dockerfile.dev
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+    volumes:
+      - ./services/facilities:/app
+    networks:
+      - network
+
   booking:
     build:
       context: ./services/booking
@@ -141,35 +141,29 @@ services:
     environment:
       - PORT=80
       - HOST=booking
-      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
       - DEBUG=true
       - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
-    networks:
-      - network
     volumes:
       - ./services/booking:/app
       - /app/node_modules
     depends_on:
       booking-db:
         condition: service_healthy
-
-  booking-studio:
-    build:
-      context: ./services/booking
-      target: studio
-    environment:
-      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
-      - PRISMA_STUDIO_PORT=5555
-    ports:
-      - "5555"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "scripts/healthcheck.js",
+          "booking",
+          "80"
+        ]
+      interval: 5s
+      timeout: 15s
+      retries: 5
     networks:
       - network
-    volumes:
-      - ./services/booking:/app
-      - /app/node_modules
-    depends_on:
-      booking-db:
-        condition: service_healthy
 
   booking-db:
     image: postgres
@@ -177,17 +171,14 @@ services:
     environment:
       - POSTGRES_PASSWORD=booking
       - POSTGRES_USER=booking
-      - POSTGRES_DB=dev
-    networks:
-      - network
-    volumes:
-      - ./persistence/booking/db:/var/lib/postgresql/data
+      - POSTGRES_DB=test
     healthcheck:
-      # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: [ "CMD", "pg_isready", "-U", "booking", "-d", "dev" ]
+      test: [ "CMD", "pg_isready", "-U", "booking", "-d", "test" ]
       interval: 5s
       timeout: 15s
       retries: 5
+    networks:
+      - network
 
   gateway:
     build: ./gateway
@@ -195,13 +186,37 @@ services:
       - .env.dev
     ports:
       - "${APP_PORT}:80"
-    networks:
-      - network
     links:
       - web
       - auth
       - users
       - status
+      - facilities
+      - booking
+    networks:
+      - network
+
+  booking-ci:
+    build:
+      context: ./services/booking
+      target: ci
+    environment:
+      - PORT=80
+      - HOST=booking-ci
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
+      - DEBUG=true
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    depends_on:
+      booking-db:
+        condition: service_healthy
+      booking:
+        condition: service_healthy
+      facilities:
+        condition: service_started
+      gateway:
+        condition: service_started
+    networks:
+      - network
 
 networks:
   network:
