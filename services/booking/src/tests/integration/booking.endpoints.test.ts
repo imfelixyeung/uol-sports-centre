@@ -1,16 +1,21 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import {Booking, PrismaClient} from '@prisma/client';
 
 import {env} from '@/env';
-import prisma from '@/lib/prisma';
+import {UserRole} from '@/middleware/auth';
+import logger from '@/lib/logger';
+import {bookingToDTO} from '@/dto/booking.dto';
+
+const prisma = new PrismaClient();
 
 const BASE_URL = 'http://booking-server';
-const user_token = jwt.sign(
+const USER_TOKEN = jwt.sign(
   {
     user: {
       id: 1,
       email: 'test@test.com',
-      role: 'USER',
+      role: UserRole.USER,
     },
     type: 'access',
   },
@@ -20,13 +25,12 @@ const user_token = jwt.sign(
     issuer: 'auth',
   }
 );
-
-const admin_token = jwt.sign(
+const ADMIN_TOKEN = jwt.sign(
   {
     user: {
       id: 2,
       email: 'admin@test.com',
-      role: 'ADMIN',
+      role: UserRole.ADMIN,
     },
     type: 'access',
   },
@@ -37,52 +41,76 @@ const admin_token = jwt.sign(
   }
 );
 
-describe('Test /bookings endpoints', () => {
-  beforeAll(async () => {
-    await prisma.booking.createMany({
-      data: [
-        {
-          transactionId: 1,
-          eventId: 1,
-          userId: 1,
-          starts: new Date(),
-          created: new Date(),
-          updated: new Date(),
-        },
-        {
-          transactionId: 2,
-          eventId: 2,
-          userId: 1,
-          starts: new Date(),
-          created: new Date(),
-          updated: new Date(),
-        },
-        {
-          transactionId: 3,
-          eventId: 3,
-          userId: 1,
-          starts: new Date(),
-          created: new Date(),
-          updated: new Date(),
-        },
-        {
-          transactionId: 12,
-          eventId: 2,
-          userId: 3,
-          starts: new Date(),
-          created: new Date(),
-          updated: new Date(),
-        },
-        {
-          transactionId: 45,
-          eventId: 1,
-          userId: 4,
-          starts: new Date(),
-          created: new Date(),
-          updated: new Date(),
-        },
-      ],
-    });
+const BOOKINGS: Booking[] = [
+  {
+    id: 1,
+    transactionId: 1,
+    eventId: 1,
+    userId: 1,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 2,
+    transactionId: 2,
+    eventId: 2,
+    userId: 1,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 3,
+    transactionId: 3,
+    eventId: 3,
+    userId: 1,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 4,
+    transactionId: 12,
+    eventId: 2,
+    userId: 3,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 5,
+    transactionId: 45,
+    eventId: 1,
+    userId: 4,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+];
+
+beforeAll(async () => {
+  await prisma.$connect();
+  await prisma.booking.createMany({
+    data: BOOKINGS,
+  });
+
+  logger.debug('Created test bookings');
+  logger.debug(`Bookings count: ${await prisma.booking.count()}`);
+});
+
+describe('Test GET /bookings endpoint', () => {
+  it("should 400 if bad params are passed to 'limit' and 'page'", async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .query({
+        limit: 'bad',
+        page: 'bad',
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
   });
 
   it('should 401 if accessed without authentication', async () => {
@@ -92,419 +120,294 @@ describe('Test /bookings endpoints', () => {
     expect(response.body.status).toBe('error');
   });
 
-  it('should 401 if requests all bookings as user', async () => {
+  it('should 403 if requests all bookings as user', async () => {
     const response = await request(BASE_URL)
       .get('/bookings')
-      .set('Authorization', `Bearer ${user_token}`);
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 403 if user requests all user bookings for another id', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .query({user: 2})
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should return bookings for users own id', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .query({user: 1})
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.bookings).toBeDefined();
+    expect(response.body.bookings).toStrictEqual(
+      BOOKINGS.filter(b => b.userId === 1).map(b => bookingToDTO(b))
+    );
+  });
+
+  it('should return all bookings for admin', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.bookings).toBeDefined();
+    expect(response.body.bookings).toStrictEqual(
+      BOOKINGS.map(b => bookingToDTO(b))
+    );
+    expect(response.body.metadata).toBeDefined();
+  });
+
+  it('should return 2 bookings per page', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .query({
+        limit: 2,
+        page: 1,
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.bookings).toBeDefined();
+    expect(response.body.bookings).toHaveLength(2);
+    expect(response.body.metadata).toBeDefined();
+    expect(response.body.metadata.page).toBe(1);
+    expect(response.body.metadata.limit).toBe(2);
+    expect(response.body.metadata.count).toBe(BOOKINGS.length);
+    expect(response.body.metadata.pageCount).toBe(
+      Math.ceil(BOOKINGS.length / 2)
+    );
+  });
+});
+
+describe('Test POST /bookings endpoint', () => {
+  it("should 400 if bad params are passed to 'add booking'", async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        userId: 'bad',
+        eventId: 'bad',
+        transactionId: 'bad',
+        starts: 'bad',
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 401 if add booking without authentication', async () => {
+    const response = await request(BASE_URL).post('/bookings').send({
+      userId: 1,
+      eventId: 1,
+      transactionId: 1,
+      starts: new Date(),
+    });
 
     expect(response.statusCode).toBe(401);
     expect(response.body.status).toBe('error');
   });
 
-  it('should 200 if requests all user bookings for own id', async () => {
+  it('should 403 if a user tries adding a booking', async () => {
     const response = await request(BASE_URL)
-      .get('/bookings')
-      .query({user: 1})
-      .set('Authorization', `Bearer ${user_token}`);
+      .post('/bookings')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 1,
+        transactionId: 1,
+        starts: new Date(),
+      });
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should add a booking if is admin', async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 1,
+        transactionId: 1,
+        starts: new Date(),
+      });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
   });
+});
 
-  it('should return all bookings for current user', async () => {
+describe('Test GET /bookings/:id endpoint', () => {
+  it("should 400 if bad id is passed to 'get booking'", async () => {
     const response = await request(BASE_URL)
-      .get('/bookings')
-      .query({user: 1})
-      .set('Authorization', `Bearer ${user_token}`);
+      .get('/bookings/bad')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 401 if get booking without authentication', async () => {
+    const response = await request(BASE_URL).get('/bookings/1');
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 403 for booking 4 (owned by uid 3) for user 1', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/4')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 404 for booking 100 (not existing)', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/100')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should return booking 4 (owned by uid 3) for an admin (uid 2)', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/4')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
-    expect(response.body.bookings).toBeDefined();
-    expect(Array.isArray(response.body.bookings)).toBe(true);
-    expect(response.body.bookings.length).toBe(3);
-    expect(response.body.metadata).toBeDefined();
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[3]));
+  });
+});
+
+describe('Test PUT /bookings/:id endpoint', () => {
+  it("should 400 if bad body is passed to 'update booking'", async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/1')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        eventId: 'bad',
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
   });
 
-  //   test('GET /bookings?limit=5&page=2', async () => {
-  //     // create list of mock bookings
-  //     const bookings: Booking[] = [
-  //       {
-  //         id: 1,
-  //         transactionId: 1,
-  //         eventId: 1,
-  //         userId: 1,
-  //         starts: new Date(),
-  //         created: new Date(),
-  //         updated: new Date(),
-  //       },
-  //     ];
+  it("should 400 if bad url param is passed to 'update booking'", async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/bad')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        eventId: 3,
+      });
 
-  //     const expectedResponseBody: PaginatedBookings & Status = {
-  //       status: 'OK',
-  //       bookings: bookings.map(b => bookingToDTO(b)),
-  //       metadata: {
-  //         count: bookings.length,
-  //         limit: 0,
-  //         page: 1,
-  //         pageCount: 1,
-  //       },
-  //     };
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
 
-  //     // mock the prisma client
-  //     prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
+  it('should 401 if update booking without authentication', async () => {
+    const response = await request(BASE_URL).put('/bookings/1').send({
+      eventId: 3,
+    });
 
-  //     // perform test to see if it is there
-  //     await supertest(app)
-  //       .get('/bookings')
-  //       .expect(200)
-  //       .then(response => {
-  //         // check it returns what it should
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
 
-  //   test('GET /bookings?user=2', async () => {
-  //     // create list of mock bookings
-  //     const bookings: Booking[] = [
-  //       {
-  //         id: 6,
-  //         transactionId: 1,
-  //         eventId: 1,
-  //         userId: 2,
-  //         starts: new Date(),
-  //         created: new Date(),
-  //         updated: new Date(),
-  //       },
-  //       {
-  //         id: 7,
-  //         transactionId: 1,
-  //         eventId: 1,
-  //         userId: 2,
-  //         starts: new Date(),
-  //         created: new Date(),
-  //         updated: new Date(),
-  //       },
-  //       {
-  //         id: 8,
-  //         transactionId: 1,
-  //         eventId: 1,
-  //         userId: 2,
-  //         starts: new Date(),
-  //         created: new Date(),
-  //         updated: new Date(),
-  //       },
-  //     ];
+  it('should 403 if a user tries updating a booking', async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/1')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        eventId: 3,
+      });
 
-  //     const bookingsCount = 100;
-  //     const expectedResponseBody: PaginatedBookings & Status = {
-  //       status: 'OK',
-  //       bookings: bookings.map(b => bookingToDTO(b)),
-  //       metadata: {
-  //         count: bookingsCount,
-  //         limit: 5,
-  //         page: 2,
-  //         pageCount: bookingsCount / 5,
-  //       },
-  //     };
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
 
-  //     // mock the prisma client
-  //     prismaMock.$transaction.mockResolvedValue([bookingsCount, bookings]);
+  it('should 404 if update booking with non-existing id', async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/100')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        eventId: 3,
+      });
 
-  //     // perform test to see if it is there
-  //     await supertest(app)
-  //       .get('/bookings')
-  //       .query({user: 2, limit: 5, page: 2})
-  //       .expect(200)
-  //       .then(response => {
-  //         // check it returns what it should
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
+    expect(response.statusCode).toBe(404);
+    expect(response.body.status).toBe('error');
+  });
 
-  //   test('GET /bookings/1', async () => {
-  //     // create list of mock bookings
-  //     const bookingMock: Booking = {
-  //       id: 1,
-  //       transactionId: 1,
-  //       eventId: 1,
-  //       userId: 1,
-  //       starts: new Date(),
-  //       created: new Date(),
-  //       updated: new Date(),
-  //     };
-  //     const expectedResponseBody = {
-  //       status: 'OK',
-  //       booking: bookingToDTO(bookingMock),
-  //     };
+  it('should update a booking if is admin', async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/1')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        eventId: 3,
+      });
 
-  //     // mock the prisma client
-  //     prismaMock.booking.findUnique.mockResolvedValue(bookingMock);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+});
 
-  //     // perform test to see if it is there
-  //     await supertest(app)
-  //       .get('/bookings/1')
-  //       .expect(200)
-  //       .then(response => {
-  //         // check it returns what it should
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
+describe('Test DELETE /bookings/:id endpoint', () => {
+  it("should 400 if bad params are passed to 'delete booking'", async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/bad')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
 
-  //   test('POST /bookings', async () => {
-  //     const newBooking: CreateBookingDTO = {
-  //       userId: 1,
-  //       eventId: 1,
-  //       transactionId: 1,
-  //       starts: new Date(),
-  //     };
-  //     const mockBooking: Booking = {
-  //       ...newBooking,
-  //       id: 1,
-  //       created: new Date(),
-  //       updated: new Date(),
-  //     };
-  //     const expectedResponseBody = {
-  //       status: 'OK',
-  //       booking: bookingToDTO(mockBooking),
-  //     };
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
 
-  //     // mock the prisma client
-  //     prismaMock.booking.create.mockResolvedValue(mockBooking);
+  it('should 401 if delete booking without authentication', async () => {
+    const response = await request(BASE_URL).delete('/bookings/1');
 
-  //     // create a new booking
-  //     await supertest(app)
-  //       .post('/bookings')
-  //       .send(newBooking)
-  //       .expect(200)
-  //       .then(response => {
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
 
-  //   test('PUT /bookings/10', async () => {
-  //     const existingBooking: Booking = {
-  //       id: 10,
-  //       userId: 1,
-  //       eventId: 1,
-  //       transactionId: 1,
-  //       starts: new Date(),
-  //       created: new Date(),
-  //       updated: new Date(),
-  //     };
-  //     const update: UpdateBookingDTO = {
-  //       id: 10,
-  //       eventId: 3,
-  //     };
-  //     const expectedUpdate: Booking = {...existingBooking, ...update};
+  it('should 403 if a user tries deleting a booking', async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/1')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
 
-  //     const expectedResponseBody = {
-  //       status: 'OK',
-  //       booking: bookingToDTO(expectedUpdate),
-  //     };
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
 
-  //     // mock the prisma client
-  //     prismaMock.booking.update.mockResolvedValue(expectedUpdate);
+  it('should 404 if delete booking with non-existing id', async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/100')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
 
-  //     // create a new booking
-  //     await supertest(app)
-  //       .put('/bookings/10')
-  //       .send(update)
-  //       .expect(200)
-  //       .then(response => {
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
+    expect(response.statusCode).toBe(404);
+    expect(response.body.status).toBe('error');
+  });
 
-  //   test('DELETE /bookings/10', async () => {
-  //     const booking: Booking = {
-  //       id: 10,
-  //       userId: 1,
-  //       eventId: 1,
-  //       transactionId: 1,
-  //       starts: new Date(),
-  //       created: new Date(),
-  //       updated: new Date(),
-  //     };
+  it('should delete booking if is admin', async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/1')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
 
-  //     const expectedResponseBody = {
-  //       status: 'OK',
-  //       booking: bookingToDTO(booking),
-  //     };
-
-  //     // mock the prisma client
-  //     prismaMock.booking.delete.mockResolvedValue(booking);
-
-  //     // create a new booking
-  //     await supertest(app)
-  //       .delete('/bookings/10')
-  //       .expect(200)
-  //       .then(response => {
-  //         expect(response.body).toStrictEqual(expectedResponseBody);
-  //       });
-  //   });
-
-  //   //
-  //   // The following tests send erroneous data
-  //   //
-
-  //   test('GET /bookings?limit=sdhkfs -- Bad params', async () => {
-  //     await supertest(app)
-  //       .get('/bookings')
-  //       .query({limit: 'sdhkfs'})
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('GET /bookings -- Database error', async () => {
-  //     prismaMock.$transaction.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .get('/bookings')
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-  //   test('GET /bookings?user=1 -- Database error', async () => {
-  //     prismaMock.$transaction.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .get('/bookings')
-  //       .query({user: 1})
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('GET /bookings/hkfs -- Bad params', async () => {
-  //     await supertest(app)
-  //       .get('/bookings/sffs')
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('POST /bookings -- Bad body', async () => {
-  //     await supertest(app)
-  //       .post('/bookings')
-  //       .send({hello: 'World'})
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('POST /bookings -- Database error', async () => {
-  //     prismaMock.booking.create.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .post('/bookings')
-  //       .send({
-  //         userId: 1,
-  //         eventId: 1,
-  //         starts: new Date(),
-  //         transactionId: 1,
-  //       } as CreateBookingDTO)
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('GET /bookings/1 -- Database error', async () => {
-  //     prismaMock.booking.findUnique.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .get('/bookings/1')
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('GET /bookings/1 -- Doesnt exist error', async () => {
-  //     prismaMock.booking.findUnique.mockResolvedValue(null);
-
-  //     await supertest(app)
-  //       .get('/bookings/1')
-  //       .expect(404)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('PUT /bookings/hkfs -- Bad params', async () => {
-  //     await supertest(app)
-  //       .put('/bookings/sffs')
-  //       .send({
-  //         starts: new Date(),
-  //       } as UpdateBookingDTO)
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('PUT /bookings/1 -- Bad body', async () => {
-  //     await supertest(app)
-  //       .put('/bookings/1')
-  //       .send({
-  //         userId: new Date(),
-  //       })
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('PUT /bookings/1 -- Database Error', async () => {
-  //     prismaMock.booking.update.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .put('/bookings/1')
-  //       .send({
-  //         userId: 1,
-  //       } as UpdateBookingDTO)
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('DELETE /bookings/1 -- Database Error', async () => {
-  //     prismaMock.booking.delete.mockRejectedValue(null);
-
-  //     await supertest(app)
-  //       .delete('/bookings/1')
-  //       .expect(500)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
-
-  //   test('DELETE /bookings/hjkf -- Bad params', async () => {
-  //     await supertest(app)
-  //       .delete('/bookings/hjkf')
-  //       .expect(400)
-  //       .then(response => {
-  //         expect(response.body.status).toBe('error');
-  //         expect(response.body.error).toBeTruthy();
-  //       });
-  //   });
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
 });

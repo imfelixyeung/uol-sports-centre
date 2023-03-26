@@ -7,9 +7,5 @@ jest.mock('@/lib/httpClient', () => ({
   default: mockDeep<IHttpClient>(),
 }));
 
-beforeEach(() => {
-  mockReset(httpClientMock);
-});
-
 export const httpClientMock =
   httpClient as unknown as DeepMockProxy<IHttpClient>;

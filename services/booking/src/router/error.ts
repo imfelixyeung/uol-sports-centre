@@ -20,8 +20,11 @@ export const serverErrorHandler: ErrorRequestHandler = (
 
 export const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
-    res
-      .status(401)
-      .json({status: 'error', message: 'Unauthorised error', error: err});
+    logger.debug(`Unauthorised error: ${err.message}`);
+    res.status(401).json({
+      status: 'error',
+      message: 'Unauthorised error',
+      error: err.message,
+    });
   }
 };

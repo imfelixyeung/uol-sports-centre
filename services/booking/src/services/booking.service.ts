@@ -32,7 +32,7 @@ class BookingService {
    * @memberof BookingService
    */
   async create(bookingData: CreateBookingDTO) {
-    logger.debug(`Create new booking, ${bookingData}`);
+    logger.debug(`Create new booking, ${JSON.stringify(bookingData)}`);
 
     return await bookingDao.addBooking(bookingData);
   }

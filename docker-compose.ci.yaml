@@ -52,6 +52,9 @@ services:
             - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
             - DEBUG=true
             - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+        volumes:
+            - ./services/booking:/app
+            - /app/node_modules
         depends_on:
             booking-db:
                 condition: service_healthy

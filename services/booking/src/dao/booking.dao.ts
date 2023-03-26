@@ -27,7 +27,7 @@ class BookingDAO {
    * @memberof BookingDAO
    */
   async addBooking(bookingData: CreateBookingDTO): Promise<Booking | Error> {
-    logger.debug(`Adding booking to database, ${bookingData}`);
+    logger.debug(`Adding booking to database, ${JSON.stringify(bookingData)}`);
 
     const booking = await prisma.booking
       .create({

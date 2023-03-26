@@ -7,6 +7,8 @@ import {PaginatedBookings} from '@/types/responses';
 import paginationSchema from '@/schema/pagination';
 import {id, timestamp} from '@/schema';
 import NotFoundError from '@/errors/notFound';
+import {Request} from 'express-jwt';
+import {UserRole} from '@/middleware/auth';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -26,8 +28,18 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async getBookings(req: express.Request, res: express.Response) {
+  async getBookings(req: Request, res: express.Response) {
     logger.debug('Received getBookings request');
+
+    // if no auth, return 401
+    logger.debug('Checking auth', {token: req.auth});
+    if (!req.auth) {
+      logger.debug('No auth supplied');
+      return res.status(401).json({
+        status: 'error',
+        error: 'You are not authorized to view bookings',
+      });
+    }
 
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
@@ -49,13 +61,36 @@ class BookingController {
     let bookings: PaginatedBookings | Error;
     if (query.data.user !== undefined) {
       const filter = {...query.data, user: query.data.user};
-      bookings = await bookingService.getUserBookings(filter).catch(err => {
-        logger.error(
-          `Error getting bookings from user ${query.data.user}: ${err}`
-        );
-        return new Error(err);
-      });
+
+      // if user is admin or trying to get their own bookings, get the bookings
+      if (
+        req.auth.user.role === UserRole.ADMIN ||
+        req.auth.user.id === query.data.user
+      ) {
+        bookings = await bookingService.getUserBookings(filter).catch(err => {
+          logger.error(
+            `Error getting bookings from user ${query.data.user}: ${err}`
+          );
+          return new Error(err);
+        });
+      } else {
+        return res.status(403).json({
+          status: 'error',
+          error: 'You are not allowed to view bookings for other users',
+        });
+      }
     } else {
+      // is getting all bookings
+
+      // if user is not admin, return 403
+      if (req.auth.user.role !== UserRole.ADMIN) {
+        logger.debug('User is not admin');
+        return res.status(403).json({
+          status: 'error',
+          error: 'You are not allowed to view all bookings',
+        });
+      }
+
       bookings = await bookingService.get(query.data).catch(err => {
         logger.error(`Error getting bookings: ${err}`);
         return new Error(err);

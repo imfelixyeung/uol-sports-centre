@@ -35,7 +35,7 @@ ci-users:
 
 ci-booking:
 	docker compose -f docker-compose.ci.yaml build booking
-	docker compose -f docker-compose.ci.yaml run booking
+	docker compose -f docker-compose.ci.yaml run booking; docker compose -f docker-compose.ci.yaml down
 
 clean:
 	docker compose down

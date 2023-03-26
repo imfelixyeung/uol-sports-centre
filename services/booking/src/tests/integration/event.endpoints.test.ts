@@ -1,5 +1,6 @@
 import express from 'express';
 import supertest from 'supertest';
+import {mockReset} from 'jest-mock-extended';
 import {Event} from '@prisma/client';
 
 import {createServer} from '@/server';
@@ -11,6 +12,7 @@ import {EventDTO} from '@/dto/event.dto';
 let app: express.Express;
 
 beforeAll(done => {
+  mockReset(prismaMock);
   app = createServer();
   done();
 });

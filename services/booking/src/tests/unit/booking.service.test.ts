@@ -1,4 +1,5 @@
 import {Booking} from '@prisma/client';
+import {mockReset} from 'jest-mock-extended';
 import {prismaMock} from '../mock/prisma';
 import {httpClientMock} from '../mock/httpClient';
 
@@ -13,6 +14,10 @@ import {PaginatedBookings} from '@/types/responses';
 import {EventDTO} from '@/dto/event.dto';
 import {ActivitiesResponse} from '@/types/external';
 
+beforeEach(() => {
+  mockReset(prismaMock);
+  mockReset(httpClientMock);
+});
 describe('Test BookingService', () => {
   test('get bookings', async () => {
     // create list of mock bookings
