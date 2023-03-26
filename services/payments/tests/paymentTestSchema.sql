@@ -4,7 +4,8 @@ CREATE TABLE products (
     productID TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
-    productType TEXT 
+    booking_id TEXT,
+    productType TEXT, 
     CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL
 );
 

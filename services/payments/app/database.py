@@ -35,12 +35,18 @@ def init_database() -> None:
   # add_customer(467468, stripe.Customer.create().stripe_id)
 
 
-def add_product(name: str, product_id: str, price: str, product_type: str):
+def add_product(name: str, product_id: str, price: str, booking_id: str,
+                product_type: str):
   """Adds a new product to the database"""
   connection = sqlite3.connect(DATABASE_URL)
   cur = connection.cursor()
-  cur.execute("INSERT INTO products VALUES (?, ?, ?, ?)",
-              (product_id, name, price, product_type))
+  if booking_id == "":
+    cur.execute(
+        "INSERT INTO products (product_id, productName, price, productType) VALUES (?, ?, ?, ?)",
+        (product_id, name, price, product_type))
+  else:
+    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
+                (product_id, name, price, product_type, booking_id))
   last_row_id = cur.lastrowid
   connection.commit()
   connection.close()
@@ -194,6 +200,20 @@ def get_product(product_name: str):
 
   con.close()
   return product
+
+
+def get_order(booking_id: str):
+  """Function to get the order associated with a booking"""
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  product_id = cur.execute(
+      """SELECT product_id FROM products WHERE booking_id = ?""",
+      [booking_id]).fetchone()
+  order = cur.execute("""SELECT * FROM orders WHERE product_id = ?""",
+                      [product_id]).fetchone()
+  con.close()
+
+  return order
 
 
 def get_pricing_lists(product_type: str):

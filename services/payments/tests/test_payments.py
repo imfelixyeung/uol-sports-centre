@@ -2,7 +2,7 @@
 import unittest
 import sqlite3
 import json
-from unittest.mock import patch, MagicMock
+#from unittest.mock import patch, MagicMock
 
 import urllib.request
 import stripe
@@ -10,10 +10,11 @@ import stripe
 from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 
 from app import app
-from app.payments import make_a_purchase, get_payment_manager
+from app.payments import make_a_purchase, get_payment_manager, make_purchasable
 from app.database import (init_database, add_product, add_customer,
-                          get_purchases, delete_product, update_price,
-                          delete_customer, get_purchase)
+                          delete_product, update_price, delete_customer,
+                          get_purchase)
+from app.views import (refund)
 from app.interfaces import create_checkout
 
 
@@ -37,7 +38,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
-    #payments.MakePurchasable('product-test', 5.0, 'test-type')
+    #make_purchasable('product', 5.0, 'session')
 
     #retrieving the added product from Stripe
     products = stripe.Product.list()
@@ -54,8 +55,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "",
                 "subscription")
 
     #Make a new temp customer on Stripe
@@ -96,8 +97,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "",
                 "subscription")
     connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()
@@ -124,7 +125,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the databse
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
 
     #Update price of product
     update_price("product-test", "10")
@@ -147,7 +148,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_get_prices(self):
     """Test that gets the pricing list"""
 
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
 
     with app.test_client() as client:
       response = client.get("/get-prices/session")
@@ -171,7 +172,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     new_customer = stripe.Customer.create()
 
     #Add test product to payments service
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
 
     #Assert valid checkout URL response
     session_url = create_checkout(new_customer.stripe_id, "product-test")
@@ -200,6 +201,43 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
+
+  def test_refund(self):
+    #initialise Database
+    init_database()
+
+    #Add a purchasable booking item
+    #make_purchasable("booking", 5.0, "session", "111")
+
+    #Adding product to database
+    product = stripe.Product.create(name="booking")
+    add_product("booking", product.stripe_id, str(5.0), "111", "session")
+
+    #Create temp new customer on stripe
+    new_customer = stripe.Customer.create()
+
+    #Add a customer
+    add_customer(222, new_customer.stripe_id)
+
+    con = sqlite3.connect(DATABASE_URL)
+    cur = con.cursor()
+    product_id = cur.execute(
+        """SELECT product_id FROM products WHERE booking_id 
+        = 111""").fetchone()
+
+    order = get_purchase(product_id[0])
+
+    #Make a purchase for the product
+    #make_a_purchase(222, ["booking"], "payment")
+
+    #Perform refund
+    #refund("111")
+
+    self.assertIsNone(order)
+
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
+    stripe.Product.delete(product_id[0])
 
   # @patch("app.database.get_purchase")
   # @patch.object(stripe.Refund, "create")

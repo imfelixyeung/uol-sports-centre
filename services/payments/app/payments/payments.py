@@ -5,42 +5,50 @@ from stripe import error as stripe_errors
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
-                          update_price, get_pricing_lists, get_purchases)
+                          update_price, get_pricing_lists, get_purchases,
+                          get_order, delete_order)
 
 
 def make_purchasable(product_name: str,
-                     product_price: str,
-                     product_type="payment"):
+                     product_price: float,
+                     product_type: str,
+                     booking_id=""):
   """Make a chosen product purchasable through adding to stripe and DB"""
 
   #Adding product to stripe
-  product = stripe.Product.create(name=product_name)
-  stripe.Price.create(unit_amount_decimal=str(product_price * 100),
-                      currency="gbp",
-                      product=product.stripe_id)
+  product = stripe.Product.create(
+      name=product_name,
+      default_price_data={
+          "unit_amount_decimal": str(product_price * 100),
+          "currency": "gbp"
+      })
+  #stripe.Price.create(unit_amount_decimal=str(product_price * 100),
+  #currency="gbp",
+  #product=product.stripe_id)
   #Adding product to database
-  add_product(product_name, product.stripe_id, product_price, product_type)
+  add_product(product_name, product.stripe_id, str(product_price), booking_id,
+              product_type)
 
 
-def send_receipt(user_id: int, session_id: str):
-  """Sends a receipt to the given user for the given session"""
-  stripe_user = get_user(user_id)
+#def send_receipt(user_id: int, session_id: str):
+# """Sends a receipt to the given user for the given session"""
+#stripe_user = get_user(user_id)
 
-  # Get the payment intent ID from the stripe session
-  session = stripe.checkout.Session.retrieve(session_id)
-  payment_intent_id = session.payment_intent
-  """The following is commented out for now in order to not return any errors"""
-  # Get the customer email through endpoint call
-  # response = requests.get(f"http://gateway/api/auth/{user_id}", timeout=5)
+# Get the payment intent ID from the stripe session
+#session = stripe.checkout.Session.retrieve(session_id)
+#payment_intent_id = session.payment_intent
+#The following is commented out for now in order to not return any errors
+# Get the customer email through endpoint call
+# response = requests.get(f"http://gateway/api/auth/{user_id}", timeout=5)
 
-  # data = response.json()
-  # email_address = data["data"]["email"]
+# data = response.json()
+# email_address = data["data"]["email"]
 
-  # # Send the receipt email to customer
-  # stripe.PaymentIntent.confirm(
-  #     payment_intent_id,
-  #     receipt_email=email_address,
-  # )
+# # Send the receipt email to customer
+# stripe.PaymentIntent.confirm(
+#     payment_intent_id,
+#     receipt_email=email_address,
+# )
 
 
 #Returns the pdf download link for a receipt, given the order ID
@@ -91,7 +99,7 @@ def make_a_purchase(user_id: int,
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product)[0]
-    product_name = get_product(product)[1]
+    #product_name = get_product(product)[1]
     product_type = get_product(product)[3]
 
     if product_type == "session":
@@ -116,10 +124,7 @@ def make_a_purchase(user_id: int,
     if bookings_count > 2 or membership:
       discount = [{"coupon": apply_discount(membership)}]
 
-    line_item = {
-        "price": product_price,
-        "quantity": 1,
-    }
+    line_item = {"price": product_price, "quantity": 1}
 
     line_items.append(line_item)
 
@@ -247,3 +252,24 @@ def cancel_subscription(user_id: int):
 
   #return response_users.status_code
   return 200
+
+
+def refund_booking(booking_id: str):
+  # Retrieve the purchase information from the database
+  order = get_order(booking_id)
+
+  # Checks if the purchase exists
+  if not order:
+    return "Purchase not found"
+
+  # Refund the payment using Stripe API
+  try:
+    stripe.Refund.create(charge=order[5])
+
+  except stripe_errors.StripeError as refund_error:
+    return refund_error
+
+  # For now, delete order
+  delete_order(order[0])
+
+  return order

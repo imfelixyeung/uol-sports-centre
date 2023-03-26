@@ -10,7 +10,7 @@ from flask import request, jsonify, redirect, make_response
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_purchase, delete_order, get_sales,
-                          get_pricing_lists)
+                          get_pricing_lists, get_order)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription)
 
@@ -252,33 +252,25 @@ def cancel_membership(user_id: int):
 
 
 @app.route("/refund/<int:booking_id>", methods=["POST"])
-def refund():
-  """Endpoint to process refunds"""
-
-  #Get the orderID and amount to refund frmo the request data
-  data = request.get_json()
-
-  order_id = data.get("order_id")
-  refund_amount = data.get("refund_amount")
+def refund(booking_id):
+  """Endpoint to process refunds for booking"""
 
   # Retrieve the purchase information from the database
-  purchase = get_purchase(order_id)
+  order = get_order(booking_id)
 
   # Checks if the purchase exists
-  if not purchase:
+  if not order:
     return jsonify({"error": "Purchase not found."}), 404
 
   # Refund the payment using Stripe API
   try:
-    stripe.Refund.create(
-        amount=refund_amount,
-        refund_application_fee=True,
-    )
+    stripe.Refund.create(charge=order[5])
+
   except stripe_errors.StripeError as refund_error:
     return jsonify({"error": str(refund_error)}), 400
 
   # For now, delete order
-  delete_order(order_id)
+  delete_order(order[0])
 
   return jsonify({"message": "Refund processed successfully."}), 200
 
