@@ -92,7 +92,8 @@ const BOOKINGS: Booking[] = [
 beforeAll(async () => {
   await prisma.$connect();
   await prisma.booking.createMany({
-    data: BOOKINGS,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: BOOKINGS.map(({id, ...remainder}) => remainder),
   });
 
   logger.debug('Created test bookings');
