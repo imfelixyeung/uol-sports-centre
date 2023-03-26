@@ -216,12 +216,15 @@ def pricing_list(product_type: str):
     return {"quantity": 0, "prices_total": 0, "products": {}}
 
   for product in price_list_array:
-    total += product[1]
+    total += product["price"]
 
   return {
       "quantity": len(price_list_array),
       "prices_total": total,
-      "products": {product[0]: product[1] for product in price_list_array}
+      "products": {
+          product["productName"]: product["price"]
+          for product in price_list_array
+      }
   }
 
 
