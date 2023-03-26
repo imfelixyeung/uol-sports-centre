@@ -103,40 +103,52 @@ def webhook_received():
     return make_response(jsonify({"Invalid Signature": str(signature_error)}),
                          400)
 
+  #Checkout session completion
   if event.type == "checkout.session.completed":
     session = stripe.checkout.Session.retrieve(
         event.data.object.id,
         expand=["line_items"],
     )
 
+    #Get invoice for checkout session
+    invoice = stripe.Invoice.retrieve(session.invoice)
+
+    #Determine transaction and expiry date
     transaction_time = str(datetime.now())
     expiry_time = str(datetime.now() + relativedelta(months=1))
+
+    #Add purchase to database, inserting relavant fields for product type
     for purchased_item in session.line_items.data:
       item_type = stripe.Product.retrieve(purchased_item.price.product).object
       if item_type == "subscription":
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, expiry_time,
+                     transaction_time, expiry_time, invoice.invoice_pdf,
                      session.payment_intent.charges.data[0].id)
       else:
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time,
+                     transaction_time, invoice.invoice_pdf,
                      session.payment_intent.charges.data[0].id)
     return make_response("", 200)
 
+  #Update subscription if invoice has been paid
   elif event.type == "invoice.paid":
     #Renews exipry of purchased subscription when paid
     invoice = event.data.object
     customer = invoice.customer
+
+    #Check for subscription product and update expiry in database
     for item in invoice.lines.data:
       product = item.price.product
       if stripe.Product.retrieve(product).object == "subscription":
         expiry = 1
+        #Update expiry to 12 months if yearly interval
         if item.price.recurring.interval == "year":
           expiry = 12
         update_expiry(customer, product,
                       str(datetime.now() + relativedelta(months=expiry)))
+
+  #Cause subscription to expire if deleted
   elif event.type == "customer.subscription.deleted":
-    #Remove subscription from user
     subscription = event.data.object
     customer = subscription.customer
     product = subscription.items.data[1].price.product

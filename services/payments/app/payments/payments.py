@@ -1,14 +1,11 @@
 """Modues provides functionality to make products purchasable or edit prices"""
 
-from datetime import datetime
 import stripe
 from stripe import error as stripe_errors
-import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
-                          add_purchase, update_price, get_pricing_lists,
-                          get_purchases)
+                          update_price, get_pricing_lists, get_purchases)
 
 
 def make_purchasable(product_name: str,
@@ -44,6 +41,10 @@ def send_receipt(user_id: int, session_id: str):
   #     payment_intent_id,
   #     receipt_email=email_address,
   # )
+
+
+def get_reciept():
+  """Get recept pdf download"""
 
 
 def make_a_purchase(user_id: int,
@@ -119,19 +120,21 @@ def make_a_purchase(user_id: int,
 
     line_items.append(line_item)
 
-    price_object = stripe.Price.retrieve(product_price)
-    charge_amount = price_object.unit_amount
+    #price_object = stripe.Price.retrieve(product_price)
+
+    #Charge to be processed at webhook
+    #charge_amount = price_object.unit_amount
 
     # Create a new charge for the product
-    charge = stripe.Charge.create(
-        amount=charge_amount,
-        currency="usd",
-        customer=stripe_user[1],
-        description=product_name,
-    )
+    #charge = stripe.Charge.create(
+    #    amount=charge_amount,
+    #    currency="usd",
+    #    customer=stripe_user[1],
+    #    description=product_name,
+    #)
 
     # Creates a new row in the purchased products table
-    add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
+    #add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
 
     if update_subscription is True:
 

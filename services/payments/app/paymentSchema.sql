@@ -16,7 +16,8 @@ CREATE TABLE orders (
     product_id TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT,
-    chargeID TEXT NOT NULL, 
+    chargeID TEXT NOT NULL,
+    reciept_pdf TEXT,  
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
