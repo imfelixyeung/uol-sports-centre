@@ -9,7 +9,7 @@ from flask import request, jsonify, redirect, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
-                          update_expiry, get_purchase, delete_order, get_sales,
+                          update_expiry, delete_order, get_sales,
                           get_pricing_lists, get_order)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription)

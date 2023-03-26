@@ -42,8 +42,8 @@ def add_product(name: str, product_id: str, price: str, booking_id: str,
   cur = connection.cursor()
   if booking_id == "":
     cur.execute(
-        "INSERT INTO products (product_id, productName, price, productType) VALUES (?, ?, ?, ?)",
-        (product_id, name, price, product_type))
+        """INSERT INTO products (product_id, productName, price, productType) 
+        VALUES (?, ?, ?, ?)""", (product_id, name, price, product_type))
   else:
     cur.execute("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
                 (product_id, name, price, product_type, booking_id))
