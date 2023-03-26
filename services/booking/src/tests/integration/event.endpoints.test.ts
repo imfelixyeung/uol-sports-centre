@@ -1,65 +1,86 @@
-import express from 'express';
-import supertest from 'supertest';
-import {mockReset} from 'jest-mock-extended';
-import {Event} from '@prisma/client';
+import request from 'supertest';
 
-import {createServer} from '@/server';
+import {ADMIN_TOKEN, BASE_URL, USER_TOKEN} from './base';
 
-import {prismaMock} from '../mock/prisma';
-import {Status} from '@/types';
-import {EventDTO} from '@/dto/event.dto';
-
-let app: express.Express;
-
-beforeAll(done => {
-  mockReset(prismaMock);
-  app = createServer();
-  done();
-});
-
-describe('Test /events', () => {
-  test('GET /events', async () => {
-    // create list of mock events
-    const events: Event[] = [
-      {
-        id: 1,
-        name: 'Pool Open Use',
-        activityId: 1,
-        day: 1,
-        time: 480,
-        duration: 720,
-        type: 'OPEN_USE',
-      },
-      {
-        id: 2,
-        name: 'Fitness Open Use',
-        activityId: 5,
-        day: 1,
-        time: 480,
-        duration: 840,
-        type: 'OPEN_USE',
-      },
-    ];
-
-    const expectedResponseBody: {events: EventDTO[]} & Status = {
-      status: 'OK',
-      events: events,
-    };
-
-    // mock the prisma client
-    prismaMock.event.findMany.mockResolvedValue(events);
-
-    // perform test to see if it is there
-    await supertest(app)
+describe('Test GET /events', () => {
+  test('it should return events without authorisation', async () => {
+    const response = await request(BASE_URL)
       .get('/events')
       .query({
         start: new Date('2023-03-14T08:00:00.000Z').getTime(),
         end: new Date('2023-03-14T10:00:00.000Z').getTime(),
-      })
-      .expect(200)
-      .then(response => {
-        // check it returns what it should
-        expect(response.body).toStrictEqual(expectedResponseBody);
       });
+
+    expect(response.status).toBe(200);
+  });
+
+  test('it should return events with authorisation', async () => {
+    const response = await request(BASE_URL)
+      .get('/events')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .query({
+        start: new Date('2023-03-14T08:00:00.000Z').getTime(),
+        end: new Date('2023-03-14T10:00:00.000Z').getTime(),
+      });
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe('Test POST /events', () => {
+  it('should return 400 if bad request', async () => {
+    const response = await request(BASE_URL)
+      .post('/events')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        type: 'SESSION',
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should return 401 if not authorised', async () => {
+    const response = await request(BASE_URL).post('/events').send({
+      name: 'Test Event',
+      activityId: '1',
+      day: 1,
+      time: 1,
+      duration: 1,
+      type: 'SESSION',
+    });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 403 if not admin', async () => {
+    const response = await request(BASE_URL)
+      .post('/events')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        name: 'Test Event',
+        activityId: '1',
+        day: 1,
+        time: 1,
+        duration: 1,
+        type: 'SESSION',
+      });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should create an event if admin', async () => {
+    const response = await request(BASE_URL)
+      .post('/events')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        name: 'Test Event',
+        activityId: '1',
+        day: 1,
+        time: 1,
+        duration: 1,
+        type: 'SESSION',
+      });
+
+    expect(response.status).toBe(200);
   });
 });

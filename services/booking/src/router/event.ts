@@ -1,6 +1,9 @@
 import express, {Router} from 'express';
+import {expressjwt as jwt} from 'express-jwt';
 
 import EventController from '@/controllers/event.controller';
+import {authErrorHandler} from './error';
+import {adminOnly, jwtArgs} from '@/middleware/auth';
 
 const eventRouter: Router = express.Router();
 
@@ -8,7 +11,7 @@ const eventRouter: Router = express.Router();
 eventRouter.get('/', EventController.getEvents);
 
 // create new event
-eventRouter.post('/', EventController.createEvent);
+eventRouter.post('/', jwt(jwtArgs), adminOnly, EventController.createEvent);
 
 // get specific event
 // eventRouter.get('/:id', EventController.getEventById);
@@ -18,5 +21,7 @@ eventRouter.post('/', EventController.createEvent);
 
 // delete specific event
 // eventRouter.delete('/:id', EventController.deleteEventById);
+
+eventRouter.use(authErrorHandler);
 
 export default eventRouter;

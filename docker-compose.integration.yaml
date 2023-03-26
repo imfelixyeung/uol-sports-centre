@@ -195,10 +195,7 @@ services:
       context: ./services/booking
       target: ci
     environment:
-      - PORT=80
-      - HOST=booking-ci
       - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
-      - DEBUG=true
       - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     depends_on:
       booking-db:

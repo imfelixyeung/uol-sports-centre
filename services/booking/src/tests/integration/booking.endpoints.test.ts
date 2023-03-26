@@ -1,45 +1,12 @@
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import {Booking, PrismaClient} from '@prisma/client';
 
-import {env} from '@/env';
-import {UserRole} from '@/middleware/auth';
 import logger from '@/lib/logger';
 import {bookingToDTO} from '@/dto/booking.dto';
 
-const prisma = new PrismaClient();
+import {ADMIN_TOKEN, BASE_URL, USER_TOKEN} from './base';
 
-const BASE_URL = 'http://gateway/api/booking';
-const USER_TOKEN = jwt.sign(
-  {
-    user: {
-      id: 1,
-      email: 'test@test.com',
-      role: UserRole.USER,
-    },
-    type: 'access',
-  },
-  env.JWT_SIGNING_SECRET,
-  {
-    algorithm: 'HS256',
-    issuer: 'auth',
-  }
-);
-const ADMIN_TOKEN = jwt.sign(
-  {
-    user: {
-      id: 2,
-      email: 'admin@test.com',
-      role: UserRole.ADMIN,
-    },
-    type: 'access',
-  },
-  env.JWT_SIGNING_SECRET,
-  {
-    algorithm: 'HS256',
-    issuer: 'auth',
-  }
-);
+const prisma = new PrismaClient();
 
 const BOOKINGS: Booking[] = [
   {
