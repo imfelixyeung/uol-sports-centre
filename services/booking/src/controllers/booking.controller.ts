@@ -31,16 +31,6 @@ class BookingController {
   async getBookings(req: Request, res: express.Response) {
     logger.debug('Received getBookings request');
 
-    // if no auth, return 401
-    logger.debug('Checking auth', {token: req.auth});
-    if (!req.auth) {
-      logger.debug('No auth supplied');
-      return res.status(401).json({
-        status: 'error',
-        error: 'You are not authorized to view bookings',
-      });
-    }
-
     // create a schema, outlining what we expect from params
     const querySchema = z.object({
       ...paginationSchema,
@@ -64,8 +54,8 @@ class BookingController {
 
       // if user is admin or trying to get their own bookings, get the bookings
       if (
-        req.auth.user.role === UserRole.ADMIN ||
-        req.auth.user.id === query.data.user
+        req.auth?.user.role === UserRole.ADMIN ||
+        req.auth?.user.id === query.data.user
       ) {
         bookings = await bookingService.getUserBookings(filter).catch(err => {
           logger.error(
@@ -83,7 +73,7 @@ class BookingController {
       // is getting all bookings
 
       // if user is not admin, return 403
-      if (req.auth.user.role !== UserRole.ADMIN) {
+      if (req.auth?.user.role !== UserRole.ADMIN) {
         logger.debug('User is not admin');
         return res.status(403).json({
           status: 'error',
@@ -115,7 +105,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async createBooking(req: express.Request, res: express.Response) {
+  async createBooking(req: Request, res: express.Response) {
     logger.debug('Received createBooking request');
 
     // get post body information
@@ -160,7 +150,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async getBookingById(req: express.Request, res: express.Response) {
+  async getBookingById(req: Request, res: express.Response) {
     logger.debug('Received getBookingById request');
 
     // create a schema, outlining what we expect from params
@@ -196,6 +186,18 @@ class BookingController {
           error: booking,
         });
       }
+    }
+
+    // if user is not admin, or the user is not the owner of the booking, return 403
+    if (
+      req.auth?.user.role !== UserRole.ADMIN &&
+      req.auth?.user.id !== booking.userId
+    ) {
+      logger.debug('User is not admin or owner of booking');
+      return res.status(403).json({
+        status: 'error',
+        error: 'You are not allowed to view this booking',
+      });
     }
 
     // after passing all the above checks, the booking should be okay

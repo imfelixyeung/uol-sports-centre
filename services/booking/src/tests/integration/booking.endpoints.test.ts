@@ -295,6 +295,17 @@ describe('Test GET /bookings/:id endpoint', () => {
     expect(response.body.booking).toBeDefined();
     expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[3]));
   });
+
+  it('should return booking 1 (owned by uid 1) for user 1', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/1')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[0]));
+  });
 });
 
 describe('Test PUT /bookings/:id endpoint', () => {

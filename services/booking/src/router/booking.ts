@@ -2,7 +2,7 @@ import express, {Router} from 'express';
 import {expressjwt as jwt} from 'express-jwt';
 
 import BookingController from '@/controllers/booking.controller';
-import {jwtArgs} from '@/middleware/auth';
+import {adminOnly, jwtArgs} from '@/middleware/auth';
 import {authErrorHandler} from './error';
 
 const bookingRouter: Router = express.Router();
@@ -14,7 +14,7 @@ bookingRouter.use(authErrorHandler);
 bookingRouter.get('/', BookingController.getBookings);
 
 // create new booking
-bookingRouter.post('/', BookingController.createBooking);
+bookingRouter.post('/', adminOnly, BookingController.createBooking);
 
 // get available booking slots
 bookingRouter.get('/availability', BookingController.getAvailableBookings);
