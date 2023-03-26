@@ -1,18 +1,11 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 
-import {Booking} from '@prisma/client';
-
 import {env} from '@/env';
-import {Status} from '@/types';
-import {PaginatedBookings} from '@/types/responses';
-import {
-  bookingToDTO,
-  CreateBookingDTO,
-  UpdateBookingDTO,
-} from '@/dto/booking.dto';
+import prisma from '@/lib/prisma';
 
-const token = jwt.sign(
+const BASE_URL = 'http://booking-server';
+const user_token = jwt.sign(
   {
     user: {
       id: 1,
@@ -28,13 +21,108 @@ const token = jwt.sign(
   }
 );
 
+const admin_token = jwt.sign(
+  {
+    user: {
+      id: 2,
+      email: 'admin@test.com',
+      role: 'ADMIN',
+    },
+    type: 'access',
+  },
+  env.JWT_SIGNING_SECRET,
+  {
+    algorithm: 'HS256',
+    issuer: 'auth',
+  }
+);
+
 describe('Test /bookings endpoints', () => {
-  it('tests GET /bookings endpoint', async () => {
-    const response = await request('http://booking-server/bookings')
+  beforeAll(async () => {
+    await prisma.booking.createMany({
+      data: [
+        {
+          transactionId: 1,
+          eventId: 1,
+          userId: 1,
+          starts: new Date(),
+          created: new Date(),
+          updated: new Date(),
+        },
+        {
+          transactionId: 2,
+          eventId: 2,
+          userId: 1,
+          starts: new Date(),
+          created: new Date(),
+          updated: new Date(),
+        },
+        {
+          transactionId: 3,
+          eventId: 3,
+          userId: 1,
+          starts: new Date(),
+          created: new Date(),
+          updated: new Date(),
+        },
+        {
+          transactionId: 12,
+          eventId: 2,
+          userId: 3,
+          starts: new Date(),
+          created: new Date(),
+          updated: new Date(),
+        },
+        {
+          transactionId: 45,
+          eventId: 1,
+          userId: 4,
+          starts: new Date(),
+          created: new Date(),
+          updated: new Date(),
+        },
+      ],
+    });
+  });
+
+  it('should 401 if accessed without authentication', async () => {
+    const response = await request(BASE_URL).get('/bookings');
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 401 if requests all bookings as user', async () => {
+    const response = await request(BASE_URL)
       .get('/bookings')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${user_token}`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 200 if requests all user bookings for own id', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .query({user: 1})
+      .set('Authorization', `Bearer ${user_token}`);
 
     expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+
+  it('should return all bookings for current user', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .query({user: 1})
+      .set('Authorization', `Bearer ${user_token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.bookings).toBeDefined();
+    expect(Array.isArray(response.body.bookings)).toBe(true);
+    expect(response.body.bookings.length).toBe(3);
+    expect(response.body.metadata).toBeDefined();
   });
 
   //   test('GET /bookings?limit=5&page=2', async () => {
