@@ -1,27 +1,82 @@
 version: "3"
 
 services:
-  web:
-    build:
-      context: ./services/web
-      target: ci
+    web:
+        build:
+            context: ./services/web
+            target: ci
 
-  auth:
-    build:
-      context: ./services/auth
-      target: ci
+    auth:
+        build:
+            context: ./services/auth
+            target: ci
 
-  status:
-    build:
-      context: ./services/status
-      target: ci
+    status:
+        build:
+            context: ./services/status
+            target: ci
 
-  users:
-    build:
-      context: ./services/users
-      target: ci
+    users:
+        build:
+            context: ./services/users
+            target: ci
 
-  docs:
-    build:
-      context: ./docs
-      target: ci
+    docs:
+        build:
+            context: ./docs
+            target: ci
+
+    booking:
+        build:
+            context: ./services/booking
+            target: ci
+        environment:
+            - PORT=80
+            - HOST=booking
+            - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
+            - DEBUG=true
+            - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+        depends_on:
+            booking-db:
+                condition: service_healthy
+            booking-server:
+                condition: service_healthy
+
+    booking-server:
+        build:
+            context: ./services/booking
+            target: dev
+        environment:
+            - PORT=80
+            - HOST=booking-server
+            - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
+            - DEBUG=true
+            - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+        depends_on:
+            booking-db:
+                condition: service_healthy
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "node",
+                    "scripts/healthcheck.js",
+                    "booking-server",
+                    "80",
+                ]
+            interval: 5s
+            timeout: 15s
+            retries: 5
+
+    booking-db:
+        image: postgres
+        restart: always
+        environment:
+            - POSTGRES_PASSWORD=booking
+            - POSTGRES_USER=booking
+            - POSTGRES_DB=dev
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "booking", "-d", "dev"]
+            interval: 5s
+            timeout: 15s
+            retries: 5

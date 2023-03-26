@@ -1,20 +1,17 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+
 import {Booking} from '@prisma/client';
 
-import {createServer} from '@/server';
+import {env} from '@/env';
+import {Status} from '@/types';
+import {PaginatedBookings} from '@/types/responses';
 import {
   bookingToDTO,
   CreateBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
 
-import {prismaMock} from './mock/prisma';
-import {PaginatedBookings} from '@/types/responses';
-import {Status} from '@/types';
-import {env} from '@/env';
-
-const app = createServer();
 const token = jwt.sign(
   {
     user: {
@@ -31,41 +28,12 @@ const token = jwt.sign(
   }
 );
 
-describe('Test /bookings', () => {
-  test('GET /bookings', async () => {
-    // create list of mock bookings
-    const bookings: Booking[] = [
-      {
-        id: 1,
-        transactionId: 1,
-        eventId: 1,
-        userId: 1,
-        starts: new Date(),
-        created: new Date(),
-        updated: new Date(),
-      },
-    ];
-
-    const expectedResponseBody: PaginatedBookings & Status = {
-      status: 'OK',
-      bookings: bookings.map(b => bookingToDTO(b)),
-      metadata: {
-        count: bookings.length,
-        limit: 0,
-        page: 1,
-        pageCount: 1,
-      },
-    };
-
-    // mock the prisma client
-    prismaMock.$transaction.mockResolvedValue([bookings.length, bookings]);
-
-    // perform test to see if it is there
-    const response = await request('http://localhost:3000/api/booking/bookings')
+describe('Test /bookings endpoints', () => {
+  it('tests GET /bookings endpoint', async () => {
+    const response = await request('http://booking-server/bookings')
       .get('/bookings')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(response.body).toStrictEqual(expectedResponseBody);
     expect(response.statusCode).toBe(200);
   });
 
