@@ -43,8 +43,6 @@ services:
       - POSTGRES_DB=dev
     networks:
       - network
-    volumes:
-      - ./persistence/auth/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
       test: [ "CMD", "pg_isready", "-U", "auth", "-d", "dev" ]
@@ -78,8 +76,6 @@ services:
       - POSTGRES_DB=dev
     networks:
       - network
-    volumes:
-      - ./persistence/users/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
       test: [ "CMD", "pg_isready", "-U", "users", "-d", "dev" ]
@@ -113,8 +109,6 @@ services:
       - POSTGRES_DB=dev
     networks:
       - network
-    volumes:
-      - ./persistence/status/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
       test: [ "CMD", "pg_isready", "-U", "status", "-d", "dev" ]

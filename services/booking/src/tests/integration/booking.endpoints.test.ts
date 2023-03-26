@@ -470,8 +470,8 @@ describe('Test POST /bookings/book', () => {
 
   it('should 401 if book without authentication', async () => {
     const response = await request(BASE_URL).post('/bookings/book').send({
-      userId: 1,
-      eventId: 1,
+      user: 1,
+      event: 1,
       starts: '2023-03-02T10:00:00.000Z',
     });
 
@@ -484,8 +484,8 @@ describe('Test POST /bookings/book', () => {
       .post('/bookings/book')
       .set('Authorization', `Bearer ${USER_TOKEN}`)
       .send({
-        userId: 2,
-        eventId: 1,
+        user: 2,
+        event: 1,
         starts: '2023-03-02T10:00:00.000Z',
       });
 
@@ -498,8 +498,8 @@ describe('Test POST /bookings/book', () => {
       .post('/bookings/book')
       .set('Authorization', `Bearer ${USER_TOKEN}`)
       .send({
-        userId: 1,
-        eventId: 100,
+        user: 1,
+        event: 100,
         starts: '2023-03-02T10:00:00.000Z',
       });
 
@@ -512,8 +512,8 @@ describe('Test POST /bookings/book', () => {
       .post('/bookings/book')
       .set('Authorization', `Bearer ${USER_TOKEN}`)
       .send({
-        userId: 1,
-        eventId: 1,
+        user: 1,
+        event: 1,
         starts: '2023-03-02T10:00:00.000Z',
       });
 
@@ -526,8 +526,8 @@ describe('Test POST /bookings/book', () => {
       .post('/bookings/book')
       .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
       .send({
-        userId: 1,
-        eventId: 1,
+        user: 1,
+        event: 1,
         starts: '2023-03-02T10:00:00.000Z',
       });
 

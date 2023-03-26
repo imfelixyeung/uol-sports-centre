@@ -383,7 +383,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async bookBooking(req: express.Request, res: express.Response) {
+  async bookBooking(req: Request, res: express.Response) {
     const bookBodySchema = z.object({
       starts: timestamp,
       event: id('event id'),
@@ -398,13 +398,31 @@ class BookingController {
         error: query.error,
       });
 
+    // if the user is not booking for themselves and they are not an admin, return an error
+    if (
+      req.auth?.user.role !== UserRole.ADMIN &&
+      req.auth?.user.id !== query.data.user
+    ) {
+      return res.status(403).send({
+        status: 'error',
+        error: 'You do not have permission to book for this user',
+      });
+    }
+
     const booking = await bookingService.book(query.data);
 
     if (booking instanceof Error) {
-      return res.status(400).send({
-        status: 'error',
-        error: booking.message,
-      });
+      if (booking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: booking.message,
+        });
+      }
     }
 
     return res.status(200).send({

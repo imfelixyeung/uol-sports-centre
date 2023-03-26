@@ -839,10 +839,10 @@ paths:
             schema:
               type: object
               properties:
-                userId:
+                user:
                   type: integer
                   description: The event that the booking relates to
-                eventId:
+                event:
                   type: integer
                   description: The event that the booking relates to
                 starts:
