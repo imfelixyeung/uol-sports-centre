@@ -102,6 +102,7 @@ def make_a_purchase(user_id: int,
     # Checks user has purchased a subscription
     membership = False
     purchases = get_purchases(user_id)
+
     for purchase in purchases:
       if purchase[2] == "subscription":
         # and datetime.now() < time.strptime(purchase[4]):

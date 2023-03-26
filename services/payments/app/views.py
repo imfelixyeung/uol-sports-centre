@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import stripe
 from stripe import error as stripe_errors
-from flask import request, jsonify, redirect, render_template
+from flask import request, jsonify, redirect, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
@@ -16,16 +16,6 @@ from app.payments import (make_a_purchase, get_payment_manager, change_price,
 import env
 
 stripe.api_key = env.STRIPE_API_KEY
-
-
-@app.route("/", methods=["GET"])
-def get_index():
-  """Gets the index for which it shows a subscription for now"""
-  # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-  #   "subscription")
-  #add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
-  #add_customer(467468, stripe.Customer.create().stripe_id)
-  return render_template("index.html")
 
 
 @app.route("/management/discount/change/<int:amount>", methods=["GET"])
@@ -43,7 +33,7 @@ def get_sales_lastweek(product_type: str):
 
 @app.route("/checkout-session/<int:user_id>", methods=["POST"])
 def redirect_checkout(user_id, products, payment_mode):
-  """It redicrects the checkout"""
+  """It returns an url for checkout"""
   #products = ["product-test"]
   #payment_mode = "payment"
   return make_a_purchase(user_id, products, payment_mode)
@@ -65,10 +55,12 @@ def webhook_received():
                                            secret=env.STRIPE_WEBHOOK_KEY)
   except ValueError as payload_error:
     #Invalid Payload
-    return jsonify({"Invalid Payload": str(payload_error)}), 400
+    return make_response(jsonify({"Invalid Payload": str(payload_error)}), 400)
+
   except stripe_errors.SignatureVerificationError as signature_error:
     #Invalid Signature
-    return jsonify({"Invalid Signature": str(signature_error)}), 400
+    return make_response(jsonify({"Invalid Signature": str(signature_error)}),
+                         400)
 
   if event.type == "checkout.session.completed":
     session = stripe.checkout.Session.retrieve(
@@ -86,7 +78,7 @@ def webhook_received():
       else:
         add_purchase(session.customer, purchased_item.price.product,
                      transaction_time)
-    print("Payment succeeded!")
+    return make_response("", 200)
 
   elif event.type == "invoice.paid":
     #Renews exipry of purchased subscription when paid
@@ -106,7 +98,7 @@ def webhook_received():
     customer = subscription.customer
     product = subscription.items.data[1].price.product
     update_expiry(customer, product, str(datetime.now()))
-  return "ok"
+  return make_response("", 200)
 
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
@@ -169,7 +161,6 @@ def refund():
   # Refund the payment using Stripe API
   try:
     stripe.Refund.create(
-        payment_intent=purchase["payment_intent"],
         amount=refund_amount,
         refund_application_fee=True,
     )
