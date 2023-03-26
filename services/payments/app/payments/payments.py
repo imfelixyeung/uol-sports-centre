@@ -46,20 +46,8 @@ def send_receipt(user_id: int, session_id: str):
 #Returns the pdf download link for a receipt, given the order ID
 def get_receipt(order_id: int):
   """Get receipt for pdf download"""
-  try:
-    # Retrieve the charge id associated with the order ID
-    charge_id = stripe.Charge.list(limit=1, metadata={
-        'order_id': order_id
-    }).data[0]
-
-    # Retrieve the receipt url
-    receipt_url = charge_id.receipt_url
-
-    return receipt_url
-
-  except (IndexError, stripe_errors.StripeError) as receipt_error:
-    # Handle any errors that occur
-    return {"error": str(receipt_error)}
+  purchase = get_purchases(order_id)
+  return purchase[5]
 
 
 def make_a_purchase(user_id: int,
