@@ -255,11 +255,19 @@ class BookingController {
       });
 
     // check has created
-    if (updatedBooking instanceof Error)
-      return res.status(500).send({
-        status: 'error',
-        error: 'Unable to update booking',
-      });
+    if (updatedBooking instanceof Error) {
+      if (updatedBooking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: 'Unable to update booking',
+        });
+      }
+    }
 
     // after passing all the above checks, the booking should be okay
     return res.status(200).send({
@@ -297,10 +305,17 @@ class BookingController {
       });
 
     if (booking instanceof Error) {
-      return res.status(500).send({
-        status: 'error',
-        error: booking,
-      });
+      if (booking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: booking,
+        });
+      }
     }
 
     return res.status(200).send({

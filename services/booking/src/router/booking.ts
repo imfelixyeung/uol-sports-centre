@@ -7,28 +7,42 @@ import {authErrorHandler} from './error';
 
 const bookingRouter: Router = express.Router();
 
-bookingRouter.use(jwt(jwtArgs));
-bookingRouter.use(authErrorHandler);
-
 // get all bookings
-bookingRouter.get('/', BookingController.getBookings);
+bookingRouter.get('/', jwt(jwtArgs), BookingController.getBookings);
 
 // create new booking
-bookingRouter.post('/', adminOnly, BookingController.createBooking);
+bookingRouter.post(
+  '/',
+  jwt(jwtArgs),
+  adminOnly,
+  BookingController.createBooking
+);
 
 // get available booking slots
 bookingRouter.get('/availability', BookingController.getAvailableBookings);
 
 // user book booking
-bookingRouter.post('/book', BookingController.bookBooking);
+bookingRouter.post('/book', jwt(jwtArgs), BookingController.bookBooking);
 
 // get specific booking
-bookingRouter.get('/:id', BookingController.getBookingById);
+bookingRouter.get('/:id', jwt(jwtArgs), BookingController.getBookingById);
 
 // update specific booking
-bookingRouter.put('/:id', BookingController.updateBookingById);
+bookingRouter.put(
+  '/:id',
+  jwt(jwtArgs),
+  adminOnly,
+  BookingController.updateBookingById
+);
 
 // delete specific booking
-bookingRouter.delete('/:id', BookingController.deleteBookingById);
+bookingRouter.delete(
+  '/:id',
+  jwt(jwtArgs),
+  adminOnly,
+  BookingController.deleteBookingById
+);
+
+bookingRouter.use(authErrorHandler);
 
 export default bookingRouter;
