@@ -423,3 +423,113 @@ describe('Test DELETE /bookings/:id endpoint', () => {
     expect(response.body.status).toBe('OK');
   });
 });
+
+describe('Test GET /bookings/availability', () => {
+  it('should 400 if bad params are passed to "get availability"', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/availability')
+      .query({
+        activity: 'bad',
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
+
+  it("should be accessible without authentication (it's public)", async () => {
+    const response = await request(BASE_URL).get('/bookings/availability');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+
+  it('should be accessible with authentication', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/availability')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+});
+
+describe('Test POST /bookings/book', () => {
+  it('should 400 if bad body is passed to "book"', async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        activity: 'bad',
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 401 if book without authentication', async () => {
+    const response = await request(BASE_URL).post('/bookings/book').send({
+      userId: 1,
+      eventId: 1,
+      starts: '2023-03-02T10:00:00.000Z',
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 403 if a user tries booking a slot for another user', async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        userId: 2,
+        eventId: 1,
+        starts: '2023-03-02T10:00:00.000Z',
+      });
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
+  it('should 404 if book with non-existing event', async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 100,
+        starts: '2023-03-02T10:00:00.000Z',
+      });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.status).toBe('error');
+  });
+
+  it("should book a slot if it's available for a user", async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 1,
+        starts: '2023-03-02T10:00:00.000Z',
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+
+  it("should book a slot if it's available for an admin", async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 1,
+        starts: '2023-03-02T10:00:00.000Z',
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+  });
+});
