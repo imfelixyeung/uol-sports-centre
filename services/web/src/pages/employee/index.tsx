@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import {useState} from 'react';
 import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
+import {buttonStyles} from '~/components/Button';
 import PageHero from '~/components/PageHero';
 import SelectedBookingsDropdown from '~/components/SelectedBookingsDropdown';
 import Typography from '~/components/Typography';
@@ -13,6 +15,12 @@ const EmployeePage = () => {
   return (
     <div>
       <PageHero title="Employee Dashboard" />
+      <Link
+        href="/employee/check-in-user"
+        className={buttonStyles({intent: 'primary'})}
+      >
+        Check in user
+      </Link>
       <section className="container py-8">
         <Typography.h2>Create booking for customer</Typography.h2>
         <CreateBookingForm />
