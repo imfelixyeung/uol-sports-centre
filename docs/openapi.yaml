@@ -358,7 +358,7 @@ paths:
       responses:
         "200":
           description: OK
-  
+
   /payments/refund/<int:booking_id>:
     get:
       tags:
