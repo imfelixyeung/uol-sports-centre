@@ -580,9 +580,6 @@ paths:
                 eventId:
                   type: integer
                   description: The event that the booking relates to
-                transactionId:
-                  type: integer
-                  description: The transaction linked with this booking
                 starts:
                   type: string
                   description: the start time of the booking
@@ -592,7 +589,6 @@ paths:
                 value:
                   userId: 1
                   eventId: 1
-                  transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
 
       responses:
@@ -671,9 +667,6 @@ paths:
                 eventId:
                   type: integer
                   description: The event that the booking relates to
-                transactionId:
-                  type: integer
-                  description: The transaction linked with this booking
                 starts:
                   type: string
                   description: the start time of the booking
@@ -683,7 +676,6 @@ paths:
                 value:
                   userId: 1
                   eventId: 1
-                  transactionId: 1
                   starts: "2023-03-02T10:00:00.000Z"
       responses:
         "200":
@@ -1598,10 +1590,6 @@ components:
         eventId:
           type: integer
           description: Event ID
-          example: 1
-        transactionId:
-          type: integer
-          description: Transaction ID
           example: 1
         starts:
           type: string

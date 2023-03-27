@@ -9,6 +9,7 @@ export const serverErrorHandler: ErrorRequestHandler = (
   err,
   req,
   res,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next
 ) => {
   logger.error(err.stack);
@@ -18,6 +19,7 @@ export const serverErrorHandler: ErrorRequestHandler = (
     .end();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     logger.debug(`Unauthorised error: ${err.message}`);

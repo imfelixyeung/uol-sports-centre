@@ -348,7 +348,6 @@ class BookingService {
     const newBooking = await this.create({
       eventId: bookingData.event,
       starts: new Date(bookingData.starts),
-      transactionId: 0,
       userId: bookingData.user,
     });
 

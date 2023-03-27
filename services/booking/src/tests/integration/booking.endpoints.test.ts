@@ -9,7 +9,6 @@ import {ADMIN_TOKEN, BASE_URL, USER_TOKEN, prisma} from './base';
 const BOOKINGS: Booking[] = [
   {
     id: 1,
-    transactionId: 1,
     eventId: 1,
     userId: 1,
     starts: new Date('2023-03-27T10:00:00.000Z'),
@@ -18,7 +17,6 @@ const BOOKINGS: Booking[] = [
   },
   {
     id: 2,
-    transactionId: 2,
     eventId: 2,
     userId: 1,
     starts: new Date('2023-03-27T10:00:00.000Z'),
@@ -27,7 +25,6 @@ const BOOKINGS: Booking[] = [
   },
   {
     id: 3,
-    transactionId: 3,
     eventId: 3,
     userId: 1,
     starts: new Date('2023-03-27T10:00:00.000Z'),
@@ -36,7 +33,6 @@ const BOOKINGS: Booking[] = [
   },
   {
     id: 4,
-    transactionId: 12,
     eventId: 2,
     userId: 3,
     starts: new Date('2023-03-27T10:00:00.000Z'),
@@ -45,7 +41,6 @@ const BOOKINGS: Booking[] = [
   },
   {
     id: 5,
-    transactionId: 45,
     eventId: 1,
     userId: 4,
     starts: new Date('2023-03-27T10:00:00.000Z'),
@@ -164,7 +159,6 @@ describe('Test POST /bookings endpoint', () => {
       .send({
         userId: 'bad',
         eventId: 'bad',
-        transactionId: 'bad',
         starts: 'bad',
       });
 
@@ -176,7 +170,6 @@ describe('Test POST /bookings endpoint', () => {
     const response = await request(BASE_URL).post('/bookings').send({
       userId: 1,
       eventId: 1,
-      transactionId: 1,
       starts: new Date(),
     });
 
@@ -191,7 +184,6 @@ describe('Test POST /bookings endpoint', () => {
       .send({
         userId: 1,
         eventId: 1,
-        transactionId: 1,
         starts: new Date(),
       });
 
@@ -206,7 +198,6 @@ describe('Test POST /bookings endpoint', () => {
       .send({
         userId: 1,
         eventId: 1,
-        transactionId: 1,
         starts: new Date(),
       });
 

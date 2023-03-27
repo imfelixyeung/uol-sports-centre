@@ -112,7 +112,6 @@ class BookingController {
     const createBookingBodySchema = z.object({
       userId: z.number(),
       eventId: z.number(),
-      transactionId: z.number(),
       starts: z.string().transform(time => new Date(time)),
     });
 
@@ -219,7 +218,6 @@ class BookingController {
     const updateBookingBodySchema = z.object({
       userId: z.number().optional(),
       eventId: z.number().optional(),
-      transactionId: z.number().optional(),
       starts: z
         .string()
         .transform(time => new Date(time))
