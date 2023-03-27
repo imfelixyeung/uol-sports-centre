@@ -359,7 +359,7 @@ paths:
         "200":
           description: OK
   
-  /refund/<int:booking_id>:
+  /payments/refund/<int:booking_id>:
     get:
       tags:
         - payments
