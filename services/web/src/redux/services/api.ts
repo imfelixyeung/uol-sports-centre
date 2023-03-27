@@ -12,6 +12,8 @@ import type {
 import type {
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
+  GetBookingsRequest,
+  GetBookingsResponse,
 } from './types/bookings';
 import type {
   CreateFacilityActivityRequest,
@@ -51,6 +53,7 @@ export const api = createApi({
   }),
   tagTypes: [
     'User',
+    'Booking',
     'BookingAvailability',
     'Facility',
     'FacilityActivity',
@@ -242,18 +245,32 @@ export const api = createApi({
         facilityId = null,
       }) => {
         const search = new URLSearchParams();
-        if (page) search.set('page', `${page}`);
-        if (limit) search.set('limit', `${limit}`);
-        if (start) search.set('start', `${start}`);
-        if (end) search.set('end', `${end}`);
-        if (activityId) search.set('activity', `${activityId}`);
-        if (facilityId) search.set('facility', `${facilityId}`);
+        if (page !== null) search.set('page', `${page}`);
+        if (limit !== null) search.set('limit', `${limit}`);
+        if (start !== null) search.set('start', `${start}`);
+        if (end !== null) search.set('end', `${end}`);
+        if (activityId !== null) search.set('activity', `${activityId}`);
+        if (facilityId !== null) search.set('facility', `${facilityId}`);
 
         return {
           url: `/booking/bookings/availability?${search.toString()}`,
         };
       },
       providesTags: ['BookingAvailability'],
+    }),
+
+    getBookings: builder.query<GetBookingsResponse, GetBookingsRequest>({
+      query: ({limit = null, page = null, userId: user = null}) => {
+        const search = new URLSearchParams();
+        if (page !== null) search.set('page', `${page}`);
+        if (limit !== null) search.set('limit', `${limit}`);
+        if (user !== null) search.set('user', `${user}`);
+
+        return {
+          url: `/booking/bookings?${search.toString()}`,
+        };
+      },
+      providesTags: ['Booking'],
     }),
   }),
 });
@@ -281,4 +298,5 @@ export const {
   useUpdateUserFirstNameMutation,
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
+  useGetBookingsQuery,
 } = api;

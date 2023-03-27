@@ -40,3 +40,31 @@ export interface BookingAvailabilityRequest {
   activityId?: number | undefined;
   facilityId?: number | undefined;
 }
+
+export interface Booking {
+  id: number;
+  userId: number;
+  eventId: number;
+  starts: string;
+  created: string;
+  updated: string;
+}
+
+export interface BookingPagination {
+  count: number;
+  limit: number;
+  page: number;
+  pageCount: number;
+}
+
+export type GetBookingsRequest = {
+  limit?: number;
+  page?: number;
+  userId?: number;
+};
+
+export type GetBookingsResponse = {
+  status: string;
+  bookings: Booking[];
+  metadata: BookingPagination;
+};

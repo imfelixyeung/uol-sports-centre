@@ -9,10 +9,14 @@ import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
+import {useGetBookingsQuery} from '~/redux/services/api';
 
 const UserDashboardPage = () => {
   const {session} = useAuth();
   const {user} = useUser();
+  const bookingsData = useGetBookingsQuery({
+    userId: session?.user.id,
+  });
 
   const navSection = (
     <section className="my-16">
@@ -48,21 +52,14 @@ const UserDashboardPage = () => {
       <Typography.h2 styledAs="h1" desktopStyledAs="h2" uppercase>
         {'/// Upcoming'}
       </Typography.h2>
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
+      {bookingsData.data?.bookings.map(booking => (
+        <BookingActivity
+          key={booking.id}
+          datetime={new Date(booking.starts)}
+          name="Booking Facility"
+          facility="Facility Name"
+        />
+      ))}
 
       <Link
         href="/dashboard/bookings"
