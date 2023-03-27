@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken';
 
 import {env} from '@/env';
 import {UserRole} from '@/middleware/auth';
+import {PrismaClient} from '@prisma/client';
 
+export const prisma = new PrismaClient();
 export const BASE_URL = 'http://gateway/api/booking';
 
 export const USER_TOKEN = jwt.sign(

@@ -1,10 +1,7 @@
 import {EventDTO} from '@/dto/event.dto';
-import {PrismaClient} from '@prisma/client';
 import request from 'supertest';
 
-import {ADMIN_TOKEN, BASE_URL, USER_TOKEN} from './base';
-
-const prisma = new PrismaClient();
+import {ADMIN_TOKEN, BASE_URL, USER_TOKEN, prisma} from './base';
 
 function sortEvents(events: EventDTO[]) {
   return events.sort((a, b) => {
@@ -103,6 +100,59 @@ describe('Test POST /events', () => {
         time: 1,
         duration: 1,
         type: 'SESSION',
+      });
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe('Test PUT /events/:id', () => {
+  it('should return 400 if bad request', async () => {
+    const response = await request(BASE_URL)
+      .put('/events/1')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        type: ';q2heqwuhefuhqw[ouerf[aurouhq[iurhuhgiaueh[fouohq[ouh',
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should return 401 if not authorised', async () => {
+    const response = await request(BASE_URL).put('/events/1').send({
+      name: 'Test Event',
+      activityId: '1',
+      day: 1,
+      time: 1,
+      duration: 1,
+      type: 'SESSION',
+    });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 403 if not admin', async () => {
+    const response = await request(BASE_URL)
+      .put('/events/1')
+      .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        name: 'Test Event',
+        activityId: '1',
+        day: 1,
+        time: 1,
+        duration: 1,
+        type: 'SESSION',
+      });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should update an event if admin', async () => {
+    const response = await request(BASE_URL)
+      .put('/events/1')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send({
+        name: 'Pool Party',
       });
 
     expect(response.status).toBe(200);

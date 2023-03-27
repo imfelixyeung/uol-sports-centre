@@ -1,12 +1,10 @@
 import request from 'supertest';
-import {Booking, PrismaClient} from '@prisma/client';
+import {Booking} from '@prisma/client';
 
 import logger from '@/lib/logger';
 import {bookingToDTO} from '@/dto/booking.dto';
 
-import {ADMIN_TOKEN, BASE_URL, USER_TOKEN} from './base';
-
-const prisma = new PrismaClient();
+import {ADMIN_TOKEN, BASE_URL, USER_TOKEN, prisma} from './base';
 
 const BOOKINGS: Booking[] = [
   {

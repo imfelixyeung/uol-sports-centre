@@ -18,3 +18,13 @@ export interface CreateEventDTO {
   duration: number;
   type: EventType;
 }
+
+export interface UpdateEventDTO {
+  id: number;
+  name?: string;
+  activityId?: number;
+  day?: number;
+  time?: number;
+  duration?: number;
+  type?: EventType;
+}

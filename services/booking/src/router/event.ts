@@ -17,10 +17,20 @@ eventRouter.post('/', jwt(jwtArgs), adminOnly, EventController.createEvent);
 // eventRouter.get('/:id', EventController.getEventById);
 
 // update specific event
-// eventRouter.put('/:id', EventController.updateEventById);
+eventRouter.put(
+  '/:id',
+  jwt(jwtArgs),
+  adminOnly,
+  EventController.updateEventById
+);
 
 // delete specific event
-// eventRouter.delete('/:id', EventController.deleteEventById);
+// eventRouter.delete(
+//   '/:id',
+//   jwt(jwtArgs),
+//   adminOnly,
+//   EventController.deleteEventById
+// );
 
 eventRouter.use(authErrorHandler);
 
