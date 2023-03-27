@@ -4,6 +4,7 @@ from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
 from app.create_dictionaries import make_facility
+from app.auth import authenticate
 
 
 class FacilitiesRouter:
@@ -45,6 +46,9 @@ class FacilitiesRouter:
                                 methods=["DELETE"])
 
   def get_facilities(self):
+    """Get all facilities"""
+    authenticate()
+
     # Check to see if page and limit have been supplied
     if request.args.get("page") and request.args.get("limit"):
       try:
