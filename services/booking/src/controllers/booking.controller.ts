@@ -385,7 +385,8 @@ class BookingController {
    */
   async bookBooking(req: Request, res: express.Response) {
     const bookBodySchema = z.object({
-      starts: timestamp,
+      // accept start date as iso string zod validator
+      starts: z.string().transform(t => new Date(t).getTime()),
       event: id('event id'),
       user: id('user id'),
     });

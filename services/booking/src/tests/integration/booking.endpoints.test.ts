@@ -486,6 +486,13 @@ describe('Test POST /bookings/book', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking.id).toEqual(expect.any(Number));
+    expect(response.body.booking.userId).toBe(1);
+    expect(response.body.booking.eventId).toBe(1);
+    expect(response.body.booking.starts).toBe('2023-03-02T10:00:00.000Z');
+    expect(new Date(response.body.booking.created)).toBeInstanceOf(Date);
+    expect(new Date(response.body.booking.updated)).toBeInstanceOf(Date);
   });
 
   it("should book a slot if it's available for an admin", async () => {
@@ -500,6 +507,13 @@ describe('Test POST /bookings/book', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking.id).toEqual(expect.any(Number));
+    expect(response.body.booking.userId).toBe(1);
+    expect(response.body.booking.eventId).toBe(1);
+    expect(response.body.booking.starts).toBe('2023-03-02T10:00:00.000Z');
+    expect(new Date(response.body.booking.created)).toBeInstanceOf(Date);
+    expect(new Date(response.body.booking.updated)).toBeInstanceOf(Date);
   });
 
   it('should have more tests', async () => {});
