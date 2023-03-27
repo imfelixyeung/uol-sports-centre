@@ -1,5 +1,6 @@
 import {Request} from 'express';
 import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
+import jwt from 'jsonwebtoken';
 
 export const getJwtFromRequest = (req: Request) => {
   const authorisation = req.headers.authorization;
@@ -11,5 +12,10 @@ export const getJwtFromRequest = (req: Request) => {
   const parsedTokenData = jsonWebTokenSchema.safeParse(token);
   if (!parsedTokenData.success) return null;
 
-  return parsedTokenData.data as JsonWebToken;
+  const jwtPayload = jwt.decode(token);
+  if (!jwtPayload) return null;
+
+  const decodedTokenData = Object.assign({}, parsedTokenData.data, jwtPayload);
+
+  return decodedTokenData as JsonWebToken;
 };

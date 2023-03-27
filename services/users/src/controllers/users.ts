@@ -11,6 +11,8 @@ import {
   returnFullRecord,
 } from '../services/users';
 import {CreateUserDBA, EditUserDBA} from '../services/dbRequests';
+import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
+import {getJwtFromRequest} from '../utils/getJwtFromRequest';
 
 async function demoHandler(req: express.Request, res: express.Response) {
   const demoData = 'THIS IS A DEMO';
@@ -20,10 +22,42 @@ async function demoHandler(req: express.Request, res: express.Response) {
 }
 
 async function viewFullRecord(req: express.Request, res: express.Response) {
-  // need to extract the data from the request
+  // get JWT from header
+  // check if JWT is valid
+  // if JWT is valid, continue
+  // if JWT is invalid, return 401
+
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
+
+  // need to extract the id from the request
   const paramSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   // need to validate the data
   const params = paramSchema.safeParse(req.params);
   if (!params.success)
@@ -55,6 +89,15 @@ async function updateMembership(req: express.Request, res: express.Response) {
   // we need to pass that object to the editMembership function
   // we need to return the response
 
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
+
   // need to extract the data from the request
   const updateUserSchema = z.object({
     membership: z.string(),
@@ -63,6 +106,25 @@ async function updateMembership(req: express.Request, res: express.Response) {
   const updateUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   // need to validate the data
   const body = updateUserSchema.safeParse(req.body);
   // need to validate the id parameter
@@ -102,6 +164,15 @@ async function updateMembership(req: express.Request, res: express.Response) {
 }
 
 async function updateFirstName(req: express.Request, res: express.Response) {
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
+
   const updateUserSchema = z.object({
     firstName: z.string(),
   });
@@ -109,6 +180,25 @@ async function updateFirstName(req: express.Request, res: express.Response) {
   const updateUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'manager' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
   if (!body.success)
@@ -144,6 +234,15 @@ async function updateFirstName(req: express.Request, res: express.Response) {
 }
 
 async function updateSurname(req: express.Request, res: express.Response) {
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
+
   const updateUserSchema = z.object({
     lastName: z.string(),
   });
@@ -151,6 +250,25 @@ async function updateSurname(req: express.Request, res: express.Response) {
   const updateUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
   if (!body.success)
@@ -185,6 +303,14 @@ async function updateSurname(req: express.Request, res: express.Response) {
 }
 
 async function updatePaymentID(req: express.Request, res: express.Response) {
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
   const updateUserSchema = z.object({
     paymentID: z.number(),
   });
@@ -192,6 +318,25 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
   const updateUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   const body = updateUserSchema.safeParse(req.body);
   const params = updateUserParamsSchema.safeParse(req.params);
   if (!body.success)
@@ -226,12 +371,38 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
 }
 
 async function createUser(req: express.Request, res: express.Response) {
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
   // create a schema to validate the body
   const createUserSchema = z.object({
     id: z.number(),
     firstName: z.string(),
     lastName: z.string(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
   // validate the body
   const body = createUserSchema.safeParse(req.body);
   // if the body is not valid, return a 400 error
@@ -260,10 +431,37 @@ async function createUser(req: express.Request, res: express.Response) {
 }
 
 async function deleteUser(req: express.Request, res: express.Response) {
+  // JWT validation
+  const token = getJwtFromRequest(req);
+  if (!token) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid JWT or no JWT provided',
+    });
+  }
   // create a schema to validate the body
   const deleteUserParamsSchema = z.object({
     id: z.coerce.number(),
   });
+
+  // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
+  // if yes, continue
+  // if no, return 400
+  if (token.role === 'user' && token.id !== req.params.id) {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${req.params.id}`,
+    });
+  }
+  // check if the role from JWT is admin or employee and if yes, continue
+  // else return 400
+  else if (token.role !== 'admin' && token.role !== 'employee') {
+    return res.status(400).json({
+      status: 'error',
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
+    });
+  }
+
   // validate the body
   const params = deleteUserParamsSchema.safeParse(req.params);
   // if the body is not valid, return a 400 error
