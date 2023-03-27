@@ -45,6 +45,8 @@ class EventDAO {
           activityIds.push(activity.id);
         }
       });
+
+      logger.debug(`Activity ids in facility: ${JSON.stringify(activityIds)}`);
     }
 
     if (filter.activity) {
@@ -60,6 +62,14 @@ class EventDAO {
         }
       }
     }
+
+    logger.debug(`Activity ids: ${JSON.stringify(activityIds)}`);
+
+    if (
+      (filter.facility !== undefined || filter.activity !== undefined) &&
+      activityIds.length === 0
+    )
+      return [];
 
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
