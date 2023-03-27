@@ -258,8 +258,18 @@ paths:
       responses:
         "200":
           description: OK
+  
+  /payments/make-purchasable:
+    post:
+      tags:
+        -payments
+      description: """Enables a product to be purchased"""
 
-  /payments/discout/apply:
+      responses:
+        "200":
+          description: OK
+
+  /payments/discount/apply:
     post:
       tags:
         - payments
