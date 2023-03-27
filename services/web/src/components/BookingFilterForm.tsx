@@ -21,14 +21,19 @@ const BookingFilterForm: FC<{
 
   if (!facilities || !activities) return null; // TODO: handle loading, error states
 
-  const now = dayjs().set('hour', 0).set('minute', 0).set('second', 0);
-  const twoWeeksFromNow = now
+  const todayStart = dayjs().set('hour', 0).set('minute', 0).set('second', 0);
+  const twoWeeksFromNow = todayStart
     .add(2, 'week')
     .set('hour', 23)
     .set('minute', 59)
     .set('second', 59);
-  const defaultStart = now.format('YYYY-MM-DDTHH:mm');
-  const defaultEnd = twoWeeksFromNow.format('YYYY-MM-DDTHH:mm');
+  const todayEnd = todayStart
+    .set('hour', 23)
+    .set('minute', 59)
+    .set('second', 59);
+  const minDate = todayStart.format('YYYY-MM-DDTHH:mm');
+  const maxDate = twoWeeksFromNow.format('YYYY-MM-DDTHH:mm');
+  const defaultEnd = todayEnd.format('YYYY-MM-DDTHH:mm');
 
   const initialValues: {
     start?: string;
@@ -36,7 +41,7 @@ const BookingFilterForm: FC<{
     activity?: number;
     facility?: number;
   } = {
-    start: defaultStart,
+    start: minDate,
     end: defaultEnd,
   };
 
@@ -61,8 +66,8 @@ const BookingFilterForm: FC<{
             name="start"
             type="datetime-local"
             className="p-2 text-black"
-            min={defaultStart}
-            max={defaultEnd}
+            min={minDate}
+            max={maxDate}
           />
         </label>
         <label className="flex grow flex-col">
@@ -71,8 +76,8 @@ const BookingFilterForm: FC<{
             name="end"
             type="datetime-local"
             className="p-2 text-black"
-            min={defaultStart}
-            max={defaultEnd}
+            min={minDate}
+            max={maxDate}
           />
         </label>
         <label className="flex grow flex-col">
