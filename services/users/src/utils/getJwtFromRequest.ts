@@ -3,11 +3,11 @@ import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
 import jwt from 'jsonwebtoken';
 
 export const getJwtFromRequest = (req: Request) => {
-  const authorisation = req.headers.authorization;
-  if (!authorisation) return null;
+  const authorization = req.headers.authorization;
+  if (!authorization) return null;
 
-  if (!authorisation.startsWith('Bearer ')) return null;
-  const token = authorisation.split('Bearer ')[1];
+  if (!authorization.startsWith('Bearer ')) return null;
+  const token = authorization.split('Bearer ')[1];
 
   const parsedTokenData = jsonWebTokenSchema.safeParse(token);
   if (!parsedTokenData.success) return null;

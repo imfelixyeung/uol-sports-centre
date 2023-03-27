@@ -9,7 +9,7 @@ export const getHealth = async () => {
   };
 };
 
-const getDatabaseHealth = async () => {
+export const getDatabaseHealth = async () => {
   try {
     // Attempt to query the database
     await db.$queryRaw`SELECT 1`;
