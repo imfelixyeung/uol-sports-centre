@@ -67,8 +67,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
 
   const logout = async () => {
     if (!token) return;
-    await logoutMutation({token}).unwrap();
     clear();
+    await logoutMutation({token}).unwrap();
   };
 
   const register = async (credentials: Credentials) => {
