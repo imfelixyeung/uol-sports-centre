@@ -37,6 +37,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
     'session'
   );
 
+  const isLoggedIn = !!(token && refreshToken && session);
+
   const [loginMutation] = useLoginMutation();
   const [logoutMutation] = useLogoutMutation();
   const [registerMutation] = useRegisterMutation();
@@ -153,9 +155,9 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
         logout,
         register,
         getSession,
-        token,
-        refreshToken,
-        session,
+        token: isLoggedIn ? token : null,
+        refreshToken: isLoggedIn ? refreshToken : null,
+        session: isLoggedIn ? session : null,
       }}
     >
       {children}
