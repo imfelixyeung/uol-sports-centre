@@ -39,8 +39,7 @@ const SelectedBookingsDropdown: FC = () => {
                   datetime={new Date(booking.starts)}
                   capacity={booking.capacity}
                   duration={booking.duration}
-                  name={booking.event.name}
-                  facility="Facility"
+                  eventId={booking.event.id}
                   variant="tile"
                   action={
                     <Button

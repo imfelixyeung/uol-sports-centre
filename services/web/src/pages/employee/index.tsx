@@ -51,6 +51,7 @@ const CreateBookingForm = () => {
           duration: booking.duration,
           name: booking.event.name,
           availableBooking: booking,
+          eventId: booking.event.id,
         }))}
         title={<SelectedBookingsDropdown />}
       />
