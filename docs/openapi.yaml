@@ -239,17 +239,7 @@ paths:
         "200":
           $ref: "#/components/responses/HealthCheck"
 
-  /payments/:
-    get:
-      tags:
-        - payments
-      description: "Returns a template html file in order to access other functions"
-
-      responses:
-        "200":
-          description: OK
-
-  /payments/checkout-session/<int:user_id>:
+  /payments/checkout-session/{user_id}:
     post:
       tags:
         - payments
@@ -289,7 +279,7 @@ paths:
         "200":
           description: OK
 
-  /payments/purchased-products/<int:userID>:
+  /payments/purchased-products/{userID}:
     get:
       tags:
         - payments
@@ -299,7 +289,7 @@ paths:
         "200":
           description: OK
 
-  /payments/get-prices/<str:product_type>:
+  /payments/get-prices/{product_type}:
     get:
       tags:
         - payments
@@ -309,7 +299,7 @@ paths:
         "200":
           description: OK
 
-  /payments/management/discount/change/<int:amount>:
+  /payments/discount/change/{amount}:
     get:
       tags:
         - payments
@@ -319,7 +309,7 @@ paths:
         "200":
           description: OK
 
-  /payments/management/sales/<string:product_type>:
+  /payments/sales/{product_type}:
     get:
       tags:
         - payments
@@ -329,7 +319,7 @@ paths:
         "200":
           description: OK
 
-  /payments/customer-portal/<int:user_id>:
+  /payments/customer-portal/{user_id}:
     get:
       tags:
         - payments
@@ -339,7 +329,7 @@ paths:
         "200":
           description: OK
 
-  /payments/cancel-membership/<int:user_id>:
+  /payments/cancel-membership/{user_id}:
     get:
       tags:
         - payments
@@ -349,7 +339,7 @@ paths:
         "200":
           description: OK
 
-  /payments/refund/<int:booking_id>:
+  /payments/refund/{booking_id}:
     get:
       tags:
         - payments

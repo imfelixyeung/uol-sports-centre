@@ -255,6 +255,7 @@ def cancel_subscription(user_id: int):
 
 
 def refund_booking(booking_id: str):
+  """Refunds the booking to the user for the given booking id"""
   # Retrieve the purchase information from the database
   order = get_order(booking_id)
 

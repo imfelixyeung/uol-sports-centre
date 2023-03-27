@@ -20,7 +20,7 @@ import env
 stripe.api_key = env.STRIPE_API_KEY
 
 
-@app.route("/management/discount/change/<int:amount>", methods=["GET"])
+@app.route("discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
   """Retrieves the new discount amount and changes it"""
   auth = request.headers.get("Authorization")
@@ -43,7 +43,7 @@ def change_discount(amount):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/management/sales/<string:product_type>", methods=["GET"])
+@app.route("/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
   """Function that retrieves the sales from the last 
     7 days for a given product type"""
@@ -74,7 +74,6 @@ def redirect_checkout():
   # Getting the required data through json
   data = request.get_json()
 
-  user_id = data["user_id"]
   products = data["products"]
   payment_mode = data["payment_mode"]
 
@@ -191,7 +190,7 @@ def webhook_received():
 
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
-def get_purchased_products():
+def get_purchased_products(user_id: int):
   """Retrieve all purchased products for a given user"""
 
   # Getting the required data through json
