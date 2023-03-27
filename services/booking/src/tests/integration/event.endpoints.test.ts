@@ -1,9 +1,21 @@
+import {EventDTO} from '@/dto/event.dto';
+import {PrismaClient} from '@prisma/client';
 import request from 'supertest';
 
 import {ADMIN_TOKEN, BASE_URL, USER_TOKEN} from './base';
 
+const prisma = new PrismaClient();
+
+function sortEvents(events: EventDTO[]) {
+  return events.sort((a, b) => {
+    const x = a.id;
+    const y = b.id;
+    return x < y ? -1 : x > y ? 1 : 0;
+  });
+}
+
 describe('Test GET /events', () => {
-  test('it should return events without authorisation', async () => {
+  it('should return events without authorisation', async () => {
     const response = await request(BASE_URL)
       .get('/events')
       .query({
@@ -14,7 +26,7 @@ describe('Test GET /events', () => {
     expect(response.status).toBe(200);
   });
 
-  test('it should return events with authorisation', async () => {
+  it('should return events with authorisation', async () => {
     const response = await request(BASE_URL)
       .get('/events')
       .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -24,6 +36,18 @@ describe('Test GET /events', () => {
       });
 
     expect(response.status).toBe(200);
+  });
+
+  it('should return all events with no query params', async () => {
+    const response = await request(BASE_URL)
+      .get('/events')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    // get all events from db
+    const events = await prisma.event.findMany();
+
+    expect(response.status).toBe(200);
+    expect(sortEvents(response.body.events)).toStrictEqual(sortEvents(events));
   });
 });
 

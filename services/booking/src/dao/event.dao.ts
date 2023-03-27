@@ -25,6 +25,11 @@ class EventDAO {
   async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
     logger.debug('Getting events');
 
+    // return all events if no filter is provided
+    if (!filter.start && !filter.end && !filter.facility && !filter.activity) {
+      return await prisma.event.findMany();
+    }
+
     // if filter.facility is provided, get the activities for that facility
     let activityIds: number[] = [];
 
