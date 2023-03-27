@@ -37,6 +37,7 @@ const DashboardBookingsPage = () => {
         />
         <main className="grow bg-white text-black">
           <div className="container py-8">
+            {bookings.length === 0 && <>You have no bookings.</>}
             <Bookings
               bookings={bookings.map(booking => ({
                 datetime: new Date(booking.starts),

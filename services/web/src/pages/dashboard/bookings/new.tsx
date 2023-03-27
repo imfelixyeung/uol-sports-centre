@@ -27,6 +27,12 @@ const NewBookingsPage = () => {
         <main className="grow bg-white text-black">
           <div className="container py-8">
             <BookingFilterForm onFilterChange={setFilter} />
+            {availableBookings.length === 0 && (
+              <>
+                No bookings available based on your filter, try changing the
+                filter.
+              </>
+            )}
             <Bookings
               bookings={availableBookings.map(booking => ({
                 datetime: new Date(booking.starts),
