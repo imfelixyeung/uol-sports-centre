@@ -1,14 +1,19 @@
 import type {GetStaticPaths, GetStaticProps} from 'next';
 import {useRouter} from 'next/router';
+import {QRCodeSVG} from 'qrcode.react';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
+import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useGetBookingQuery} from '~/redux/services/api';
+import type {QrBooking} from '~/schema/qrBooking';
 
 const ViewBookingPage = () => {
   const router = useRouter();
+  const {session} = useAuth();
   const bookingId = router.query.id;
   const bookingData = useGetBookingQuery(
     {bookingId: parseInt(bookingId as string)},
@@ -20,6 +25,11 @@ const ViewBookingPage = () => {
 
   const booking = bookingData.data?.booking;
   if (!booking) return <>Not found</>;
+
+  const qrBooking: QrBooking = {
+    bookingIds: [booking.id],
+    userId: session!.user.id,
+  };
 
   return (
     <>
@@ -41,6 +51,17 @@ const ViewBookingPage = () => {
               />
             </div>
           </div>
+          <section>
+            <Typography.h2>Show the QR Code below to the staff</Typography.h2>
+            <div className="flex justify-center">
+              <div className="bg-[#fff] p-8">
+                <QRCodeSVG
+                  value={JSON.stringify(qrBooking)}
+                  className="aspect-square h-full max-h-[50vw] w-full max-w-[50vw]"
+                />
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </>
