@@ -258,16 +258,6 @@ paths:
       responses:
         "200":
           description: OK
-  
-  /payments/make-purchasable:
-    post:
-      tags:
-        -payments
-      description: """Enables a product to be purchased"""
-
-      responses:
-        "200":
-          description: OK
 
   /payments/discount/apply:
     post:
@@ -334,16 +324,6 @@ paths:
       tags:
         - payments
       description: "Returns the sales of the past week as dictionaries for the specified product type"
-
-      responses:
-        "200":
-          description: OK
-
-  /payments/refund:
-    post:
-      tags:
-        - payments
-      description: "Refunds a purchase for the customer accessing it"
 
       responses:
         "200":

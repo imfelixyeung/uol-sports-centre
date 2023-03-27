@@ -80,6 +80,7 @@ def redirect_checkout():
 
   return make_a_purchase(user_id, products, payment_mode)
 
+
 @app.route("/make-purchasable", methods=["POST"])
 def create_purchasable():
   """Enables a product to be purchased"""
@@ -94,8 +95,10 @@ def create_purchasable():
   if booking_id is None:
     make_purchasable(product_name, product_price, product_type)
   else:
-    make_purchasable(product_name, product_price, product_type, 
-                     booking_id)
+    make_purchasable(product_name, product_price, product_type, booking_id)
+
+  return jsonify({"message": "Product made purchasable."}), 200
+
 
 @app.route("/webhook", methods=["POST"])
 def webhook_received():
