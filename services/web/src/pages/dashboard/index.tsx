@@ -57,6 +57,14 @@ const UserDashboardPage = () => {
           key={booking.id}
           datetime={new Date(booking.starts)}
           eventId={booking.eventId}
+          action={
+            <Link
+              href={`/dashboard/booking/${booking.id}`}
+              className={buttonStyles({intent: 'primary'})}
+            >
+              View
+            </Link>
+          }
         />
       ))}
 

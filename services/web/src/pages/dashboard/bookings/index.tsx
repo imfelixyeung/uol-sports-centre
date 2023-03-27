@@ -42,6 +42,7 @@ const DashboardBookingsPage = () => {
               bookings={bookings.map(booking => ({
                 datetime: new Date(booking.starts),
                 eventId: booking.eventId,
+                id: booking.id,
               }))}
               title={
                 <Typography.h2 styledAs="h1" uppercase>

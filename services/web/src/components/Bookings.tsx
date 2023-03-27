@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import localizedFormatPlugin from 'dayjs/plugin/localizedFormat';
+import Link from 'next/link';
 import type {FC, ReactNode} from 'react';
 import {useState} from 'react';
 import BookingActivity from '~/components/BookingActivity';
@@ -18,7 +19,7 @@ import type {
   BookingCapacity,
 } from '~/redux/services/types/bookings';
 import {datesBetween} from '~/utils/datesBetween';
-import Button from './Button';
+import Button, {buttonStyles} from './Button';
 import IconToggleGroup from './IconToggleGroup';
 import ScrollArea from './ScrollArea';
 import Typography from './Typography';
@@ -35,6 +36,7 @@ type View = (typeof availableViews)[number]['id'];
 interface BookingsProps {
   title: ReactNode;
   bookings: {
+    id?: number;
     datetime: Date;
     capacity?: BookingCapacity;
     duration?: number;
@@ -71,7 +73,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
         )}
       >
         {bookings.map((booking, index) => {
-          const {availableBooking} = booking;
+          const {availableBooking, id = null} = booking;
 
           const inBasket =
             availableBooking &&
@@ -89,28 +91,38 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
               eventId={booking.eventId}
               variant={currentView === 'grid' ? 'card' : 'tile'}
               action={
-                availableBooking ? (
-                  <>
-                    <Button intent="primary">Book</Button>
-                    {inBasket ? (
-                      <Button
-                        intent="secondary"
-                        onClick={() =>
-                          dispatch(removeBooking(availableBooking))
-                        }
-                      >
-                        Remove
-                      </Button>
-                    ) : (
-                      <Button
-                        intent="secondary"
-                        onClick={() => dispatch(addBooking(availableBooking))}
-                      >
-                        Add
-                      </Button>
-                    )}
-                  </>
-                ) : null
+                <>
+                  {availableBooking ? (
+                    <>
+                      <Button intent="primary">Book</Button>
+                      {inBasket ? (
+                        <Button
+                          intent="secondary"
+                          onClick={() =>
+                            dispatch(removeBooking(availableBooking))
+                          }
+                        >
+                          Remove
+                        </Button>
+                      ) : (
+                        <Button
+                          intent="secondary"
+                          onClick={() => dispatch(addBooking(availableBooking))}
+                        >
+                          Add
+                        </Button>
+                      )}
+                    </>
+                  ) : null}
+                  {id !== null && (
+                    <Link
+                      href={`/dashboard/booking/${id}`}
+                      className={buttonStyles({intent: 'primary'})}
+                    >
+                      View
+                    </Link>
+                  )}
+                </>
               }
             />
           );
@@ -127,6 +139,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
 
 const BookingsCalendarView: FC<{
   bookings: {
+    id?: number;
     datetime: Date;
     capacity?: BookingCapacity;
     duration?: number;
@@ -175,7 +188,7 @@ const BookingsCalendarView: FC<{
                   <td key={hour} className="bg-white p-3 align-top text-black">
                     <div className="flex h-full flex-col gap-3">
                       {bookingsMatching.map((booking, index) => {
-                        const {availableBooking} = booking;
+                        const {availableBooking, id = null} = booking;
 
                         const inBasket =
                           availableBooking &&
@@ -194,32 +207,44 @@ const BookingsCalendarView: FC<{
                             eventId={booking.eventId}
                             variant="tile"
                             action={
-                              availableBooking ? (
-                                <>
-                                  <Button intent="primary">Book</Button>
-                                  {inBasket ? (
-                                    <Button
-                                      intent="secondary"
-                                      onClick={() =>
-                                        dispatch(
-                                          removeBooking(availableBooking)
-                                        )
-                                      }
-                                    >
-                                      Remove
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      intent="secondary"
-                                      onClick={() =>
-                                        dispatch(addBooking(availableBooking))
-                                      }
-                                    >
-                                      Add
-                                    </Button>
-                                  )}
-                                </>
-                              ) : null
+                              <>
+                                {availableBooking ? (
+                                  <>
+                                    <Button intent="primary">Book</Button>
+                                    {inBasket ? (
+                                      <Button
+                                        intent="secondary"
+                                        onClick={() =>
+                                          dispatch(
+                                            removeBooking(availableBooking)
+                                          )
+                                        }
+                                      >
+                                        Remove
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        intent="secondary"
+                                        onClick={() =>
+                                          dispatch(addBooking(availableBooking))
+                                        }
+                                      >
+                                        Add
+                                      </Button>
+                                    )}
+                                  </>
+                                ) : null}
+                                {id !== null && (
+                                  <Link
+                                    href={`/dashboard/booking/${id}`}
+                                    className={buttonStyles({
+                                      intent: 'primary',
+                                    })}
+                                  >
+                                    View
+                                  </Link>
+                                )}
+                              </>
                             }
                           />
                         );

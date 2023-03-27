@@ -61,9 +61,15 @@ const BookingActivity: FC<BookingActivityProps> = ({
   if (variant === 'page')
     return (
       <>
-        <Typography.h1 uppercase>Booking Activity</Typography.h1>
-        <Typography.h2 uppercase>
+        <Typography.h1 uppercase>
           <BookingEventData eventId={eventId} pick="name" />
+        </Typography.h1>
+        <Typography.h2 uppercase>
+          <BookingEventData
+            eventId={eventId}
+            expandActivity="name"
+            expandFacility="name"
+          />
         </Typography.h2>
         {metadata}
         <div>{action}</div>

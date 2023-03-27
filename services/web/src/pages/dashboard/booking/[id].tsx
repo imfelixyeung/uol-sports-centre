@@ -1,15 +1,25 @@
 import type {GetStaticPaths, GetStaticProps} from 'next';
-import {useState} from 'react';
+import {useRouter} from 'next/router';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
 import {withPageAuthRequired} from '~/providers/auth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {useGetBookingQuery} from '~/redux/services/api';
 
 const ViewBookingPage = () => {
-  const [tempBooked, setTempBooked] = useState(false);
+  const router = useRouter();
+  const bookingId = router.query.id;
+  const bookingData = useGetBookingQuery(
+    {bookingId: parseInt(bookingId as string)},
+    {skip: !bookingId}
+  );
 
-  const toggle = () => setTempBooked(prev => !prev);
+  if (!bookingId) return <>Not found</>;
+  if (Array.isArray(bookingId)) return <>Not found</>;
+
+  const booking = bookingData.data?.booking;
+  if (!booking) return <>Not found</>;
 
   return (
     <>
@@ -21,22 +31,13 @@ const ViewBookingPage = () => {
             <div className="flex flex-col gap-3 p-6">
               <BookingActivity
                 variant="page"
-                datetime={new Date('2023-01-01')}
-                name="Activity Name"
-                facility="Facility"
+                datetime={new Date(booking.starts)}
                 action={
-                  <>
-                    {tempBooked ? (
-                      <Button intent="primary" onClick={toggle}>
-                        Book Session
-                      </Button>
-                    ) : (
-                      <Button intent="secondary" onClick={toggle}>
-                        Cancel Booking
-                      </Button>
-                    )}
-                  </>
+                  <Button intent="secondary" type="button">
+                    Cancel Booking
+                  </Button>
                 }
+                eventId={booking.eventId}
               />
             </div>
           </div>
