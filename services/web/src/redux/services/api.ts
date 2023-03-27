@@ -15,6 +15,8 @@ import type {
   BookingAvailabilityResponse,
   GetBookingEventsRequest,
   GetBookingEventsResponse,
+  GetBookingRequest,
+  GetBookingResponse,
   GetBookingsRequest,
   GetBookingsResponse,
 } from './types/bookings';
@@ -277,6 +279,11 @@ export const api = createApi({
       providesTags: ['Booking'],
     }),
 
+    getBooking: builder.query<GetBookingResponse, GetBookingRequest>({
+      query: ({bookingId}) => `/booking/bookings/${bookingId}`,
+      providesTags: ['Booking'],
+    }),
+
     getBookingEvents: builder.query<
       GetBookingEventsResponse,
       GetBookingEventsRequest
@@ -322,5 +329,6 @@ export const {
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
   useGetBookingsQuery,
+  useGetBookingQuery,
   useGetBookingEventsQuery,
 } = api;

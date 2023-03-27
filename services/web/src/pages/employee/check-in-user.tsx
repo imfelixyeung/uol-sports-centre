@@ -2,9 +2,10 @@ import type {FC} from 'react';
 import {useState} from 'react';
 import type {OnResultFunction} from 'react-qr-reader';
 import {QrReader} from 'react-qr-reader';
+import BookingActivity from '~/components/BookingActivity';
 import Json from '~/components/Json';
 import Typography from '~/components/Typography';
-import {useGetUserRecordQuery} from '~/redux/services/api';
+import {useGetBookingQuery, useGetUserRecordQuery} from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 import {qrBookingSchema} from '~/schema/qrBooking';
 
@@ -75,18 +76,38 @@ const CheckInUserPage = () => {
 const ListBookings: FC<{
   bookingIds: number[];
   userId: number;
-}> = ({bookingIds}) => {
+}> = ({bookingIds, userId}) => {
   return (
     <div>
       <Typography.span>TODO</Typography.span>
       <ul className="list-inside list-disc">
         {bookingIds.map(bookingId => (
           <li key={bookingId}>
-            <Typography.span>{bookingId}</Typography.span>
+            <BookingWrapper bookingId={bookingId} userId={userId} />
           </li>
         ))}
       </ul>
     </div>
+  );
+};
+
+const BookingWrapper: FC<{
+  bookingId: number;
+  userId: number;
+}> = ({bookingId, userId}) => {
+  const bookingData = useGetBookingQuery({bookingId});
+  const booking = bookingData.data?.booking;
+
+  if (bookingData.isLoading) return <>Loading</>;
+
+  if (!booking) return <>Invalid booking ({bookingId})</>;
+  if (booking.userId !== userId) return <>Invalid booking ({bookingId})</>;
+
+  return (
+    <BookingActivity
+      datetime={new Date(booking.starts)}
+      eventId={booking.eventId}
+    />
   );
 };
 
