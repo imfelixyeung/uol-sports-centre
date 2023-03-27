@@ -68,3 +68,10 @@ export type GetBookingsResponse = {
   bookings: Booking[];
   metadata: BookingPagination;
 };
+
+export type GetBookingEventsRequest = void;
+
+export type GetBookingEventsResponse = {
+  status: string;
+  events: BookingEvent[];
+};

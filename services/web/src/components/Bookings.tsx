@@ -37,8 +37,8 @@ interface BookingsProps {
   bookings: {
     datetime: Date;
     capacity?: BookingCapacity;
-    duration: number;
-    name: string;
+    duration?: number;
+    eventId: number;
     availableBooking?: AvailableBooking;
   }[];
 }
@@ -86,8 +86,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
               datetime={new Date(booking.datetime)}
               capacity={booking.capacity}
               duration={booking.duration}
-              name={booking.name}
-              facility="Facility"
+              eventId={booking.eventId}
               variant={currentView === 'grid' ? 'card' : 'tile'}
               action={
                 availableBooking ? (
@@ -130,8 +129,8 @@ const BookingsCalendarView: FC<{
   bookings: {
     datetime: Date;
     capacity?: BookingCapacity;
-    duration: number;
-    name: string;
+    duration?: number;
+    eventId: number;
     availableBooking?: AvailableBooking;
   }[];
 }> = ({bookings}) => {
@@ -192,8 +191,7 @@ const BookingsCalendarView: FC<{
                             datetime={new Date(booking.datetime)}
                             capacity={booking.capacity}
                             duration={booking.duration}
-                            name={booking.name}
-                            facility="Facility"
+                            eventId={booking.eventId}
                             variant="tile"
                             action={
                               availableBooking ? (

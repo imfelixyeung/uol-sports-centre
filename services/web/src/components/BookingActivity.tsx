@@ -4,6 +4,7 @@ import durationPlugin from 'dayjs/plugin/duration';
 import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 import type {FC, ReactNode} from 'react';
 import type {BookingCapacity} from '~/redux/services/types/bookings';
+import BookingEventData from './BookingEventData';
 import CalendarIcon from './Icons/CalendarIcon';
 import ClockIcon from './Icons/ClockIcon';
 import CounterIcon from './Icons/CounterIcon';
@@ -14,22 +15,20 @@ dayjs.extend(relativeTimePlugin);
 
 interface BookingActivityProps {
   variant?: 'card' | 'tile' | 'page';
-  name: string;
-  facility: string;
   datetime: Date;
   capacity?: BookingCapacity;
   action?: ReactNode;
   duration?: number;
+  eventId: number;
 }
 
 const BookingActivity: FC<BookingActivityProps> = ({
   variant = 'card',
-  name,
   datetime,
   action,
-  facility,
   capacity,
   duration,
+  eventId,
 }) => {
   const metadata = (
     <div
@@ -48,12 +47,14 @@ const BookingActivity: FC<BookingActivityProps> = ({
           {`${capacity.max - capacity.current}/${capacity.max} slots available`}
         </Typography.p>
       )}
-      {duration && (
-        <Typography.p styledAs="subtext" className="flex items-center gap-2">
-          <ClockIcon className="h-5" />
-          {dayjs.duration({minutes: duration}).humanize()}
-        </Typography.p>
-      )}
+
+      <Typography.p styledAs="subtext" className="flex items-center gap-2">
+        <ClockIcon className="h-5" />
+        <span>
+          <BookingEventData eventId={eventId} expandActivity="duration" />{' '}
+          Minutes
+        </span>
+      </Typography.p>
     </div>
   );
 
@@ -61,7 +62,9 @@ const BookingActivity: FC<BookingActivityProps> = ({
     return (
       <>
         <Typography.h1 uppercase>Booking Activity</Typography.h1>
-        <Typography.h2 uppercase>{name}</Typography.h2>
+        <Typography.h2 uppercase>
+          <BookingEventData eventId={eventId} pick="name" />
+        </Typography.h2>
         {metadata}
         <div>{action}</div>
       </>
@@ -77,9 +80,15 @@ const BookingActivity: FC<BookingActivityProps> = ({
       <div className="flex justify-between gap-6">
         <div className={clsx('flex gap-6', variant === 'card' && 'flex-col')}>
           <div>
-            <Typography.h3 uppercase>{name}</Typography.h3>
+            <Typography.h3 uppercase>
+              <BookingEventData eventId={eventId} pick="name" />
+            </Typography.h3>
             <Typography.h4 styledAs="subtext" uppercase>
-              {facility}
+              <BookingEventData
+                eventId={eventId}
+                expandActivity="name"
+                expandFacility="name"
+              />
             </Typography.h4>
           </div>
           {metadata}

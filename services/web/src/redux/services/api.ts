@@ -1,4 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import dayjs from 'dayjs';
 import type {
   GetSessionResponse,
   LoginRequest,
@@ -12,6 +13,8 @@ import type {
 import type {
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
+  GetBookingEventsRequest,
+  GetBookingEventsResponse,
   GetBookingsRequest,
   GetBookingsResponse,
 } from './types/bookings';
@@ -54,6 +57,7 @@ export const api = createApi({
   tagTypes: [
     'User',
     'Booking',
+    'BookingEvent',
     'BookingAvailability',
     'Facility',
     'FacilityActivity',
@@ -256,7 +260,7 @@ export const api = createApi({
           url: `/booking/bookings/availability?${search.toString()}`,
         };
       },
-      providesTags: ['BookingAvailability'],
+      providesTags: ['BookingAvailability', 'BookingEvent'],
     }),
 
     getBookings: builder.query<GetBookingsResponse, GetBookingsRequest>({
@@ -271,6 +275,25 @@ export const api = createApi({
         };
       },
       providesTags: ['Booking'],
+    }),
+
+    getBookingEvents: builder.query<
+      GetBookingEventsResponse,
+      GetBookingEventsRequest
+    >({
+      query: () => {
+        const start = dayjs();
+        const end = start.add(8, 'days');
+
+        const search = new URLSearchParams();
+        search.set('start', `${start.valueOf()}`);
+        search.set('end', `${end.valueOf()}`);
+
+        return {
+          url: `/booking/events?${search.toString()}`,
+        };
+      },
+      providesTags: ['BookingEvent'],
     }),
   }),
 });
@@ -299,4 +322,5 @@ export const {
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
   useGetBookingsQuery,
+  useGetBookingEventsQuery,
 } = api;

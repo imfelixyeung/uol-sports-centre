@@ -56,8 +56,7 @@ const UserDashboardPage = () => {
         <BookingActivity
           key={booking.id}
           datetime={new Date(booking.starts)}
-          name="Booking Facility"
-          facility="Facility Name"
+          eventId={booking.eventId}
         />
       ))}
 

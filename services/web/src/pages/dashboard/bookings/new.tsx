@@ -32,7 +32,7 @@ const NewBookingsPage = () => {
                 datetime: new Date(booking.starts),
                 capacity: booking.capacity,
                 duration: booking.duration,
-                name: booking.event.name,
+                eventId: booking.event.id,
                 availableBooking: booking,
               }))}
               title={<SelectedBookingsDropdown />}
