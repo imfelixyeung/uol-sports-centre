@@ -326,7 +326,7 @@ class BookingService {
 
     if (event.type === 'SESSION') {
       // check if 1 booking exists
-      if (bookings.metadata.count > 1)
+      if (bookings.metadata.count >= 1)
         return new Error('Unable to book session, booking already exists');
     } else {
       // get capacity information from facilities
