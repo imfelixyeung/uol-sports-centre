@@ -358,6 +358,16 @@ paths:
       responses:
         "200":
           description: OK
+  
+  /refund/<int:booking_id>:
+    get:
+      tags:
+        - payments
+      description: "Endpoint to process refunds for booking"
+
+      responses:
+        "200":
+          description: OK
 
   /payments/health:
     get:
