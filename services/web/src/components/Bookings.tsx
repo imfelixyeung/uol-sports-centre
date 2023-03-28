@@ -33,16 +33,18 @@ const availableViews = [
 const defaultView: View = 'calendar';
 type View = (typeof availableViews)[number]['id'];
 
+interface BookingProps {
+  id?: number;
+  datetime: Date;
+  capacity?: BookingCapacity;
+  duration?: number;
+  eventId: number;
+  availableBooking?: AvailableBooking;
+}
+
 interface BookingsProps {
   title: ReactNode;
-  bookings: {
-    id?: number;
-    datetime: Date;
-    capacity?: BookingCapacity;
-    duration?: number;
-    eventId: number;
-    availableBooking?: AvailableBooking;
-  }[];
+  bookings: BookingProps[];
 }
 
 const Bookings: FC<BookingsProps> = ({title, bookings}) => {
@@ -138,14 +140,7 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
 };
 
 const BookingsCalendarView: FC<{
-  bookings: {
-    id?: number;
-    datetime: Date;
-    capacity?: BookingCapacity;
-    duration?: number;
-    eventId: number;
-    availableBooking?: AvailableBooking;
-  }[];
+  bookings: BookingProps[];
 }> = ({bookings}) => {
   const calendarStart = Math.min(
     ...bookings.map(booking => booking.datetime.getTime())
