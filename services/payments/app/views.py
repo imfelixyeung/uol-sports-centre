@@ -18,9 +18,10 @@ from app.payments import (make_a_purchase, get_payment_manager, change_price,
 import env
 
 stripe.api_key = env.STRIPE_API_KEY
+DECODE_KEY = env.DECODE_KEY
 
 
-@app.route("/management/discount/change/<int:amount>", methods=["GET"])
+@app.route("/discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
   """Retrieves the new discount amount and changes it"""
   auth = request.headers.get("Authorization")
@@ -32,8 +33,7 @@ def change_discount(amount):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  secret_key = "your-secret-key"
-  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -43,7 +43,8 @@ def change_discount(amount):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/management/sales/<string:product_type>", methods=["GET"])
+@app.route("/sales/<string:product_type>", methods=["GET"])
+@app.route("/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
   """Function that retrieves the sales from the last 
     7 days for a given product type"""
@@ -57,8 +58,7 @@ def get_sales_lastweek(product_type: str):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  secret_key = "your-secret-key"
-  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -69,12 +69,11 @@ def get_sales_lastweek(product_type: str):
 
 
 @app.route("/checkout-session/<int:user_id>", methods=["POST"])
-def redirect_checkout():
+def redirect_checkout(user_id: int):
   """It returns an url for checkout"""
   # Getting the required data through json
   data = request.get_json()
 
-  user_id = data["user_id"]
   products = data["products"]
   payment_mode = data["payment_mode"]
 
@@ -149,7 +148,7 @@ def webhook_received():
       # Create a new charge for the product
       charge = stripe.Charge.create(
           amount=charge_amount,
-          currency="usd",
+          currency="gbp",
           customer=session.customer,
           description=purchased_item.price.product,
       )
@@ -191,13 +190,9 @@ def webhook_received():
 
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
-def get_purchased_products():
+def get_purchased_products(user_id: int):
+def get_purchased_products(user_id: int):
   """Retrieve all purchased products for a given user"""
-
-  # Getting the required data through json
-  data = request.get_json()
-
-  user_id = data["user_id"]
 
   auth = request.headers.get("Authorization")
 
@@ -208,8 +203,7 @@ def get_purchased_products():
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  secret_key = "your-secret-key"
-  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -226,7 +220,7 @@ def customer_portal(user_id: int):
   return redirect(get_payment_manager(user_id), code=303)
 
 
-@app.route("/management/change-price", methods=["POST"])
+@app.route("/change-price", methods=["POST"])
 def change_product_price():
   """End point for changing the price for managemnet uses"""
 
@@ -239,8 +233,7 @@ def change_product_price():
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  secret_key = "your-secret-key"
-  decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":

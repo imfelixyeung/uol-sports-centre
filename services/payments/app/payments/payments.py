@@ -4,6 +4,8 @@ import stripe
 from stripe import error as stripe_errors
 from datetime import datetime, timedelta
 import requests
+from datetime import datetime, timedelta
+import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -32,27 +34,6 @@ def make_purchasable(product_name: str,
               product_type)
 
 
-#def send_receipt(user_id: int, session_id: str):
-# """Sends a receipt to the given user for the given session"""
-#stripe_user = get_user(user_id)
-
-# Get the payment intent ID from the stripe session
-#session = stripe.checkout.Session.retrieve(session_id)
-#payment_intent_id = session.payment_intent
-#The following is commented out for now in order to not return any errors
-# Get the customer email through endpoint call
-# response = requests.get(f"http://gateway/api/auth/{user_id}", timeout=5)
-
-# data = response.json()
-# email_address = data["data"]["email"]
-
-# # Send the receipt email to customer
-# stripe.PaymentIntent.confirm(
-#     payment_intent_id,
-#     receipt_email=email_address,
-# )
-
-
 #Returns the pdf download link for a receipt, given the order ID
 def get_receipt(order_id: int):
   """Get receipt for pdf download"""
@@ -78,6 +59,7 @@ def make_a_purchase(user_id: int,
 
   # Stores all the products that are about to be purchased
   line_items = []
+  bookings_count = 0
 
   if not test:
     #The start date and end date used for filtering
@@ -146,7 +128,7 @@ def make_a_purchase(user_id: int,
           timeout=5)
 
       if response_users.status_code != 200:
-        return {"error": "failed to recieve response from users"}
+        return {"error": "Cannot get the details for the user."}
 
       update_subscription = False
 
@@ -159,8 +141,6 @@ def make_a_purchase(user_id: int,
       success_url=success_url,
       cancel_url=success_url,
   )
-
-  # send_receipt(user_id, session.id)
 
   return session.url
 
@@ -182,9 +162,6 @@ def change_price(new_price: str, product_name: str):
 
 def apply_discount(membership: bool):
   """Applies a discount to a product based on the discount condition"""
-
-  # Get the original price of the product
-  #product_price = get_product(product_name)[2]
 
   # Apply the discount
   try:
@@ -209,7 +186,7 @@ def change_discount_amount(amount: float):
       metadata={"percent_off": amount},
   )
 
-  return "SUCCESSS"
+  return 200
 
 
 def get_payment_manager(user_id: int):
@@ -260,6 +237,7 @@ def cancel_subscription(user_id: int):
 
 
 def refund_booking(booking_id: str):
+  """Refunds the booking to the user for the given booking id"""
   # Retrieve the purchase information from the database
   order = get_order(booking_id)
 
