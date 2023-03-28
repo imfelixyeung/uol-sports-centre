@@ -7,6 +7,8 @@ import {PaginatedBookings} from '@/types/responses';
 import paginationSchema from '@/schema/pagination';
 import {id, timestamp} from '@/schema';
 import NotFoundError from '@/errors/notFound';
+import {Request} from 'express-jwt';
+import {UserRole} from '@/middleware/auth';
 
 /**
  * The Booking Controller handles the incomming network requests and validates
@@ -26,7 +28,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async getBookings(req: express.Request, res: express.Response) {
+  async getBookings(req: Request, res: express.Response) {
     logger.debug('Received getBookings request');
 
     // create a schema, outlining what we expect from params
@@ -49,13 +51,36 @@ class BookingController {
     let bookings: PaginatedBookings | Error;
     if (query.data.user !== undefined) {
       const filter = {...query.data, user: query.data.user};
-      bookings = await bookingService.getUserBookings(filter).catch(err => {
-        logger.error(
-          `Error getting bookings from user ${query.data.user}: ${err}`
-        );
-        return new Error(err);
-      });
+
+      // if user is admin or trying to get their own bookings, get the bookings
+      if (
+        [UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) ||
+        req.auth?.user.id === query.data.user
+      ) {
+        bookings = await bookingService.getUserBookings(filter).catch(err => {
+          logger.error(
+            `Error getting bookings from user ${query.data.user}: ${err}`
+          );
+          return new Error(err);
+        });
+      } else {
+        return res.status(403).json({
+          status: 'error',
+          error: 'You are not allowed to view bookings for other users',
+        });
+      }
     } else {
+      // is getting all bookings
+
+      // if user is not admin, return 403
+      if (![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role)) {
+        logger.debug('User is not admin or employee');
+        return res.status(403).json({
+          status: 'error',
+          error: 'You are not allowed to view all bookings',
+        });
+      }
+
       bookings = await bookingService.get(query.data).catch(err => {
         logger.error(`Error getting bookings: ${err}`);
         return new Error(err);
@@ -80,14 +105,13 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async createBooking(req: express.Request, res: express.Response) {
+  async createBooking(req: Request, res: express.Response) {
     logger.debug('Received createBooking request');
 
     // get post body information
     const createBookingBodySchema = z.object({
       userId: z.number(),
       eventId: z.number(),
-      transactionId: z.number(),
       starts: z.string().transform(time => new Date(time)),
     });
 
@@ -125,7 +149,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async getBookingById(req: express.Request, res: express.Response) {
+  async getBookingById(req: Request, res: express.Response) {
     logger.debug('Received getBookingById request');
 
     // create a schema, outlining what we expect from params
@@ -163,6 +187,18 @@ class BookingController {
       }
     }
 
+    // if user is not admin, or the user is not the owner of the booking, return 403
+    if (
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
+      req.auth?.user.id !== booking.userId
+    ) {
+      logger.debug('User is not admin/employee or owner of booking');
+      return res.status(403).json({
+        status: 'error',
+        error: 'You are not allowed to view this booking',
+      });
+    }
+
     // after passing all the above checks, the booking should be okay
     return res.status(200).send({
       status: 'OK',
@@ -182,7 +218,6 @@ class BookingController {
     const updateBookingBodySchema = z.object({
       userId: z.number().optional(),
       eventId: z.number().optional(),
-      transactionId: z.number().optional(),
       starts: z
         .string()
         .transform(time => new Date(time))
@@ -218,11 +253,19 @@ class BookingController {
       });
 
     // check has created
-    if (updatedBooking instanceof Error)
-      return res.status(500).send({
-        status: 'error',
-        error: 'Unable to update booking',
-      });
+    if (updatedBooking instanceof Error) {
+      if (updatedBooking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: 'Unable to update booking',
+        });
+      }
+    }
 
     // after passing all the above checks, the booking should be okay
     return res.status(200).send({
@@ -260,10 +303,17 @@ class BookingController {
       });
 
     if (booking instanceof Error) {
-      return res.status(500).send({
-        status: 'error',
-        error: booking,
-      });
+      if (booking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: booking,
+        });
+      }
     }
 
     return res.status(200).send({
@@ -331,9 +381,10 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async bookBooking(req: express.Request, res: express.Response) {
+  async bookBooking(req: Request, res: express.Response) {
     const bookBodySchema = z.object({
-      starts: timestamp,
+      // accept start date as iso string zod validator
+      starts: z.string().transform(t => new Date(t).getTime()),
       event: id('event id'),
       user: id('user id'),
     });
@@ -346,13 +397,31 @@ class BookingController {
         error: query.error,
       });
 
+    // if the user is not booking for themselves and they are not an admin, return an error
+    if (
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
+      req.auth?.user.id !== query.data.user
+    ) {
+      return res.status(403).send({
+        status: 'error',
+        error: 'You do not have permission to book for this user',
+      });
+    }
+
     const booking = await bookingService.book(query.data);
 
     if (booking instanceof Error) {
-      return res.status(400).send({
-        status: 'error',
-        error: booking.message,
-      });
+      if (booking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          error: booking.message,
+        });
+      }
     }
 
     return res.status(200).send({

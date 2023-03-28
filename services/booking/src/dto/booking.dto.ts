@@ -5,7 +5,6 @@ export interface BookingDTO {
   id: number;
   userId: number;
   eventId: number;
-  transactionId: number;
   starts: string;
   created: string;
   updated: string;
@@ -33,7 +32,6 @@ export interface PossibleBookingDTO {
 export interface CreateBookingDTO {
   userId: number;
   eventId: number;
-  transactionId: number;
   starts: Date;
 }
 
@@ -41,7 +39,6 @@ export interface UpdateBookingDTO {
   id: number;
   userId?: number;
   eventId?: number;
-  transactionId?: number;
   starts?: Date;
 }
 

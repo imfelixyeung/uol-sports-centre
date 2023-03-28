@@ -6,20 +6,29 @@ import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
+import {useGetBookingsQuery} from '~/redux/services/api';
 
 const UserDashboardPage = () => {
+  const {session, token} = useAuth();
   const {user} = useUser();
+  const bookingsData = useGetBookingsQuery({
+    userId: session?.user.id,
+    token: token!,
+  });
 
   const navSection = (
     <section className="my-16">
       <div className="flex flex-wrap justify-between gap-3">
-        <Link href="/dashboard/bookings">
-          <Card variant="default" title="Booking" grow />
+        <Link href="/dashboard/bookings" className="grow">
+          <Card variant="default" title="Booking" />
         </Link>
         <Card variant="alt" title="Memberships" grow />
-        <Card variant="red" title="Profile" grow />
+        <Link href="/dashboard/profile" className="grow">
+          <Card variant="red" title="Profile" />
+        </Link>
       </div>
     </section>
   );
@@ -44,21 +53,25 @@ const UserDashboardPage = () => {
       <Typography.h2 styledAs="h1" desktopStyledAs="h2" uppercase>
         {'/// Upcoming'}
       </Typography.h2>
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
-      <BookingActivity
-        datetime={new Date('2023-01-01 00:00')}
-        name="Booking Facility"
-        facility="Facility Name"
-      />
+      {bookingsData.data ? (
+        bookingsData.data.bookings.map(booking => (
+          <BookingActivity
+            key={booking.id}
+            datetime={new Date(booking.starts)}
+            eventId={booking.eventId}
+            action={
+              <Link
+                href={`/dashboard/booking/${booking.id}`}
+                className={buttonStyles({intent: 'primary'})}
+              >
+                View
+              </Link>
+            }
+          />
+        ))
+      ) : (
+        <>No upcoming bookings...</>
+      )}
 
       <Link
         href="/dashboard/bookings"
@@ -75,11 +88,26 @@ const UserDashboardPage = () => {
   return (
     <>
       <Seo title="Dashboard" />
+
       <div>
         <PageHero
           title={`Hello ${user?.firstName ?? ''}!`}
           subtitle="Welcome to a sports centre"
         />
+        <div className="container my-3 flex flex-col gap-3">
+          {['EMPLOYEE', 'MANAGER', 'ADMIN'].includes(
+            session?.user.role ?? ''
+          ) && (
+            <>
+              <Link href="/employee">Go to Employee Portal</Link>
+            </>
+          )}
+          {['MANAGER', 'ADMIN'].includes(session?.user.role ?? '') && (
+            <>
+              <Link href="/management">Go to Management Portal</Link>
+            </>
+          )}
+        </div>
         <main className="bg-white text-black">
           {/* Desktop */}
           <div className="container hidden grid-cols-12 gap-3 py-8 lg:grid">

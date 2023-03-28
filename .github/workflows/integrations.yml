@@ -82,7 +82,7 @@ jobs:
         working-directory: ./services/booking
 
       - name: Test
-        run: pnpm run test
+        run: pnpm run test:unit
         working-directory: ./services/booking
 
   users-ci-checks:

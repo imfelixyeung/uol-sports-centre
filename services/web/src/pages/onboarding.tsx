@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {Field, Form, Formik, useFormikContext} from 'formik';
+import {Form, Formik} from 'formik';
 import {useRouter} from 'next/router';
 import type {FC, PropsWithChildren} from 'react';
 import {useEffect, useState} from 'react';
@@ -8,6 +8,7 @@ import * as yup from 'yup';
 import AppIcon from '~/components/AppIcon/AppIcon';
 import useRedirectTo from '~/components/Auth/hooks/useRedirectTo';
 import Button from '~/components/Button';
+import FormField from '~/components/FormField';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
@@ -183,7 +184,7 @@ const OnboardingPage: NextPageWithLayout = () => {
             <div className="grid grow grid-cols-2 items-start gap-6">
               <div className="flex grow flex-col gap-3">
                 {step.fields.map(field => (
-                  <OnboardingField
+                  <FormField
                     key={field.name}
                     name={field.name}
                     label={field.label}
@@ -248,36 +249,6 @@ const OnboardingStepper: FC<{
         );
       })}
     </div>
-  );
-};
-
-const OnboardingField: FC<{
-  name: string;
-  label: string;
-  required?: boolean;
-  disabled?: boolean;
-}> = ({name, label, required = false, disabled = false}) => {
-  const context = useFormikContext<Record<string, string>>();
-
-  return (
-    <label
-      htmlFor={name}
-      className={clsx('flex grow flex-col', disabled && 'opacity-20')}
-    >
-      <span>
-        {label}
-        {required && '*'}
-      </span>
-      <Field
-        id={name}
-        name={name}
-        className="border-2 border-black/20 bg-[#fff] p-2 text-black"
-        disabled={disabled}
-      />
-      {context.submitCount !== 0 && context.errors[name] && (
-        <span className="text-red-600">{context.errors[name]}</span>
-      )}
-    </label>
   );
 };
 

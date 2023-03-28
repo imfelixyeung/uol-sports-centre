@@ -1,10 +1,16 @@
-import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
+import {CreateEventDTO, EventDTO, UpdateEventDTO} from '@/dto/event.dto';
 import NotFoundError from '@/errors/notFound';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
 import {ActivitiesResponse} from '@/types/external';
+import {Prisma} from '@prisma/client';
+
+export type EventReturn = {
+  events: EventDTO[];
+  start: number | undefined;
+};
 
 /**
  * The Event DAO (Data Access Object) is used to abstract the underlying
@@ -22,8 +28,15 @@ class EventDAO {
    *
    * @memberof EventDAO
    */
-  async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
+  async getEvents(filter: EventsFilter): Promise<EventReturn | Error> {
     logger.debug('Getting events');
+
+    let start: number | undefined;
+
+    // return all events if no filter is provided
+    if (!filter.start && !filter.end && !filter.facility && !filter.activity) {
+      return {events: await prisma.event.findMany(), start: undefined};
+    }
 
     // if filter.facility is provided, get the activities for that facility
     let activityIds: number[] = [];
@@ -69,7 +82,7 @@ class EventDAO {
       (filter.facility !== undefined || filter.activity !== undefined) &&
       activityIds.length === 0
     )
-      return [];
+      return {events: [], start: undefined};
 
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
@@ -146,7 +159,7 @@ class EventDAO {
       let daysEvents = eventsByDay[day] as EventDTO[];
 
       // if is first day, ensure that all the events returned are equal to or later than the start time
-      if (index === 0)
+      if (index === 0) {
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.start as number).setHours(
             0,
@@ -154,11 +167,13 @@ class EventDAO {
             0,
             0
           );
+          if (!start || eventStartTime < start) start = eventStartTime;
           return (filter.start as number) <= eventStartTime;
         });
+      }
 
       // if is last day, ensure that all the events returned are equal to or less than the end time
-      if (index === days.length - 1)
+      if (index === days.length - 1) {
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.end as number).setHours(
             0,
@@ -168,15 +183,21 @@ class EventDAO {
           );
           return (filter.end as number) >= eventStartTime;
         });
+      }
 
       // add all events
       allEvents.push(...daysEvents);
     }
 
     // return either the list of events or the error
-    return allEvents;
+    return {events: allEvents, start: filter.start ? start : undefined};
   }
 
+  /**
+   * Creates an event in the database
+   *
+   * @memberof EventDAO
+   */
   async createEvent(eventData: CreateEventDTO): Promise<EventDTO | Error> {
     logger.debug(`Adding event to database, ${eventData}`);
 
@@ -211,6 +232,54 @@ class EventDAO {
       )
       .catch(err => {
         logger.error(`Error getting event ${err}`);
+        return new Error(err);
+      });
+
+    return event;
+  }
+
+  async updateEvent(eventData: UpdateEventDTO): Promise<EventDTO | Error> {
+    logger.debug(`Updating event in database, ${JSON.stringify(eventData)}`);
+
+    // split id and the rest of the data
+    const {id, ...updateData} = eventData;
+
+    const booking = await prisma.event
+      .update({
+        where: {
+          id: id,
+        },
+        data: updateData,
+      })
+      .catch(err => {
+        logger.error(`Error updating event ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Event ${id} not found`);
+          }
+        }
+        return new Error(err);
+      });
+
+    return booking;
+  }
+
+  async deleteEvent(eventId: number): Promise<Error | EventDTO> {
+    logger.debug(`Deleting event in database, ${eventId}`);
+
+    const event = await prisma.event
+      .delete({
+        where: {
+          id: eventId,
+        },
+      })
+      .catch(err => {
+        logger.error(`Error deleting event ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Event ${eventId} not found`);
+          }
+        }
         return new Error(err);
       });
 

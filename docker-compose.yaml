@@ -118,6 +118,7 @@ services:
       - PORT=80
       - HOST=booking
       - DATABASE_URL=postgresql://booking:booking@booking-db:5432/prod
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     depends_on:

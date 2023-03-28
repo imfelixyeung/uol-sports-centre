@@ -13,6 +13,17 @@ COPY prisma/schema.prisma ./prisma/schema.prisma
 # install packages
 RUN pnpm install
 
+######
+# CI #
+######
+FROM base as ci
+
+# copy app
+COPY . .
+
+CMD [ "pnpm", "run", "ci" ]
+
+
 #######
 # Dev #
 #######

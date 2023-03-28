@@ -3,6 +3,7 @@ import jwt_decode from 'jwt-decode';
 import {useRouter} from 'next/router';
 import type {FC, PropsWithChildren} from 'react';
 import {useCallback, useEffect} from 'react';
+import PageHero from '~/components/PageHero';
 import {
   useGetSessionQuery,
   useLoginMutation,
@@ -11,6 +12,7 @@ import {
   useRegisterMutation,
 } from '~/redux/services/api';
 import type {
+  AuthUserRole,
   Credentials,
   DecodedJsonWebToken,
   Tokens,
@@ -34,6 +36,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
   const [session, setSession] = useStorage<DecodedJsonWebToken | null>(
     'session'
   );
+
+  const isLoggedIn = !!(token && refreshToken && session);
 
   const [loginMutation] = useLoginMutation();
   const [logoutMutation] = useLogoutMutation();
@@ -63,8 +67,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
 
   const logout = async () => {
     if (!token) return;
-    await logoutMutation({token}).unwrap();
     clear();
+    await logoutMutation({token}).unwrap();
   };
 
   const register = async (credentials: Credentials) => {
@@ -151,9 +155,9 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
         logout,
         register,
         getSession,
-        token,
-        refreshToken,
-        session,
+        token: isLoggedIn ? token : null,
+        refreshToken: isLoggedIn ? refreshToken : null,
+        session: isLoggedIn ? session : null,
       }}
     >
       {children}
@@ -161,7 +165,11 @@ export const AuthProvider: FC<PropsWithChildren> = ({children}) => {
   );
 };
 
-export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
+export const PageAuthRequired: FC<
+  PropsWithChildren<{
+    rolesAllowed?: AuthUserRole[];
+  }>
+> = ({children, rolesAllowed}) => {
   const auth = useAuth();
   const router = useRouter();
 
@@ -178,16 +186,21 @@ export const PageAuthRequired: FC<PropsWithChildren> = ({children}) => {
   }, [auth.session, router]);
 
   if (!auth.session) return <></>;
+  if (rolesAllowed && !rolesAllowed.includes(auth.session.user.role))
+    return <PageHero title="Insufficient permission" />;
   return <>{children}</>;
 };
 
 // function inspired by auth0 nextjs's withPageAuthRequired function
 export const withPageAuthRequired = <T extends {} = {}>(
-  Page: NextPageWithLayout
+  Page: NextPageWithLayout,
+  options: {
+    rolesAllowed?: AuthUserRole[];
+  } = {}
 ): NextPageWithLayout<T> => {
   const WithPageAuthRequired: NextPageWithLayout<T> = (props: T) => {
     return (
-      <PageAuthRequired>
+      <PageAuthRequired rolesAllowed={options.rolesAllowed}>
         <Page {...props} />
       </PageAuthRequired>
     );
