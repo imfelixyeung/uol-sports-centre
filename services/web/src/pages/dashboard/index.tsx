@@ -52,21 +52,25 @@ const UserDashboardPage = () => {
       <Typography.h2 styledAs="h1" desktopStyledAs="h2" uppercase>
         {'/// Upcoming'}
       </Typography.h2>
-      {bookingsData.data?.bookings.map(booking => (
-        <BookingActivity
-          key={booking.id}
-          datetime={new Date(booking.starts)}
-          eventId={booking.eventId}
-          action={
-            <Link
-              href={`/dashboard/booking/${booking.id}`}
-              className={buttonStyles({intent: 'primary'})}
-            >
-              View
-            </Link>
-          }
-        />
-      ))}
+      {bookingsData.data ? (
+        bookingsData.data.bookings.map(booking => (
+          <BookingActivity
+            key={booking.id}
+            datetime={new Date(booking.starts)}
+            eventId={booking.eventId}
+            action={
+              <Link
+                href={`/dashboard/booking/${booking.id}`}
+                className={buttonStyles({intent: 'primary'})}
+              >
+                View
+              </Link>
+            }
+          />
+        ))
+      ) : (
+        <>No upcoming bookings...</>
+      )}
 
       <Link
         href="/dashboard/bookings"
