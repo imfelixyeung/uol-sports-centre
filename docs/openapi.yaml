@@ -241,6 +241,13 @@ paths:
 
   /payments/checkout-session/{user_id}:
     post:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 6
       tags:
         - payments
       description: "Generates checkout sessions for products in stripe"
@@ -281,6 +288,14 @@ paths:
 
   /payments/purchased-products/{userID}:
     get:
+      parameters:
+        - name: userID
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 6
+
       tags:
         - payments
       description: "Retrieves all purchased products for a given user"
@@ -291,6 +306,13 @@ paths:
 
   /payments/get-prices/{product_type}:
     get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
+
       tags:
         - payments
       description: "Returns pricing list for the chosen product type"
@@ -301,6 +323,12 @@ paths:
 
   /payments/discount/change/{amount}:
     get:
+      parameters:
+        - name: amount
+          in: path
+          schema:
+            type: number
+          required: true
       tags:
         - payments
       description: "Enables a user with management authority to change the discount amount"
@@ -311,6 +339,12 @@ paths:
 
   /payments/sales/{product_type}:
     get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
       tags:
         - payments
       description: "Returns the sales of the past week as dictionaries for the specified product type"
@@ -321,6 +355,12 @@ paths:
 
   /payments/customer-portal/{user_id}:
     get:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
       tags:
         - payments
       description: "Generates a stripe customer portal URL for the customer"
@@ -331,6 +371,13 @@ paths:
 
   /payments/cancel-membership/{user_id}:
     get:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
+
       tags:
         - payments
       description: "Cancels existing membership for the given user"
@@ -341,6 +388,13 @@ paths:
 
   /payments/refund/{booking_id}:
     get:
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+
       tags:
         - payments
       description: "Endpoint to process refunds for booking"
