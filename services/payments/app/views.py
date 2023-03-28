@@ -312,7 +312,7 @@ def refund(booking_id):
   return jsonify({"message": "Refund processed successfully."}), 200
 
 
-@app.route("/receipt/<int: booking_id>", methods=["GET"])
+@app.route("/receipt/<int:booking_id>", methods=["GET"])
 def get_receipt(booking_id):
   """Endpoint to retrieve receipt PDF download link"""
 
