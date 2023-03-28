@@ -4,8 +4,6 @@ import stripe
 from stripe import error as stripe_errors
 from datetime import datetime, timedelta
 import requests
-from datetime import datetime, timedelta
-import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
