@@ -12,10 +12,11 @@ import {useUser} from '~/providers/user/hooks/useUser';
 import {useGetBookingsQuery} from '~/redux/services/api';
 
 const UserDashboardPage = () => {
-  const {session} = useAuth();
+  const {session, token} = useAuth();
   const {user} = useUser();
   const bookingsData = useGetBookingsQuery({
     userId: session?.user.id,
+    token: token!,
   });
 
   const navSection = (

@@ -13,10 +13,10 @@ import type {QrBooking} from '~/schema/qrBooking';
 
 const ViewBookingPage = () => {
   const router = useRouter();
-  const {session} = useAuth();
+  const {session, token} = useAuth();
   const bookingId = router.query.id;
   const bookingData = useGetBookingQuery(
-    {bookingId: parseInt(bookingId as string)},
+    {bookingId: parseInt(bookingId as string), token: token!},
     {skip: !bookingId}
   );
 

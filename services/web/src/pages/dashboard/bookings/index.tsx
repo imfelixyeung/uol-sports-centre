@@ -10,9 +10,10 @@ import {withUserOnboardingRequired} from '~/providers/user';
 import {useGetBookingsQuery} from '~/redux/services/api';
 
 const DashboardBookingsPage = () => {
-  const {session} = useAuth();
+  const {session, token} = useAuth();
   const bookingsData = useGetBookingsQuery({
     userId: session?.user.id,
+    token: token!,
   });
 
   const bookings = bookingsData.data?.bookings;

@@ -5,6 +5,7 @@ import {QrReader} from 'react-qr-reader';
 import BookingActivity from '~/components/BookingActivity';
 import Json from '~/components/Json';
 import Typography from '~/components/Typography';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {useGetBookingQuery, useGetUserRecordQuery} from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 import {qrBookingSchema} from '~/schema/qrBooking';
@@ -95,7 +96,8 @@ const BookingWrapper: FC<{
   bookingId: number;
   userId: number;
 }> = ({bookingId, userId}) => {
-  const bookingData = useGetBookingQuery({bookingId});
+  const {token} = useAuth();
+  const bookingData = useGetBookingQuery({bookingId, token: token!});
   const booking = bookingData.data?.booking;
 
   if (bookingData.isLoading) return <>Loading</>;

@@ -265,22 +265,28 @@ export const api = createApi({
       providesTags: ['BookingAvailability', 'BookingEvent'],
     }),
 
-    getBookings: builder.query<GetBookingsResponse, GetBookingsRequest>({
-      query: ({limit = null, page = null, userId: user = null}) => {
-        const search = new URLSearchParams();
-        if (page !== null) search.set('page', `${page}`);
-        if (limit !== null) search.set('limit', `${limit}`);
-        if (user !== null) search.set('user', `${user}`);
+    getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
+      {
+        query: ({limit = null, page = null, userId: user = null, token}) => {
+          const search = new URLSearchParams();
+          if (page !== null) search.set('page', `${page}`);
+          if (limit !== null) search.set('limit', `${limit}`);
+          if (user !== null) search.set('user', `${user}`);
 
-        return {
-          url: `/booking/bookings?${search.toString()}`,
-        };
-      },
-      providesTags: ['Booking'],
-    }),
+          return {
+            url: `/booking/bookings?${search.toString()}`,
+            headers: {Authorization: `Bearer ${token}`},
+          };
+        },
+        providesTags: ['Booking'],
+      }
+    ),
 
-    getBooking: builder.query<GetBookingResponse, GetBookingRequest>({
-      query: ({bookingId}) => `/booking/bookings/${bookingId}`,
+    getBooking: builder.query<GetBookingResponse, GetBookingRequest & Token>({
+      query: ({bookingId, token}) => ({
+        url: `/booking/bookings/${bookingId}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
       providesTags: ['Booking'],
     }),
 
