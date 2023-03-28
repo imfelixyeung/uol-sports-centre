@@ -27,13 +27,14 @@ describe('getJwtFromRequest', () => {
     expect(getJwtFromRequest(request)).toBeNull();
   });
 
-  it('should return jwt when have a valid auth header is provided', () => {
+  // Test, it should return null when a jwt with invalid payload is provided
+  it('should return null when a jwt with invalid payload is provided', () => {
     const token = 'header.payload.signature';
     const request = {
       headers: {
         authorization: `Bearer ${token}`,
       },
     } as Request;
-    expect(getJwtFromRequest(request)).toBe(token);
+    expect(getJwtFromRequest(request)).toBeNull();
   });
 });

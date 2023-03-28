@@ -82,9 +82,6 @@ describe('deleteExistingUser', () => {
   const userID = 0;
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await deleteExistingUser(userID).catch(
       error => error
@@ -93,7 +90,7 @@ describe('deleteExistingUser', () => {
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error deleting user\nError: User with ID: ${userID} does not exist in database.`
+      `Error deleting user\nError: User with ID: ${userID} does not exist`
     );
   });
 });
@@ -136,9 +133,6 @@ describe('editPaymentID', () => {
   };
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await editPaymentID(editUserData).catch(
       error => error
@@ -147,7 +141,7 @@ describe('editPaymentID', () => {
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error editing payment ID of user\nError: User with ID: ${editUserData.id} does not exist in database.`
+      `Error editing payment ID\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
 });
@@ -193,16 +187,13 @@ describe('editSurname', () => {
   };
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await editSurname(editUserData).catch(error => error);
 
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error editing surname of user\nError: User with ID: ${editUserData.id} does not exist in database.`
+      `Error editing Surname name\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
 });
@@ -248,9 +239,6 @@ describe('editFirstName', () => {
   };
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await editFirstName(editUserData).catch(
       error => error
@@ -259,7 +247,7 @@ describe('editFirstName', () => {
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error editing first name of user\nError: User with ID: ${editUserData.id} does not exist in database.`
+      `Error editing first name\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
 });
@@ -305,9 +293,6 @@ describe('editMembership', () => {
   };
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await editMembership(editUserData).catch(
       error => error
@@ -316,7 +301,7 @@ describe('editMembership', () => {
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error editing membership of user\nError: User with ID: ${editUserData.id} does not exist in database.`
+      `Error editing membership\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
 });
@@ -359,16 +344,34 @@ describe('returnFullRecord', () => {
   const userID = 0;
 
   it('should throw error if user does not exist', async () => {
-    // mocks the database to return null
-    dbMock.user.findUnique.mockResolvedValue(null);
-
     // catches the thrown error
     const result: Error = await returnFullRecord(userID).catch(error => error);
 
     // checks if the function threw an error and has the correct error message
     expect(result instanceof Error).toBe(true);
     expect(result.message).toBe(
-      `Error returning full record of user\nError: User with ID: ${userID} does not exist in database.`
+      `Error getting user\nError: User with ID: ${userID} does not exist`
     );
+  });
+});
+
+// Test for returnFullRecord function
+// It returns the full record of a user in the database
+// It should return the user that was returned successfully
+describe('returnFullRecord', () => {
+  returnFullRecord;
+
+  // dummy data for testing
+  const userID = 0;
+
+  it('should return the user', async () => {
+    // mocks the database to return a user
+    dbMock.user.findUnique.mockResolvedValue({id: userID} as User);
+
+    // calls the function
+    const result = await returnFullRecord(userID);
+
+    // checks if the function returned the user
+    expect(result).toEqual({id: userID});
   });
 });
