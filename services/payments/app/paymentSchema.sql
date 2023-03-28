@@ -5,21 +5,21 @@ CREATE TABLE products (
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT
-    CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL,
-    booking_id TEXT
+    CHECK( productType IN ('facility', 'activity', 'session', 'membership')) NOT NULL
 );
 
 DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
-    order_id INTEGER PRIMARY KEY,
+    order_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     user_id INTEGER NOT NULL,
     product_id TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT,
     chargeID TEXT NOT NULL,
-    reciept_pdf TEXT,  
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    reciept_pdf TEXT,
+    booking_id INTEGER,  
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
 );
 
 DROP TABLE IF EXISTS customers;
@@ -29,4 +29,12 @@ CREATE TABLE customers (
     stripe_id TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES orders(user_id),
     PRIMARY KEY (user_id, stripe_id)
+)
+
+CREATE TABLE pending (
+    user_id INTEGER NOT NULL, 
+    event_id INTEGER NOT NULL, 
+    starts TEXT NOT NULL,
+    checkout_id TEXT NOT NULL, 
+    PRIMARY KEY (user_id, event_id, starts)
 )

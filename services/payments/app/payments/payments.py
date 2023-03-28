@@ -8,13 +8,11 @@ import requests
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
                           update_price, get_pricing_lists, get_purchases,
-                          get_order, delete_order)
+                          get_order, delete_order, add_pending)
 
 
-def make_purchasable(product_name: str,
-                     product_price: float,
-                     product_type: str,
-                     booking_id=""):
+def make_purchasable(product_name: str, product_price: float,
+                     product_type: str):
   """Make a chosen product purchasable through adding to stripe and DB"""
 
   #Adding product to stripe
@@ -28,12 +26,11 @@ def make_purchasable(product_name: str,
   #currency="gbp",
   #product=product.stripe_id)
   #Adding product to database
-  add_product(product_name, product.stripe_id, str(product_price), booking_id,
-              product_type)
+  add_product(product_name, product.stripe_id, str(product_price), product_type)
 
 
 def make_a_purchase(user_id: int,
-                    products: list[str],
+                    products: list[dict],
                     payment_mode: str,
                     test=False,
                     success_url=LOCAL_DOMAIN):
@@ -76,10 +73,9 @@ def make_a_purchase(user_id: int,
 
   for product in products:
     # Gets the product ID and price from the products table
-    product_id = get_product(product)[0]
-    product_type = get_product(product)[3]
+    product_id = get_product(product["type"])[0]
 
-    if product_type == "session":
+    if product[type] == "booking":
       bookings_count += 1
 
     # Gets the product price from the products table
@@ -111,6 +107,11 @@ def make_a_purchase(user_id: int,
       success_url=success_url,
       cancel_url=success_url,
   )
+
+  for product in products:
+    if product["type"] == "booking":
+      add_pending(product["data"]["userId"], product["data"]["eventId"],
+                  product["data"]["starts"], session.stripe_id)
 
   return session.url
 

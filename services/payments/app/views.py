@@ -1,5 +1,5 @@
 """Payments Microservice:
-Provides functionality for making payments for subscriptions"""
+Provides functionality for making payments for products"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import requests
@@ -11,8 +11,9 @@ from flask import request, jsonify, redirect, make_response
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, delete_order, get_sales,
-                          get_pricing_lists, get_order, get_user, get_product,
-                          get_user_from_stripe)
+                          get_pricing_lists, get_order, get_user,
+                          get_user_from_stripe, get_product, get_pending,
+                          delete_pending)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -72,20 +73,17 @@ def get_sales_lastweek(product_type: str):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/checkout-session/<int:user_id>", methods=["POST"])
-def redirect_checkout(user_id: int):
+@app.route("/checkout-session", methods=["POST"])
+def redirect_checkout():
   """It returns an url for checkout"""
   # Getting the required data through json
-  data = request.get_json()
-
-  products = data["products"]
-
   payment_mode = "payment"
+  products = request.get_json()
+  user_id = 1
   for product in products:
-    saved = get_product(product)
-    if saved[3] == "subscription":
+    user_id = product["userId"]
+    if product["type"] == "membership":
       payment_mode = "subscription"
-      break
 
   return make_a_purchase(user_id, products, payment_mode)
 
@@ -99,12 +97,8 @@ def create_purchasable():
   product_name = data["product_name"]
   product_price = data["product_price"]
   product_type = data["product_type"]
-  booking_id = data["booking_id"]
 
-  if booking_id is None:
-    make_purchasable(product_name, product_price, product_type)
-  else:
-    make_purchasable(product_name, product_price, product_type, booking_id)
+  make_purchasable(product_name, product_price, product_type)
 
   return jsonify({"message": "Product made purchasable."}), 200
 
@@ -163,15 +157,18 @@ def webhook_received():
           description=purchased_item.price.product,
       )
 
-      #If item is a booking, book via bookings microservice
+      #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] == "session":
-        booking = get_product(product.name)
-        requests.post("http://gateway/api/booking/bookings/book/",
-                      json={
-                          "userId": session.customer,
-                          "eventId": booking[4]
-                      },
-                      timeout=5)
+        pending_bookings = get_pending(session.stripe_id)
+        for booking in pending_bookings:
+          requests.post("http://gateway/api/booking/bookings/book/",
+                        json={
+                            "userId": booking[0],
+                            "eventId": booking[1],
+                            "starts": booking[2]
+                        },
+                        timeout=5)
+
       #If item is a subscription, add an expiry date and update users
       if product.object == "subscription":
 
@@ -181,11 +178,15 @@ def webhook_received():
                       timeout=5)
 
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, expiry_time, invoice.invoice_pdf,
-                     charge.id)
+                     transaction_time, charge.id, invoice.invoice_pdf,
+                     expiry_time)
       else:
         add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, invoice.invoice_pdf, charge.id)
+                     transaction_time, charge.id, invoice.invoice_pdf)
+
+    #remove pending booking transactions as purchase is complete
+    delete_pending(session.stripe_id)
+
     return make_response("", 200)
 
   #Update subscription if invoice has been paid
@@ -211,6 +212,14 @@ def webhook_received():
     customer = subscription.customer
     product = subscription.items.data[1].price.product
     update_expiry(customer, product, str(datetime.now()))
+
+  #Delete pending bookings if session expired
+  elif event.type == "checkout.session.expired":
+    session = stripe.checkout.Session.retrieve(
+        event.data.object.id,
+        expand=["line_items"],
+    )
+    delete_pending(session.stripe_id)
   return make_response("", 200)
 
 

@@ -30,18 +30,13 @@ def init_database() -> None:
   connection.close()
 
 
-def add_product(name: str, product_id: str, price: str, booking_id: str,
-                product_type: str):
+def add_product(name: str, product_id: str, price: str, product_type: str):
   """Adds a new product to the database"""
   connection = sqlite3.connect(DATABASE_URL)
   cur = connection.cursor()
-  if booking_id == "":
-    cur.execute(
-        """INSERT INTO products (product_id, productName, price, productType) 
+  cur.execute(
+      """INSERT INTO products (product_id, productName, price, productType) 
         VALUES (?, ?, ?, ?)""", (product_id, name, price, product_type))
-  else:
-    cur.execute("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
-                (product_id, name, price, product_type, booking_id))
   last_row_id = cur.lastrowid
   connection.commit()
   connection.close()
@@ -141,26 +136,24 @@ def add_purchase(customer_id: str,
                  purchase_date: str,
                  charge_id: str,
                  invoice_pdf: str,
-                 expiry: Optional[str] = None):
+                 expiry: Optional[str] = None,
+                 booking_id: Optional[int] = None):
   """Function that adds a new purchase to the database"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
 
-  # Case when expiry date is provided
-  if expiry is not None:
-    cur.execute(
-        """INSERT INTO orders (user_id, product_id, 
-        purchaseDate, expiryDate, chargeID, reciept_pdf)
-        VALUES (?, ?, ?, ?, ?, ?)""", (customer_id, product_id, purchase_date,
-                                       expiry, charge_id, invoice_pdf))
-
-  # If it is not
-  else:
-    cur.execute(
-        """INSERT INTO orders (user_id, product_id, purchaseDate, chargeID,
-        reciept_pdf)
-        VALUES (?, ?, ?, ?, ?)""",
-        (customer_id, product_id, purchase_date, charge_id, invoice_pdf))
+  cur.execute(
+      """INSERT INTO orders 
+      (user_id, 
+      product_id, 
+      purchaseDate, 
+      expiryDate, 
+      chargeID, 
+      receipt_pdf, 
+      booking_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)""",
+      (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
+       booking_id))
   con.commit()
   con.close()
 
@@ -211,11 +204,8 @@ def get_order(booking_id: int):
   """Function to get the order associated with a booking"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  product_id = cur.execute(
-      """SELECT product_id FROM products WHERE booking_id = ?""",
-      [booking_id]).fetchone()
-  order = cur.execute("""SELECT * FROM orders WHERE product_id = ?""",
-                      [product_id]).fetchone()
+  order = cur.execute("""SELECT * FROM orders WHERE booking_id = ?""",
+                      [booking_id]).fetchone()
   con.close()
 
   return order
@@ -241,7 +231,7 @@ def get_purchases(user_id: int):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   purchased_products = cur.execute(
-      """SELECT order_id, products.product_id, productType, purchaseDate, 
+      """SELECT products.product_id, productType, purchaseDate, 
     expiryDate FROM orders JOIN products ON 
     orders.product_id = products.product_id
     WHERE orders.user_id = ?""", [user_id]).fetchall()
@@ -249,16 +239,31 @@ def get_purchases(user_id: int):
   return purchased_products
 
 
-def get_purchase(order_id: int):
-  """Function to get a specific purchase by its order ID"""
+def add_pending(user_id: int, event_id: int, starts: str, checkout_id: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  purchase = cur.execute(
-      """SELECT * FROM orders
-    JOIN products ON orders.product_id = products.product_id
-    WHERE orders.order_id = ?""", [order_id]).fetchone()
+  cur.execute("""INSERT INTO pending VALUES (?, ?, ?, ?)""",
+              (user_id, event_id, starts, checkout_id))
+  con.commit()
   con.close()
-  return purchase
+
+
+def get_pending(checkout_id: str):
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  pending_bookings = cur.execute(
+      """SELECT * FROM pending WHERE checkout_id = ?""",
+      [checkout_id]).fetchall()
+  con.close()
+  return pending_bookings
+
+
+def delete_pending(checkout_id: str):
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  cur.execute("DELETE FROM pending WHERE checkout_id = ?", (checkout_id))
+  con.commit()
+  con.close()
 
 
 def check_health() -> bool:
