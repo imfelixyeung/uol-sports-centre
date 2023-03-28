@@ -26,11 +26,8 @@ module.exports = {
         white: '#EEEEEE',
       },
       fontFamily: {
-        body: ['var(--font-saira)', ...defaultTheme.fontFamily.sans],
-        display: [
-          'var(--font-saira-condensed)',
-          ...defaultTheme.fontFamily.sans,
-        ],
+        body: ['Saira', ...defaultTheme.fontFamily.sans],
+        display: ['Saira Condensed', 'Saira', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
         auth: "url('/assets/images/patterns/auth.svg')",

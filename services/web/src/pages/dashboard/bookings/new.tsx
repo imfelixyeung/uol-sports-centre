@@ -1,11 +1,23 @@
+import {useState} from 'react';
+import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
 import PageHero from '~/components/PageHero';
+import SelectedBookingsDropdown from '~/components/SelectedBookingsDropdown';
 import Seo from '~/components/Seo';
-import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {useGetAvailableBookingsQuery} from '~/redux/services/api';
+import type {BookingAvailabilityRequest} from '~/redux/services/types/bookings';
 
-const DashboardBookingsPage = () => {
+const NewBookingsPage = () => {
+  const [filter, setFilter] = useState<BookingAvailabilityRequest>({});
+  const availableBookingsData = useGetAvailableBookingsQuery(filter);
+  const availableBookings = availableBookingsData.data?.availableBookings;
+
+  if (availableBookingsData.isLoading) return <>Loading...</>;
+  if (availableBookingsData.isError || !availableBookings)
+    return <>Something went wrong...</>;
+
   return (
     <>
       <Seo title="Dashboard" />
@@ -16,50 +28,22 @@ const DashboardBookingsPage = () => {
         />
         <main className="grow bg-white text-black">
           <div className="container py-8">
-            <div className="mb-8 grid grid-cols-2 gap-3 bg-black p-8 text-white md:grid-cols-3 lg:grid-cols-6">
-              <label className="flex grow flex-col">
-                <span>Date</span>
-                <input type="date" className="p-2 text-black" />
-              </label>
-              <label className="flex grow flex-col">
-                <span>From</span>
-                <input type="time" className="p-2 text-black" />
-              </label>
-              <label className="flex grow flex-col">
-                <span>To</span>
-                <input type="time" className="p-2 text-black" />
-              </label>
-              <label className="flex grow flex-col">
-                <span>Activity</span>
-                <select className="p-2 text-black" defaultValue="">
-                  <option value="" hidden>
-                    ------
-                  </option>
-                </select>
-              </label>
-              <label className="flex grow flex-col">
-                <span>Facility</span>
-                <select className="p-2 text-black" defaultValue="">
-                  <option value="" hidden>
-                    ------
-                  </option>
-                </select>
-              </label>
-              <label className="flex grow flex-col">
-                <span>Places</span>
-                <select className="p-2 text-black" defaultValue="">
-                  <option value="" hidden>
-                    ------
-                  </option>
-                </select>
-              </label>
-            </div>
+            <BookingFilterForm onFilterChange={setFilter} />
+            {availableBookings.length === 0 && (
+              <>
+                No bookings available based on your filter, try changing the
+                filter.
+              </>
+            )}
             <Bookings
-              title={
-                <Typography.h2 styledAs="h1" uppercase>
-                  Available Sessions
-                </Typography.h2>
-              }
+              bookings={availableBookings.map(booking => ({
+                datetime: new Date(booking.starts),
+                capacity: booking.capacity,
+                duration: booking.duration,
+                eventId: booking.event.id,
+                availableBooking: booking,
+              }))}
+              title={<SelectedBookingsDropdown />}
             />
           </div>
         </main>
@@ -69,5 +53,5 @@ const DashboardBookingsPage = () => {
 };
 
 export default withPageAuthRequired(
-  withUserOnboardingRequired(DashboardBookingsPage)
+  withUserOnboardingRequired(NewBookingsPage)
 );
