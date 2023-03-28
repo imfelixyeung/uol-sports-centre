@@ -33,9 +33,9 @@ def make_purchasable(product_name: str,
 
 
 #Returns the pdf download link for a receipt, given the order ID
-def get_receipt(order_id: int):
+def get_receipt(booking_id: str):
   """Get receipt for pdf download"""
-  purchase = get_purchases(order_id)
+  purchase = get_order(booking_id)
   return purchase[5]
 
 
