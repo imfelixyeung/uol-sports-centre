@@ -313,7 +313,7 @@ def refund(booking_id):
 
 
 @app.route("/receipt/<int: booking_id>", methods=["GET"])
-def receipt(booking_id):
+def get_receipt(booking_id):
   """Endpoint to retrieve receipt PDF download link"""
 
   # Retrieve receipt link from the database
