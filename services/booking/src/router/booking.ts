@@ -2,7 +2,7 @@ import express, {Router} from 'express';
 import {expressjwt as jwt} from 'express-jwt';
 
 import BookingController from '@/controllers/booking.controller';
-import {adminOnly, jwtArgs} from '@/middleware/auth';
+import {roleAccess, jwtArgs, UserRole} from '@/middleware/auth';
 import {authErrorHandler} from './error';
 
 const bookingRouter: Router = express.Router();
@@ -14,7 +14,7 @@ bookingRouter.get('/', jwt(jwtArgs), BookingController.getBookings);
 bookingRouter.post(
   '/',
   jwt(jwtArgs),
-  adminOnly,
+  roleAccess([UserRole.ADMIN]),
   BookingController.createBooking
 );
 
@@ -31,7 +31,7 @@ bookingRouter.get('/:id', jwt(jwtArgs), BookingController.getBookingById);
 bookingRouter.put(
   '/:id',
   jwt(jwtArgs),
-  adminOnly,
+  roleAccess([UserRole.ADMIN]),
   BookingController.updateBookingById
 );
 
@@ -39,7 +39,7 @@ bookingRouter.put(
 bookingRouter.delete(
   '/:id',
   jwt(jwtArgs),
-  adminOnly,
+  roleAccess([UserRole.ADMIN]),
   BookingController.deleteBookingById
 );
 

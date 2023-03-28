@@ -16,11 +16,15 @@ export enum UserRole {
   EMPLOYEE = 'EMPLOYEE',
 }
 
-export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
-  if (req.auth && req.auth.user.role === UserRole.ADMIN) {
-    next();
-  } else {
-    logger.debug('Access denied for user', req.auth?.user.id, 'to', req.path);
-    res.status(403).send({status: 'error', message: 'Forbidden'});
-  }
+export const roleAccess = (allowedRoles: UserRole[]) => {
+  const roleMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if (req.auth && allowedRoles.includes(req.auth.user.role)) {
+      next();
+    } else {
+      logger.debug('Access denied for user', req.auth?.user.id, 'to', req.path);
+      res.status(403).send({status: 'error', message: 'Forbidden'});
+    }
+  };
+
+  return roleMiddleware;
 };
