@@ -73,7 +73,7 @@ def get_sales_lastweek(product_type: str):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/checkout-session", methods=["POST"])
+@app.route("/checkout-session/", methods=["POST"])
 def redirect_checkout():
   """It returns an url for checkout"""
   # Getting the required data through json

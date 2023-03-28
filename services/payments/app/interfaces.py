@@ -16,7 +16,7 @@ def create_checkout(stripe_id: str,
   product = get_product(product_name)
 
   product_type = "payment"
-  if product[3] == "subscription":
+  if product[3] == "membership":
     product_type = "subscription"
 
   if not product:
@@ -26,7 +26,7 @@ def create_checkout(stripe_id: str,
   checkout_session = stripe.checkout.Session.create(
       success_url=success_url,
       mode=product_type,
-      expires_at=int(datetime.timestamp(datetime.now())) + 1800,
+      expires_at=(int(datetime.timestamp(datetime.now())) + 4000),
       customer=stripe_id,
       line_items=[
           {

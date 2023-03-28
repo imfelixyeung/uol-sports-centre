@@ -75,7 +75,7 @@ def make_a_purchase(user_id: int,
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
 
-    if product[type] == "booking":
+    if product["type"] == "booking":
       bookings_count += 1
 
     # Gets the product price from the products table

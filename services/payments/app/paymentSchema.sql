@@ -19,7 +19,7 @@ CREATE TABLE orders (
     chargeID TEXT NOT NULL,
     reciept_pdf TEXT,
     booking_id INTEGER,  
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 DROP TABLE IF EXISTS customers;
@@ -29,7 +29,9 @@ CREATE TABLE customers (
     stripe_id TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES orders(user_id),
     PRIMARY KEY (user_id, stripe_id)
-)
+);
+
+DROP TABLE IF EXISTS pending;
 
 CREATE TABLE pending (
     user_id INTEGER NOT NULL, 
@@ -37,4 +39,4 @@ CREATE TABLE pending (
     starts TEXT NOT NULL,
     checkout_id TEXT NOT NULL, 
     PRIMARY KEY (user_id, event_id, starts)
-)
+);

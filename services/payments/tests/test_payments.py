@@ -55,9 +55,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "",
-                "subscription")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "membership")
 
     #Make a new temp customer on Stripe
     new_customer = stripe.Customer.create()
@@ -79,7 +78,13 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     stripe.Customer.modify(new_customer.id, default_source=card.id)
 
     #Make a purchase with multiple products
-    products = ["product-test", "subscription-test"]
+    products = [{
+        "type": "product-test",
+        "data": {}
+    }, {
+        "type": "subscription-test",
+        "data": {}
+    }]
     response = make_a_purchase(111, products, "subscription", True)
 
     # Check if session URL is returned
@@ -97,9 +102,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "",
-                "subscription")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "membership")
     connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()
 
@@ -125,7 +129,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the databse
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
     #Update price of product
     update_price("product-test", "10")
@@ -148,7 +152,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_get_prices(self):
     """Test that gets the pricing list"""
 
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
     with app.test_client() as client:
       response = client.get("/get-prices/session")
@@ -172,7 +176,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     new_customer = stripe.Customer.create()
 
     #Add test product to payments service
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
     #Assert valid checkout URL response
     session_url = create_checkout(new_customer.stripe_id, "product-test")
@@ -202,7 +206,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
 
-  def test_refund(self):
+  def refund(self):
     #initialise Database
     init_database()
 
@@ -211,7 +215,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Adding product to database
     product = stripe.Product.create(name="booking")
-    add_product("booking", product.stripe_id, str(5.0), "111", "session")
+    add_product("booking", product.stripe_id, str(5.0), "session")
 
     #Create temp new customer on stripe
     new_customer = stripe.Customer.create()

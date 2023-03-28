@@ -239,6 +239,15 @@ def get_purchases(user_id: int):
   return purchased_products
 
 
+def get_purchase(product_id: str):
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  product = cur.execute("""SELECT * FROM products WHERE product_id = ?""",
+                        [product_id])
+  con.close()
+  return product
+
+
 def add_pending(user_id: int, event_id: int, starts: str, checkout_id: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
