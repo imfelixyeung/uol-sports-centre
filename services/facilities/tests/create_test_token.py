@@ -2,7 +2,7 @@
 import jwt
 
 
-def create_test_token(role="admin"):
+def create_test_token(role="ADMIN"):
   """Create a test token for testing purposes"""
 
   payload = {"user": {"id": 1, "email": "Test@test.com", "role": role}}

@@ -78,7 +78,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "closing_time": int(720),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": token})
+                               headers={"Authorization": "Bearer " + token})
 
       check_query = OpenTime.query.get(2)
 
@@ -114,7 +114,7 @@ class OpenTimeTests(unittest.TestCase):
                                   "opening_time": 600,
                                   "closing_time": 930
                               },
-                              headers={"Authorization": token})
+                              headers={"Authorization": "Bearer " + token})
 
       check_query = OpenTime.query.get(1)
 
@@ -147,7 +147,8 @@ class OpenTimeTests(unittest.TestCase):
       # Get facility before deletion so we can check response later
       to_delete = OpenTime.query.get(1)
 
-      response = self.app.delete("/times/1", headers={"Authorization": token})
+      response = self.app.delete("/times/1",
+                                 headers={"Authorization": "Bearer " + token})
 
       expected_response = {
           "status": "ok",
@@ -171,7 +172,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "closing_time": str("10:30pm"),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": token})
+                               headers={"Authorization": "Bearer " + token})
 
       self.assertDictEqual({
           "status": "Failed",
@@ -181,7 +182,7 @@ class OpenTimeTests(unittest.TestCase):
   def test_permission_denied(self):
     with app.app_context():
 
-      token = create_test_token(role="user")
+      token = create_test_token(role="USER")
 
       response = self.app.post("/times/",
                                json={
@@ -189,7 +190,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "capacity": int(6),
                                    "description": "A tennis court"
                                },
-                               headers={"Authorization": token})
+                               headers={"Authorization": "Bearer " + token})
 
       self.assertDictEqual({
           "status": "Failed",

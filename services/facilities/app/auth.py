@@ -2,6 +2,8 @@
 import os
 import jwt
 
+role = "ADMIN"
+
 
 def authenticate(auth_token):
   """Authenticate user to ensure they can access specific functions"""
@@ -12,7 +14,7 @@ def authenticate(auth_token):
     secret_key = "test"
 
   #HS256 is the algorithm used to encode the token
+  token = str.replace(str(auth_token), "Bearer ", "")
+  user_token = jwt.decode(token, secret_key, algorithms=["HS256"])
 
-  user_token = jwt.decode(auth_token, secret_key, algorithms=["HS256"])
-
-  return user_token["user"]["role"] == "admin"
+  return user_token["user"]["role"] == role
