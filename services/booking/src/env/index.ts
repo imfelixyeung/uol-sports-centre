@@ -13,12 +13,13 @@ const envSchema = z.object({
     .string()
     .default('false')
     .transform(debug => debug === 'true'),
+  JWT_SIGNING_SECRET: z.string().default('secret'),
 });
 
 export const safeEnv = envSchema.safeParse(process.env);
 
 if (!safeEnv.success) {
-  console.log('Error while parsing env', safeEnv.error);
+  console.error('Error while parsing env', safeEnv.error);
   throw new Error('Failed to parse env');
 }
 

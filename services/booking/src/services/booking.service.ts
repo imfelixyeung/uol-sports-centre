@@ -32,7 +32,7 @@ class BookingService {
    * @memberof BookingService
    */
   async create(bookingData: CreateBookingDTO) {
-    logger.debug(`Create new booking, ${bookingData}`);
+    logger.debug(`Create new booking, ${JSON.stringify(bookingData)}`);
 
     return await bookingDao.addBooking(bookingData);
   }
@@ -326,7 +326,7 @@ class BookingService {
 
     if (event.type === 'SESSION') {
       // check if 1 booking exists
-      if (bookings.metadata.count > 1)
+      if (bookings.metadata.count >= 1)
         return new Error('Unable to book session, booking already exists');
     } else {
       // get capacity information from facilities
@@ -348,7 +348,6 @@ class BookingService {
     const newBooking = await this.create({
       eventId: bookingData.event,
       starts: new Date(bookingData.starts),
-      transactionId: 0,
       userId: bookingData.user,
     });
 

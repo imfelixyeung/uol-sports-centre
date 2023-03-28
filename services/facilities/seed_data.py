@@ -105,15 +105,15 @@ def seed_activities():
     if not seed_check:
       general_use = Activity(name="Swimming Pool Open Use",
                              duration=60,
-                             capacity=15,
+                             capacity=27,
                              facility_id=1)
       lane_swimming = Activity(name="Lane Swimming",
                                duration=60,
-                               capacity=15,
+                               capacity=3,
                                facility_id=1)
       lessons = Activity(name="Lessons",
                          duration=60,
-                         capacity=20,
+                         capacity=30,
                          facility_id=1)
       team_event_swimming = Activity(name="Swimming Pool Team event",
                                      duration=120,

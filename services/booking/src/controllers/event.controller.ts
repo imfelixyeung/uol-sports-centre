@@ -3,8 +3,10 @@ import logger from '@/lib/logger';
 import eventService from '@/services/event.service';
 import {z} from 'zod';
 import {id, timestamp} from '@/schema';
-import {CreateEventDTO} from '@/dto/event.dto';
+import {CreateEventDTO, UpdateEventDTO} from '@/dto/event.dto';
 import {EventType} from '@prisma/client';
+import {Request} from 'express-jwt';
+import {UserRole} from '@/middleware/auth';
 
 /**
  * The Event Controller handles the incomming network requests and validates
@@ -62,8 +64,16 @@ class EventController {
     });
   }
 
-  async createEvent(req: express.Request, res: express.Response) {
+  async createEvent(req: Request, res: express.Response) {
     logger.debug('Received createEvent request');
+
+    // if not admin, return 403
+    if (req.auth?.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({
+        status: 'error',
+        error: 'Unauthorized',
+      });
+    }
 
     // get post body information
     const createEventBodySchema = z.object({
@@ -105,8 +115,114 @@ class EventController {
   }
 
   // async getEventById(req: express.Request, res: express.Response) {}
-  // async updateEventById(req: express.Request, res: express.Response) {}
-  // async deleteEventById(req: express.Request, res: express.Response) {}
+
+  async updateEventById(req: Request, res: express.Response) {
+    logger.debug('Received updateEventById request');
+
+    // if not admin, return 403
+    if (req.auth?.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({
+        status: 'error',
+        error: 'Unauthorized',
+      });
+    }
+
+    // get post body information
+    const updateEventBodySchema = z.object({
+      name: z.string().optional(),
+      activityId: id('activity id').optional(),
+      day: z.number().optional(),
+      time: z.number().optional(),
+      duration: z.number().optional(),
+      type: z.nativeEnum(EventType).optional(),
+    });
+
+    const updateEventParamsSchema = z.object({
+      id: id('booking id'),
+    });
+
+    // ensure the request params abide by that schema
+    const body = updateEventBodySchema.safeParse(req.body);
+    const params = updateEventParamsSchema.safeParse(req.params);
+    if (!body.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed body',
+        error: body.error,
+      });
+
+    if (!params.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: params.error,
+      });
+
+    // create the new event
+    const eventData: UpdateEventDTO = {id: params.data.id, ...body.data};
+    const updatedEvent = await eventService.update(eventData).catch(err => {
+      logger.error(`Unable to update event: ${err}`);
+      return new Error(err);
+    });
+
+    if (eventData instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: 'Unable to update event',
+      });
+    }
+    // after passing all the above checks, the booking should be okay
+    return res.status(200).send({
+      status: 'OK',
+      event: updatedEvent,
+    });
+  }
+
+  async deleteEventById(req: Request, res: express.Response) {
+    logger.debug('Received deleteEventById request');
+
+    // if not admin, return 403
+    if (req.auth?.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({
+        status: 'error',
+        error: 'Unauthorized',
+      });
+    }
+
+    // get post body information
+    const deleteEventParamsSchema = z.object({
+      id: id('event id'),
+    });
+
+    // ensure the request params abide by that schema
+    const params = deleteEventParamsSchema.safeParse(req.params);
+    if (!params.success)
+      return res.status(400).json({
+        status: 'error',
+        message: 'malformed parameters',
+        error: params.error,
+      });
+
+    // create the new event
+    const deletedEvent = await eventService
+      .delete(params.data.id)
+      .catch(err => {
+        logger.error(`Unable to delete event: ${err}`);
+        return new Error(err);
+      });
+
+    if (deletedEvent instanceof Error) {
+      return res.status(500).send({
+        status: 'error',
+        error: 'Unable to delete event',
+      });
+    }
+    // after passing all the above checks, the booking should be okay
+    return res.status(200).send({
+      status: 'OK',
+      event: deletedEvent,
+    });
+  }
 }
 
 export default new EventController();

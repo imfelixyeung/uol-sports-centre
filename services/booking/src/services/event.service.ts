@@ -1,5 +1,5 @@
 import eventDao from '@/dao/event.dao';
-import {CreateEventDTO} from '@/dto/event.dto';
+import {CreateEventDTO, UpdateEventDTO} from '@/dto/event.dto';
 import logger from '@/lib/logger';
 import {EventsFilter} from '@/types/events';
 
@@ -27,6 +27,16 @@ class EventService {
   async create(eventData: CreateEventDTO) {
     logger.debug(`Creating event with data: ${eventData}`);
     return await eventDao.createEvent(eventData);
+  }
+
+  async update(eventData: UpdateEventDTO) {
+    logger.debug(`Updating event with data: ${eventData}`);
+    return await eventDao.updateEvent(eventData);
+  }
+
+  async delete(eventId: number) {
+    logger.debug(`Deleting event with id: ${eventId}`);
+    return await eventDao.deleteEvent(eventId);
   }
 }
 

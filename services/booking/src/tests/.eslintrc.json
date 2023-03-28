@@ -4,7 +4,7 @@
     "node/no-unpublished-import": [
       "error",
       {
-        "allowModules": ["supertest", "jest-mock-extended"]
+        "allowModules": ["supertest", "jest-mock-extended", "dotenv"]
       }
     ]
   }
