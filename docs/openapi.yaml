@@ -1496,9 +1496,9 @@ components:
       type: string
       description: User's role
       enum:
-        - user
-        - employee
-        - admin
+        - USER
+        - EMPLOYEE
+        - ADMIN
     AuthUserData:
       type: object
       properties:
