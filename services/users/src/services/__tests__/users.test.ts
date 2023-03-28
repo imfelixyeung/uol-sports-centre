@@ -1,7 +1,7 @@
 import {dbMock} from '../../utils/__mocks__/db.mock';
 
-import {createNewUser, deleteExistingUser} from '../users';
-import {CreateUserDBA} from '../dbRequests';
+import {createNewUser, deleteExistingUser, editPaymentID} from '../users';
+import {CreateUserDBA, EditUserDBA} from '../dbRequests';
 import {User} from '@prisma/client';
 
 // Test for createNewUser function
@@ -114,4 +114,59 @@ describe('deleteExistingUser', () => {
   });
 });
 
-// T
+// Test for editPaymentID function
+// It edits the payment ID of a user in the database
+// and then edits a user that does not exist
+// to test if the function throws an error
+describe('editPaymentID', () => {
+  editPaymentID;
+
+  // dummy data for testing
+  const editUserData: EditUserDBA = {
+    id: 0,
+    paymentID: 1,
+  };
+
+  it('should throw error if user does not exist', async () => {
+    // mocks the database to return null
+    dbMock.user.findUnique.mockResolvedValue(null);
+
+    // catches the thrown error
+    const result: Error = await editPaymentID(editUserData).catch(
+      error => error
+    );
+
+    // checks if the function threw an error and has the correct error message
+    expect(result instanceof Error).toBe(true);
+    expect(result.message).toBe(
+      `Error editing payment ID of user\nError: User with ID: ${editUserData.id} does not exist in database.`
+    );
+  });
+});
+
+// Test for editPaymentID function
+// It edits the payment ID of a user in the database
+// It should return the user that was edited successfully
+describe('editPaymentID', () => {
+  editPaymentID;
+
+  // dummy data for testing
+  const editUserData: EditUserDBA = {
+    id: 0,
+    paymentID: 1,
+  };
+
+  it('should return the edited user', async () => {
+    // mocks the database to return a user
+    dbMock.user.findUnique.mockResolvedValue({id: editUserData.id} as User);
+
+    // mocks the database to return the user that was edited
+    dbMock.user.update.mockResolvedValue({id: editUserData.id} as User);
+
+    // calls the function
+    const result = await editPaymentID(editUserData);
+
+    // checks if the function returned the user that was edited
+    expect(result).toEqual({id: editUserData.id});
+  });
+});
