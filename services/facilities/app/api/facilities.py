@@ -133,6 +133,10 @@ class FacilitiesRouter:
     return return_value
 
   def update_facility(self, facility_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
 
     # Get item to be updated
@@ -175,6 +179,10 @@ class FacilitiesRouter:
     return return_value
 
   def delete_facility(self, facility_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     to_delete = Facility.query.get(facility_id)
 
     # If the requested

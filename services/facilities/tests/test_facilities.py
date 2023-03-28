@@ -98,12 +98,15 @@ class FacilitiesTests(unittest.TestCase):
 
   def test_update_facility_success(self):
     with app.app_context():
+      token = create_test_token()
+
       response = self.app.put("/facilities/1",
                               json={
                                   "name": "Football Pitch",
                                   "capacity": 25,
                                   "description": "A great football pitch"
-                              })
+                              },
+                              headers={"Authorization": token})
 
       check_query = Facility.query.get(1)
 
@@ -129,10 +132,13 @@ class FacilitiesTests(unittest.TestCase):
 
   def test_delete_facility_success(self):
     with app.app_context():
+      token = create_test_token()
+
       # Get facility before deletion so we can check response later
       to_delete = Facility.query.get(1)
 
-      response = self.app.delete("/facilities/1")
+      response = self.app.delete("/facilities/1",
+                                 headers={"Authorization": token})
 
       expected_response = {
           "status": "ok",
