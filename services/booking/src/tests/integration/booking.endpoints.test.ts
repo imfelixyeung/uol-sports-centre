@@ -4,7 +4,13 @@ import {Booking} from '@prisma/client';
 import logger from '@/lib/logger';
 import {bookingToDTO} from '@/dto/booking.dto';
 
-import {ADMIN_TOKEN, BASE_URL, USER_TOKEN, prisma} from './base';
+import {
+  prisma,
+  BASE_URL,
+  USER_TOKEN,
+  EMPLOYEE_TOKEN,
+  ADMIN_TOKEN,
+} from './base';
 
 const BOOKINGS: Booking[] = [
   {
@@ -43,6 +49,22 @@ const BOOKINGS: Booking[] = [
     id: 5,
     eventId: 1,
     userId: 4,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 6,
+    eventId: 1,
+    userId: 1,
+    starts: new Date('2023-03-27T10:00:00.000Z'),
+    created: new Date(),
+    updated: new Date(),
+  },
+  {
+    id: 7,
+    eventId: 1,
+    userId: 1,
     starts: new Date('2023-03-27T10:00:00.000Z'),
     created: new Date(),
     updated: new Date(),
@@ -111,6 +133,19 @@ describe('Test GET /bookings endpoint', () => {
     expect(response.body.bookings).toBeDefined();
     expect(response.body.bookings).toStrictEqual(
       BOOKINGS.filter(b => b.userId === 1).map(b => bookingToDTO(b))
+    );
+  });
+
+  it('should return all bookings for employee', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.bookings).toBeDefined();
+    expect(response.body.bookings).toStrictEqual(
+      BOOKINGS.map(b => bookingToDTO(b))
     );
   });
 
@@ -191,6 +226,20 @@ describe('Test POST /bookings endpoint', () => {
     expect(response.body.status).toBe('error');
   });
 
+  it('should 403 if an employee tries adding a booking', async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`)
+      .send({
+        userId: 1,
+        eventId: 1,
+        starts: new Date(),
+      });
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.status).toBe('error');
+  });
+
   it('should add a booking if is admin', async () => {
     const response = await request(BASE_URL)
       .post('/bookings')
@@ -239,6 +288,17 @@ describe('Test GET /bookings/:id endpoint', () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.body.status).toBe('error');
+  });
+
+  it('should return booking 4 (owned by uid 3) for an employee (uid 5)', async () => {
+    const response = await request(BASE_URL)
+      .get('/bookings/4')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[3]));
   });
 
   it('should return booking 4 (owned by uid 3) for an admin (uid 2)', async () => {
@@ -322,6 +382,25 @@ describe('Test PUT /bookings/:id endpoint', () => {
     expect(response.body.status).toBe('error');
   });
 
+  it('should update a booking if is employee', async () => {
+    const response = await request(BASE_URL)
+      .put('/bookings/1')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`)
+      .send({
+        eventId: 3,
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(
+      bookingToDTO({
+        ...BOOKINGS[0],
+        eventId: 3,
+      })
+    );
+  });
+
   it('should update a booking if is admin', async () => {
     const response = await request(BASE_URL)
       .put('/bookings/1')
@@ -332,6 +411,12 @@ describe('Test PUT /bookings/:id endpoint', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toStrictEqual(
+      bookingToDTO({
+        ...BOOKINGS[0],
+        eventId: 3,
+      })
+    );
   });
 });
 
@@ -370,13 +455,26 @@ describe('Test DELETE /bookings/:id endpoint', () => {
     expect(response.body.status).toBe('error');
   });
 
+  it('should delete booking if is employee', async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/6')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[5]));
+  });
+
   it('should delete booking if is admin', async () => {
     const response = await request(BASE_URL)
-      .delete('/bookings/1')
+      .delete('/bookings/7')
       .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[6]));
   });
 });
 
@@ -467,6 +565,27 @@ describe('Test POST /bookings/book', () => {
     const response = await request(BASE_URL)
       .post('/bookings/book')
       .set('Authorization', `Bearer ${USER_TOKEN}`)
+      .send({
+        user: 1,
+        event: 1,
+        starts: '2023-03-02T10:00:00.000Z',
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking.id).toEqual(expect.any(Number));
+    expect(response.body.booking.userId).toBe(1);
+    expect(response.body.booking.eventId).toBe(1);
+    expect(response.body.booking.starts).toBe('2023-03-02T10:00:00.000Z');
+    expect(new Date(response.body.booking.created)).toBeInstanceOf(Date);
+    expect(new Date(response.body.booking.updated)).toBeInstanceOf(Date);
+  });
+
+  it("should book a slot if it's available for an employee", async () => {
+    const response = await request(BASE_URL)
+      .post('/bookings/book')
+      .set('Authorization', `Bearer ${EMPLOYEE_TOKEN}`)
       .send({
         user: 1,
         event: 1,

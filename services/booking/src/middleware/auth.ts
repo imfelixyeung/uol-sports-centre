@@ -13,6 +13,7 @@ export const jwtArgs: Params = {
 export enum UserRole {
   ADMIN = 'ADMIN',
   USER = 'USER',
+  EMPLOYEE = 'EMPLOYEE',
 }
 
 export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
