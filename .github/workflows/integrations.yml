@@ -125,7 +125,6 @@ jobs:
         run: make lint
         working-directory: ./services/facilities
 
-
   payments-ci-checks:
     runs-on: ubuntu-latest
     steps:
@@ -140,6 +139,7 @@ jobs:
           echo STRIPE_WEBHOOK=${{ secrets.STRIPE_WEBHOOK_TEST }} >> .env.ci
           echo STRIPE_API=${{ secrets.STRIPE_API_KEY_TEST }} >> .env.ci
           echo APP_PORT=${{ secrets.APP_PORT }} >> .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
 
       - name: Run ci tests in docker
         run: make ci-payments
