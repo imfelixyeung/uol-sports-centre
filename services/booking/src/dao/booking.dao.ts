@@ -27,7 +27,7 @@ class BookingDAO {
    * @memberof BookingDAO
    */
   async addBooking(bookingData: CreateBookingDTO): Promise<Booking | Error> {
-    logger.debug(`Adding booking to database, ${bookingData}`);
+    logger.debug(`Adding booking to database, ${JSON.stringify(bookingData)}`);
 
     const booking = await prisma.booking
       .create({
@@ -63,6 +63,11 @@ class BookingDAO {
       })
       .catch(err => {
         logger.error(`Error updating booking booking ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Booking ${id} not found`);
+          }
+        }
         return new Error(err);
       });
 
@@ -85,6 +90,11 @@ class BookingDAO {
       })
       .catch(err => {
         logger.error(`Error deleting booking ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Booking ${bookingId} not found`);
+          }
+        }
         return new Error(err);
       });
 
@@ -106,7 +116,9 @@ class BookingDAO {
         },
       })
       .then(value =>
-        value === null ? new NotFoundError(`Booking ${bookingId} found`) : value
+        value === null
+          ? new NotFoundError(`Booking ${bookingId} not found`)
+          : value
       )
       .catch(err => {
         logger.error(`Error getting booking ${err}`);
