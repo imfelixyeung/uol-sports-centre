@@ -10,9 +10,10 @@ from flask import request, jsonify, redirect, make_response
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, delete_order, get_sales,
-                          get_pricing_lists, get_order)
+                          get_pricing_lists, get_order, get_user)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
-                          change_discount_amount, cancel_subscription)
+                          change_discount_amount, cancel_subscription,
+                          make_purchasable)
 
 import env
 
@@ -43,6 +44,7 @@ def change_discount(amount):
 
 
 @app.route("/sales/<string:product_type>", methods=["GET"])
+@app.route("/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
   """Function that retrieves the sales from the last 
     7 days for a given product type"""
@@ -71,10 +73,30 @@ def redirect_checkout(user_id: int):
   """It returns an url for checkout"""
   # Getting the required data through json
   data = request.get_json()
+
   products = data["products"]
   payment_mode = data["payment_mode"]
 
   return make_a_purchase(user_id, products, payment_mode)
+
+
+@app.route("/make-purchasable", methods=["POST"])
+def create_purchasable():
+  """Enables a product to be purchased"""
+  #Getting the required data through json
+  data = request.get_json()
+
+  product_name = data["product_name"]
+  product_price = data["product_price"]
+  product_type = data["product_type"]
+  booking_id = data["booking_id"]
+
+  if booking_id is None:
+    make_purchasable(product_name, product_price, product_type)
+  else:
+    make_purchasable(product_name, product_price, product_type, booking_id)
+
+  return jsonify({"message": "Product made purchasable."}), 200
 
 
 @app.route("/webhook", methods=["POST"])
@@ -169,6 +191,7 @@ def webhook_received():
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
 def get_purchased_products(user_id: int):
+def get_purchased_products(user_id: int):
   """Retrieve all purchased products for a given user"""
 
   auth = request.headers.get("Authorization")
@@ -238,10 +261,14 @@ def get_prices(product_type: str):
 @app.route("/cancel-membership/<int:user_id>", methods=["GET"])
 def cancel_membership(user_id: int):
   """Cancels existing membership for the given user"""
+
+  #Check if user exists
+  if get_user(user_id) is None:
+    return jsonify({"error": "User not found."}), 404
   return jsonify(cancel_subscription(user_id))
 
 
-@app.route("/refund/<int:booking_id>", methods=["POST"])
+@app.route("/refund/<int:booking_id>", methods=["GET"])
 def refund(booking_id):
   """Endpoint to process refunds for booking"""
 
