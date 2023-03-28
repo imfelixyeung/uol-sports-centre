@@ -59,7 +59,7 @@ services:
       - ./persistence/auth/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
+      test: [ "CMD", "pg_isready", "-U", "auth", "-d", "dev" ]
       interval: 5s
       timeout: 15s
       retries: 5
@@ -94,7 +94,7 @@ services:
       - ./persistence/users/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: ["CMD", "pg_isready", "-U", "users", "-d", "dev"]
+      test: [ "CMD", "pg_isready", "-U", "users", "-d", "dev" ]
       interval: 5s
       timeout: 15s
       retries: 5
@@ -129,7 +129,7 @@ services:
       - ./persistence/status/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: ["CMD", "pg_isready", "-U", "status", "-d", "dev"]
+      test: [ "CMD", "pg_isready", "-U", "status", "-d", "dev" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -143,6 +143,7 @@ services:
       - HOST=booking
       - DATABASE_URL=postgresql://booking:booking@booking-db:5432/dev
       - DEBUG=true
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     volumes:
@@ -183,7 +184,7 @@ services:
       - ./persistence/booking/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: ["CMD", "pg_isready", "-U", "booking", "-d", "dev"]
+      test: [ "CMD", "pg_isready", "-U", "booking", "-d", "dev" ]
       interval: 5s
       timeout: 15s
       retries: 5

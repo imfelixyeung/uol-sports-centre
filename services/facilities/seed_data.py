@@ -8,7 +8,7 @@ app = create_app()
 
 def seed_facilities():
   with app.app_context():
-    seed_check = Facility.query.get(1)
+    seed_check = Facility.query.all()
 
     if not seed_check:
       swimming_pool = Facility(name="Swimming Pool",
@@ -51,7 +51,7 @@ def seed_facilities():
 
 def seed_open_time():
   with app.app_context():
-    seed_check = OpenTime.query.get(1)
+    seed_check = OpenTime.query.all()
 
     days = [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
@@ -100,20 +100,20 @@ def seed_open_time():
 
 def seed_activities():
   with app.app_context():
-    seed_check = Activity.query.get(1)
+    seed_check = Activity.query.all()
 
     if not seed_check:
       general_use = Activity(name="Swimming Pool Open Use",
                              duration=60,
-                             capacity=15,
+                             capacity=27,
                              facility_id=1)
       lane_swimming = Activity(name="Lane Swimming",
                                duration=60,
-                               capacity=15,
+                               capacity=3,
                                facility_id=1)
       lessons = Activity(name="Lessons",
                          duration=60,
-                         capacity=20,
+                         capacity=30,
                          facility_id=1)
       team_event_swimming = Activity(name="Swimming Pool Team event",
                                      duration=120,

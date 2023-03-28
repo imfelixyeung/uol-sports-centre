@@ -5,9 +5,21 @@ import PageHero from '~/components/PageHero';
 import Seo from '~/components/Seo';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {useGetBookingsQuery} from '~/redux/services/api';
 
 const DashboardBookingsPage = () => {
+  const {session, token} = useAuth();
+  const bookingsData = useGetBookingsQuery({
+    userId: session?.user.id,
+    token: token!,
+  });
+
+  const bookings = bookingsData.data?.bookings;
+
+  if (!bookings) return null;
+
   return (
     <>
       <Seo title="Dashboard" />
@@ -26,7 +38,13 @@ const DashboardBookingsPage = () => {
         />
         <main className="grow bg-white text-black">
           <div className="container py-8">
+            {bookings.length === 0 && <>You have no bookings.</>}
             <Bookings
+              bookings={bookings.map(booking => ({
+                datetime: new Date(booking.starts),
+                eventId: booking.eventId,
+                id: booking.id,
+              }))}
               title={
                 <Typography.h2 styledAs="h1" uppercase>
                   Your Bookings

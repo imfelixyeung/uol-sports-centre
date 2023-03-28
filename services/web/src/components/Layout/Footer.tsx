@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Button from '../Button';
+import {StatusOverview} from '../Status';
 import Typography from '../Typography';
 
 const quickLinks = [
@@ -20,8 +21,8 @@ const Footer = () => {
 
   return (
     <footer className="border-t-[1px] border-white bg-black">
-      <div className="container">
-        <div className="my-12 flex flex-col-reverse justify-between md:flex-row">
+      <div className="container py-12">
+        <div className="flex flex-col-reverse justify-between md:flex-row">
           <nav>
             <ul>
               {quickLinks.map((link, index) => (
@@ -47,6 +48,9 @@ const Footer = () => {
               back to top
             </span>
           </div>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <StatusOverview />
         </div>
       </div>
       <div className="border-t-[1px] border-white">

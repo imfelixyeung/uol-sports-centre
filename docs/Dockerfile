@@ -16,8 +16,5 @@ COPY . .
 
 # Continuous Integration target
 FROM base as ci
-CMD [ "pnpm", "ci" ]
-CMD [ "openapi-spec-validator", "openapi.yaml" ]
-CMD pnpm ci && openapi-spec-validator --errors=all openapi.yaml
-
+CMD [ "pnpm", "run", "ci"]
 
