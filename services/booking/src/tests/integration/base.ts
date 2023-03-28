@@ -7,6 +7,11 @@ import {PrismaClient} from '@prisma/client';
 export const prisma = new PrismaClient();
 export const BASE_URL = 'http://gateway/api/booking';
 
+const token_options: jwt.SignOptions = {
+  algorithm: 'HS256',
+  issuer: 'auth',
+};
+
 export const USER_TOKEN = jwt.sign(
   {
     user: {
@@ -17,10 +22,20 @@ export const USER_TOKEN = jwt.sign(
     type: 'access',
   },
   env.JWT_SIGNING_SECRET,
+  token_options
+);
+
+export const EMPLOYEE_TOKEN = jwt.sign(
   {
-    algorithm: 'HS256',
-    issuer: 'auth',
-  }
+    user: {
+      id: 5,
+      email: 'employee@test.com',
+      role: UserRole.EMPLOYEE,
+    },
+    type: 'access',
+  },
+  env.JWT_SIGNING_SECRET,
+  token_options
 );
 
 export const ADMIN_TOKEN = jwt.sign(
@@ -33,8 +48,5 @@ export const ADMIN_TOKEN = jwt.sign(
     type: 'access',
   },
   env.JWT_SIGNING_SECRET,
-  {
-    algorithm: 'HS256',
-    issuer: 'auth',
-  }
+  token_options
 );
