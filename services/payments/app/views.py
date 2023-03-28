@@ -18,7 +18,6 @@ from app.payments import (make_a_purchase, get_payment_manager, change_price,
 import env
 
 stripe.api_key = env.STRIPE_API_KEY
-AUTH_JWT_SIGNING_SECRET = env.AUTH_JWT_SIGNING_SECRET
 
 
 @app.route("/discount/change/<int:amount>", methods=["GET"])
@@ -34,7 +33,7 @@ def change_discount(amount):
 
   # Decode the token using the algorithm and secret key
   decoded_token = jwt.decode(token,
-                             AUTH_JWT_SIGNING_SECRET,
+                             env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
@@ -60,7 +59,7 @@ def get_sales_lastweek(product_type: str):
 
   # Decode the token using the algorithm and secret key
   decoded_token = jwt.decode(token,
-                             AUTH_JWT_SIGNING_SECRET,
+                             env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
@@ -206,7 +205,7 @@ def get_purchased_products(user_id: int):
 
   # Decode the token using the algorithm and secret key
   decoded_token = jwt.decode(token,
-                             AUTH_JWT_SIGNING_SECRET,
+                             env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
@@ -238,7 +237,7 @@ def change_product_price():
 
   # Decode the token using the algorithm and secret key
   decoded_token = jwt.decode(token,
-                             AUTH_JWT_SIGNING_SECRET,
+                             env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
