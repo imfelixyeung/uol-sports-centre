@@ -26,7 +26,8 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
   // if JWT is valid, continue
   // if JWT is invalid, return 401
 
-  const token = getJwtFromRequest(req);
+  // JWT validation
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -90,7 +91,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
   // we need to return the response
 
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -166,7 +167,7 @@ async function updateMembership(req: express.Request, res: express.Response) {
 
 async function updateFirstName(req: express.Request, res: express.Response) {
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -236,7 +237,7 @@ async function updateFirstName(req: express.Request, res: express.Response) {
 
 async function updateSurname(req: express.Request, res: express.Response) {
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -305,7 +306,7 @@ async function updateSurname(req: express.Request, res: express.Response) {
 
 async function updatePaymentID(req: express.Request, res: express.Response) {
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -373,7 +374,7 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
 
 async function createUser(req: express.Request, res: express.Response) {
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
@@ -435,7 +436,7 @@ async function createUser(req: express.Request, res: express.Response) {
 
 async function deleteUser(req: express.Request, res: express.Response) {
   // JWT validation
-  const token = getJwtFromRequest(req);
+  const token: {id: number; role: string} | null = getJwtFromRequest(req);
   if (!token) {
     return res.status(400).json({
       status: 'error',
