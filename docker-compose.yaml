@@ -151,6 +151,10 @@ services:
       - ./persistence/payments/data:/app/data
     environment:
       - APP_PORT=80
+      - STRIPE_API=${STRIPE_API}
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+
     networks:
       - network
 
