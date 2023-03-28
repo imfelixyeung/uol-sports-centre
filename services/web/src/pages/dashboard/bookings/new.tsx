@@ -14,7 +14,9 @@ const NewBookingsPage = () => {
   const availableBookingsData = useGetAvailableBookingsQuery(filter);
   const availableBookings = availableBookingsData.data?.availableBookings;
 
-  if (!availableBookings) return null; // TODO: handle loading, error states
+  if (availableBookingsData.isLoading) return <>Loading...</>;
+  if (availableBookingsData.isError || !availableBookings)
+    return <>Something went wrong...</>;
 
   return (
     <>

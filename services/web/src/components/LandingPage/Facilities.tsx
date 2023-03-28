@@ -7,7 +7,9 @@ const Facilities = () => {
   const facilitiesData = useGetFacilitiesQuery();
   const facilities = facilitiesData.data;
 
-  if (!facilities) return null; // TODO: handle loading and error
+  if (facilitiesData.isLoading) return <>Loading...</>;
+  if (facilitiesData.isError || !facilities)
+    return <>Something went wrong...</>;
 
   return (
     <div className="bg-white text-black">
