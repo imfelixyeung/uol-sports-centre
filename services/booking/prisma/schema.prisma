@@ -11,13 +11,12 @@ datasource db {
 }
 
 model Booking {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  eventId       Int
-  transactionId Int
-  starts        DateTime
-  created       DateTime
-  updated       DateTime
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  eventId Int
+  starts  DateTime
+  created DateTime
+  updated DateTime
 
   event Event @relation(fields: [eventId], references: [id])
 }
