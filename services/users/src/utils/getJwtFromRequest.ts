@@ -1,6 +1,7 @@
 import {Request} from 'express';
 import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
 import jwt from 'jsonwebtoken';
+import {z} from 'zod';
 
 export const getJwtFromRequest = (req: Request) => {
   const authorization = req.headers.authorization;
@@ -17,5 +18,16 @@ export const getJwtFromRequest = (req: Request) => {
 
   const decodedTokenData = Object.assign({}, parsedTokenData.data, jwtPayload);
 
-  return decodedTokenData as JsonWebToken;
+  // Define scheme for decoded token data
+  const schema = z.object({
+    id: z.coerce.number(),
+    role: z.string(),
+  });
+
+  const extractedData = schema.safeParse(
+    JSON.parse(decodedTokenData as JsonWebToken)
+  );
+  if (!extractedData.success) return null;
+
+  return extractedData.data;
 };
