@@ -2,6 +2,8 @@
 
 import stripe
 from stripe import error as stripe_errors
+from datetime import datetime, timedelta
+import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -61,6 +63,7 @@ def get_receipt(order_id: int):
 def make_a_purchase(user_id: int,
                     products: list[str],
                     payment_mode: str,
+                    test=False,
                     success_url=LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
@@ -76,22 +79,25 @@ def make_a_purchase(user_id: int,
   # Stores all the products that are about to be purchased
   line_items = []
 
-  #FOR NOW - Temporarirly removing microservice dependencies
-  #The start date and end date used for filtering
-  #start_date = int(round(datetime.now().timestamp() * 1000))
-  #end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000)
+  if not test:
+    #The start date and end date used for filtering
+    start_date = int(round(datetime.now().timestamp() * 1000))
+    end_date = int(
+        round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
 
-  #bookings_array = (f"http://gateway/api/booking/bookings"
-  #                  f"?user={user_id}"
-  #                  f"&start={start_date}"
-  #                  f"&end={end_date}")
+    bookings_array = (f"http://gateway/api/booking/bookings"
+                      f"?user={user_id}"
+                      f"&start={start_date}"
+                      f"&end={end_date}")
 
-  #response = requests.get(bookings_array, timeout=10)
+    response = requests.get(bookings_array, timeout=10)
 
-  # Count the number of bookings made for the
-  # current customer in the last 7 days
-  #bookings_count = len(response.json())
-  bookings_count = 6
+    # Count the number of bookings made for the
+    # current customer in the last 7 days
+    bookings_count = len(response.json())
+
+  else:
+    bookings_count = 6
 
   update_subscription = False
   discount = []
@@ -99,7 +105,7 @@ def make_a_purchase(user_id: int,
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product)[0]
-    #product_name = get_product(product)[1]
+    product_name = get_product(product)[1]
     product_type = get_product(product)[3]
 
     if product_type == "session":
@@ -131,16 +137,16 @@ def make_a_purchase(user_id: int,
     # Creates a new row in the purchased products table
     #add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
 
-    if update_subscription is True:
+    if update_subscription is True and not test:
 
       #FOR NOW - Temporarirly removing microservice dependencies
-      #response_users = requests.post(
-      #    f"http://gateway/api/users/{user_id}/updateMembership",
-      #    json={"membership": product_name},
-      #    timeout=5)
+      response_users = requests.post(
+          f"http://gateway/api/users/{user_id}/updateMembership",
+          json={"membership": product_name},
+          timeout=5)
 
-      #if response_users.status_code != 200:
-      #  return {"error": "sth wrong"}
+      if response_users.status_code != 200:
+        return {"error": "failed to recieve response from users"}
 
       update_subscription = False
 
@@ -245,13 +251,12 @@ def cancel_subscription(user_id: int):
   stripe.Subscription.delete(subscription)
 
   #FOR NOW - Temporarirly removing microservice dependencies
-  #response_users = requests.post(
-  #    f"http://gateway/api/users/{user_id}/updateMembership",
-  #    json={"membership": subscription},
-  #    timeout=5)
+  response_users = requests.post(
+      f"http://gateway/api/users/{user_id}/updateMembership",
+      json={"membership": subscription},
+      timeout=5)
 
-  #return response_users.status_code
-  return 200
+  return response_users.status_code
 
 
 def refund_booking(booking_id: str):
