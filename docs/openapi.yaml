@@ -999,7 +999,7 @@ paths:
       tags:
         - facility
       summary: Add a new facility
-      description: Add a new facility
+      description: Add a new facility. Requires "admin" role in auth token to access.
       operationId: add_facility
       requestBody:
         description: Create a new facility
@@ -1063,7 +1063,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the facility with the specified ID
+      summary: Updates the facility with the specified ID. Requires "admin" role in auth token.
       description: Updates the facility with the specified ID
       operationId: update_facility
       parameters:
@@ -1096,7 +1096,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the facility with the specified ID
+      summary: Deletes the facility with the specified ID. Requires "admin" role in auth token.
       description: Deletes the facility with the specified ID
       operationId: delete_facility
       parameters:
@@ -1164,7 +1164,7 @@ paths:
     post:
       tags:
         - facility
-      summary: Add a new opening time
+      summary: Add a new opening time. Requires "admin" role in auth token.
       description: Add a new opening time
       operationId: add_open_time
       requestBody:
@@ -1236,7 +1236,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the opening time with the specified ID
+      summary: Updates the opening time with the specified ID. Requires "admin" role in auth token.
       description: Updates the opening time with the specified ID
       operationId: update_open_time
       parameters:
@@ -1269,7 +1269,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the opening time with the specified ID
+      summary: Deletes the opening time with the specified ID. Requires "admin" role in auth token.
       description: Deletes the opening time with the specified ID
       operationId: delete_open_time
       parameters:
@@ -1337,7 +1337,7 @@ paths:
     post:
       tags:
         - facility
-      summary: Add a new activity
+      summary: Add a new activity. Requires "admin" role in auth token.
       description: Add a new activity
       operationId: add_activity
       requestBody:
@@ -1409,7 +1409,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the activity with the specified ID
+      summary: Updates the activity with the specified ID. Requires "admin" role in auth token.
       description: Updates the activity with the specified ID
       operationId: update_activity
       parameters:
@@ -1442,7 +1442,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the activity with the specified ID
+      summary: Deletes the activity with the specified ID. Requires "admin" role in auth token.
       description: Deletes the activity with the specified ID
       operationId: delete_activity
       parameters:
