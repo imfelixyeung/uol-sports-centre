@@ -82,9 +82,6 @@ def make_a_purchase(user_id: int,
     if product_type == "session":
       bookings_count += 1
 
-    if product_type == "subscription":
-      update_subscription = True
-
     # Gets the product price from the products table
     product_price = stripe.Product.retrieve(product_id).default_price
 
