@@ -112,6 +112,9 @@ class BookingService {
     // return the error if occurs
     if (validEvents instanceof Error) return validEvents;
 
+    // update start
+    if (validEvents.start) filter.start = validEvents.start;
+
     // next we need to get a list of activities to access information on how
     // long each instance of an activity will be
     const activities = await httpClient
@@ -129,15 +132,20 @@ class BookingService {
     const possibleBookings: PossibleBookingDTO[] = [];
 
     logger.debug(
-      `Generating possible bookings for ${validEvents.length} events`
+      `Generating possible bookings for ${
+        validEvents.events.length
+      } events and filters ${JSON.stringify(filter)}`
     );
+
+    logger.debug(`Valid events: ${JSON.stringify(validEvents)}`);
+
     // check if there are any valid events
-    if (validEvents.length > 0) {
-      let currentDay = validEvents[0].day;
+    if (validEvents.events.length > 0) {
+      let currentDay = validEvents.events[0].day;
       let currentDayCount = 0;
 
       // for each event, generate a list of possible bookings
-      validEvents.forEach(event => {
+      validEvents.events.forEach(event => {
         const activity = activities.find(a => a.id === event.activityId);
         if (!activity) {
           logger.error(
@@ -147,9 +155,13 @@ class BookingService {
         }
 
         // count days between this instance of the event and the start of the filter
+        logger.debug(
+          `Current day: ${currentDay} | Event day: ${event.day} | Count: ${currentDayCount}`
+        );
         if (currentDay !== event.day) {
           currentDay = event.day;
           currentDayCount++;
+          logger.debug('incremented day');
         }
 
         const timeSlots = event.duration / activity.duration;
@@ -158,12 +170,8 @@ class BookingService {
         for (let i = 0; i < timeSlots; i++) {
           // calculate start and end time, then check whether they fit within the bounds
           const bookingStartTime =
-            new Date(filter.start).setHours(
-              0,
-              event.time + i * activity.duration,
-              0,
-              0
-            ) +
+            new Date(filter.start).setHours(0, 0, 0, 0) +
+            (event.time + i * activity.duration) * 60 * 1000 +
             currentDayCount * 24 * 60 * 60 * 1000;
 
           const bookingEndTime =
@@ -173,10 +181,19 @@ class BookingService {
           // we dont add it as a possible booking
 
           if (
-            (filter.start && bookingStartTime < filter.start) ||
-            (filter.end && bookingEndTime > filter.end)
-          )
+            (filter.start && bookingStartTime <= filter.start) ||
+            (filter.end && bookingEndTime >= filter.end)
+          ) {
+            logger.debug(
+              `Booking doesn't fit within filter, ${bookingStartTime}`
+            );
+            logger.debug(
+              filter.start && bookingStartTime <= filter.start
+                ? 'Booking starts before filter'
+                : 'Booking starts after filter'
+            );
             continue;
+          }
 
           const possibleBooking: PossibleBookingDTO = {
             starts: new Date(bookingStartTime).toISOString(),
