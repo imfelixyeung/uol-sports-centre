@@ -26,9 +26,9 @@ import Typography from './Typography';
 dayjs.extend(localizedFormatPlugin);
 
 const availableViews = [
+  {id: 'calendar', name: 'Calendar View', Icon: CalendarIcon},
   {id: 'grid', name: 'Grid View', Icon: GridIcon},
   {id: 'list', name: 'List View', Icon: ListIcon},
-  {id: 'calendar', name: 'Calendar View', Icon: CalendarIcon},
 ] as const;
 const defaultView: View = 'calendar';
 type View = (typeof availableViews)[number]['id'];
