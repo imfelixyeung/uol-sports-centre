@@ -54,7 +54,7 @@ class BookingController {
 
       // if user is admin or trying to get their own bookings, get the bookings
       if (
-        req.auth?.user.role === UserRole.ADMIN ||
+        [UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) ||
         req.auth?.user.id === query.data.user
       ) {
         bookings = await bookingService.getUserBookings(filter).catch(err => {
@@ -73,8 +73,8 @@ class BookingController {
       // is getting all bookings
 
       // if user is not admin, return 403
-      if (req.auth?.user.role !== UserRole.ADMIN) {
-        logger.debug('User is not admin');
+      if (![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role)) {
+        logger.debug('User is not admin or employee');
         return res.status(403).json({
           status: 'error',
           error: 'You are not allowed to view all bookings',
@@ -189,10 +189,10 @@ class BookingController {
 
     // if user is not admin, or the user is not the owner of the booking, return 403
     if (
-      req.auth?.user.role !== UserRole.ADMIN &&
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
       req.auth?.user.id !== booking.userId
     ) {
-      logger.debug('User is not admin or owner of booking');
+      logger.debug('User is not admin/employee or owner of booking');
       return res.status(403).json({
         status: 'error',
         error: 'You are not allowed to view this booking',
@@ -399,7 +399,7 @@ class BookingController {
 
     // if the user is not booking for themselves and they are not an admin, return an error
     if (
-      req.auth?.user.role !== UserRole.ADMIN &&
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
       req.auth?.user.id !== query.data.user
     ) {
       return res.status(403).send({
