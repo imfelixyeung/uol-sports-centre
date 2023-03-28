@@ -29,11 +29,6 @@ def init_database() -> None:
 
   connection.close()
 
-  # add_product("product-test", "price_1MnuZyK4xeIGYs5lFGnbcNZm", "15",
-  #             "subscription")
-  # add_product("product-2", "prod_NWxpESI1EH6kFJ", "15", "subscription")
-  # add_customer(467468, stripe.Customer.create().stripe_id)
-
 
 def add_product(name: str, product_id: str, price: str, booking_id: str,
                 product_type: str):

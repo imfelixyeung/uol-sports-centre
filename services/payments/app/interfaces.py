@@ -7,7 +7,6 @@ from app.database import get_product
 import env
 
 LOCAL_DOMAIN = f"http://localhost:{env.APP_PORT}"
-print(LOCAL_DOMAIN, "!!!!!!!! DEBUGGGGG")
 
 
 def create_checkout(stripe_id: str,

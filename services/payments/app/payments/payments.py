@@ -2,6 +2,8 @@
 
 import stripe
 from stripe import error as stripe_errors
+from datetime import datetime, timedelta
+import requests
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -30,27 +32,6 @@ def make_purchasable(product_name: str,
               product_type)
 
 
-#def send_receipt(user_id: int, session_id: str):
-# """Sends a receipt to the given user for the given session"""
-#stripe_user = get_user(user_id)
-
-# Get the payment intent ID from the stripe session
-#session = stripe.checkout.Session.retrieve(session_id)
-#payment_intent_id = session.payment_intent
-#The following is commented out for now in order to not return any errors
-# Get the customer email through endpoint call
-# response = requests.get(f"http://gateway/api/auth/{user_id}", timeout=5)
-
-# data = response.json()
-# email_address = data["data"]["email"]
-
-# # Send the receipt email to customer
-# stripe.PaymentIntent.confirm(
-#     payment_intent_id,
-#     receipt_email=email_address,
-# )
-
-
 #Returns the pdf download link for a receipt, given the order ID
 def get_receipt(order_id: int):
   """Get receipt for pdf download"""
@@ -75,23 +56,23 @@ def make_a_purchase(user_id: int,
 
   # Stores all the products that are about to be purchased
   line_items = []
+  bookings_count = 0
 
   #FOR NOW - Temporarirly removing microservice dependencies
   #The start date and end date used for filtering
-  #start_date = int(round(datetime.now().timestamp() * 1000))
-  #end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000)
+  start_date = int(round(datetime.now().timestamp() * 1000))
+  end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
 
-  #bookings_array = (f"http://gateway/api/booking/bookings"
-  #                  f"?user={user_id}"
-  #                  f"&start={start_date}"
-  #                  f"&end={end_date}")
+  bookings_array = (f"http://gateway/api/booking/bookings"
+                    f"?user={user_id}"
+                    f"&start={start_date}"
+                    f"&end={end_date}")
 
-  #response = requests.get(bookings_array, timeout=10)
+  response = requests.get(bookings_array, timeout=10)
 
   # Count the number of bookings made for the
   # current customer in the last 7 days
-  #bookings_count = len(response.json())
-  bookings_count = 6
+  bookings_count = len(response.json())
 
   update_subscription = False
   discount = []
@@ -99,7 +80,7 @@ def make_a_purchase(user_id: int,
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product)[0]
-    #product_name = get_product(product)[1]
+    product_name = get_product(product)[1]
     product_type = get_product(product)[3]
 
     if product_type == "session":
@@ -128,19 +109,15 @@ def make_a_purchase(user_id: int,
 
     line_items.append(line_item)
 
-    # Creates a new row in the purchased products table
-    #add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
-
     if update_subscription is True:
 
-      #FOR NOW - Temporarirly removing microservice dependencies
-      #response_users = requests.post(
-      #    f"http://gateway/api/users/{user_id}/updateMembership",
-      #    json={"membership": product_name},
-      #    timeout=5)
+      response_users = requests.post(
+          f"http://gateway/api/users/{user_id}/updateMembership",
+          json={"membership": product_name},
+          timeout=5)
 
-      #if response_users.status_code != 200:
-      #  return {"error": "sth wrong"}
+      if response_users.status_code != 200:
+        return {"error": "Cannot get the details for the user."}
 
       update_subscription = False
 
@@ -153,8 +130,6 @@ def make_a_purchase(user_id: int,
       success_url=success_url,
       cancel_url=success_url,
   )
-
-  # send_receipt(user_id, session.id)
 
   return session.url
 
@@ -176,9 +151,6 @@ def change_price(new_price: str, product_name: str):
 
 def apply_discount(membership: bool):
   """Applies a discount to a product based on the discount condition"""
-
-  # Get the original price of the product
-  #product_price = get_product(product_name)[2]
 
   # Apply the discount
   try:
@@ -203,7 +175,7 @@ def change_discount_amount(amount: float):
       metadata={"percent_off": amount},
   )
 
-  return "SUCCESSS"
+  return 200
 
 
 def get_payment_manager(user_id: int):
@@ -244,14 +216,13 @@ def cancel_subscription(user_id: int):
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 
-  #FOR NOW - Temporarirly removing microservice dependencies
-  #response_users = requests.post(
-  #    f"http://gateway/api/users/{user_id}/updateMembership",
-  #    json={"membership": subscription},
-  #    timeout=5)
+  # Get the response from the users microservice
+  response_users = requests.post(
+      f"http://gateway/api/users/{user_id}/updateMembership",
+      json={"membership": subscription},
+      timeout=5)
 
-  #return response_users.status_code
-  return 200
+  return response_users.status_code
 
 
 def refund_booking(booking_id: str):
