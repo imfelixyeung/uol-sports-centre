@@ -39,7 +39,7 @@ bookingRouter.put(
 bookingRouter.delete(
   '/:id',
   jwt(jwtArgs),
-  roleAccess([UserRole.ADMIN]),
+  roleAccess([UserRole.ADMIN, UserRole.EMPLOYEE]),
   BookingController.deleteBookingById
 );
 

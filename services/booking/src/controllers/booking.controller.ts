@@ -399,7 +399,7 @@ class BookingController {
 
     // if the user is not booking for themselves and they are not an admin, return an error
     if (
-      req.auth?.user.role !== UserRole.ADMIN &&
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
       req.auth?.user.id !== query.data.user
     ) {
       return res.status(403).send({
