@@ -175,6 +175,16 @@ def get_user(user_id: int):
   return find_user
 
 
+def get_user_from_stripe(stripe_id: str):
+  """Function that finds the user id from their stripe id"""
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  find_user = cur.execute("""SELECT * FROM customers WHERE
+    stripe_id = ?""", [stripe_id]).fetchone()
+  con.close()
+  return find_user[1]
+
+
 def delete_order(order_id: int) -> None:
   """Function to delete a specific purchase by its order ID"""
   con = sqlite3.connect(DATABASE_URL)

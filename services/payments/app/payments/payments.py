@@ -72,13 +72,11 @@ def make_a_purchase(user_id: int,
   else:
     bookings_count = 6
 
-  update_subscription = False
   discount = []
 
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product)[0]
-    product_name = get_product(product)[1]
     product_type = get_product(product)[3]
 
     if product_type == "session":
@@ -106,22 +104,6 @@ def make_a_purchase(user_id: int,
     line_item = {"price": product_price, "quantity": 1}
 
     line_items.append(line_item)
-
-    # Creates a new row in the purchased products table
-    #add_purchase(stripe_user[0], product_id, str(datetime.now()), charge.id)
-
-    if update_subscription is True and not test:
-
-      #FOR NOW - Temporarirly removing microservice dependencies
-      response_users = requests.post(
-          f"http://gateway/api/users/{user_id}/updateMembership",
-          json={"membership": product_name},
-          timeout=5)
-
-      if response_users.status_code != 200:
-        return {"error": "Cannot get the details for the user."}
-
-      update_subscription = False
 
   session = stripe.checkout.Session.create(
       customer=stripe_user[1],

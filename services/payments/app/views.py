@@ -2,24 +2,17 @@
 Provides functionality for making payments for subscriptions"""
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import requests
 import jwt
 import stripe
 from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, make_response
 
 from app import app
-from app.database import (
-    check_health,
-    get_purchases,
-    add_purchase,
-    update_expiry,
-    delete_order,
-    get_sales,
-    get_pricing_lists,
-    get_order,
-    get_user,
-    get_product,
-)
+from app.database import (check_health, get_purchases, add_purchase,
+                          update_expiry, delete_order, get_sales,
+                          get_pricing_lists, get_order, get_user, get_product,
+                          get_user_from_stripe)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -155,7 +148,7 @@ def webhook_received():
 
     #Add purchase to database, inserting relavant fields for product type
     for purchased_item in session.line_items.data:
-      item_type = stripe.Product.retrieve(purchased_item.price.product).object
+      product = stripe.Product.retrieve(purchased_item.price.product)
 
       price_object = stripe.Price.retrieve(purchased_item.price)
 
@@ -170,8 +163,23 @@ def webhook_received():
           description=purchased_item.price.product,
       )
 
-      #If item is a subscription, add an expiry date
-      if item_type == "subscription":
+      #If item is a booking, book via bookings microservice
+      if get_product(product.name)[3] == "session":
+        booking = get_product(product.name)
+        requests.post("http://gateway/api/booking/bookings/book/",
+                      json={
+                          "userId": session.customer,
+                          "eventId": booking[4]
+                      },
+                      timeout=5)
+      #If item is a subscription, add an expiry date and update users
+      if product.object == "subscription":
+
+        user_id = get_user_from_stripe(session.customer)
+        requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
+                      json={"membership": product.name},
+                      timeout=5)
+
         add_purchase(session.customer, purchased_item.price.product,
                      transaction_time, expiry_time, invoice.invoice_pdf,
                      charge.id)
