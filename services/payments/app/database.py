@@ -197,7 +197,7 @@ def get_product(product_name: str):
   return product
 
 
-def get_order(booking_id: str):
+def get_order(booking_id: int):
   """Function to get the order associated with a booking"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()

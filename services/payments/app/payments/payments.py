@@ -33,10 +33,10 @@ def make_purchasable(product_name: str,
 
 
 #Returns the pdf download link for a receipt, given the order ID
-def get_receipt(booking_id: str):
+def get_receipt(booking_id: int):
   """Get receipt for pdf download"""
   purchase = get_order(booking_id)
-  return purchase[5]
+  return purchase[6]
 
 
 def make_a_purchase(user_id: int,
@@ -234,7 +234,7 @@ def cancel_subscription(user_id: int):
   return response_users.status_code
 
 
-def refund_booking(booking_id: str):
+def refund_booking(booking_id: int):
   """Refunds the booking to the user for the given booking id"""
   # Retrieve the purchase information from the database
   order = get_order(booking_id)

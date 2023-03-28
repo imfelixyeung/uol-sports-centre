@@ -1,31 +1,32 @@
 DROP TABLE IF EXISTS products;
 
 CREATE TABLE products (
-    productID TEXT PRIMARY KEY,
+    product_id TEXT PRIMARY KEY,
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
-    booking_id TEXT,
-    productType TEXT, 
-    CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL
+    productType TEXT
+    CHECK( productType IN ('facility', 'activity', 'session', 'subscription')) NOT NULL,
+    booking_id TEXT
 );
 
 DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
-    orderID INTEGER PRIMARY KEY,
-    userID INTEGER NOT NULL,
-    productID TEXT NOT NULL,
+    order_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    product_id TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
-    expiryDate TEXT, 
-    chargeID TEXT NOT NULL, 
-    FOREIGN KEY (productID) REFERENCES products(productID)
+    expiryDate TEXT,
+    chargeID TEXT NOT NULL,
+    reciept_pdf TEXT,  
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 DROP TABLE IF EXISTS customers;
 
 CREATE TABLE customers (
-    userID INTEGER NOT NULL, 
-    stripeID TEXT NOT NULL,
-    FOREIGN KEY (userID) REFERENCES orders(userID),
-    PRIMARY KEY (userID, stripeID)
+    user_id INTEGER NOT NULL, 
+    stripe_id TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES orders(user_id),
+    PRIMARY KEY (user_id, stripe_id)
 )

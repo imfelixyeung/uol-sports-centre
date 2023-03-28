@@ -8,9 +8,18 @@ from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, make_response
 
 from app import app
-from app.database import (check_health, get_purchases, add_purchase,
-                          update_expiry, delete_order, get_sales,
-                          get_pricing_lists, get_order, get_user, get_product)
+from app.database import (
+    check_health,
+    get_purchases,
+    add_purchase,
+    update_expiry,
+    delete_order,
+    get_sales,
+    get_pricing_lists,
+    get_order,
+    get_user,
+    get_product,
+)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -301,6 +310,21 @@ def refund(booking_id):
   delete_order(order[0])
 
   return jsonify({"message": "Refund processed successfully."}), 200
+
+
+@app.route("/receipt/<int: booking_id>", methods=["GET"])
+def receipt(booking_id):
+  """Endpoint to retrieve receipt PDF download link"""
+
+  # Retrieve receipt link from the database
+  purchase = get_order(booking_id)
+  receipt = purchase[6]
+
+  # Checks if the receipt exists
+  if not receipt:
+    return jsonify({"error": "Purchase not found."}), 404
+
+  return jsonify({"receipt": receipt}), 200
 
 
 @app.route("/health")
