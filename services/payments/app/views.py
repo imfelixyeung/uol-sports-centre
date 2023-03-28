@@ -20,6 +20,7 @@ import env
 stripe.api_key = env.STRIPE_API_KEY
 AUTH_JWT_SIGNING_SECRET = env.AUTH_JWT_SIGNING_SECRET
 
+
 @app.route("/discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
   """Retrieves the new discount amount and changes it"""
