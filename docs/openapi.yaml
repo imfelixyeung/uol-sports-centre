@@ -403,6 +403,23 @@ paths:
         "200":
           description: OK
 
+  /payments/receipt/{booking_id}:
+    get:
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+
+      tags:
+        - payments
+      description: "Endpoint for returning a link for the receipt"
+
+      responses:
+        "200":
+          description: OK
+
   /payments/health:
     get:
       tags:
