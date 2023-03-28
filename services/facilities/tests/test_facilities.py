@@ -6,6 +6,7 @@ from app import create_app
 from app.database import db
 from app.models.facility import Facility
 from app.create_dictionaries import make_facility
+from create_test_token import create_test_token
 
 ############ FACILITIES TESTS ############
 
@@ -63,13 +64,15 @@ class FacilitiesTests(unittest.TestCase):
 
   def test_add_facility_success(self):
     with app.app_context():
+      token = create_test_token()
 
       response = self.app.post("/facilities/",
                                json={
                                    "name": "Tennis Court",
                                    "capacity": int(6),
                                    "description": "A tennis court"
-                               })
+                               },
+                               headers={"Authorization": token})
 
       check_query = Facility.query.get(2)
 
@@ -143,14 +146,34 @@ class FacilitiesTests(unittest.TestCase):
 
   def test_add_facility_wrong_data(self):
     with app.app_context():
+      token = create_test_token()
 
       response = self.app.post("/facilities/",
                                json={
                                    "name": int(2),
                                    "capacity": str("yeah")
-                               })
+                               },
+                               headers={"Authorization": token})
 
       self.assertDictEqual({
           "status": "Failed",
           "message": "Invalid input"
+      }, json.loads(response.data))
+
+  def test_permission_denied(self):
+    with app.app_context():
+
+      token = create_test_token(role="user")
+
+      response = self.app.post("/facilities/",
+                               json={
+                                   "name": "Tennis Court",
+                                   "capacity": int(6),
+                                   "description": "A tennis court"
+                               },
+                               headers={"Authorization": token})
+
+      self.assertDictEqual({
+          "status": "Failed",
+          "message": "Permission denied"
       }, json.loads(response.data))

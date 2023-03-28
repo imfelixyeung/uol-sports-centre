@@ -47,7 +47,6 @@ class FacilitiesRouter:
 
   def get_facilities(self):
     """Get all facilities"""
-    authenticate()
 
     # Check to see if page and limit have been supplied
     if request.args.get("page") and request.args.get("limit"):
@@ -80,6 +79,10 @@ class FacilitiesRouter:
 
   def add_facility(self):
     # Get data from body of post request
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
     name = data.get("name")
     description = data.get("description")
