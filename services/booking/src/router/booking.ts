@@ -31,7 +31,7 @@ bookingRouter.get('/:id', jwt(jwtArgs), BookingController.getBookingById);
 bookingRouter.put(
   '/:id',
   jwt(jwtArgs),
-  roleAccess([UserRole.ADMIN]),
+  roleAccess([UserRole.ADMIN, UserRole.EMPLOYEE]),
   BookingController.updateBookingById
 );
 

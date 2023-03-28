@@ -189,10 +189,10 @@ class BookingController {
 
     // if user is not admin, or the user is not the owner of the booking, return 403
     if (
-      req.auth?.user.role !== UserRole.ADMIN &&
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
       req.auth?.user.id !== booking.userId
     ) {
-      logger.debug('User is not admin or owner of booking');
+      logger.debug('User is not admin/employee or owner of booking');
       return res.status(403).json({
         status: 'error',
         error: 'You are not allowed to view this booking',
