@@ -51,10 +51,6 @@ export async function editPaymentID(userData: EditUserDBA) {
   }
 }
 
-export function seedDatabase(): undefined {
-  return undefined;
-}
-
 export async function createNewUser(userData: CreateUserDBA) {
   // attempt to create user
   try {
