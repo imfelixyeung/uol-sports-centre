@@ -115,10 +115,10 @@ const AddFacilityForm = () => {
   const [createFacility] = useCreateFacilityMutation();
   return (
     <Formik
-      initialValues={{name: '', capacity: 0}}
+      initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
-        const {name, capacity} = values;
-        await toast.promise(createFacility({name, capacity}), {
+        const {name, capacity, description} = values;
+        await toast.promise(createFacility({name, capacity, description}), {
           loading: 'Adding facility...',
           success: 'Facility added',
           error: 'Something went wrong',
@@ -129,6 +129,7 @@ const AddFacilityForm = () => {
       <Form>
         <FormField label="Facility Name" required name="name" />
         <FormField label="Facility Capacity" required name="capacity" />
+        <FormField label="Facility Description" required name="description" />
         <Button type="submit" intent="primary">
           Add
         </Button>
@@ -173,11 +174,17 @@ const UpdateFacilityForm = () => {
           initialValues={{
             name: selectedFacility?.name ?? '',
             capacity: selectedFacility?.capacity ?? 0,
+            description: selectedFacility?.description ?? '',
           }}
           onSubmit={async (values, actions) => {
-            const {name, capacity} = values;
+            const {name, capacity, description} = values;
             await toast.promise(
-              updateFacility({id: selectedFacilityId, name, capacity}),
+              updateFacility({
+                id: selectedFacilityId,
+                name,
+                capacity,
+                description,
+              }),
               {
                 loading: 'Updating facility...',
                 success: 'Facility updated',
@@ -190,6 +197,11 @@ const UpdateFacilityForm = () => {
           <Form>
             <FormField label="Facility Name" required name="name" />
             <FormField label="Facility Capacity" required name="capacity" />
+            <FormField
+              label="Facility Description"
+              required
+              name="description"
+            />
             <Button type="submit" intent="primary">
               Update
             </Button>
