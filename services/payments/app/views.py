@@ -56,7 +56,9 @@ def get_sales_lastweek(product_type: str):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, 
+                             AUTH_JWT_SIGNING_SECRET, 
+                             algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -200,7 +202,9 @@ def get_purchased_products(user_id: int):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, 
+                             AUTH_JWT_SIGNING_SECRET, 
+                             algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -230,7 +234,9 @@ def change_product_price():
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, 
+                             AUTH_JWT_SIGNING_SECRET, 
+                             algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
