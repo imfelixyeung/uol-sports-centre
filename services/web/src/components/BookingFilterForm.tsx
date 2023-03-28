@@ -19,7 +19,16 @@ const BookingFilterForm: FC<{
   const facilities = facilitiesData.data;
   const activities = activitiesData.data;
 
-  if (!facilities || !activities) return null; // TODO: handle loading, error states
+  if (facilitiesData.isLoading || activitiesData.isLoading)
+    return <>Loading...</>;
+
+  if (
+    facilitiesData.isError ||
+    activitiesData.isError ||
+    !facilities ||
+    !activities
+  )
+    return <>Something went wrong...</>;
 
   const todayStart = dayjs().set('hour', 0).set('minute', 0).set('second', 0);
   const twoWeeksFromNow = todayStart

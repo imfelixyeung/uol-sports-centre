@@ -13,7 +13,16 @@ const FacilitiesPage = () => {
   const activitiesData = useGetFacilityActivitiesQuery();
   const activities = activitiesData.data;
 
-  if (!facilities || !activities) return null; // TODO: handle loading and errors
+  if (facilitiesData.isLoading || activitiesData.isLoading)
+    return <>Loading...</>;
+
+  if (
+    facilitiesData.isError ||
+    activitiesData.isError ||
+    !facilities ||
+    !activities
+  )
+    return <>Something went wrong...</>;
 
   // TODO: refactor and modulate .map returns into components
 
