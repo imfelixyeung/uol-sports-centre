@@ -191,7 +191,6 @@ def webhook_received():
 
 @app.route("/purchased-products/<int:user_id>", methods=["GET"])
 def get_purchased_products(user_id: int):
-def get_purchased_products(user_id: int):
   """Retrieve all purchased products for a given user"""
 
   auth = request.headers.get("Authorization")
