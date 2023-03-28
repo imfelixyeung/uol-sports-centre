@@ -16,7 +16,7 @@ COPY . .
 
 # CI target
 FROM base as ci
-CMD [ "pnpm", "ci" ]
+CMD [ "pnpm", "run", "ci" ]
 
 
 # Development target
