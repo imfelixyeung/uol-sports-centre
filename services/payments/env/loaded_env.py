@@ -14,7 +14,7 @@ load_dotenv()
 STRIPE_API_KEY = typing.cast(str, os.getenv("STRIPE_API"))
 APP_PORT_STRING = typing.cast(str, os.getenv("APP_PORT"))
 STRIPE_WEBHOOK_KEY = typing.cast(str, os.getenv("STRIPE_WEBHOOK"))
-DECODE_KEY = typing.cast(str, os.getenv("DECODE_KEY"))
+AUTH_JWT_SIGNING_SECRET = typing.cast(str, os.getenv("AUTH_JWT_SIGNING_SECRET"))
 DEBUG = os.getenv("DEBUG") in ["True", "true"]
 
 # Docker defaults unset environment variables to empty strings
@@ -32,8 +32,8 @@ if not STRIPE_WEBHOOK_KEY:
   print("Error: 'STRIPE_WEBHOOK' environment variable is not set")
   sys.exit(1)
 
-if not DECODE_KEY:
-  print("Error: 'DECODE_KEY' environment variable is not set")
+if not AUTH_JWT_SIGNING_SECRET:
+  print("Error: 'AUTH_JWT_SIGNING_SECRET' environment variable is not set")
   sys.exit(1)
 
 try:

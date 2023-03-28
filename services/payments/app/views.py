@@ -18,8 +18,7 @@ from app.payments import (make_a_purchase, get_payment_manager, change_price,
 import env
 
 stripe.api_key = env.STRIPE_API_KEY
-DECODE_KEY = env.DECODE_KEY
-
+AUTH_JWT_SIGNING_SECRET = env.AUTH_JWT_SIGNING_SECRET
 
 @app.route("/discount/change/<int:amount>", methods=["GET"])
 def change_discount(amount):
@@ -33,7 +32,7 @@ def change_discount(amount):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -43,7 +42,6 @@ def change_discount(amount):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/sales/<string:product_type>", methods=["GET"])
 @app.route("/sales/<string:product_type>", methods=["GET"])
 def get_sales_lastweek(product_type: str):
   """Function that retrieves the sales from the last 
@@ -58,7 +56,7 @@ def get_sales_lastweek(product_type: str):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -202,7 +200,7 @@ def get_purchased_products(user_id: int):
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
@@ -232,7 +230,7 @@ def change_product_price():
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token, DECODE_KEY, algorithms=["HS256"])
+  decoded_token = jwt.decode(token, AUTH_JWT_SIGNING_SECRET, algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
       "role"] == "MANAGER":
