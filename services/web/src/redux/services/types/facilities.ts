@@ -18,6 +18,7 @@ export interface Facility {
   id: number;
   name: string;
   capacity: number;
+  description: string;
 }
 
 export type FacilitiesResponse = Facility[];

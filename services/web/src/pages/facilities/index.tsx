@@ -60,10 +60,7 @@ const FacilitiesPage = () => {
                   <div>
                     <Typography.h1>{facility.name}</Typography.h1>
                     <Typography.p className="mt-6">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore facere pariatur quo quod esse corrupti
-                      exercitationem dolorum dignissimos delectus quibusdam
-                      ipsum harum, quam cum vero id fugit veniam aut est!
+                      {facility.description}
                     </Typography.p>
                   </div>
                   <img className="aspect-video w-full bg-gray-500 md:h-48 md:w-auto" />

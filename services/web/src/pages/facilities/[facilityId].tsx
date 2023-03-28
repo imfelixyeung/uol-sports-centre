@@ -35,6 +35,7 @@ const FacilitiesPage = () => {
       />
       <div className="bg-white text-black">
         <div className="container my-8 grow">
+          <Typography.h3>{facility?.description}</Typography.h3>
           <Typography.h2>Opening Hours</Typography.h2>
           {facilityTimes ? (
             <OpeningHours openingHours={facilityTimes} />

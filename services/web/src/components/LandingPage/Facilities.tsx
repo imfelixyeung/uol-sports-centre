@@ -19,8 +19,7 @@ const Facilities = () => {
           products={facilities.map(facility => ({
             image: '/assets/images/patterns/card.svg', // TODO: get image from facilities api
             name: facility.name,
-            description:
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, ea facere. Sapiente enim, nisi maiores repellendus ipsum explicabo itaque ducimus provident accusamus odio amet dolorum tenetur facilis obcaecati ea velit?',
+            description: facility.description,
             url: `/facilities/${facility.id}`,
           }))}
         />
