@@ -6,7 +6,7 @@
   "scripts": {
     "format:fix": "prettier --config .prettierrc --ignore-path .prettierignore --write .",
     "format:check": "prettier --config .prettierrc --ignore-path .prettierignore --check .",
-    "ci": "pnpm format:check"
+    "ci": "pnpm format:check && openapi-spec-validator --errors=all openapi.yaml"
   },
   "keywords": [],
   "author": "",
