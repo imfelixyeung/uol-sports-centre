@@ -80,7 +80,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Make a purchase with multiple products
     products = ["product-test", "subscription-test"]
-    response = make_a_purchase(111, products, "subscription")
+    response = make_a_purchase(111, products, "subscription", True)
 
     # Check if session URL is returned
     self.assertIsNotNone(response)
