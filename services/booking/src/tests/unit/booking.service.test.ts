@@ -1,6 +1,7 @@
 import {Booking} from '@prisma/client';
-import {prismaMock} from './mock/prisma';
-import {httpClientMock} from './mock/httpClient';
+import {mockReset} from 'jest-mock-extended';
+import {prismaMock} from '../mock/prisma';
+import {httpClientMock} from '../mock/httpClient';
 
 import bookingService from '@/services/booking.service';
 import {
@@ -13,6 +14,10 @@ import {PaginatedBookings} from '@/types/responses';
 import {EventDTO} from '@/dto/event.dto';
 import {ActivitiesResponse} from '@/types/external';
 
+beforeEach(() => {
+  mockReset(prismaMock);
+  mockReset(httpClientMock);
+});
 describe('Test BookingService', () => {
   test('get bookings', async () => {
     // create list of mock bookings
@@ -21,7 +26,6 @@ describe('Test BookingService', () => {
         id: 1,
         userId: 1,
         eventId: 1,
-        transactionId: 1,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -53,7 +57,6 @@ describe('Test BookingService', () => {
         id: 1,
         userId: 1,
         eventId: 1,
-        transactionId: 1,
         starts: new Date(),
         created: new Date(),
         updated: new Date(),
@@ -85,7 +88,6 @@ describe('Test BookingService', () => {
       id: 1,
       userId: 1,
       eventId: 1,
-      transactionId: 1,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),
@@ -102,7 +104,6 @@ describe('Test BookingService', () => {
     const newBooking: CreateBookingDTO = {
       userId: 1,
       eventId: 1,
-      transactionId: 1,
       starts: new Date(),
     };
     const mockBooking: Booking = {
@@ -134,7 +135,6 @@ describe('Test BookingService', () => {
       id: 10,
       userId: 1,
       eventId: 1,
-      transactionId: 1,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),
@@ -157,7 +157,6 @@ describe('Test BookingService', () => {
       id: 100,
       userId: 1,
       eventId: 1,
-      transactionId: 1,
       starts: new Date(),
       created: new Date(),
       updated: new Date(),

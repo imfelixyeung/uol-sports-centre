@@ -1,10 +1,11 @@
-import {CreateEventDTO, EventDTO} from '@/dto/event.dto';
+import {CreateEventDTO, EventDTO, UpdateEventDTO} from '@/dto/event.dto';
 import NotFoundError from '@/errors/notFound';
 import httpClient from '@/lib/httpClient';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import {EventsFilter} from '@/types/events';
 import {ActivitiesResponse} from '@/types/external';
+import {Prisma} from '@prisma/client';
 
 /**
  * The Event DAO (Data Access Object) is used to abstract the underlying
@@ -24,6 +25,11 @@ class EventDAO {
    */
   async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
     logger.debug('Getting events');
+
+    // return all events if no filter is provided
+    if (!filter.start && !filter.end && !filter.facility && !filter.activity) {
+      return await prisma.event.findMany();
+    }
 
     // if filter.facility is provided, get the activities for that facility
     let activityIds: number[] = [];
@@ -177,6 +183,11 @@ class EventDAO {
     return allEvents;
   }
 
+  /**
+   * Creates an event in the database
+   *
+   * @memberof EventDAO
+   */
   async createEvent(eventData: CreateEventDTO): Promise<EventDTO | Error> {
     logger.debug(`Adding event to database, ${eventData}`);
 
@@ -211,6 +222,54 @@ class EventDAO {
       )
       .catch(err => {
         logger.error(`Error getting event ${err}`);
+        return new Error(err);
+      });
+
+    return event;
+  }
+
+  async updateEvent(eventData: UpdateEventDTO): Promise<EventDTO | Error> {
+    logger.debug(`Updating event in database, ${JSON.stringify(eventData)}`);
+
+    // split id and the rest of the data
+    const {id, ...updateData} = eventData;
+
+    const booking = await prisma.event
+      .update({
+        where: {
+          id: id,
+        },
+        data: updateData,
+      })
+      .catch(err => {
+        logger.error(`Error updating event ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Event ${id} not found`);
+          }
+        }
+        return new Error(err);
+      });
+
+    return booking;
+  }
+
+  async deleteEvent(eventId: number): Promise<Error | EventDTO> {
+    logger.debug(`Deleting event in database, ${eventId}`);
+
+    const event = await prisma.event
+      .delete({
+        where: {
+          id: eventId,
+        },
+      })
+      .catch(err => {
+        logger.error(`Error deleting event ${err}`);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === 'P2025') {
+            return new NotFoundError(`Event ${eventId} not found`);
+          }
+        }
         return new Error(err);
       });
 
