@@ -270,7 +270,7 @@ def get_pending(checkout_id: str):
 def delete_pending(checkout_id: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  cur.execute("DELETE FROM pending WHERE checkout_id = ?", (checkout_id))
+  cur.execute("DELETE FROM pending WHERE checkout_id = ?", [checkout_id])
   con.commit()
   con.close()
 

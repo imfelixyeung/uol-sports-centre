@@ -78,6 +78,9 @@ def make_a_purchase(user_id: int,
     if product["type"] == "booking":
       bookings_count += 1
 
+    if get_product(product["type"])[3] == "membership":
+      payment_intent = {}
+
     # Gets the product price from the products table
     product_price = stripe.Product.retrieve(product_id).default_price
 
@@ -85,11 +88,11 @@ def make_a_purchase(user_id: int,
     membership = False
     purchases = get_purchases(user_id)
 
+    #Validate user has an unexpired membership for membership discount
     for purchase in purchases:
-      if purchase[2] == "subscription":
-        # and datetime.now() < time.strptime(purchase[4]):
+      if purchase[1] == "membership" and datetime.now() < datetime.strptime(
+          purchase[3], "%m/%d/%y %H:%M:%S"):
         membership = True
-        payment_intent = None
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
