@@ -41,21 +41,10 @@ describe('createNewUser', () => {
       `Error creating user\nError: User with ID: ${createUserData.id} already exists in database. Attempted to overwrite.`
     );
   });
-});
 
-// Test for createNewUser function
-// It adds a new user to the database
-// It should return the user that was added successfully
-describe('createNewUser', () => {
-  createNewUser;
-
-  // dummy data for testing
-  const createUserData: CreateUserDBA = {
-    firstName: 'Lorem',
-    lastName: 'Ipsum',
-    id: 0,
-  };
-
+  // Test for createNewUser function
+  // It adds a new user to the database
+  // It should return the user that was added successfully
   it('should return the created user', async () => {
     // mocks the database to return null
     dbMock.user.findUnique.mockResolvedValue(null);
@@ -93,17 +82,9 @@ describe('deleteExistingUser', () => {
       `Error deleting user\nError: User with ID: ${userID} does not exist`
     );
   });
-});
-
-// Test for deleteExistingUser function
-// It deletes a user from the database
-// It should return the user that was deleted successfully
-describe('deleteExistingUser', () => {
-  deleteExistingUser;
-
-  // dummy data for testing
-  const userID = 0;
-
+  // Test for deleteExistingUser function
+  // It deletes a user from the database
+  // It should return the user that was deleted successfully
   it('should return the deleted user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: userID} as User);
@@ -144,20 +125,9 @@ describe('editPaymentID', () => {
       `Error editing payment ID\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
-});
-
-// Test for editPaymentID function
-// It edits the payment ID of a user in the database
-// It should return the user that was edited successfully
-describe('editPaymentID', () => {
-  editPaymentID;
-
-  // dummy data for testing
-  const editUserData: EditUserDBA = {
-    id: 0,
-    paymentID: 1,
-  };
-
+  // Test for editPaymentID function
+  // It edits the payment ID of a user in the database
+  // It should return the user that was edited successfully
   it('should return the edited user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: editUserData.id} as User);
@@ -196,20 +166,9 @@ describe('editSurname', () => {
       `Error editing Surname name\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
-});
-
-// Test for editSurname function
-// It edits the surname of a user in the database
-// It should return the user that was edited successfully
-describe('editSurname', () => {
-  editSurname;
-
-  // dummy data for testing
-  const editUserData: EditUserDBA = {
-    id: 0,
-    lastName: 'Ipsum',
-  };
-
+  // Test for editSurname function
+  // It edits the surname of a user in the database
+  // It should return the user that was edited successfully
   it('should return the edited user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: editUserData.id} as User);
@@ -250,20 +209,9 @@ describe('editFirstName', () => {
       `Error editing first name\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
-});
-
-// Test for editFirstName function
-// It edits the first name of a user in the database
-// It should return the user that was edited successfully
-describe('editFirstName', () => {
-  editFirstName;
-
-  // dummy data for testing
-  const editUserData: EditUserDBA = {
-    id: 0,
-    firstName: 'Lorem',
-  };
-
+  // Test for editFirstName function
+  // It edits the first name of a user in the database
+  // It should return the user that was edited successfully
   it('should return the edited user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: editUserData.id} as User);
@@ -304,20 +252,9 @@ describe('editMembership', () => {
       `Error editing membership\nError: User with ID: ${editUserData.id} does not exist`
     );
   });
-});
-
-// Test for editMembership function
-// It edits the membership of a user in the database
-// It should return the user that was edited successfully
-describe('editMembership', () => {
-  editMembership;
-
-  // dummy data for testing
-  const editUserData: EditUserDBA = {
-    id: 0,
-    membership: 'Basic',
-  };
-
+  // Test for editMembership function
+  // It edits the membership of a user in the database
+  // It should return the user that was edited successfully
   it('should return the edited user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: editUserData.id} as User);
@@ -353,17 +290,9 @@ describe('returnFullRecord', () => {
       `Error getting user\nError: User with ID: ${userID} does not exist`
     );
   });
-});
-
-// Test for returnFullRecord function
-// It returns the full record of a user in the database
-// It should return the user that was returned successfully
-describe('returnFullRecord', () => {
-  returnFullRecord;
-
-  // dummy data for testing
-  const userID = 0;
-
+  // Test for returnFullRecord function
+  // It returns the full record of a user in the database
+  // It should return the user that was returned successfully
   it('should return the user', async () => {
     // mocks the database to return a user
     dbMock.user.findUnique.mockResolvedValue({id: userID} as User);
