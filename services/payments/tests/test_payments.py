@@ -3,6 +3,7 @@ import unittest
 import sqlite3
 import json
 from unittest import mock
+from unittest.mock import patch
 
 import urllib.request
 import stripe
@@ -12,9 +13,7 @@ from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 from app import app
 from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
-                          delete_product, update_price, delete_customer,
-                          get_purchase)
-#from app.views import (refund)
+                          delete_product, update_price, delete_customer)
 from app.interfaces import create_checkout
 
 
@@ -245,42 +244,27 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     # Check that the received data is a list
     self.assertIsInstance(data, list)
 
-  def refund(self):
-    #initialise Database
-    init_database()
+  # @patch("stripe.Refund.create")
+  # def test_refund(self, mock_stripe):
+  #   """ Function to test functionality of refund endpoint"""
 
-    #Add a purchasable booking item
-    #make_purchasable("booking", 5.0, "session", "111")
+  #   # Test data:
+  #   test_booking_id = 1234
 
-    #Adding product to database
-    product = stripe.Product.create(name="booking")
-    add_product("booking", product.stripe_id, str(5.0), "session")
+  #   with patch("app.database.get_order") as mock_get_order:
+  #     mock_get_order.return_value = [
+  #         1234, 1, "prod_1234", "2020-12-31", "ch_1234", 1234
+  #     ]
 
-    #Create temp new customer on stripe
-    new_customer = stripe.Customer.create()
+  #   mock_stripe.return_value = {"status": 200}
 
-    #Add a customer
-    add_customer(222, new_customer.stripe_id)
+  #   # Call the endpoint
+  #   response = self.client.get(f"/refund/{test_booking_id}")
 
-    con = sqlite3.connect(DATABASE_URL)
-    cur = con.cursor()
-    product_id = cur.execute(
-        """SELECT product_id FROM products WHERE booking_id 
-        = 111""").fetchone()
-
-    order = get_purchase(product_id[0])
-
-    #Make a purchase for the product
-    #make_a_purchase(222, ["booking"], "payment")
-
-    #Perform refund
-    #refund("111")
-
-    self.assertIsNone(order)
-
-    #Delete temp customer
-    stripe.Customer.delete(new_customer.stripe_id)
-    stripe.Product.delete(product_id[0])
+  #   # Check the response
+  #   self.assertEqual(response.status_code, 200)
+  #   self.assertEqual(response.json,
+  #                    {"message": "Refund processed successfully."})
 
 
 if __name__ == "__main__":
