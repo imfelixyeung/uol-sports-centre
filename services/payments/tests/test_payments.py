@@ -83,10 +83,18 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       #Make a purchase with multiple products
       products = [{
           "type": "product-test",
-          "data": {}
+          "data": {
+              "userId": 111,
+              "eventId": 1,
+              "starts": "2020-01-01T10:00:00.000Z"
+          }
       }, {
           "type": "subscription-test",
-          "data": {}
+          "data": {
+              "userId": 111,
+              "eventId": 2,
+              "starts": "2020-01-01T10:00:00.000Z"
+          }
       }]
       response = make_a_purchase(111, products, "subscription", 6)
 
