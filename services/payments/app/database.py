@@ -227,7 +227,7 @@ def get_pricing_lists(product_type: str):
 
 
 def get_purchases(user_id: int):
-  """Function to get a; the purchases for a specific user"""
+  """Function to get the purchases for a specific user"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   purchased_products = cur.execute(

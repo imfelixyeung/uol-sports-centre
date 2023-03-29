@@ -70,7 +70,7 @@ def make_a_purchase(user_id: int,
     bookings_count = 6
 
   discount = []
-  payment_intent = None
+  payment_intent = {"setup_future_usage": "on_session"}
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
@@ -89,7 +89,7 @@ def make_a_purchase(user_id: int,
       if purchase[2] == "subscription":
         # and datetime.now() < time.strptime(purchase[4]):
         membership = True
-        payment_intent = {"setup_future_usage": "on_session"}
+        payment_intent = None
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
