@@ -2,6 +2,7 @@
 import unittest
 import sqlite3
 import json
+from flask import Flask
 from unittest import mock
 from unittest.mock import patch
 
@@ -31,6 +32,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   def setUp(self):
     self.client = app.test_client()
+    self.app = Flask(__name__)
     delete_product("prod_NUNbPMJPMIEvWk")
 
   def test_make_purchasable(self):
@@ -50,50 +52,52 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   def test_make_a_purchase(self):
     """tests if a purchase can be made correctly"""
-    init_database()
+    with self.app.app_context():
+      init_database()
 
-    #Add test products to database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "membership")
+      #Add test products to database
+      add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+      add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
+                  "membership")
 
-    #Make a new temp customer on Stripe
-    new_customer = stripe.Customer.create()
+      #Make a new temp customer on Stripe
+      new_customer = stripe.Customer.create()
 
-    #Add customer to database
-    add_customer(111, new_customer.stripe_id)
+      #Add customer to database
+      add_customer(111, new_customer.stripe_id)
 
-    # Add test card to the customer
-    card_token = stripe.Token.create(card={
-        "number": "4242424242424242",
-        "exp_month": 12,
-        "exp_year": 2024,
-        "cvc": "123",
-    },)
+      # Add test card to the customer
+      card_token = stripe.Token.create(card={
+          "number": "4242424242424242",
+          "exp_month": 12,
+          "exp_year": 2024,
+          "cvc": "123",
+      },)
 
-    card = stripe.Customer.create_source(new_customer.id, source=card_token)
+      card = stripe.Customer.create_source(new_customer.id, source=card_token)
 
-    # Link the card to the customer
-    stripe.Customer.modify(new_customer.id, default_source=card.id)
+      # Link the card to the customer
+      stripe.Customer.modify(new_customer.id, default_source=card.id)
 
-    #Make a purchase with multiple products
-    products = [{
-        "type": "product-test",
-        "data": {}
-    }, {
-        "type": "subscription-test",
-        "data": {}
-    }]
-    response = make_a_purchase(111, products, "subscription", 6)
+      #Make a purchase with multiple products
+      products = [{
+          "type": "product-test",
+          "data": {}
+      }, {
+          "type": "subscription-test",
+          "data": {}
+      }]
+      response = make_a_purchase(111, products, "subscription", 6)
 
-    # Check if session URL is returned
-    self.assertIsNotNone(response)
+      # Check if session URL is returned
+      self.assertIsNotNone(response)
 
-    #Delete temp customer
-    stripe.Customer.delete(new_customer.stripe_id)
-    delete_customer(111, new_customer.stripe_id)
+      #Delete temp customer
+      stripe.Customer.delete(new_customer.stripe_id)
+      delete_customer(111, new_customer.stripe_id)
 
-    delete_product("prod_NUNazbUQcwZQaU")
-    delete_product("prod_NUNbPMJPMIEvWk")
+      delete_product("prod_NUNazbUQcwZQaU")
+      delete_product("prod_NUNbPMJPMIEvWk")
 
   def test_add_product(self):
     """Testing the functionality of adding products"""
