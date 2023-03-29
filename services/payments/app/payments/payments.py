@@ -89,7 +89,7 @@ def make_a_purchase(user_id: int,
       if purchase[2] == "subscription":
         # and datetime.now() < time.strptime(purchase[4]):
         membership = True
-        payment_intent = None
+        payment_intent = {}
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
