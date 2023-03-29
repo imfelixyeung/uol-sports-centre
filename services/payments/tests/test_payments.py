@@ -15,7 +15,7 @@ from app import app
 from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
                           delete_product, update_price, delete_customer,
-                          add_purchase)
+                          add_purchase, get_order)
 from app.interfaces import create_checkout
 
 
@@ -251,6 +251,46 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     # Check that the received data is a list
     self.assertIsInstance(data, list)
+
+  def test_get_receipt(self):
+    """Function to test the functionality of refund """
+
+    #initialise Database
+    init_database()
+
+    # Add test products to the database
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+
+    # Create temp new customer on stripe
+    new_customer = stripe.Customer.create()
+
+    # Add customer to database with '111' as ID
+    add_customer(111, new_customer.stripe_id)
+
+    test_booking_id = 1234
+
+    # Adding a temp purchase
+    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
+                 None, test_booking_id)
+
+    test_order = get_order(1234)
+
+    # Call the get_receipt endpoint
+    response = app.test_client().get(f"/receipt/{test_booking_id}")
+
+    # Check if the response status code is 200
+    self.assertEqual(response.status_code, 200)
+
+    # Check if the receipt URL is correct
+    response_json = response.json
+    if response_json is not None:
+      self.assertEqual(response_json["receipt"], test_order[6])
+    else:
+      self.fail("Response JSON is None")
+
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
+    delete_product("prod_NUNazbUQcwZQaU")
 
   @patch("stripe.Refund.create")
   def test_refund(self, mock_stripe):
