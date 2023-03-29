@@ -4,6 +4,7 @@ from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import OpenTime, Facility
 from app.create_dictionaries import make_open_time
+from app.auth import authenticate
 
 
 class OpenTimesRouter:
@@ -75,6 +76,10 @@ class OpenTimesRouter:
     return return_value
 
   def add_open_time(self):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     # Get data from body of post request
     data = request.json
 
@@ -126,6 +131,10 @@ class OpenTimesRouter:
     return return_value
 
   def update_open_time(self, time_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
 
     # Get item to be updated
@@ -175,6 +184,10 @@ class OpenTimesRouter:
     return return_value
 
   def delete_open_time(self, time_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     to_delete = OpenTime.query.get(time_id)
 
     # If the requested
