@@ -21,14 +21,13 @@ const ProfilePage = () => {
     <div className="flex grow flex-col">
       <PageHero
         title={user ? `${user.firstName} ${user.lastName}` : 'Loading...'}
-        subtitle={user?.membership ?? 'No membership...'}
+        side={<MembershipBanner />}
       />
-      <section className="container my-8 flex grow gap-8">
-        <MembershipBanner />
-      </section>
-      <section className="container my-8 flex grow gap-8">
-        <ProfileEditForm />
-      </section>
+      <div className="grow bg-white text-black">
+        <section className="container my-8 flex gap-8">
+          <ProfileEditForm />
+        </section>
+      </div>
     </div>
   );
 };
@@ -68,21 +67,48 @@ const ProfileEditForm = () => {
       enableReinitialize
     >
       <Form className="grow">
-        <Typography.h2>Account Information</Typography.h2>
-        <div className="my-6 grid grid-cols-2 gap-3">
-          <div className="col-span-2">
-            <FormField name="email" label="Email" disabled />
+        <Typography.h2 styledAs="h1" uppercase>
+          Account Information
+        </Typography.h2>
+        <div className="my-8 grid lg:grid-cols-2">
+          <div>
+            <Typography.h3 styledAs="h2" uppercase>
+              Name
+            </Typography.h3>
+            <Typography.p>What should we call you</Typography.p>
           </div>
-          <div className="col-span-1">
-            <FormField name="firstName" label="First Name" required />
-          </div>
-          <div className="col-span-1">
-            <FormField name="lastName" label="Last Name" required />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-1">
+              <FormField name="firstName" label="First Name" required />
+            </div>
+            <div className="col-span-1">
+              <FormField name="lastName" label="Last Name" required />
+            </div>
           </div>
         </div>
-        <Button type="submit" intent="primary">
-          Update
-        </Button>
+        <hr />
+        <div className="my-8 grid lg:grid-cols-2">
+          <div>
+            <Typography.h3 styledAs="h2" uppercase>
+              Contact
+            </Typography.h3>
+            <Typography.p>How should we contact you</Typography.p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <FormField name="email" label="Email" required disabled />
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div className="my-8 flex justify-between">
+          <Button type="submit" intent="secondary" outline>
+            Back
+          </Button>
+          <Button type="submit" intent="secondary" outline>
+            Update Profile
+          </Button>
+        </div>
       </Form>
     </Formik>
   );
