@@ -7,6 +7,7 @@ from app.database import db
 from app.models.facility import Facility
 from app.models.activity import Activity
 from app.create_dictionaries import make_activity
+from create_test_token import create_test_token
 
 # Create app for testing
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -70,14 +71,15 @@ class ActivitiesTests(unittest.TestCase):
 
   def test_add_activity_success(self):
     with app.app_context():
-
+      token = create_test_token()
       response = self.app.post("/activities/",
                                json={
                                    "name": "Football Lesson",
                                    "duration": int(30),
                                    "capacity": int(20),
                                    "facility_id": int(1)
-                               })
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
 
       check_query = Activity.query.get(2)
 
@@ -104,12 +106,14 @@ class ActivitiesTests(unittest.TestCase):
 
   def test_update_activity(self):
     with app.app_context():
+      token = create_test_token()
       response = self.app.put("/activities/1",
                               json={
                                   "name": "Football Lesson",
                                   "capacity": 10,
                                   "duration": 30
-                              })
+                              },
+                              headers={"Authorization": f"Bearer {token}"})
 
       check_query = Activity.query.get(1)
 
@@ -136,10 +140,14 @@ class ActivitiesTests(unittest.TestCase):
 
   def test_delete_activity(self):
     with app.app_context():
+
+      token = create_test_token()
+
       # Get facility before deletion so we can check response later
       to_delete = Activity.query.get(1)
 
-      response = self.app.delete("/activities/1")
+      response = self.app.delete("/activities/1",
+                                 headers={"Authorization": f"Bearer {token}"})
 
       expected_response = {
           "status": "ok",
@@ -154,15 +162,36 @@ class ActivitiesTests(unittest.TestCase):
   def test_add_activity_wrong_data(self):
     with app.app_context():
 
+      token = create_test_token()
+
       response = self.app.post("/activities/",
                                json={
                                    "name": int(30),
                                    "duration": str("Thirty"),
                                    "capacity": str("Twenty"),
                                    "facility_id": int(1)
-                               })
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",
           "message": "Invalid input"
+      }, json.loads(response.data))
+
+  def test_permission_denied(self):
+    with app.app_context():
+
+      token = create_test_token(role="USER")
+
+      response = self.app.post("/activities/",
+                               json={
+                                   "name": "Tennis Court",
+                                   "capacity": int(6),
+                                   "description": "A tennis court"
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
+
+      self.assertDictEqual({
+          "status": "Failed",
+          "message": "Permission denied"
       }, json.loads(response.data))
