@@ -97,16 +97,20 @@ def redirect_checkout():
                     f"&start={start_date}"
                     f"&end={end_date}")
 
-  response = requests.get(bookings_array,
-                          timeout=10,
-                          headers={"Authorization": f"{auth}"})
+  try:
+    response = requests.get(bookings_array,
+                            timeout=10,
+                            headers={"Authorization": f"{auth}"})
+  except requests.exceptions.Timeout:
+    return jsonify({"error": "The request timed out"}), 504
+
+  except requests.exceptions.RequestException as e:
+    return jsonify(
+        {"error": "An error occurred while making the request: " + str(e)}), 500
 
   # Count the number of bookings made for the
   # current customer in the last 7 days
-  #return response.json()["bookings"]
-
   bookings_count = len(response.json()["bookings"])
-  # Getting the required data through json
 
   return make_a_purchase(user_id, products, payment_mode, bookings_count)
 
@@ -171,8 +175,9 @@ def webhook_received():
     #Add purchase to database, inserting relavant fields for product type
     payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
     charge_id = payment_intent.latest_charge
-    for purchased_item in stripe.checkout.Session.list_line_items(
-        session.stripe_id, limit=100).data:
+
+    # Iterate through the retrieved line items
+    for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
 
       #price_object = stripe.Price.retrieve(purchased_item.price.id)

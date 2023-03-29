@@ -2,6 +2,7 @@
 
 import stripe
 from stripe import error as stripe_errors
+from stripe.error import StripeError
 from datetime import datetime
 import requests
 from flask import jsonify
@@ -23,9 +24,7 @@ def make_purchasable(product_name: str, product_price: float,
           "unit_amount_decimal": str(product_price * 100),
           "currency": "gbp"
       })
-  #stripe.Price.create(unit_amount_decimal=str(product_price * 100),
-  #currency="gbp",
-  #product=product.stripe_id)
+
   #Adding product to database
   add_product(product_name, product.stripe_id, str(product_price), product_type)
 
@@ -40,17 +39,34 @@ def make_a_purchase(user_id: int,
   if stripe_user is None:
 
     stripe_user = get_user(user_id)
-    new_customer = stripe.Customer.create(
-        #get user details from user microservice
-    )
+
+    response_users = requests.post(
+        f"http://gateway/api/users/{user_id}/viewFullRecord", timeout=5)
+
+    if response_users.status_code == 200:
+      data = response_users.json()
+      first_name = data["user"]["firstName"]
+      last_name = data["user"]["lastName"]
+      full_name = f"{first_name} {last_name}"
+
+    else:
+      return jsonify({
+          "error": {
+              "message": "User record for the given user ID cannot be found."
+          }
+      }), 400
+
+    new_customer = stripe.Customer.create(name=full_name)
     add_customer(user_id, new_customer.stripe_id)
     stripe_user = get_user(user_id)
 
   # Stores all the products that are about to be purchased
   line_items = []
   discount = []
-  payment_intent = {"setup_future_usage": "on_session"}
   purchases = []
+
+  payment_intent = {"setup_future_usage": "on_session"}
+
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
@@ -68,7 +84,6 @@ def make_a_purchase(user_id: int,
     membership = False
 
     purchases = get_purchases(user_id)
-    #return jsonify(purchases)
 
     #Validate user has an unexpired membership for membership discount
     for purchase in purchases:
@@ -84,53 +99,65 @@ def make_a_purchase(user_id: int,
 
     line_items.append(line_item)
 
-  # Payment_intent_data should not be passed for a subscription:
-  if payment_mode == "subscription":
-    session = stripe.checkout.Session.create(
-        customer=stripe_user[1],
-        payment_method_types=["card"],
-        line_items=line_items,
-        mode=payment_mode,
-        discounts=discount,
-        success_url=success_url,
-        cancel_url=success_url,
-        invoice_creation={"enabled": True},
-    )
+  try:
+    # Payment_intent_data should not be passed for a subscription:
+    if payment_mode == "subscription":
+      session = stripe.checkout.Session.create(
+          customer=stripe_user[1],
+          payment_method_types=["card"],
+          line_items=line_items,
+          mode=payment_mode,
+          discounts=discount,
+          success_url=success_url,
+          cancel_url=success_url,
+          invoice_creation={"enabled": True},
+      )
 
-  # If it is not a subscription:
-  else:
-    session = stripe.checkout.Session.create(
-        customer=stripe_user[1],
-        payment_method_types=["card"],
-        line_items=line_items,
-        mode=payment_mode,
-        discounts=discount,
-        success_url=success_url,
-        cancel_url=success_url,
-        payment_intent_data=payment_intent,
-        invoice_creation={"enabled": True},
-    )
+    # If it is not a subscription:
+    else:
+      session = stripe.checkout.Session.create(
+          customer=stripe_user[1],
+          payment_method_types=["card"],
+          line_items=line_items,
+          mode=payment_mode,
+          discounts=discount,
+          success_url=success_url,
+          cancel_url=success_url,
+          payment_intent_data=payment_intent,
+          invoice_creation={"enabled": True},
+      )
 
-  for product in products:
-    if product["type"] == "booking":
-      add_pending(product["data"]["userId"], product["data"]["eventId"],
-                  product["data"]["starts"], session.stripe_id)
+    for product in products:
+      if product["type"] == "booking":
+        add_pending(product["data"]["userId"], product["data"]["eventId"],
+                    product["data"]["starts"], session.stripe_id)
 
-  return jsonify({"Url": session.url, "purchases": purchases})
+    return jsonify({"Url": session.url, "purchases": purchases})
+
+  except StripeError as error:
+    return jsonify({"error": {"message": str(error)}}), 400
 
 
 def change_price(new_price: str, product_name: str):
   """Changes price of specified product for management microservice"""
+  # Get the product
   product = get_product(product_name)
+  if not product:
+    return jsonify({"error": {"message": "Product not found."}}), 404
 
-  old_stripe_price = stripe.Product.retrieve(product[0]).default_price
-  new_stripe_price = stripe.Price.create(unit_amount_decimal=str(new_price *
-                                                                 100),
-                                         currency="gbp",
-                                         product=product[0])
+  # Getting the old and new price from stripe
+  try:
+    old_stripe_price = stripe.Product.retrieve(product[0]).default_price
+    new_stripe_price = stripe.Price.create(unit_amount_decimal=str(new_price *
+                                                                   100),
+                                           currency="gbp",
+                                           product=product[0])
 
-  stripe.Product.modify(product[0], default_price=new_stripe_price.stripe_id)
-  stripe.Price.modify(old_stripe_price, active=False)
+    stripe.Product.modify(product[0], default_price=new_stripe_price.stripe_id)
+    stripe.Price.modify(old_stripe_price, active=False)
+  except StripeError as error:
+    return jsonify({"error": {"message": str(error)}}), 400
+
   update_price(product_name, new_price)
 
 
@@ -155,12 +182,16 @@ def change_discount_amount(amount: float):
     Changes the discount amount set for 3
     or more bookings in a period of seven days
     """
-  stripe.Coupon.modify(
-      "VOz7neAM",
-      metadata={"percent_off": amount},
-  )
+  try:
+    stripe.Coupon.modify(
+        "VOz7neAM",
+        metadata={"percent_off": amount},
+    )
 
-  return 200
+    return {"message": "Discount amount changed successfully"}, 200
+
+  except StripeError as error:
+    return {"error": {"message": str(error)}}, 500
 
 
 def get_payment_manager(user_id: int):
@@ -201,7 +232,7 @@ def cancel_subscription(user_id: int):
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 
-  #FOR NOW - Temporarirly removing microservice dependencies
+  # Updating the membership status in the user microservice
   response_users = requests.post(
       f"http://gateway/api/users/{user_id}/updateMembership",
       json={"membership": subscription},
