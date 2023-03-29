@@ -262,7 +262,8 @@ def webhook_received():
     subscription = event.data.object
     customer = subscription.customer
     product = subscription.items.data[1].price.product
-    update_expiry(customer, product, str(datetime.now()))
+    #Redundant?
+    #update_expiry(customer, product, str(datetime.now()))
 
   #Delete pending bookings if session expired
   elif event.type == "checkout.session.expired":

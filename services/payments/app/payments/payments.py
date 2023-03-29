@@ -136,7 +136,7 @@ def make_a_purchase(user_id: int,
 
 def change_price(new_price: int, product_name: str):
   """Changes price of specified product for management microservice"""
-  new_price = (new_price * 100)
+  new_price = new_price * int(100)
   # Get the product
   product = get_product(product_name)
   if not product:
@@ -226,7 +226,7 @@ def pricing_list(product_type: str):
 def cancel_subscription(user_id: int):
   """Cancels membership for given user in Stripe"""
   stripe_user = get_user(user_id)[1]
-  customer = stripe.Customer.retrieve(stripe_user)
+  customer = stripe.Customer.retrieve(stripe_user, expand=["subscriptions"])
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 

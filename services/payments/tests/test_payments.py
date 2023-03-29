@@ -143,7 +143,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
     #Update price of product
-    update_price("product-test", "10")
+    update_price("product-test", 10)
 
     connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()
