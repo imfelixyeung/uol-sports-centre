@@ -29,16 +29,22 @@ const ManageUsersPage: NextPage = () => {
   const users = usersData.data.data;
 
   const prevPage = () => setPage(page => Math.max(page - 1, 0));
-  const nextPage = () => setPage(page => page + 1);
+  const nextPage = () => {
+    if (users.length === 0) return;
+    setPage(page => page + 1);
+  };
 
   return (
     <div className="container py-8">
-      <Button onClick={prevPage} intent="primary">
-        Prev Page
-      </Button>
-      <Button onClick={nextPage} intent="primary">
-        Next Page
-      </Button>
+      <div className="flex items-center">
+        <Button onClick={prevPage} intent="primary">
+          Prev Page
+        </Button>
+        <>Page: {page}</>
+        <Button onClick={nextPage} intent="primary">
+          Next Page
+        </Button>
+      </div>
       {users.map(user => (
         <div key={user.id}>
           <Typography.h2>{user.id}</Typography.h2>
@@ -53,6 +59,7 @@ const ManageUsersPage: NextPage = () => {
           <EditUserRecordForm userId={user.id} />
         </div>
       ))}
+      {users.length === 0 && <>This page is empty</>}
     </div>
   );
 };
