@@ -46,6 +46,7 @@ export const createController = <
         });
 
       const payload = await TokenRegistry.verifyToken(token).catch(() => null);
+
       const parsedPayload = jsonWebTokenPayloadSchema.safeParse(payload);
       if (!parsedPayload.success) {
         return res.status(401).json({

@@ -11,6 +11,8 @@ import type {
   UpdateUserRoleRequest,
 } from './types/auth';
 import type {
+  BookBookingRequest,
+  BookBookingResponse,
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
   GetBookingEventsRequest,
@@ -265,6 +267,19 @@ export const api = createApi({
       providesTags: ['BookingAvailability', 'BookingEvent'],
     }),
 
+    bookBooking: builder.mutation<
+      BookBookingResponse,
+      BookBookingRequest & Token
+    >({
+      query: ({event, starts, token, user}) => ({
+        url: '/booking/bookings/book',
+        method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {event, starts, user},
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
     getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
       {
         query: ({limit = null, page = null, userId: user = null, token}) => {
@@ -334,6 +349,7 @@ export const {
   useUpdateUserFirstNameMutation,
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
+  useBookBookingMutation,
   useGetBookingsQuery,
   useGetBookingQuery,
   useGetBookingEventsQuery,

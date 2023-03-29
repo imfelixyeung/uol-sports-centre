@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import BookingFilterForm from '~/components/BookingFilterForm';
@@ -8,10 +9,12 @@ import PageHero from '~/components/PageHero';
 import SelectedBookingsDropdown from '~/components/SelectedBookingsDropdown';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
-import {selectBookings} from '~/redux/features/basket';
+import {clearBookings, selectBookings} from '~/redux/features/basket';
 import {useAppDispatch, useAppSelector} from '~/redux/hooks';
 import {
+  useBookBookingMutation,
   useGetAvailableBookingsQuery,
   useGetUserRecordQuery,
 } from '~/redux/services/api';
@@ -45,7 +48,7 @@ const EmployeePage = () => {
         {userIdSelected && userData.data ? (
           <>
             <Typography.h2>Create booking for customer</Typography.h2>
-            <CreateBookingForm />
+            <CreateBookingForm userId={userIdSelected} />
             <Typography.h3>View/Amend booking for customer</Typography.h3>
             <form action="">Form</form>
           </>
@@ -61,16 +64,43 @@ export default withPageAuthRequired(withUserOnboardingRequired(EmployeePage), {
   rolesAllowed: ['ADMIN', 'MANAGER', 'EMPLOYEE'],
 });
 
-const CreateBookingForm = () => {
+const CreateBookingForm: FC<{
+  userId: number;
+}> = ({userId}) => {
+  const {token} = useAuth();
   const [filter, setFilter] = useState<BookingAvailabilityRequest>({});
+  const [bookBooking] = useBookBookingMutation();
   const availableBookingsData = useGetAvailableBookingsQuery(filter);
   const availableBookings = availableBookingsData.data?.availableBookings;
 
   const bookings = useAppSelector(selectBookings);
   const dispatch = useAppDispatch();
 
-  const createBookings = () => {
+  const createBookings = async () => {
     if (!bookings.length) return toast.error('No bookings selected');
+
+    const bookedBookings = bookings.map(booking =>
+      toast.promise(
+        bookBooking({
+          event: booking.event.id,
+          starts: booking.starts,
+          token: token!,
+          user: userId,
+        })
+          .unwrap()
+          .catch(() => new Error('Error creating booking')),
+        {
+          loading: 'Creating booking',
+          success: 'Booking created',
+          error: 'Error creating booking',
+        }
+      )
+    );
+
+    const result = await Promise.all(bookedBookings);
+    const allSuccess = result.every(booking => !(booking instanceof Error));
+
+    if (allSuccess) dispatch(clearBookings);
   };
 
   if (!availableBookings) return null; // TODO: handle loading, error states
@@ -86,7 +116,9 @@ const CreateBookingForm = () => {
           availableBooking: booking,
           eventId: booking.event.id,
         }))}
-        title={<SelectedBookingsDropdown onBook={createBookings} />}
+        title={
+          <SelectedBookingsDropdown onBook={() => void createBookings()} />
+        }
       />
     </div>
   );
