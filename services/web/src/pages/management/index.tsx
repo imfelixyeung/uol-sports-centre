@@ -394,6 +394,16 @@ const UpdateOpeningHoursForm = () => {
   );
 };
 
+const daysOfTheWeek = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+
 const UpdateOpeningHourForm: FC<{
   timeId: number;
 }> = ({timeId}) => {
@@ -431,7 +441,7 @@ const UpdateOpeningHourForm: FC<{
         await toast.promise(
           updateFacility({
             id: timeId,
-            day: day,
+            day,
             opening_time: openingTime,
             closing_time: closingTime,
           }),
@@ -445,7 +455,13 @@ const UpdateOpeningHourForm: FC<{
       }}
     >
       <Form className="flex gap-3">
-        <FormField label="Day" required name="day" />
+        <FormField label="Day" required name="day" as="select">
+          {daysOfTheWeek.map(day => (
+            <option key={day} value={day}>
+              {day}
+            </option>
+          ))}
+        </FormField>
         <FormField label="Opening" required name="open" type="time" />
         <FormField label="Closing" required name="close" type="time" />
         <Button type="submit" intent="primary">
