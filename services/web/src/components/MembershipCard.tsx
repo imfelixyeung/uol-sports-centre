@@ -9,7 +9,7 @@ export interface MembershipCardProps {
   membership: Membership & {
     current?: boolean;
   } & {
-    buttonProps: ButtonProps;
+    buttonProps?: ButtonProps;
   };
 }
 
