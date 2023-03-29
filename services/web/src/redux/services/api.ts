@@ -36,6 +36,10 @@ import type {
   UpdateFacilityRequest,
   UpdateFacilityResponse,
 } from './types/facilities';
+import type {
+  GetCustomerPortalRequest,
+  GetCustomerPortalResponse,
+} from './types/payments';
 import type {StatusReportResponse} from './types/status';
 import type {
   UsersCreateRequest,
@@ -308,6 +312,16 @@ export const api = createApi({
       },
       providesTags: ['BookingEvent'],
     }),
+
+    getCustomerPortal: builder.query<
+      GetCustomerPortalResponse,
+      GetCustomerPortalRequest & Token
+    >({
+      query: ({userId, token}) => ({
+        url: `/payments/customer-portal/${userId}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
   }),
 });
 
@@ -337,4 +351,5 @@ export const {
   useGetBookingsQuery,
   useGetBookingQuery,
   useGetBookingEventsQuery,
+  useGetCustomerPortalQuery,
 } = api;

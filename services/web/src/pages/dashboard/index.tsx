@@ -9,13 +9,20 @@ import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
-import {useGetBookingsQuery} from '~/redux/services/api';
+import {
+  useGetBookingsQuery,
+  useGetCustomerPortalQuery,
+} from '~/redux/services/api';
 
 const UserDashboardPage = () => {
   const {session, token} = useAuth();
   const {user} = useUser();
   const bookingsData = useGetBookingsQuery({
     userId: session?.user.id,
+    token: token!,
+  });
+  const customerPortalData = useGetCustomerPortalQuery({
+    userId: session!.user.id,
     token: token!,
   });
 
@@ -107,6 +114,7 @@ const UserDashboardPage = () => {
               <Link href="/management">Go to Management Portal</Link>
             </>
           )}
+          <a href={customerPortalData.data}>Go to Billing Portal</a>
         </div>
         <main className="bg-white text-black">
           {/* Desktop */}
