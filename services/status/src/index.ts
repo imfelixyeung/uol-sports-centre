@@ -17,7 +17,6 @@ registerServices([
   'auth',
   'booking',
   'facilities',
-  'management',
   'payments',
   'status',
   'users',
