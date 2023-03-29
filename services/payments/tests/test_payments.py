@@ -34,6 +34,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     self.client = app.test_client()
     self.app = Flask(__name__)
     delete_product("prod_NUNbPMJPMIEvWk")
+    delete_customer(111, "cus_NcHX3RfRyq4rys")
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
@@ -159,15 +160,15 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     with app.test_client() as client:
       response = client.get("/get-prices/session")
 
-      assert response.status_code == 200
-      assert response.content_type == "application/json"
+      self.assertEqual(response.status_code, 200)
+      self.assertEqual(response.content_type, "application/json")
 
       data = json.loads(response.data)
       assert isinstance(data, list)
 
       assert len(data) == 1
-      assert data[0]["productName"] == "product-test"
-      assert data[0]["price"] == "5"
+      self.assertEqual(data[0]["productName"], "product-test")
+      self.assertEqual(data[0]["price"], "5")
 
   def test_create_checkout_success(self):
     """Tests the create checkout functionality for the success case"""
@@ -192,6 +193,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
+    delete_customer(111, new_customer.stripe_id)
 
   def test_customer_portal(self):
     """Tests the customer portal functionality"""
@@ -211,6 +213,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
+    delete_customer(111, new_customer.stripe_id)
 
   @mock.patch("jwt.decode")
   def test_purchased_products(self, mock_jwt):
@@ -290,6 +293,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
+    delete_customer(111, new_customer.stripe_id)
     delete_product("prod_NUNazbUQcwZQaU")
 
   @patch("stripe.Refund.create")
@@ -326,7 +330,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
-
+    delete_customer(111, new_customer.stripe_id)
     delete_product("prod_NUNazbUQcwZQaU")
 
 
