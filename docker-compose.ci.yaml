@@ -21,7 +21,8 @@ services:
       context: ./services/users
       target: ci
     environment:
-      - APP_PORT=${APP_PORT}
+      - PORT=80
+      - HOST=0.0.0.0
       - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
 
   docs:
