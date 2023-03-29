@@ -77,8 +77,7 @@ export class TokenRegistry {
     try {
       return jwt.verify(token, env.JWT_SIGNING_SECRET);
     } catch (error) {
-      return error;
-      // throw new Error('Malformed token');
+      throw new Error('Malformed token');
     }
   }
 
