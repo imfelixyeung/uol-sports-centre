@@ -1,15 +1,35 @@
 import type {GetStaticPaths, GetStaticProps} from 'next';
-import {useState} from 'react';
+import {useRouter} from 'next/router';
+import {QRCodeSVG} from 'qrcode.react';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
+import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
+import {useGetBookingQuery} from '~/redux/services/api';
+import type {QrBooking} from '~/schema/qrBooking';
 
 const ViewBookingPage = () => {
-  const [tempBooked, setTempBooked] = useState(false);
+  const router = useRouter();
+  const {session, token} = useAuth();
+  const bookingId = router.query.id;
+  const bookingData = useGetBookingQuery(
+    {bookingId: parseInt(bookingId as string), token: token!},
+    {skip: !bookingId}
+  );
 
-  const toggle = () => setTempBooked(prev => !prev);
+  if (!bookingId) return <>Not found</>;
+  if (Array.isArray(bookingId)) return <>Not found</>;
+
+  const booking = bookingData.data?.booking;
+  if (!booking) return <>Not found</>;
+
+  const qrBooking: QrBooking = {
+    bookingIds: [booking.id],
+    userId: session!.user.id,
+  };
 
   return (
     <>
@@ -21,25 +41,27 @@ const ViewBookingPage = () => {
             <div className="flex flex-col gap-3 p-6">
               <BookingActivity
                 variant="page"
-                datetime={new Date('2023-01-01')}
-                name="Activity Name"
-                facility="Facility"
+                datetime={new Date(booking.starts)}
                 action={
-                  <>
-                    {tempBooked ? (
-                      <Button intent="primary" onClick={toggle}>
-                        Book Session
-                      </Button>
-                    ) : (
-                      <Button intent="secondary" onClick={toggle}>
-                        Cancel Booking
-                      </Button>
-                    )}
-                  </>
+                  <Button intent="secondary" type="button">
+                    Cancel Booking
+                  </Button>
                 }
+                eventId={booking.eventId}
               />
             </div>
           </div>
+          <section>
+            <Typography.h2>Show the QR Code below to the staff</Typography.h2>
+            <div className="flex justify-center">
+              <div className="bg-[#fff] p-8">
+                <QRCodeSVG
+                  value={JSON.stringify(qrBooking)}
+                  className="aspect-square h-full max-h-[50vw] w-full max-w-[50vw]"
+                />
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </>

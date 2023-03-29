@@ -21,7 +21,7 @@ FROM base as ci
 # copy app
 COPY . .
 
-CMD [ "pnpm", "ci" ]
+CMD [ "pnpm", "run", "ci" ]
 
 
 #######
