@@ -105,7 +105,7 @@ def redirect_checkout():
   # current customer in the last 7 days
   #return response.json()["bookings"]
 
-  bookings_count = len(response.json())
+  bookings_count = len(response.json()["bookings"])
   # Getting the required data through json
 
   return make_a_purchase(user_id, products, payment_mode, bookings_count)
@@ -169,21 +169,18 @@ def webhook_received():
     expiry_time = str(datetime.now() + relativedelta(months=1))
 
     #Add purchase to database, inserting relavant fields for product type
-    for purchased_item in session.line_items.data:
+    payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
+    charge_id = payment_intent.latest_charge
+    for purchased_item in stripe.checkout.Session.list_line_items(
+        session.stripe_id, limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
 
-      price_object = stripe.Price.retrieve(purchased_item.price)
+      #price_object = stripe.Price.retrieve(purchased_item.price.id)
 
       # Charge to be processed at webhook
-      charge_amount = price_object.unit_amount
+      #charge_amount = price_object.unit_amount
 
       # Create a new charge for the product
-      charge = stripe.Charge.create(
-          amount=charge_amount,
-          currency="gbp",
-          customer=session.customer,
-          description=purchased_item.price.product,
-      )
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] == "session":
@@ -198,19 +195,18 @@ def webhook_received():
                         timeout=5)
 
       #If item is a subscription, add an expiry date and update users
+      user_id = get_user_from_stripe(session.customer)
       if product.object == "subscription":
 
-        user_id = get_user_from_stripe(session.customer)
         requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
                       json={"membership": product.name},
                       timeout=5)
 
-        add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, charge.id, invoice.invoice_pdf,
-                     expiry_time)
+        add_purchase(user_id, purchased_item.price.product, transaction_time,
+                     charge_id, invoice.invoice_pdf, expiry_time)
       else:
-        add_purchase(session.customer, purchased_item.price.product,
-                     transaction_time, charge.id, invoice.invoice_pdf)
+        add_purchase(user_id, purchased_item.price.product, transaction_time,
+                     charge_id, invoice.invoice_pdf)
 
     #remove pending booking transactions as purchase is complete
     delete_pending(session.stripe_id)

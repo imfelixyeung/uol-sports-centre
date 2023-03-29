@@ -2,6 +2,7 @@
 
 import stripe
 from stripe import error as stripe_errors
+from datetime import datetime, timedelta
 import requests
 from flask import jsonify
 
@@ -49,6 +50,7 @@ def make_a_purchase(user_id: int,
   line_items = []
   discount = []
   payment_intent = {"setup_future_usage": "on_session"}
+  purchases = []
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
@@ -64,14 +66,14 @@ def make_a_purchase(user_id: int,
 
     # Checks user has purchased a subscription
     membership = False
+
     purchases = get_purchases(user_id)
+    #return jsonify(purchases)
 
     #Validate user has an unexpired membership for membership discount
     for purchase in purchases:
-      return jsonify(purchase)
-      if purchase[1] == "membership":  #and datetime.now() < datetime.strptime(
-        #purchase[3], "%m/%d/%y %H:%M:%S"):
-        return jsonify("yes")
+      if purchase[1] == "membership" and datetime.now() < datetime.strptime(
+          purchase[3], "%m/%d/%y %H:%M:%S"):
         membership = True
 
     #Apply a discount if more than 2 bookings were made
@@ -92,6 +94,7 @@ def make_a_purchase(user_id: int,
         discounts=discount,
         success_url=success_url,
         cancel_url=success_url,
+        invoice_creation={"enabled": True},
     )
 
   # If it is not a subscription:
@@ -105,6 +108,7 @@ def make_a_purchase(user_id: int,
         success_url=success_url,
         cancel_url=success_url,
         payment_intent_data=payment_intent,
+        invoice_creation={"enabled": True},
     )
 
   for product in products:
@@ -112,7 +116,7 @@ def make_a_purchase(user_id: int,
       add_pending(product["data"]["userId"], product["data"]["eventId"],
                   product["data"]["starts"], session.stripe_id)
 
-  return session.url
+  return jsonify({"Url": session.url, "purchases": purchases})
 
 
 def change_price(new_price: str, product_name: str):
