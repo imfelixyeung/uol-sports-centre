@@ -6,7 +6,7 @@ import requests
 import jwt
 import stripe
 from stripe import error as stripe_errors
-from flask import request, jsonify, redirect, make_response
+from flask import request, jsonify, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
