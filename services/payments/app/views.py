@@ -39,8 +39,7 @@ def change_discount(amount):
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
-      "role"] == "MANAGER":
+  if decoded_token["user"]["role"] == "MANAGER":
     return jsonify(change_discount_amount(amount))
 
   else:
@@ -65,8 +64,7 @@ def get_sales_lastweek(product_type: str):
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
-      "role"] == "MANAGER":
+  if decoded_token["user"]["role"] == "MANAGER":
     return jsonify(get_sales(product_type))
 
   else:
@@ -276,8 +274,7 @@ def change_product_price():
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
-      "role"] == "MANAGER":
+  if decoded_token["user"]["role"] == "MANAGER":
     # Getting the new price and product name
     data = request.get_json()
 

@@ -225,6 +225,26 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     purchased_products = json.loads(response.data)
     self.assertIsInstance(purchased_products, list)
 
+  @mock.patch("jwt.decode")
+  def test_get_sales(self, mock_jwt):
+    """Function that checks the functionality of get_sales_lastweek end point"""
+
+    # Mock the jwt.decode function to return a mocked decoded token
+    mock_jwt.return_value = {"user": {"role": "MANAGER"}}
+
+    # Line inspired by stack-overflaw #
+    response = self.client.get("/sales/membership",
+                               headers={"Authorization": "Bearer <JWT_TOKEN>"})
+
+    # Check that the response status code is 200
+    self.assertEqual(response.status_code, 200)
+
+    # Get the data
+    data = json.loads(response.data)
+
+    # Check that the received data is a list
+    self.assertIsInstance(data, list)
+
   def refund(self):
     #initialise Database
     init_database()
