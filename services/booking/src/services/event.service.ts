@@ -21,7 +21,11 @@ class EventService {
    */
   async get(filter: EventsFilter) {
     logger.debug('Get events');
-    return await eventDao.getEvents(filter);
+    return await eventDao
+      .getEvents(filter)
+      .then(eventRes =>
+        eventRes instanceof Error ? eventRes : eventRes.events
+      );
   }
 
   async create(eventData: CreateEventDTO) {

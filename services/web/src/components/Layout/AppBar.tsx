@@ -1,7 +1,7 @@
 import {UserCircleIcon} from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import AppIcon from '../AppIcon/AppIcon';
-import Button, {buttonStyles} from '../Button';
+import {buttonStyles} from '../Button';
 import Typography from '../Typography';
 
 const navLinks = [
@@ -19,13 +19,16 @@ const AppBar = () => {
           <Link href="/">
             <AppIcon />
           </Link>
-          <Button
-            intent="primary"
-            className="absolute right-0 md:hidden"
-            square
+          <Link
+            href="/dashboard"
+            className={buttonStyles({
+              intent: 'primary',
+              className: 'absolute right-0 md:hidden',
+              square: true,
+            })}
           >
             <UserCircleIcon className="h-6" />
-          </Button>
+          </Link>
         </div>
         <nav>
           <ul className="flex gap-6 font-bold">

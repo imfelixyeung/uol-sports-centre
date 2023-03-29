@@ -1,4 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import dayjs from 'dayjs';
 import type {
   GetSessionResponse,
   LoginRequest,
@@ -7,19 +8,42 @@ import type {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  UpdateUserRoleRequest,
 } from './types/auth';
 import type {
+  BookingAvailabilityRequest,
+  BookingAvailabilityResponse,
+  GetBookingEventsRequest,
+  GetBookingEventsResponse,
+  GetBookingRequest,
+  GetBookingResponse,
+  GetBookingsRequest,
+  GetBookingsResponse,
+} from './types/bookings';
+import type {
+  CreateFacilityActivityRequest,
+  CreateFacilityActivityResponse,
+  CreateFacilityRequest,
+  CreateFacilityResponse,
   FacilitiesResponse,
   FacilityActivitiesResponse,
   FacilityActivityResponse,
   FacilityResponse,
   FacilityTimeResponse,
   FacilityTimesResponse,
+  UpdateFacilityActivityRequest,
+  UpdateFacilityActivityResponse,
+  UpdateFacilityRequest,
+  UpdateFacilityResponse,
 } from './types/facilities';
 import type {StatusReportResponse} from './types/status';
 import type {
   UsersCreateRequest,
   UsersCreateResponse,
+  UsersUpdateFirstNameRequest,
+  UsersUpdateFirstNameResponse,
+  UsersUpdateLastNameRequest,
+  UsersUpdateLastNameResponse,
   UsersViewFullRecordResponse,
 } from './types/users';
 
@@ -32,7 +56,15 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api',
   }),
-  tagTypes: ['User'],
+  tagTypes: [
+    'User',
+    'Booking',
+    'BookingEvent',
+    'BookingAvailability',
+    'Facility',
+    'FacilityActivity',
+    'FacilityTime',
+  ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -77,32 +109,95 @@ export const api = createApi({
       }),
     }),
 
+    updateAuthUser: builder.mutation<void, UpdateUserRoleRequest & Token>({
+      query: ({token, role, userId}) => ({
+        url: `/auth/users/${userId}`,
+        method: 'PATCH',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {role},
+      }),
+    }),
+
     getStatusReport: builder.query<StatusReportResponse, void>({
       query: () => '/status/report',
     }),
 
     getFacilities: builder.query<FacilitiesResponse, void>({
       query: () => '/facilities/facilities/',
+      providesTags: ['Facility'],
     }),
 
     getFacility: builder.query<FacilityResponse, number>({
       query: facilityId => `/facilities/facilities/${facilityId}`,
+      providesTags: ['Facility'],
+    }),
+
+    createFacility: builder.mutation<
+      CreateFacilityResponse,
+      CreateFacilityRequest
+    >({
+      query: facility => ({
+        url: '/facilities/facilities/',
+        body: facility,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Facility'],
+    }),
+
+    updateFacility: builder.mutation<
+      UpdateFacilityResponse,
+      UpdateFacilityRequest
+    >({
+      query: ({id, ...facility}) => ({
+        url: `/facilities/facilities/${id}`,
+        body: facility,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Facility'],
     }),
 
     getFacilityTimes: builder.query<FacilityTimesResponse, void>({
       query: () => '/facilities/times/',
+      providesTags: ['FacilityTime'],
     }),
 
     getFacilityTime: builder.query<FacilityTimeResponse, number>({
       query: timeId => `/facilities/times/${timeId}`,
+      providesTags: ['FacilityTime'],
     }),
 
     getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
       query: () => '/facilities/activities/',
+      providesTags: ['FacilityActivity'],
     }),
 
     getFacilityActivity: builder.query<FacilityActivityResponse, number>({
       query: activityId => `/facilities/activities/${activityId}`,
+      providesTags: ['FacilityActivity'],
+    }),
+
+    updateFacilityActivity: builder.mutation<
+      UpdateFacilityActivityResponse,
+      UpdateFacilityActivityRequest
+    >({
+      query: ({id, ...activity}) => ({
+        url: `/facilities/activities/${id}`,
+        body: activity,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['FacilityActivity'],
+    }),
+
+    createFacilityActivity: builder.mutation<
+      CreateFacilityActivityResponse,
+      CreateFacilityActivityRequest
+    >({
+      query: activity => ({
+        url: '/facilities/activities/',
+        body: activity,
+        method: 'POST',
+      }),
+      invalidatesTags: ['FacilityActivity'],
     }),
 
     getUserRecord: builder.query<UsersViewFullRecordResponse, number>({
@@ -118,6 +213,101 @@ export const api = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+
+    updateUserFirstName: builder.mutation<
+      UsersUpdateFirstNameResponse,
+      UsersUpdateFirstNameRequest
+    >({
+      query: user => ({
+        url: `/users/${user.id}/updateFirstName`,
+        method: 'PUT',
+        body: {firstName: user.firstName},
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    updateUserLastName: builder.mutation<
+      UsersUpdateLastNameResponse,
+      UsersUpdateLastNameRequest
+    >({
+      query: user => ({
+        url: `/users/${user.id}/updateSurname`,
+        method: 'PUT',
+        body: {lastName: user.lastName},
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    getAvailableBookings: builder.query<
+      BookingAvailabilityResponse,
+      BookingAvailabilityRequest
+    >({
+      query: ({
+        page = null,
+        limit = null,
+        start = null,
+        end = null,
+        activityId = null,
+        facilityId = null,
+      }) => {
+        const search = new URLSearchParams();
+        if (page !== null) search.set('page', `${page}`);
+        if (limit !== null) search.set('limit', `${limit}`);
+        if (start !== null) search.set('start', `${start}`);
+        if (end !== null) search.set('end', `${end}`);
+        if (activityId !== null) search.set('activity', `${activityId}`);
+        if (facilityId !== null) search.set('facility', `${facilityId}`);
+
+        return {
+          url: `/booking/bookings/availability?${search.toString()}`,
+        };
+      },
+      providesTags: ['BookingAvailability', 'BookingEvent'],
+    }),
+
+    getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
+      {
+        query: ({limit = null, page = null, userId: user = null, token}) => {
+          const search = new URLSearchParams();
+          if (page !== null) search.set('page', `${page}`);
+          if (limit !== null) search.set('limit', `${limit}`);
+          if (user !== null) search.set('user', `${user}`);
+
+          return {
+            url: `/booking/bookings?${search.toString()}`,
+            headers: {Authorization: `Bearer ${token}`},
+          };
+        },
+        providesTags: ['Booking'],
+      }
+    ),
+
+    getBooking: builder.query<GetBookingResponse, GetBookingRequest & Token>({
+      query: ({bookingId, token}) => ({
+        url: `/booking/bookings/${bookingId}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      providesTags: ['Booking'],
+    }),
+
+    getBookingEvents: builder.query<
+      GetBookingEventsResponse,
+      GetBookingEventsRequest
+    >({
+      query: () => {
+        const start = dayjs();
+        const end = start.add(8, 'days');
+
+        const search = new URLSearchParams();
+        search.set('start', `${start.valueOf()}`);
+        search.set('end', `${end.valueOf()}`);
+
+        return {
+          url: `/booking/events?${search.toString()}`,
+        };
+      },
+      providesTags: ['BookingEvent'],
+    }),
   }),
 });
 
@@ -128,12 +318,23 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useUpdateAuthUserMutation,
   useGetFacilitiesQuery,
   useGetFacilityQuery,
+  useCreateFacilityMutation,
+  useUpdateFacilityMutation,
   useGetFacilityActivitiesQuery,
   useGetFacilityActivityQuery,
+  useCreateFacilityActivityMutation,
+  useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
   useGetUserRecordQuery,
   useCreateUserMutation,
+  useUpdateUserFirstNameMutation,
+  useUpdateUserLastNameMutation,
+  useGetAvailableBookingsQuery,
+  useGetBookingsQuery,
+  useGetBookingQuery,
+  useGetBookingEventsQuery,
 } = api;

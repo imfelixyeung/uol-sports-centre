@@ -5,15 +5,18 @@ export interface User {
   paymentID: string | null;
   membership: string | null;
 }
-
-export type UsersViewFullRecordResponse = {
+export interface UsersResponse {
   status: 'OK';
   user: User;
-};
+}
+
+export type UsersViewFullRecordResponse = UsersResponse;
 
 export type UsersCreateRequest = Pick<User, 'id' | 'firstName' | 'lastName'>;
+export type UsersCreateResponse = UsersResponse;
 
-export type UsersCreateResponse = {
-  status: 'OK';
-  user: User;
-};
+export type UsersUpdateFirstNameRequest = Pick<User, 'id' | 'firstName'>;
+export type UsersUpdateFirstNameResponse = UsersResponse;
+
+export type UsersUpdateLastNameRequest = Pick<User, 'id' | 'lastName'>;
+export type UsersUpdateLastNameResponse = UsersResponse;
