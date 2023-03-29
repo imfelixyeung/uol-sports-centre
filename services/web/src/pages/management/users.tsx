@@ -1,22 +1,13 @@
 import dayjs from 'dayjs';
-import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
-import type {FC} from 'react';
 import {useState} from 'react';
-import toast from 'react-hot-toast';
 import Button from '~/components/Button';
-import FormField from '~/components/FormField';
+import {EditUserRecordForm} from '~/components/EditUserRecordForm';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
-import {
-  useGetAuthUsersQuery,
-  useGetUserRecordQuery,
-  useUpdateUserFirstNameMutation,
-  useUpdateUserLastNameMutation,
-  useUpdateUserMembershipMutation,
-} from '~/redux/services/api';
+import {useGetAuthUsersQuery} from '~/redux/services/api';
 
 const ManageUsersPage: NextPage = () => {
   const {token} = useAuth();
@@ -68,54 +59,3 @@ export default withPageAuthRequired(
   withUserOnboardingRequired(ManageUsersPage),
   {rolesAllowed: ['ADMIN', 'MANAGER']}
 );
-
-const EditUserRecordForm: FC<{
-  userId: number;
-}> = ({userId}) => {
-  // const {token} = useAuth();
-  const userData = useGetUserRecordQuery(userId);
-  const [updateFirstName] = useUpdateUserFirstNameMutation();
-  const [updateLastName] = useUpdateUserLastNameMutation();
-  const [updateMembership] = useUpdateUserMembershipMutation();
-
-  if (userData.isLoading) return <>Loading...</>;
-  if (userData.isError || !userData.data)
-    return (
-      <>
-        Something went wrong, this user might not have competed their onboarding
-        yet
-      </>
-    );
-
-  const user = userData.data.user;
-
-  return (
-    <Formik
-      initialValues={{...user}}
-      onSubmit={async (values, actions) => {
-        const {firstName, lastName, membership} = values;
-        await toast.promise(
-          Promise.all([
-            updateFirstName({id: user.id, firstName}),
-            updateLastName({id: user.id, lastName}),
-            updateMembership({id: user.id, membership}),
-          ]),
-          {
-            loading: 'Updating...',
-            success: 'Account information updated!',
-            error: 'Something went wrong...',
-          }
-        );
-        actions.setSubmitting(false);
-      }}
-      enableReinitialize
-    >
-      <Form>
-        <FormField name="firstName" label="First name" />
-        <FormField name="lastName" label="Last name" />
-        <FormField name="membership" label="Membership" />
-        <Button intent="primary">Save</Button>
-      </Form>
-    </Formik>
-  );
-};
