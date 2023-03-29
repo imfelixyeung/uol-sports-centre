@@ -39,7 +39,7 @@ const MembershipPage = () => {
       <div className="grow bg-white py-8 text-black">
         <section className="container">
           <Typography.h2>Membership Management</Typography.h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid gap-3 lg:grid-cols-3">
             {_memberships.map((membership, index) => (
               <MembershipCard key={index} membership={membership} />
             ))}

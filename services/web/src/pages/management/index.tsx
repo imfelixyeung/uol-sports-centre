@@ -42,8 +42,7 @@ const ManagementPage: NextPage = () => {
         <UpdateActivityForm />
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
-        <Typography.h3>Total facility bookings</Typography.h3>
-        <Typography.h3>Total activity bookings</Typography.h3>
+        <SalesGraphs />
       </section>
     </>
   );
@@ -343,4 +342,27 @@ const UpdateActivityForm = () => {
       )}
     </>
   );
+};
+
+const SalesGraphs = () => {
+  const dummyData = [
+    {
+      product_name: 'something',
+      product_type: 'good',
+      units_sold: 50,
+      total_sales: 35,
+    },
+    {
+      product_name: 'anything',
+      product_type: 'bad',
+      units_sold: 25,
+      total_sales: 66,
+    },
+    {
+      product_name: 'everything',
+      product_type: 'neutral',
+      units_sold: 100,
+      total_sales: 13,
+    },
+  ];
 };
