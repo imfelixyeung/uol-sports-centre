@@ -46,25 +46,6 @@ def make_a_purchase(user_id: int,
   stripe_user = get_user(user_id)
   if stripe_user is None:
 
-    #stripe_user = get_user(user_id)
-
-    #response_users = requests.post(
-    #    f"http://gateway/api/users/{user_id}/viewFullRecord", timeout=5)
-
-    #if response_users.status_code == 200:
-    #  data = response_users.json()
-    #  first_name = data["user"]["firstName"]
-    #  last_name = data["user"]["lastName"]
-    #  full_name = f"{first_name} {last_name}"
-
-    #else:
-    #  return jsonify({
-    #      "error": {
-    #          "message": "User record for the given user ID cannot be found."
-    #      }
-    #  }), 400
-
-    #new_customer = stripe.Customer.create(name=full_name)
     new_customer = stripe.Customer.create()
     add_customer(user_id, new_customer.stripe_id)
     stripe_user = get_user(user_id)
@@ -75,12 +56,11 @@ def make_a_purchase(user_id: int,
   purchases = []
 
   payment_intent = {"setup_future_usage": "on_session"}
+
   # Checks user has purchased a subscription
   membership = False
 
   purchases = get_purchases(user_id)
-  #if payment_mode != 'subscription':
-  #return jsonify(purchases)
 
   #Validate user has an unexpired membership for membership discount
   for purchase in purchases:
@@ -197,10 +177,9 @@ def change_discount_amount(amount: float):
     or more bookings in a period of seven days
     """
   try:
-    stripe.Coupon.modify(
-        "VOz7neAM",
-        metadata={"percent_off": amount},
-    )
+    coupon = stripe.Coupon.retrieve("VOz7neAM")
+    coupon.percent_off = amount
+    coupon.save()
 
     return {"message": "Discount amount changed successfully"}, 200
 
