@@ -17,16 +17,23 @@ def make_purchasable(product_name: str, product_price: float,
                      product_type: str):
   """Make a chosen product purchasable through adding to stripe and DB"""
 
-  #Adding product to stripe
-  product = stripe.Product.create(
-      name=product_name,
-      default_price_data={
-          "unit_amount_decimal": str(product_price * 100),
-          "currency": "gbp"
-      })
+  try:
+    #Adding product to stripe
+    product = stripe.Product.create(
+        name=product_name,
+        default_price_data={
+            "unit_amount_decimal": str(product_price * 100),
+            "currency": "gbp"
+        })
 
-  #Adding product to database
-  add_product(product_name, product.stripe_id, str(product_price), product_type)
+    #Adding product to database
+    add_product(product_name, product.stripe_id, str(product_price),
+                product_type)
+
+    return 200, None
+
+  except StripeError as e:
+    return 500, str(e)
 
 
 def make_a_purchase(user_id: int,

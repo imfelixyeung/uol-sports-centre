@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import requests
 import jwt
 import stripe
+from stripe.error import StripeError
 from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, make_response
 
@@ -101,6 +102,7 @@ def redirect_checkout():
     response = requests.get(bookings_array,
                             timeout=10,
                             headers={"Authorization": f"{auth}"})
+
   except requests.exceptions.Timeout:
     return jsonify({"error": "The request timed out"}), 504
 
@@ -124,15 +126,26 @@ def create_purchasable():
   if auth is None:
     return jsonify({"message": "Missing authorization header"}, 401)
 
-  #Getting the required data through json
+  # Getting the required data through json
   data = request.get_json()
+
+  # If there are missing data, return the error accordingly
+  if not all(
+      key in data for key in ["product_name", "product_price", "product_type"]):
+    return jsonify({"message": "Missing required data"}), 400
+
   product_name = data["product_name"]
   product_price = data["product_price"]
   product_type = data["product_type"]
 
-  make_purchasable(product_name, product_price, product_type)
+  status_code, message = make_purchasable(product_name, product_price,
+                                          product_type)
 
-  return jsonify({"message": "Product made purchasable."}), 200
+  if status_code == 200:
+    return jsonify({"message": "Product made purchasable."}), 200
+
+  else:
+    return jsonify({"message": message}), 500
 
 
 @app.route("/webhook", methods=["POST"])
@@ -142,7 +155,7 @@ def webhook_received():
   signature = request.headers.get("stripe-signature")
 
   if not signature:
-    return {"message": "signature missing"}
+    return jsonify({"message": "signature missing"}), 500
 
   #Stripe signature verification
   try:
@@ -179,13 +192,6 @@ def webhook_received():
     # Iterate through the retrieved line items
     for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
-
-      #price_object = stripe.Price.retrieve(purchased_item.price.id)
-
-      # Charge to be processed at webhook
-      #charge_amount = price_object.unit_amount
-
-      # Create a new charge for the product
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] == "session":
@@ -412,16 +418,22 @@ def get_receipt(booking_id):
     return jsonify({"error": "Purchase not found."}), 404
 
   # Check if receipt exists
-  if len(purchase) < 7 or not purchase[6]:
-    return jsonify({"error": "Receipt not found for this purchase."}), 404
+  if len(purchase) < 7 or not purchase[5]:
+    return jsonify({"error": "Charge ID not found for this purchase."}), 404
 
-  receipt = purchase[6]
+  charge_id = purchase[5]
 
-  # Checks if the receipt exists
-  if not receipt:
-    return jsonify({"error": "Purchase not found."}), 404
+  # Retrieve charge object from Stripe
+  try:
+    charge = stripe.Charge.retrieve(charge_id)
 
-  return jsonify({"receipt": receipt}), 200
+  except StripeError as e:
+    return jsonify({"error": str(e)}), 500
+
+  # Retrieve receipt URL from charge object
+  receipt_url = charge.receipt_url
+
+  return jsonify({"receipt_url": receipt_url}), 200
 
 
 @app.route("/health")
