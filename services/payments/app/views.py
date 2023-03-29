@@ -6,7 +6,7 @@ import requests
 import jwt
 import stripe
 from stripe import error as stripe_errors
-from flask import request, jsonify, redirect, make_response
+from flask import request, jsonify, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
@@ -282,22 +282,26 @@ def get_purchased_products(user_id: int):
   auth = request.headers.get("Authorization")
 
   if auth is None:
-    return jsonify({"message": "Missing authorization header"}, 401)
+    return jsonify({"message": "Missing authorization header"}, 400)
 
   # Extract the token from the "Authorization" header
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token,
-                             env.JWT_SIGNING_SECRET,
-                             algorithms=["HS256"])
+  try:
+    decoded_token = jwt.decode(token,
+                               env.JWT_SIGNING_SECRET,
+                               algorithms=["HS256"])
+
+  except jwt.exceptions.DecodeError:
+    return jsonify({"message": "Invalid token."}, 400)
 
   if decoded_token["user"]["role"] == "USER":
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
 
   else:
-    return make_response(jsonify({"message": "access denied"}), 403)
+    return make_response(jsonify({"message": "access denied"}), 400)
 
 
 @app.route("/customer-portal/<int:user_id>", methods=["GET"])
@@ -307,15 +311,19 @@ def customer_portal(user_id: int):
   auth = request.headers.get("Authorization")
 
   if auth is None:
-    return jsonify({"message": "Missing authorization header"}, 401)
+    return jsonify({"message": "Missing authorization header"}, 400)
 
   # Extract the token from the "Authorization" header
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token,
-                             env.JWT_SIGNING_SECRET,
-                             algorithms=["HS256"])
+  try:
+    decoded_token = jwt.decode(token,
+                               env.JWT_SIGNING_SECRET,
+                               algorithms=["HS256"])
+
+  except jwt.exceptions.DecodeError:
+    return jsonify({"message": "Invalid token."}, 400)
 
   if decoded_token["user"]["role"] == "USER":
     received_url = get_payment_manager(user_id)
@@ -336,19 +344,26 @@ def change_product_price():
   auth = request.headers.get("Authorization")
 
   if auth is None:
-    return jsonify({"message": "Missing authorization header"}, 401)
+    return jsonify({"message": "Missing authorization header"}, 400)
 
   # Extract the token from the "Authorization" header
   token = auth.split()[1]
 
   # Decode the token using the algorithm and secret key
-  decoded_token = jwt.decode(token,
-                             env.JWT_SIGNING_SECRET,
-                             algorithms=["HS256"])
+  try:
+    decoded_token = jwt.decode(token,
+                               env.JWT_SIGNING_SECRET,
+                               algorithms=["HS256"])
+
+  except jwt.exceptions.DecodeError:
+    return jsonify({"message": "Invalid token."}, 400)
 
   if decoded_token["user"]["role"] == "MANAGER":
     # Getting the new price and product name
     data = request.get_json()
+
+    if not all(key in data for key in ["product_name", "new_price"]):
+      return jsonify({"message": "Missing required data"}), 400
 
     new_price = data["new_price"]
     product_name = data["product_name"]
