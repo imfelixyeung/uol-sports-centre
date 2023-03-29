@@ -2,6 +2,7 @@
 
 import stripe
 from stripe import error as stripe_errors
+from typing import Optional
 from stripe.error import StripeError
 from datetime import datetime
 import requests
@@ -10,7 +11,7 @@ from flask import jsonify
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
                           update_price, get_pricing_lists, get_purchases,
-                          get_order, delete_order, add_pending)
+                          get_order, delete_order, add_pending, add_purchase)
 
 
 def make_purchasable(product_name: str, product_price: float,
@@ -40,7 +41,7 @@ def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
                     bookings_count: int,
-                    success_url=LOCAL_DOMAIN):
+                    success_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
   if stripe_user is None:
@@ -74,12 +75,25 @@ def make_a_purchase(user_id: int,
   purchases = []
 
   payment_intent = {"setup_future_usage": "on_session"}
+  # Checks user has purchased a subscription
+  membership = False
+
+  purchases = get_purchases(user_id)
+  #if payment_mode != 'subscription':
+  #return jsonify(purchases)
+
+  #Validate user has an unexpired membership for membership discount
+  for purchase in purchases:
+    if purchase[1] == "membership":
+      if datetime.now() < datetime.strptime(purchase[3],
+                                            "%Y-%m-%d %H:%M:%S.%f"):
+        membership = True
 
   for product in products:
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
 
-    if product["type"] == "booking":
+    if product["type"] != "membership":
       bookings_count += 1
 
     if get_product(product["type"])[3] == "membership":
@@ -88,66 +102,56 @@ def make_a_purchase(user_id: int,
     # Gets the product price from the products table
     product_price = stripe.Product.retrieve(product_id).default_price
 
-    # Checks user has purchased a subscription
-    membership = False
-
-    purchases = get_purchases(user_id)
-
-    #Validate user has an unexpired membership for membership discount
-    for purchase in purchases:
-      if purchase[1] == "membership":
-        if datetime.now() < datetime.strptime(purchase[3], "%m/%d/%y %H:%M:%S"):
-          membership = True
-
-    #Apply a discount if more than 2 bookings were made
-    if bookings_count > 2 or membership:
-      discount = [{"coupon": apply_discount(membership)}]
+    if bookings_count > 2:
+      discount = [{"coupon": apply_discount()}]
 
     line_item = {"price": product_price, "quantity": 1}
 
     line_items.append(line_item)
 
-  try:
-    # Payment_intent_data should not be passed for a subscription:
-    if payment_mode == "subscription":
-      session = stripe.checkout.Session.create(
-          customer=stripe_user[1],
-          payment_method_types=["card"],
-          line_items=line_items,
-          mode=payment_mode,
-          discounts=discount,
-          success_url=success_url,
-          cancel_url=success_url,
-          invoice_creation={"enabled": True},
-      )
+    if membership:
+      add_purchase(str(user_id), product_id, str(datetime.now()), "", "")
 
-    # If it is not a subscription:
-    else:
-      session = stripe.checkout.Session.create(
-          customer=stripe_user[1],
-          payment_method_types=["card"],
-          line_items=line_items,
-          mode=payment_mode,
-          discounts=discount,
-          success_url=success_url,
-          cancel_url=success_url,
-          payment_intent_data=payment_intent,
-          invoice_creation={"enabled": True},
-      )
+  if not membership:
+    try:
+      # Payment_intent_data should not be passed for a subscription:
+      if payment_mode == "subscription":
+        session = stripe.checkout.Session.create(
+            customer=stripe_user[1],
+            payment_method_types=["card"],
+            line_items=line_items,
+            mode=payment_mode,
+            discounts=discount,
+            success_url=success_url,
+            cancel_url=success_url,
+        )
 
-    for product in products:
-      if product["type"] != "membership":
-        add_pending(product["data"]["userId"], product["data"]["eventId"],
-                    product["data"]["starts"], session.stripe_id)
+      # If it is not a subscription:
+      else:
+        session = stripe.checkout.Session.create(
+            customer=stripe_user[1],
+            payment_method_types=["card"],
+            line_items=line_items,
+            mode=payment_mode,
+            discounts=discount,
+            success_url=success_url,
+            cancel_url=success_url,
+            payment_intent_data=payment_intent,
+            invoice_creation={"enabled": True},
+        )
 
-    return jsonify({
-        "Url": session.url,
-        "purchases": purchases,
-        "user": user_id
-    })
+      for product in products:
+        if product["type"] != "membership":
+          add_pending(product["data"]["userId"], product["data"]["eventId"],
+                      product["data"]["starts"], session.stripe_id)
 
-  except StripeError as error:
-    return jsonify({"error": {"message": str(error)}}), 400
+      return jsonify({"Checkout": session.url})
+
+    except StripeError as error:
+      return jsonify({"error": {"message": str(error)}}), 400
+      #Apply a discount if more than 2 bookings were made
+  else:
+    return jsonify({"Checkout": success_url})
 
 
 def change_price(new_price: str, product_name: str):
@@ -173,14 +177,12 @@ def change_price(new_price: str, product_name: str):
   update_price(product_name, new_price)
 
 
-def apply_discount(membership: bool):
+def apply_discount():
   """Applies a discount to a product based on the discount condition"""
 
   # Apply the discount
   try:
     coupon = stripe.Coupon.retrieve("VOz7neAM")
-    if membership:
-      coupon = stripe.Coupon.retrieve("L1rD3SEB")
 
   except stripe_errors.StripeError as error_coupon:
     return error_coupon

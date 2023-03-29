@@ -13,7 +13,7 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, delete_order, get_sales,
                           get_pricing_lists, get_order, get_user,
                           get_user_from_stripe, get_product, get_pending,
-                          delete_pending)
+                          delete_pending, add_product, init_database)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -185,8 +185,8 @@ def webhook_received():
     expiry_time = str(datetime.now() + relativedelta(months=1))
 
     #Add purchase to database, inserting relavant fields for product type
-    payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
-    charge_id = payment_intent.latest_charge
+    payment_intent = None
+    charge_id = ""
 
     # Iterate through the retrieved line items
     for purchased_item in session.list_line_items(limit=100).data:
@@ -194,6 +194,8 @@ def webhook_received():
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] != "membership":
+        payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
+        charge_id = payment_intent.latest_charge
         pending_bookings = get_pending(session.stripe_id)
         for booking in pending_bookings:
           try:
@@ -214,7 +216,7 @@ def webhook_received():
 
       #If item is a subscription, add an expiry date and update users
       user_id = get_user_from_stripe(session.customer)
-      if product.object == "subscription":
+      if get_product(product.name)[3] == "membership":
         try:
           requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
                         json={"membership": product.name},
@@ -443,6 +445,27 @@ def get_receipt(booking_id):
     return jsonify({"error": "Purchase not found."}), 404
 
   return jsonify({"receipt": receipt}), 200
+
+
+@app.route("/initialise-payments", methods=["POST"])
+def init_payments():
+  """Endpoint to initialise the database for products"""
+  init_database()
+  products = stripe.Product.list(limit=100)
+
+  for product in products:
+    name = product.name
+    price = stripe.Price.retrieve(product.default_price)
+    if name == "Session":
+      add_product(name, product.id, price.unit_amount, "session")
+    elif name == "Activity":
+      add_product(name, product.id, price.unit_amount, "activity")
+    elif name == "Facility":
+      add_product(name, product.id, price.unit_amount, "facility")
+    elif name == "Membership":
+      add_product(name, product.id, price.unit_amount, "membership")
+
+  return jsonify("Payments Initialised"), 200
 
 
 @app.route("/health")
