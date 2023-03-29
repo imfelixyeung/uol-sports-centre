@@ -2,6 +2,7 @@ import {Request} from 'express';
 import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
 import jwt from 'jsonwebtoken';
 import {z} from 'zod';
+import {env} from '../env';
 
 export const getJwtFromRequest = (req: Request) => {
   const authorization = req.headers.authorization;
@@ -9,6 +10,13 @@ export const getJwtFromRequest = (req: Request) => {
 
   if (!authorization.startsWith('Bearer ')) return null;
   const token = authorization.split('Bearer ')[1];
+
+  try {
+    const decodedToken = jwt.verify(token, env.JWT_SIGNING_SECRET);
+    if (!decodedToken) return null;
+  } catch (error) {
+    return null;
+  }
 
   const parsedTokenData = jsonWebTokenSchema.safeParse(token);
   if (!parsedTokenData.success) return null;
