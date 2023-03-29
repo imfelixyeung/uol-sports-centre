@@ -19,7 +19,7 @@ const IconToggleGroup = <T extends string>({
     <Root
       type="single"
       className="flex items-center gap-2 bg-black p-2"
-      onValueChange={onValueChange}
+      onValueChange={value => value && onValueChange?.(value as T)}
       value={value}
     >
       {items.map(item => {

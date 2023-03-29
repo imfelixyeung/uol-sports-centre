@@ -3,7 +3,7 @@ import {expressjwt as jwt} from 'express-jwt';
 
 import EventController from '@/controllers/event.controller';
 import {authErrorHandler} from './error';
-import {adminOnly, jwtArgs} from '@/middleware/auth';
+import {roleAccess, jwtArgs, UserRole} from '@/middleware/auth';
 
 const eventRouter: Router = express.Router();
 
@@ -11,7 +11,12 @@ const eventRouter: Router = express.Router();
 eventRouter.get('/', EventController.getEvents);
 
 // create new event
-eventRouter.post('/', jwt(jwtArgs), adminOnly, EventController.createEvent);
+eventRouter.post(
+  '/',
+  jwt(jwtArgs),
+  roleAccess([UserRole.ADMIN]),
+  EventController.createEvent
+);
 
 // get specific event
 // eventRouter.get('/:id', EventController.getEventById);
@@ -20,7 +25,7 @@ eventRouter.post('/', jwt(jwtArgs), adminOnly, EventController.createEvent);
 eventRouter.put(
   '/:id',
   jwt(jwtArgs),
-  adminOnly,
+  roleAccess([UserRole.ADMIN]),
   EventController.updateEventById
 );
 

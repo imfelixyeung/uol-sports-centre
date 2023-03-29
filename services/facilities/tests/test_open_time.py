@@ -7,6 +7,7 @@ from app.database import db
 from app.models.facility import Facility
 from app.models.opentime import OpenTime
 from app.create_dictionaries import make_open_time
+from create_test_token import create_test_token
 
 # Create app for testing
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -69,13 +70,15 @@ class OpenTimeTests(unittest.TestCase):
   def test_add_open_time_success(self):
     with app.app_context():
 
+      token = create_test_token()
       response = self.app.post("/times/",
                                json={
                                    "day": "monday",
                                    "opening_time": int(660),
                                    "closing_time": int(720),
                                    "facility_id": int(1)
-                               })
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
 
       check_query = OpenTime.query.get(2)
 
@@ -102,12 +105,16 @@ class OpenTimeTests(unittest.TestCase):
 
   def test_update_open_time(self):
     with app.app_context():
+
+      token = create_test_token()
+
       response = self.app.put("/times/1",
                               json={
                                   "day": "Tuesday",
                                   "opening_time": 600,
                                   "closing_time": 930
-                              })
+                              },
+                              headers={"Authorization": f"Bearer {token}"})
 
       check_query = OpenTime.query.get(1)
 
@@ -134,10 +141,14 @@ class OpenTimeTests(unittest.TestCase):
 
   def test_delete_open_time(self):
     with app.app_context():
+
+      token = create_test_token()
+
       # Get facility before deletion so we can check response later
       to_delete = OpenTime.query.get(1)
 
-      response = self.app.delete("/times/1")
+      response = self.app.delete("/times/1",
+                                 headers={"Authorization": f"Bearer {token}"})
 
       expected_response = {
           "status": "ok",
@@ -152,15 +163,36 @@ class OpenTimeTests(unittest.TestCase):
   def test_add_open_time_wrong_data(self):
     with app.app_context():
 
+      token = create_test_token()
+
       response = self.app.post("/times/",
                                json={
                                    "day": int(2),
                                    "opening_time": str("7:30"),
                                    "closing_time": str("10:30pm"),
                                    "facility_id": int(1)
-                               })
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",
           "message": "Invalid input"
+      }, json.loads(response.data))
+
+  def test_permission_denied(self):
+    with app.app_context():
+
+      token = create_test_token(role="USER")
+
+      response = self.app.post("/times/",
+                               json={
+                                   "name": "Tennis Court",
+                                   "capacity": int(6),
+                                   "description": "A tennis court"
+                               },
+                               headers={"Authorization": f"Bearer {token}"})
+
+      self.assertDictEqual({
+          "status": "Failed",
+          "message": "Permission denied"
       }, json.loads(response.data))

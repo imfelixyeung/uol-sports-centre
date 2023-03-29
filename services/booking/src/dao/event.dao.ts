@@ -7,6 +7,11 @@ import {EventsFilter} from '@/types/events';
 import {ActivitiesResponse} from '@/types/external';
 import {Prisma} from '@prisma/client';
 
+export type EventReturn = {
+  events: EventDTO[];
+  start: number | undefined;
+};
+
 /**
  * The Event DAO (Data Access Object) is used to abstract the underlying
  * database accesses from the business logic
@@ -23,12 +28,14 @@ class EventDAO {
    *
    * @memberof EventDAO
    */
-  async getEvents(filter: EventsFilter): Promise<EventDTO[] | Error> {
+  async getEvents(filter: EventsFilter): Promise<EventReturn | Error> {
     logger.debug('Getting events');
+
+    let start: number | undefined;
 
     // return all events if no filter is provided
     if (!filter.start && !filter.end && !filter.facility && !filter.activity) {
-      return await prisma.event.findMany();
+      return {events: await prisma.event.findMany(), start: undefined};
     }
 
     // if filter.facility is provided, get the activities for that facility
@@ -75,7 +82,7 @@ class EventDAO {
       (filter.facility !== undefined || filter.activity !== undefined) &&
       activityIds.length === 0
     )
-      return [];
+      return {events: [], start: undefined};
 
     // if start and end params provided, calculate an array of days
     const days: number[] = [];
@@ -152,7 +159,7 @@ class EventDAO {
       let daysEvents = eventsByDay[day] as EventDTO[];
 
       // if is first day, ensure that all the events returned are equal to or later than the start time
-      if (index === 0)
+      if (index === 0) {
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.start as number).setHours(
             0,
@@ -160,11 +167,13 @@ class EventDAO {
             0,
             0
           );
+          if (!start || eventStartTime < start) start = eventStartTime;
           return (filter.start as number) <= eventStartTime;
         });
+      }
 
       // if is last day, ensure that all the events returned are equal to or less than the end time
-      if (index === days.length - 1)
+      if (index === days.length - 1) {
         daysEvents = daysEvents.filter(e => {
           const eventStartTime = new Date(filter.end as number).setHours(
             0,
@@ -174,13 +183,14 @@ class EventDAO {
           );
           return (filter.end as number) >= eventStartTime;
         });
+      }
 
       // add all events
       allEvents.push(...daysEvents);
     }
 
     // return either the list of events or the error
-    return allEvents;
+    return {events: allEvents, start: filter.start ? start : undefined};
   }
 
   /**
