@@ -1,5 +1,8 @@
+import dayjs from 'dayjs';
+import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
+import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
@@ -15,11 +18,15 @@ import {
   useCreateFacilityMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
+  useGetFacilityTimeQuery,
+  useGetFacilityTimesQuery,
   useUpdateAuthUserMutation,
   useUpdateFacilityActivityMutation,
   useUpdateFacilityMutation,
+  useUpdateFacilityTimeMutation,
 } from '~/redux/services/api';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
+dayjs.extend(customParseFormatPlugin);
 
 const ManagementPage: NextPage = () => {
   return (
@@ -36,6 +43,8 @@ const ManagementPage: NextPage = () => {
         <AddFacilityForm />
         <Typography.h2>Amend facility</Typography.h2>
         <UpdateFacilityForm />
+        <Typography.h2>Amend facility opening hours</Typography.h2>
+        <UpdateOpeningHoursForm />
         <Typography.h2>Add activity</Typography.h2>
         <AddActivityForm />
         <Typography.h2>Amend activity</Typography.h2>
@@ -342,5 +351,107 @@ const UpdateActivityForm = () => {
         </Formik>
       )}
     </>
+  );
+};
+
+const UpdateOpeningHoursForm = () => {
+  const timesData = useGetFacilityTimesQuery();
+  const facilitiesData = useGetFacilitiesQuery();
+  const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
+    null
+  );
+
+  if (!timesData.data) return null;
+  if (!facilitiesData.data) return null;
+  const facilities = facilitiesData.data;
+  const times = timesData.data;
+
+  const selectedTimes = times.filter(
+    time => time.facility_id === selectedFacilityId
+  );
+
+  return (
+    <>
+      <select
+        className="border-2 border-black/20 bg-[#fff] p-2 text-black"
+        value={selectedFacilityId ?? 'null'}
+        onChange={e => setSelectedFacilityId(parseInt(e.target.value))}
+      >
+        <option value="null" disabled>
+          Select a facility
+        </option>
+        {facilities.map(facility => (
+          <option value={facility.id} key={facility.id}>
+            {facility.name}
+          </option>
+        ))}
+      </select>
+      {selectedFacilityId !== null &&
+        selectedTimes.map(time => (
+          <UpdateOpeningHourForm key={time.id} timeId={time.id} />
+        ))}
+    </>
+  );
+};
+
+const UpdateOpeningHourForm: FC<{
+  timeId: number;
+}> = ({timeId}) => {
+  const timeData = useGetFacilityTimeQuery(timeId);
+  const [updateFacility] = useUpdateFacilityTimeMutation();
+  const time = timeData.data;
+
+  if (!time) return null;
+
+  const todayMorning = dayjs()
+    .set('hour', 0)
+    .set('minute', 0)
+    .set('second', 0)
+    .set('millisecond', 0);
+  const formattedOpen = todayMorning
+    .add(time.opening_time, 'minutes')
+    .format('HH:mm');
+  const formattedClose = todayMorning
+    .add(time.closing_time, 'minutes')
+    .format('HH:mm');
+
+  return (
+    <Formik
+      enableReinitialize
+      initialValues={{
+        day: time.day,
+        open: formattedOpen,
+        close: formattedClose,
+      }}
+      onSubmit={async (values, actions) => {
+        const {close, day, open} = values;
+        const openingTime = dayjs(open, 'HH:mm').diff(todayMorning, 'minutes');
+        const closingTime = dayjs(close, 'HH:mm').diff(todayMorning, 'minutes');
+
+        await toast.promise(
+          updateFacility({
+            id: timeId,
+            day: day,
+            opening_time: openingTime,
+            closing_time: closingTime,
+          }),
+          {
+            loading: 'Updating opening hours...',
+            success: 'Opening hours updated',
+            error: 'Something went wrong',
+          }
+        );
+        actions.setSubmitting(false);
+      }}
+    >
+      <Form className="flex gap-3">
+        <FormField label="Day" required name="day" />
+        <FormField label="Opening" required name="open" type="time" />
+        <FormField label="Closing" required name="close" type="time" />
+        <Button type="submit" intent="primary">
+          Update
+        </Button>
+      </Form>
+    </Formik>
   );
 };
