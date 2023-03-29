@@ -42,7 +42,8 @@ def make_a_purchase(user_id: int,
                     payment_mode: str,
                     bookings_count: int,
                     monthly: bool,
-                    success_url: Optional[str] = LOCAL_DOMAIN):
+                    success_url: Optional[str] = LOCAL_DOMAIN,
+                    cancel_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
   if stripe_user is None:
@@ -107,7 +108,7 @@ def make_a_purchase(user_id: int,
             mode=payment_mode,
             discounts=discount,
             success_url=success_url,
-            cancel_url=success_url,
+            cancel_url=cancel_url,
         )
 
       # If it is not a subscription:
@@ -119,7 +120,7 @@ def make_a_purchase(user_id: int,
             mode=payment_mode,
             discounts=discount,
             success_url=success_url,
-            cancel_url=success_url,
+            cancel_url=cancel_url,
             payment_intent_data=payment_intent,
             invoice_creation={"enabled": True},
         )
