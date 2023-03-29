@@ -149,7 +149,7 @@ def add_purchase(customer_id: str,
       purchaseDate, 
       expiryDate, 
       chargeID, 
-      receipt_pdf, 
+      reciept_pdf, 
       booking_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)""",
       (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
