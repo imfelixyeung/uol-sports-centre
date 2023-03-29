@@ -183,7 +183,7 @@ const BookingsCalendarView: FC<{
             <th className="sticky left-0 z-50 bg-black p-2">{'Date/Time'}</th>
             {hours.map(hour => (
               <th key={hour} className="p-2">
-                {hour}
+                {hour.toString().padStart(2, '0')}:00
               </th>
             ))}
           </tr>
