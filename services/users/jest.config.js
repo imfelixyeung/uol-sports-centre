@@ -5,7 +5,4 @@ module.exports = {
   collectCoverage: true,
   coverageProvider: 'v8',
   coverageDirectory: 'coverage',
-  moduleNameMapper: {
-    '^~/(.*)$': '<rootDir>/src/$1',
-  },
 };
