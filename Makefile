@@ -8,7 +8,7 @@ start:
 	docker compose up
 
 dev:
-	docker compose -f docker-compose.dev.yaml build
+	docker compose -f docker-compose.dev.yaml --env-file .env.dev build
 	docker compose -f docker-compose.dev.yaml --env-file .env.dev up
 
 ci: ci-auth ci-docs ci-status
