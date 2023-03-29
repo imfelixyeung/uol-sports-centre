@@ -1,6 +1,6 @@
 """Payments Microservice:
 Provides functionality for making payments for products"""
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import requests
 import jwt
@@ -74,7 +74,12 @@ def get_sales_lastweek(product_type: str):
 @app.route("/checkout-session/", methods=["POST"])
 def redirect_checkout():
   """It returns an url for checkout"""
-  # Getting the required data through json
+
+  auth = request.headers.get("Authorization")
+
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
   payment_mode = "payment"
   products = request.get_json()
   user_id = 1
@@ -83,12 +88,38 @@ def redirect_checkout():
     if product["type"] == "membership":
       payment_mode = "subscription"
 
-  return make_a_purchase(user_id, products, payment_mode)
+  #The start date and end date used for filtering
+  start_date = int(round(datetime.now().timestamp() * 1000))
+  end_date = int(round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
+
+  bookings_array = (f"http://gateway/api/booking/bookings"
+                    f"?user={user_id}"
+                    f"&start={start_date}"
+                    f"&end={end_date}")
+
+  response = requests.get(bookings_array,
+                          timeout=10,
+                          headers={"Authorization": f"{auth}"})
+
+  # Count the number of bookings made for the
+  # current customer in the last 7 days
+  #return response.json()["bookings"]
+
+  bookings_count = len(response.json())
+  # Getting the required data through json
+
+  return make_a_purchase(user_id, products, payment_mode, bookings_count)
 
 
 @app.route("/make-purchasable", methods=["POST"])
 def create_purchasable():
   """Enables a product to be purchased"""
+
+  auth = request.headers.get("Authorization")
+
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
   #Getting the required data through json
   data = request.get_json()
   product_name = data["product_name"]
@@ -249,12 +280,29 @@ def get_purchased_products(user_id: int):
 def customer_portal(user_id: int):
   """Generate a Stripe customer portal URL for the current user"""
 
-  received_url = get_payment_manager(user_id)
+  auth = request.headers.get("Authorization")
 
-  if received_url:
-    return redirect(received_url, code=303)
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  decoded_token = jwt.decode(token,
+                             env.JWT_SIGNING_SECRET,
+                             algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "USER":
+    received_url = get_payment_manager(user_id)
+
+    if received_url:
+      return redirect(received_url, code=303)
+    else:
+      return jsonify({"error": "Could not generate customer portal URL."}), 404
+
   else:
-    return jsonify({"error": "Could not generate customer portal URL."}), 404
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/change-price", methods=["POST"])
@@ -305,11 +353,26 @@ def get_prices(product_type: str):
 @app.route("/cancel-membership/<int:user_id>", methods=["GET"])
 def cancel_membership(user_id: int):
   """Cancels existing membership for the given user"""
+  auth = request.headers.get("Authorization")
 
-  #Check if user exists
-  if get_user(user_id) is None:
-    return jsonify({"error": "User not found."}), 404
-  return jsonify(cancel_subscription(user_id))
+  if auth is None:
+    return jsonify({"message": "Missing authorization header"}, 401)
+
+  # Extract the token from the "Authorization" header
+  token = auth.split()[1]
+
+  # Decode the token using the algorithm and secret key
+  decoded_token = jwt.decode(token,
+                             env.JWT_SIGNING_SECRET,
+                             algorithms=["HS256"])
+
+  if decoded_token["user"]["role"] == "USER":
+    #Check if user exists
+    if get_user(user_id) is None:
+      return jsonify({"error": "User not found."}), 404
+    return jsonify(cancel_subscription(user_id))
+  else:
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/refund/<int:booking_id>", methods=["GET"])
