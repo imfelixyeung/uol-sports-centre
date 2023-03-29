@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 import requests
 import jwt
 import stripe
-from stripe.error import StripeError
 from stripe import error as stripe_errors
 from flask import request, jsonify, redirect, make_response
 
@@ -418,22 +417,16 @@ def get_receipt(booking_id):
     return jsonify({"error": "Purchase not found."}), 404
 
   # Check if receipt exists
-  if len(purchase) < 7 or not purchase[5]:
-    return jsonify({"error": "Charge ID not found for this purchase."}), 404
+  if len(purchase) < 7 or not purchase[6]:
+    return jsonify({"error": "Receipt not found for this purchase."}), 404
 
-  charge_id = purchase[5]
+  receipt = purchase[6]
 
-  # Retrieve charge object from Stripe
-  try:
-    charge = stripe.Charge.retrieve(charge_id)
+  # Checks if the receipt exists
+  if not receipt:
+    return jsonify({"error": "Purchase not found."}), 404
 
-  except StripeError as e:
-    return jsonify({"error": str(e)}), 500
-
-  # Retrieve receipt URL from charge object
-  receipt_url = charge.receipt_url
-
-  return jsonify({"receipt_url": receipt_url}), 200
+  return jsonify({"receipt": receipt}), 200
 
 
 @app.route("/health")
