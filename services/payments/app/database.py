@@ -215,12 +215,12 @@ def get_sales(product_type: str):
   return sales
 
 
-def update_price(product_name: str, new_price: str):
+def update_price(product_name: str, new_price: int):
   """Updates the price of a given product to a given price"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   cur.execute("""UPDATE products SET price = ? WHERE productName = ?""",
-              (new_price, product_name))
+              (str(new_price), product_name))
   con.commit()
   con.close()
 

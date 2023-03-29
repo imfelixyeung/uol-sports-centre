@@ -134,8 +134,9 @@ def make_a_purchase(user_id: int,
     return jsonify({"Checkout": success_url})
 
 
-def change_price(new_price: str, product_name: str):
+def change_price(new_price: int, product_name: str):
   """Changes price of specified product for management microservice"""
+  new_price = (new_price * 100)
   # Get the product
   product = get_product(product_name)
   if not product:
@@ -144,8 +145,7 @@ def change_price(new_price: str, product_name: str):
   # Getting the old and new price from stripe
   try:
     old_stripe_price = stripe.Product.retrieve(product[0]).default_price
-    new_stripe_price = stripe.Price.create(unit_amount_decimal=str(new_price *
-                                                                   100),
+    new_stripe_price = stripe.Price.create(unit_amount_decimal=(new_price),
                                            currency="gbp",
                                            product=product[0])
 
@@ -184,9 +184,7 @@ def change_discount_amount(amount: float):
     stripe.Coupon.delete("VOz7neAM")
 
     # Create a new coupon with the same ID but the new percent amount
-    stripe.Coupon.create(id="VOz7neAM",
-                                      percent_off=amount,
-                                      duration="forever")
+    stripe.Coupon.create(id="VOz7neAM", percent_off=amount, duration="forever")
 
     return {"message": "Discount amount changed successfully"}, 200
 
