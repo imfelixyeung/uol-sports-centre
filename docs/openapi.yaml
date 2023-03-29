@@ -126,6 +126,9 @@ paths:
         - auth
       description: "Returns all users in the auth service (paginated)"
 
+      security:
+        - JWT: []
+
       parameters:
         - name: pageIndex
           in: query
@@ -142,6 +145,12 @@ paths:
             minimum: 0
           required: false
           example: 20
+        - name: role
+          in: query
+          schema:
+            $ref: "#/components/schemas/UserRole"
+          required: false
+          example: "USER"
 
       responses:
         "200":
@@ -164,6 +173,9 @@ paths:
       tags:
         - auth
       description: "Returns a user in the auth service"
+
+      security:
+        - JWT: []
 
       parameters:
         - name: userId
@@ -192,6 +204,9 @@ paths:
       tags:
         - auth
       description: "Updates a user in the auth service"
+
+      security:
+        - JWT: []
 
       parameters:
         - name: userId
@@ -1766,6 +1781,9 @@ components:
               password:
                 type: string
                 description: "The user's password"
+              rememberMe:
+                type: boolean
+                description: "If the refresh token should be long lived"
 
     PasswordReset:
       description: "Password reset (email old new password)"
