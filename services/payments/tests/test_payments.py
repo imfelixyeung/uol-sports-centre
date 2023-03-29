@@ -83,7 +83,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
         "type": "subscription-test",
         "data": {}
     }]
-    response = make_a_purchase(111, products, "subscription", True)
+    response = make_a_purchase(111, products, "subscription", 6)
 
     # Check if session URL is returned
     self.assertIsNotNone(response)

@@ -2,8 +2,8 @@
 
 import stripe
 from stripe import error as stripe_errors
-from datetime import datetime, timedelta
 import requests
+from flask import jsonify
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -32,7 +32,7 @@ def make_purchasable(product_name: str, product_price: float,
 def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
-                    test=False,
+                    bookings_count: int,
                     success_url=LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
@@ -47,28 +47,6 @@ def make_a_purchase(user_id: int,
 
   # Stores all the products that are about to be purchased
   line_items = []
-  bookings_count = 0
-
-  if not test:
-    #The start date and end date used for filtering
-    start_date = int(round(datetime.now().timestamp() * 1000))
-    end_date = int(
-        round((datetime.now() + timedelta(days=7)).timestamp() * 1000))
-
-    bookings_array = (f"http://gateway/api/booking/bookings"
-                      f"?user={user_id}"
-                      f"&start={start_date}"
-                      f"&end={end_date}")
-
-    response = requests.get(bookings_array, timeout=10)
-
-    # Count the number of bookings made for the
-    # current customer in the last 7 days
-    bookings_count = len(response.json())
-
-  else:
-    bookings_count = 6
-
   discount = []
   payment_intent = {"setup_future_usage": "on_session"}
   for product in products:
@@ -90,8 +68,10 @@ def make_a_purchase(user_id: int,
 
     #Validate user has an unexpired membership for membership discount
     for purchase in purchases:
-      if purchase[1] == "membership" and datetime.now() < datetime.strptime(
-          purchase[3], "%m/%d/%y %H:%M:%S"):
+      return jsonify(purchase)
+      if purchase[1] == "membership":  #and datetime.now() < datetime.strptime(
+        #purchase[3], "%m/%d/%y %H:%M:%S"):
+        return jsonify("yes")
         membership = True
 
     #Apply a discount if more than 2 bookings were made
@@ -104,24 +84,28 @@ def make_a_purchase(user_id: int,
 
   # Payment_intent_data should not be passed for a subscription:
   if payment_mode == "subscription":
-    session = stripe.checkout.Session.create(customer=stripe_user[1],
-                                             payment_method_types=["card"],
-                                             line_items=line_items,
-                                             mode=payment_mode,
-                                             discounts=discount,
-                                             success_url=success_url,
-                                             cancel_url=success_url)
+    session = stripe.checkout.Session.create(
+        customer=stripe_user[1],
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode=payment_mode,
+        discounts=discount,
+        success_url=success_url,
+        cancel_url=success_url,
+    )
 
   # If it is not a subscription:
   else:
-    session = stripe.checkout.Session.create(customer=stripe_user[1],
-                                             payment_method_types=["card"],
-                                             line_items=line_items,
-                                             mode=payment_mode,
-                                             discounts=discount,
-                                             success_url=success_url,
-                                             cancel_url=success_url,
-                                             payment_intent_data=payment_intent)
+    session = stripe.checkout.Session.create(
+        customer=stripe_user[1],
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode=payment_mode,
+        discounts=discount,
+        success_url=success_url,
+        cancel_url=success_url,
+        payment_intent_data=payment_intent,
+    )
 
   for product in products:
     if product["type"] == "booking":
@@ -159,7 +143,7 @@ def apply_discount(membership: bool):
     return error_coupon
 
   # Round the discounted price to 2 decimal places
-  return coupon
+  return coupon.stripe_id
 
 
 def change_discount_amount(amount: float):
