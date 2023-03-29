@@ -47,11 +47,13 @@ const BookingFilterForm: FC<{
   const initialValues: {
     start?: string;
     end?: string;
-    activity?: number;
-    facility?: number;
+    activity?: string;
+    facility?: string;
   } = {
     start: minDate,
     end: defaultEnd,
+    activity: 'default-all',
+    facility: 'default-all',
   };
 
   return (
@@ -61,8 +63,14 @@ const BookingFilterForm: FC<{
         onFilterChange({
           start: values.start ? new Date(values.start).getTime() : undefined,
           end: values.end ? new Date(values.end).getTime() : undefined,
-          activityId: values.activity,
-          facilityId: values.facility,
+          activityId:
+            values.activity === 'default-all'
+              ? undefined
+              : Number(values.activity),
+          facilityId:
+            values.facility === 'default-all'
+              ? undefined
+              : Number(values.facility),
         });
         actions.setSubmitting(false);
       }}
@@ -97,9 +105,7 @@ const BookingFilterForm: FC<{
             className="p-2 text-black"
             defaultValue=""
           >
-            <option value="" hidden>
-              ------
-            </option>
+            <option value="default-all">All</option>
             {activities.map(activity => (
               <option key={activity.id} value={activity.id}>
                 {activity.name}
@@ -115,9 +121,7 @@ const BookingFilterForm: FC<{
             className="p-2 text-black"
             defaultValue=""
           >
-            <option value="" hidden>
-              ------
-            </option>
+            <option value="default-all">All</option>
             {facilities.map(facility => (
               <option key={facility.id} value={facility.id}>
                 {facility.name}

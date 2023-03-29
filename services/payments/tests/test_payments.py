@@ -96,7 +96,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }]
-      response = make_a_purchase(111, products, "subscription", 6)
+      response = make_a_purchase(111, products, "subscription", 6, False)
 
       # Check if session URL is returned
       self.assertIsNotNone(response)
@@ -143,7 +143,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
     #Update price of product
-    update_price("product-test", "10")
+    update_price("product-test", 10)
 
     connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()

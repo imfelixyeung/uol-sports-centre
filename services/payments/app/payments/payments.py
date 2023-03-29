@@ -41,7 +41,9 @@ def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
                     bookings_count: int,
-                    success_url: Optional[str] = LOCAL_DOMAIN):
+                    monthly: bool,
+                    success_url: Optional[str] = LOCAL_DOMAIN,
+                    cancel_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
   if stripe_user is None:
@@ -70,17 +72,20 @@ def make_a_purchase(user_id: int,
         membership = True
 
   for product in products:
+
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
+    # Gets the product price from the products table
+    product_price = stripe.Product.retrieve(product_id).default_price
 
     if product["type"] != "membership":
       bookings_count += 1
 
     if get_product(product["type"])[3] == "membership":
       payment_intent = {}
-
-    # Gets the product price from the products table
-    product_price = stripe.Product.retrieve(product_id).default_price
+      if not monthly:
+        product_price = stripe.Price.retrieve(
+            "price_1Mr2RQK4xeIGYs5lOoC2mCbo").stripe_id
 
     if bookings_count > 2:
       discount = [{"coupon": apply_discount()}]
@@ -103,7 +108,7 @@ def make_a_purchase(user_id: int,
             mode=payment_mode,
             discounts=discount,
             success_url=success_url,
-            cancel_url=success_url,
+            cancel_url=cancel_url,
         )
 
       # If it is not a subscription:
@@ -115,7 +120,7 @@ def make_a_purchase(user_id: int,
             mode=payment_mode,
             discounts=discount,
             success_url=success_url,
-            cancel_url=success_url,
+            cancel_url=cancel_url,
             payment_intent_data=payment_intent,
             invoice_creation={"enabled": True},
         )
@@ -136,7 +141,7 @@ def make_a_purchase(user_id: int,
 
 def change_price(new_price: int, product_name: str):
   """Changes price of specified product for management microservice"""
-  new_price = (new_price * 100)
+  new_price = new_price * int(100)
   # Get the product
   product = get_product(product_name)
   if not product:
@@ -226,7 +231,7 @@ def pricing_list(product_type: str):
 def cancel_subscription(user_id: int):
   """Cancels membership for given user in Stripe"""
   stripe_user = get_user(user_id)[1]
-  customer = stripe.Customer.retrieve(stripe_user)
+  customer = stripe.Customer.retrieve(stripe_user, expand=["subscriptions"])
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 

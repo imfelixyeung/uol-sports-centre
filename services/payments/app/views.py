@@ -17,6 +17,7 @@ from app.database import (check_health, get_purchases, add_purchase,
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
+from app.interfaces import LOCAL_DOMAIN
 
 import env
 
@@ -79,14 +80,23 @@ def redirect_checkout():
 
   if auth is None:
     return jsonify({"message": "Missing authorization header"}, 401)
+  success_url = LOCAL_DOMAIN
+  cancel_url = LOCAL_DOMAIN
 
   payment_mode = "payment"
+  monthly = True
   products = request.get_json()
   user_id = 1
   for product in products:
     user_id = product["data"]["userId"]
     if product["type"] == "membership":
       payment_mode = "subscription"
+      if product["data"]["period"] == "yearly":
+        monthly = False
+    if product["type"] == "success":
+      success_url = product["data"]["url"]
+    if product["type"] == "cancel":
+      cancel_url = product["data"]["url"]
 
   #The start date and end date used for filtering
   start_date = int(round(datetime.now().timestamp() * 1000))
@@ -113,7 +123,8 @@ def redirect_checkout():
   # current customer in the last 7 days
   bookings_count = len(response.json()["bookings"])
 
-  return make_a_purchase(user_id, products, payment_mode, bookings_count)
+  return make_a_purchase(user_id, products, payment_mode, bookings_count,
+                         monthly, success_url, cancel_url)
 
 
 @app.route("/make-purchasable", methods=["POST"])
@@ -262,7 +273,8 @@ def webhook_received():
     subscription = event.data.object
     customer = subscription.customer
     product = subscription.items.data[1].price.product
-    update_expiry(customer, product, str(datetime.now()))
+    #Redundant?
+    #update_expiry(customer, product, str(datetime.now()))
 
   #Delete pending bookings if session expired
   elif event.type == "checkout.session.expired":
