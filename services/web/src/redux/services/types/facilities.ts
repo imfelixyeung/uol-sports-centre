@@ -33,7 +33,8 @@ export type FacilityActivityResponse = FacilityActivity;
 export type FacilityTimesResponse = FacilityTime[];
 export type FacilityTimeResponse = FacilityTime;
 
-export type FacilityTimeRequest = Partial<FacilityTime>;
+export type FacilityTimeRequest = Partial<FacilityTime> &
+  Pick<FacilityTime, 'id'>;
 
 export type CreateFacilityRequest = Omit<Facility, 'id'>;
 export type CreateFacilityResponse = Facility;
