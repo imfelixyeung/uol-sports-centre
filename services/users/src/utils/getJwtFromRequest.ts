@@ -24,18 +24,24 @@ export const getJwtFromRequest = (req: Request) => {
   const jwtPayload = jwt.decode(token);
   if (!jwtPayload) return null;
 
-  const decodedTokenData = Object.assign({}, parsedTokenData.data, jwtPayload);
-
   // Define scheme for decoded token data
+
   const schema = z.object({
-    id: z.coerce.number(),
-    role: z.string(),
+    user: z.object({
+      id: z.coerce.number(),
+      email: z.string(),
+      role: z.string(),
+    }),
+    type: z.string(),
+    iat: z.number(),
+    exp: z.number(),
+    iss: z.string(),
+    sub: z.string(),
+    jti: z.string(),
   });
 
-  const extractedData = schema.safeParse(
-    JSON.parse(decodedTokenData as JsonWebToken)
-  );
+  const extractedData = schema.safeParse(jwtPayload);
   if (!extractedData.success) return null;
 
-  return extractedData.data;
+  return extractedData.data.user;
 };
