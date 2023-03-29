@@ -108,15 +108,6 @@ def get_user_from_stripe(stripe_id: str):
   return find_user[0]
 
 
-def delete_order(order_id: int) -> None:
-  """Function to delete a specific purchase by its order ID"""
-  con = sqlite3.connect(DATABASE_URL)
-  cur = con.cursor()
-  cur.execute("""DELETE FROM orders WHERE order_id = ?""", [order_id])
-  con.commit()
-  con.close()
-
-
 def get_product(product_name: str):
   """Function to get the product by its product name from the database"""
   con = sqlite3.connect(DATABASE_URL)
@@ -222,26 +213,6 @@ def get_sales(product_type: str):
 
   # Return sales amount
   return sales
-
-
-def get_user(user_id: int):
-  """Function that finds the user in the database"""
-  con = sqlite3.connect(DATABASE_URL)
-  cur = con.cursor()
-  find_user = cur.execute("""SELECT * FROM customers WHERE
-    user_id = ?""", [user_id]).fetchone()
-  con.close()
-  return find_user
-
-
-def get_user_from_stripe(stripe_id: str):
-  """Function that finds the user id from their stripe id"""
-  con = sqlite3.connect(DATABASE_URL)
-  cur = con.cursor()
-  find_user = cur.execute("""SELECT * FROM customers WHERE
-    stripe_id = ?""", [stripe_id]).fetchone()
-  con.close()
-  return find_user[1]
 
 
 def update_price(product_name: str, new_price: str):
