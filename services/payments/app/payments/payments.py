@@ -177,9 +177,16 @@ def change_discount_amount(amount: float):
     or more bookings in a period of seven days
     """
   try:
-    coupon = stripe.Coupon.retrieve("VOz7neAM")
-    coupon.percent_off = amount
-    coupon.save()
+    # Retrieve the current coupon
+    stripe.Coupon.retrieve("VOz7neAM")
+
+    # Delete the current coupon
+    stripe.Coupon.delete("VOz7neAM")
+
+    # Create a new coupon with the same ID but the new percent amount
+    stripe.Coupon.create(id="VOz7neAM",
+                                      percent_off=amount,
+                                      duration="forever")
 
     return {"message": "Discount amount changed successfully"}, 200
 
