@@ -91,6 +91,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
+
       - name: Run ci tests in docker
         run: make ci-users
 

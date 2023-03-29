@@ -8,7 +8,7 @@ start:
 	docker compose up
 
 dev:
-	docker compose -f docker-compose.dev.yaml build
+	docker compose -f docker-compose.dev.yaml --env-file .env.dev build
 	docker compose -f docker-compose.dev.yaml --env-file .env.dev up
 
 ci: ci-auth ci-docs ci-status
@@ -31,7 +31,7 @@ ci-status:
 
 ci-users:
 	docker compose -f docker-compose.ci.yaml build users
-	docker compose -f docker-compose.ci.yaml run users
+	docker compose -f docker-compose.ci.yaml --env-file .env.ci run users
 
 ci-booking:
 	docker compose -f docker-compose.integration.yaml build

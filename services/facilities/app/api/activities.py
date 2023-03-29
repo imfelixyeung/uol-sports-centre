@@ -4,6 +4,7 @@ from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Activity, Facility
 from app.create_dictionaries import make_activity
+from app.auth import authenticate
 
 
 class ActivitiesRouter:
@@ -76,6 +77,10 @@ class ActivitiesRouter:
     return return_value
 
   def add_activity(self):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     # Get data from body of post request
     data = request.json
 
@@ -130,6 +135,10 @@ class ActivitiesRouter:
     return return_value
 
   def update_activity(self, activity_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
 
     # Get item to be updated
@@ -184,6 +193,10 @@ class ActivitiesRouter:
     return return_value
 
   def delete_activity(self, activity_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     to_delete = Activity.query.get(activity_id)
 
     # If the requested
