@@ -149,7 +149,7 @@ def add_purchase(customer_id: str,
       purchaseDate, 
       expiryDate, 
       chargeID, 
-      reciept_pdf, 
+      receipt_pdf, 
       booking_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)""",
       (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
@@ -175,7 +175,7 @@ def get_user_from_stripe(stripe_id: str):
   find_user = cur.execute("""SELECT * FROM customers WHERE
     stripe_id = ?""", [stripe_id]).fetchone()
   con.close()
-  return find_user[1]
+  return find_user[0]
 
 
 def delete_order(order_id: int) -> None:
@@ -232,9 +232,9 @@ def get_purchases(user_id: int):
   cur = con.cursor()
   purchased_products = cur.execute(
       """SELECT products.product_id, productType, purchaseDate, 
-    expiryDate FROM orders JOIN products ON 
-    orders.product_id = products.product_id 
-    WHERE orders.user_id = ?""", [user_id]).fetchall()
+    expiryDate, receipt_pdf FROM orders JOIN products ON 
+    orders.product_id = products.product_id WHERE orders.user_id = ?""",
+      [user_id]).fetchall()
   con.close()
   return purchased_products
 

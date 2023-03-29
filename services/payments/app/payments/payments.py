@@ -38,25 +38,26 @@ def make_a_purchase(user_id: int,
   stripe_user = get_user(user_id)
   if stripe_user is None:
 
-    stripe_user = get_user(user_id)
+    #stripe_user = get_user(user_id)
 
-    response_users = requests.post(
-        f"http://gateway/api/users/{user_id}/viewFullRecord", timeout=5)
+    #response_users = requests.post(
+    #    f"http://gateway/api/users/{user_id}/viewFullRecord", timeout=5)
 
-    if response_users.status_code == 200:
-      data = response_users.json()
-      first_name = data["user"]["firstName"]
-      last_name = data["user"]["lastName"]
-      full_name = f"{first_name} {last_name}"
+    #if response_users.status_code == 200:
+    #  data = response_users.json()
+    #  first_name = data["user"]["firstName"]
+    #  last_name = data["user"]["lastName"]
+    #  full_name = f"{first_name} {last_name}"
 
-    else:
-      return jsonify({
-          "error": {
-              "message": "User record for the given user ID cannot be found."
-          }
-      }), 400
+    #else:
+    #  return jsonify({
+    #      "error": {
+    #          "message": "User record for the given user ID cannot be found."
+    #      }
+    #  }), 400
 
-    new_customer = stripe.Customer.create(name=full_name)
+    #new_customer = stripe.Customer.create(name=full_name)
+    new_customer = stripe.Customer.create()
     add_customer(user_id, new_customer.stripe_id)
     stripe_user = get_user(user_id)
 
@@ -87,9 +88,9 @@ def make_a_purchase(user_id: int,
 
     #Validate user has an unexpired membership for membership discount
     for purchase in purchases:
-      if purchase[1] == "membership" and datetime.now() < datetime.strptime(
-          purchase[3], "%m/%d/%y %H:%M:%S"):
-        membership = True
+      if purchase[1] == "membership":
+        if datetime.now() < datetime.strptime(purchase[3], "%m/%d/%y %H:%M:%S"):
+          membership = True
 
     #Apply a discount if more than 2 bookings were made
     if bookings_count > 2 or membership:
@@ -132,7 +133,11 @@ def make_a_purchase(user_id: int,
         add_pending(product["data"]["userId"], product["data"]["eventId"],
                     product["data"]["starts"], session.stripe_id)
 
-    return jsonify({"Url": session.url, "purchases": purchases})
+    return jsonify({
+        "Url": session.url,
+        "purchases": purchases,
+        "user": user_id
+    })
 
   except StripeError as error:
     return jsonify({"error": {"message": str(error)}}), 400
