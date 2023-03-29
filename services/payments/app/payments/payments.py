@@ -129,7 +129,7 @@ def make_a_purchase(user_id: int,
       )
 
     for product in products:
-      if product["type"] == "booking":
+      if product["type"] != "membership":
         add_pending(product["data"]["userId"], product["data"]["eventId"],
                     product["data"]["starts"], session.stripe_id)
 
