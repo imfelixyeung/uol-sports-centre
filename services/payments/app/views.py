@@ -154,7 +154,7 @@ def webhook_received():
   signature = request.headers.get("stripe-signature")
 
   if not signature:
-    return jsonify({"message": "signature missing"}), 500
+    return jsonify({"message": "signature missing"}), 400
 
   #Stripe signature verification
   try:
@@ -196,21 +196,36 @@ def webhook_received():
       if get_product(product.name)[3] != "membership":
         pending_bookings = get_pending(session.stripe_id)
         for booking in pending_bookings:
-          requests.post("http://gateway/api/booking/bookings/book/",
-                        json={
-                            "userId": booking[0],
-                            "eventId": booking[1],
-                            "starts": booking[2]
-                        },
-                        timeout=5)
+          try:
+            requests.post("http://gateway/api/booking/bookings/book/",
+                          json={
+                              "userId": booking[0],
+                              "eventId": booking[1],
+                              "starts": booking[2]
+                          },
+                          timeout=5)
+
+          # Case there was a request error
+          except requests.exceptions.RequestException as request_error:
+
+            # Return with appropiate status code
+            return make_response(
+                jsonify({"Invalid request": str(request_error)}), 400)
 
       #If item is a subscription, add an expiry date and update users
       user_id = get_user_from_stripe(session.customer)
       if product.object == "subscription":
+        try:
+          requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
+                        json={"membership": product.name},
+                        timeout=5)
 
-        requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
-                      json={"membership": product.name},
-                      timeout=5)
+        # Case there was a request error
+        except requests.exceptions.RequestException as request_error:
+
+          # Return with appropiate status code
+          return make_response(jsonify({"Invalid request": str(request_error)}),
+                               400)
 
         add_purchase(user_id, purchased_item.price.product, transaction_time,
                      charge_id, invoice.invoice_pdf, expiry_time)
@@ -254,6 +269,7 @@ def webhook_received():
         expand=["line_items"],
     )
     delete_pending(session.stripe_id)
+
   return make_response("", 200)
 
 
