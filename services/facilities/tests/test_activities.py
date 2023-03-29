@@ -79,7 +79,7 @@ class ActivitiesTests(unittest.TestCase):
                                    "capacity": int(20),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       check_query = Activity.query.get(2)
 
@@ -113,7 +113,7 @@ class ActivitiesTests(unittest.TestCase):
                                   "capacity": 10,
                                   "duration": 30
                               },
-                              headers={"Authorization": "Bearer " + token})
+                              headers={"Authorization": f"Bearer {token}"})
 
       check_query = Activity.query.get(1)
 
@@ -147,7 +147,7 @@ class ActivitiesTests(unittest.TestCase):
       to_delete = Activity.query.get(1)
 
       response = self.app.delete("/activities/1",
-                                 headers={"Authorization": "Bearer " + token})
+                                 headers={"Authorization": f"Bearer {token}"})
 
       expected_response = {
           "status": "ok",
@@ -171,7 +171,7 @@ class ActivitiesTests(unittest.TestCase):
                                    "capacity": str("Twenty"),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",
@@ -189,7 +189,7 @@ class ActivitiesTests(unittest.TestCase):
                                    "capacity": int(6),
                                    "description": "A tennis court"
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",

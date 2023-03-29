@@ -78,7 +78,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "closing_time": int(720),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       check_query = OpenTime.query.get(2)
 
@@ -114,7 +114,7 @@ class OpenTimeTests(unittest.TestCase):
                                   "opening_time": 600,
                                   "closing_time": 930
                               },
-                              headers={"Authorization": "Bearer " + token})
+                              headers={"Authorization": f"Bearer {token}"})
 
       check_query = OpenTime.query.get(1)
 
@@ -148,7 +148,7 @@ class OpenTimeTests(unittest.TestCase):
       to_delete = OpenTime.query.get(1)
 
       response = self.app.delete("/times/1",
-                                 headers={"Authorization": "Bearer " + token})
+                                 headers={"Authorization": f"Bearer {token}"})
 
       expected_response = {
           "status": "ok",
@@ -172,7 +172,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "closing_time": str("10:30pm"),
                                    "facility_id": int(1)
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",
@@ -190,7 +190,7 @@ class OpenTimeTests(unittest.TestCase):
                                    "capacity": int(6),
                                    "description": "A tennis court"
                                },
-                               headers={"Authorization": "Bearer " + token})
+                               headers={"Authorization": f"Bearer {token}"})
 
       self.assertDictEqual({
           "status": "Failed",
