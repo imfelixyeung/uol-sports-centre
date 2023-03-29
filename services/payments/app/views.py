@@ -81,7 +81,7 @@ def redirect_checkout():
   products = request.get_json()
   user_id = 1
   for product in products:
-    user_id = product["userId"]
+    user_id = product["data"]["userId"]
     if product["type"] == "membership":
       payment_mode = "subscription"
 

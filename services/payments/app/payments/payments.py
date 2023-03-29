@@ -106,7 +106,7 @@ def make_a_purchase(user_id: int,
       discounts=discount,
       success_url=success_url,
       cancel_url=success_url,
-  )
+      payment_intent_data={"setup_future_usage": 'on_session'})
 
   for product in products:
     if product["type"] == "booking":
