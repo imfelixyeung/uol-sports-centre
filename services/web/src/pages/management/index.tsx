@@ -1,5 +1,6 @@
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
+import dynamic from 'next/dynamic';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
@@ -20,6 +21,10 @@ import {
   useUpdateFacilityMutation,
 } from '~/redux/services/api';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
+
+const SalesGraphs = dynamic(() => import('~/components/SalesGraph'), {
+  ssr: false,
+});
 
 const ManagementPage: NextPage = () => {
   return (
@@ -42,8 +47,7 @@ const ManagementPage: NextPage = () => {
         <UpdateActivityForm />
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
-        <Typography.h3>Total facility bookings</Typography.h3>
-        <Typography.h3>Total activity bookings</Typography.h3>
+        <SalesGraphs />
       </section>
     </>
   );
