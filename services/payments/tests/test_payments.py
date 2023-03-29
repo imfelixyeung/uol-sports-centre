@@ -1,8 +1,8 @@
-'''Unit testing for payments microservice'''
+"""Unit testing for payments microservice"""
 import unittest
 import sqlite3
 import json
-#from unittest.mock import patch, MagicMock
+from unittest import mock
 
 import urllib.request
 import stripe
@@ -30,23 +30,24 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   """Testing the payments microservice"""
 
   def setUp(self):
-    #     app.testing = True
     self.client = app.test_client()
-    #     self.product_name = "product-test"
-    #     self.product_price = 50.00
-    #     self.user_id = 467468
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
     #make_purchasable('product', 5.0, 'session')
 
-    #retrieving the added product from Stripe
+    # Retrieving the added product from Stripe
     products = stripe.Product.list()
     product_stripe = next(
         (p for p in products if p.name == "subscription-test"), None)
+
+    # Check if product_stripe is None
+    if product_stripe is None:
+      self.fail("No product named 'subscription-test'.")
+
     price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
 
-    #asserting that the added product matches the expected result
+    # Asserting that the added product matches the expected result
     self.assertEqual(product_stripe.name, "subscription-test")
     self.assertEqual(price.unit_amount_decimal, "1500")
 
@@ -181,6 +182,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Assert valid checkout URL response
     session_url = create_checkout(new_customer.stripe_id, "product-test")
 
+    # Check if sesion_url is None
+    if session_url is None:
+      self.fail("Invalid checkout URL provided.")
+
     with urllib.request.urlopen(session_url) as response:
       self.assertEqual(response.getcode(), 200)
 
@@ -205,6 +210,24 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
+
+  @mock.patch("jwt.decode")
+  def test_purchased_products(self, mock_jwt):
+    """Function that checks the functionality of purchased_products end point"""
+
+    # Mock the jwt.decode function to return a mocked decoded token
+    mock_jwt.return_value = {"user": {"role": "USER"}}
+
+    # Line inspired by stack-overflaw #
+    response = self.client.get("/purchased-products/1",
+                               headers={"Authorization": "Bearer <JWT_TOKEN>"})
+
+    # Check that the response status code is 200
+    self.assertEqual(response.status_code, 200)
+
+    # Check that the response is a list of purchased products
+    purchased_products = json.loads(response.data)
+    self.assertIsInstance(purchased_products, list)
 
   def refund(self):
     #initialise Database
@@ -242,50 +265,6 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     #Delete temp customer
     stripe.Customer.delete(new_customer.stripe_id)
     stripe.Product.delete(product_id[0])
-
-  # @patch("app.database.get_purchase")
-  # @patch.object(stripe.Refund, "create")
-  # def test_refund(self, mock_refund_create, mock_get_purchase):
-  #   """Testing the /refund endpoint"""
-
-  #   # Create an instance of the Flask test client
-  #   client = app.test_client()
-
-  #   # Define the test data
-  #   test_data = {"order_id": 1, "refund_amount": 5}
-
-  #   # Create a mock purchase object with a valid payment_intent field
-  #   mock_purchase = {
-  #       "order_id": 1,
-  #       "product_id": 1,
-  #   }
-
-  #   # Mock the get_purchase() function to return the mock purchase object
-  #   mock_get_purchase.return_value = mock_purchase
-
-  #   # Mocking the get_purchase function for a sample purchase
-  #   with patch("app.database.get_purchase", mock_get_purchase):
-
-  #     # Make the request to the refund endpoint
-  #     response = client.post("/refund",
-  #                            data=json.dumps(test_data),
-  #                            content_type="application/json")
-
-  #     print("response data: ", response.data)
-  #     print("response status code: ", response.status_code)
-
-  #     # Check that the refund was created successfully
-  #     mock_refund_create.assert_called_once_with(amount=5,
-  #                                                refund_application_fee=True)
-
-  #     # Check that the order was deleted
-  #     mock_get_purchase.assert_called_once_with(1)
-
-  #     # Check that the endpoint returned a success status code
-  #     assert response.status_code == 200
-
-  #     # Check that the enndpoint returned the expected response body
-  #     assert response.json == {"message": "Refund processed successfully."}
 
 
 if __name__ == "__main__":

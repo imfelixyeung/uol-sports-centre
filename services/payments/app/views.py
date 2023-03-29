@@ -240,8 +240,7 @@ def get_purchased_products(user_id: int):
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "ADMIN" or decoded_token["user"][
-      "role"] == "MANAGER":
+  if decoded_token["user"]["role"] == "USER":
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
 
