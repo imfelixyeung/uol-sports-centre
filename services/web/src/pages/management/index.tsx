@@ -1,5 +1,6 @@
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
+import Link from 'next/link';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
@@ -44,6 +45,8 @@ const ManagementPage: NextPage = () => {
         <Typography.h3>Total sales</Typography.h3>
         <Typography.h3>Total facility bookings</Typography.h3>
         <Typography.h3>Total activity bookings</Typography.h3>
+        <Typography.h2>Manage users</Typography.h2>
+        <Link href="/management/users">Manage</Link>
       </section>
     </>
   );
