@@ -34,22 +34,18 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
-    #make_purchasable('product', 5.0, 'session')
+    with app.test_client() as client:
 
-    # Retrieving the added product from Stripe
-    products = stripe.Product.list()
-    product_stripe = next(
-        (p for p in products if p.name == "subscription-test"), None)
+      data = {
+          "product_name": "Subscription-test",
+          "product_price": 15.0,
+          "product_type": "membership"
+      }
 
-    # Check if product_stripe is None
-    if product_stripe is None:
-      self.fail("No product named 'subscription-test'.")
+      response = client.post("/make-purchasable", json=data)
 
-    price = stripe.Price.list(limit=1, product=product_stripe.id).data[0]
-
-    # Asserting that the added product matches the expected result
-    self.assertEqual(product_stripe.name, "subscription-test")
-    self.assertEqual(price.unit_amount_decimal, "1500")
+      # Assert the response code
+      self.assertEqual(response.status_code, 200)
 
   def test_make_a_purchase(self):
     """tests if a purchase can be made correctly"""

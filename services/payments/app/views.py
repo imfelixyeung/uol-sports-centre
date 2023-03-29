@@ -93,7 +93,6 @@ def create_purchasable():
   """Enables a product to be purchased"""
   #Getting the required data through json
   data = request.get_json()
-
   product_name = data["product_name"]
   product_price = data["product_price"]
   product_type = data["product_type"]
@@ -251,7 +250,13 @@ def get_purchased_products(user_id: int):
 @app.route("/customer-portal/<int:user_id>", methods=["GET"])
 def customer_portal(user_id: int):
   """Generate a Stripe customer portal URL for the current user"""
-  return redirect(get_payment_manager(user_id), code=303)
+
+  received_url = get_payment_manager(user_id)
+
+  if received_url:
+    return redirect(received_url, code=303)
+  else:
+    return jsonify({"error": "Could not generate customer portal URL."}), 404
 
 
 @app.route("/change-price", methods=["POST"])
@@ -291,7 +296,13 @@ def change_product_price():
 @app.route("/get-prices/<string:product_type>", methods=["GET"])
 def get_prices(product_type: str):
   """Retrieve pricing list of specified product type"""
-  return jsonify(get_pricing_lists(product_type))
+
+  received_list = get_pricing_lists(product_type)
+
+  if received_list:
+    return jsonify(received_list), 200
+  else:
+    return jsonify({"error": "No prices found."}), 404
 
 
 @app.route("/cancel-membership/<int:user_id>", methods=["GET"])
