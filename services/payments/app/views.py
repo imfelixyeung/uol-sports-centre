@@ -101,6 +101,7 @@ def redirect_checkout():
     response = requests.get(bookings_array,
                             timeout=10,
                             headers={"Authorization": f"{auth}"})
+
   except requests.exceptions.Timeout:
     return jsonify({"error": "The request timed out"}), 504
 
@@ -124,15 +125,26 @@ def create_purchasable():
   if auth is None:
     return jsonify({"message": "Missing authorization header"}, 401)
 
-  #Getting the required data through json
+  # Getting the required data through json
   data = request.get_json()
+
+  # If there are missing data, return the error accordingly
+  if not all(
+      key in data for key in ["product_name", "product_price", "product_type"]):
+    return jsonify({"message": "Missing required data"}), 400
+
   product_name = data["product_name"]
   product_price = data["product_price"]
   product_type = data["product_type"]
 
-  make_purchasable(product_name, product_price, product_type)
+  status_code, message = make_purchasable(product_name, product_price,
+                                          product_type)
 
-  return jsonify({"message": "Product made purchasable."}), 200
+  if status_code == 200:
+    return jsonify({"message": "Product made purchasable."}), 200
+
+  else:
+    return jsonify({"message": message}), 500
 
 
 @app.route("/webhook", methods=["POST"])
@@ -142,7 +154,7 @@ def webhook_received():
   signature = request.headers.get("stripe-signature")
 
   if not signature:
-    return {"message": "signature missing"}
+    return jsonify({"message": "signature missing"}), 500
 
   #Stripe signature verification
   try:
@@ -179,13 +191,6 @@ def webhook_received():
     # Iterate through the retrieved line items
     for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
-
-      #price_object = stripe.Price.retrieve(purchased_item.price.id)
-
-      # Charge to be processed at webhook
-      #charge_amount = price_object.unit_amount
-
-      # Create a new charge for the product
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] != "membership":
