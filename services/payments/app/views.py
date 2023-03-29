@@ -334,6 +334,15 @@ def get_receipt(booking_id):
 
   # Retrieve receipt link from the database
   purchase = get_order(booking_id)
+
+  # Check if purchase is None or empty
+  if not purchase:
+    return jsonify({"error": "Purchase not found."}), 404
+
+  # Check if receipt exists
+  if len(purchase) < 7 or not purchase[6]:
+    return jsonify({"error": "Receipt not found for this purchase."}), 404
+
   receipt = purchase[6]
 
   # Checks if the receipt exists
