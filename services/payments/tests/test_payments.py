@@ -13,7 +13,8 @@ from config import DATABASE_SCHEMA_TEST_URL, DATABASE_URL
 from app import app
 from app.payments import make_a_purchase, get_payment_manager
 from app.database import (init_database, add_product, add_customer,
-                          delete_product, update_price, delete_customer)
+                          delete_product, update_price, delete_customer,
+                          add_purchase)
 from app.interfaces import create_checkout
 
 
@@ -30,6 +31,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
   def setUp(self):
     self.client = app.test_client()
+    delete_product("prod_NUNbPMJPMIEvWk")
 
   def test_make_purchasable(self):
     """tests if it can make a test product purchasable"""
@@ -232,6 +234,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     mock_jwt.return_value = {"user": {"role": "MANAGER"}}
 
     # Line inspired by stack-overflaw #
+    # Solution by https://stackoverflow.com/questions/
+    # 72843386/setting-a-bearer-jwt-token-in-angular
     response = self.client.get("/sales/membership",
                                headers={"Authorization": "Bearer <JWT_TOKEN>"})
 
@@ -244,27 +248,42 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     # Check that the received data is a list
     self.assertIsInstance(data, list)
 
-  # @patch("stripe.Refund.create")
-  # def test_refund(self, mock_stripe):
-  #   """ Function to test functionality of refund endpoint"""
+  @patch("stripe.Refund.create")
+  def test_refund(self, mock_stripe):
+    """ Function to test functionality of refund endpoint"""
 
-  #   # Test data:
-  #   test_booking_id = 1234
+    # Initialise the database
+    create_test_database()
 
-  #   with patch("app.database.get_order") as mock_get_order:
-  #     mock_get_order.return_value = [
-  #         1234, 1, "prod_1234", "2020-12-31", "ch_1234", 1234
-  #     ]
+    # Add test products to the database
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
 
-  #   mock_stripe.return_value = {"status": 200}
+    # Create temp new customer on stripe
+    new_customer = stripe.Customer.create()
 
-  #   # Call the endpoint
-  #   response = self.client.get(f"/refund/{test_booking_id}")
+    # Add customer to database with '111' as ID
+    add_customer(111, new_customer.stripe_id)
 
-  #   # Check the response
-  #   self.assertEqual(response.status_code, 200)
-  #   self.assertEqual(response.json,
-  #                    {"message": "Refund processed successfully."})
+    test_booking_id = 1234
+
+    # Adding a temp purchase
+    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
+                 None, test_booking_id)
+
+    mock_stripe.return_value = {"status": 200}
+
+    # Call the endpoint
+    response = self.client.get(f"/refund/{test_booking_id}")
+
+    # Check the response
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.json,
+                     {"message": "Refund processed successfully."})
+
+    #Delete temp customer
+    stripe.Customer.delete(new_customer.stripe_id)
+
+    delete_product("prod_NUNazbUQcwZQaU")
 
 
 if __name__ == "__main__":

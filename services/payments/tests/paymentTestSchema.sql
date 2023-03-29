@@ -17,7 +17,8 @@ CREATE TABLE orders (
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT,
     chargeID TEXT NOT NULL,
-    reciept_pdf TEXT,  
+    reciept_pdf TEXT,
+    booking_id INTEGER,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
