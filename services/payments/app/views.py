@@ -193,7 +193,7 @@ def webhook_received():
       product = stripe.Product.retrieve(purchased_item.price.product)
 
       #If a product is a booking, complete pending bookings
-      if get_product(product.name)[3] == "session":
+      if get_product(product.name)[3] != "membership":
         pending_bookings = get_pending(session.stripe_id)
         for booking in pending_bookings:
           requests.post("http://gateway/api/booking/bookings/book/",
