@@ -79,11 +79,40 @@ def add_purchase(customer_id: str,
       purchaseDate, 
       expiryDate, 
       chargeID, 
-      reciept_pdf, 
+      receipt_pdf, 
       booking_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)""",
       (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
        booking_id))
+  con.commit()
+  con.close()
+
+
+def get_user(user_id: int):
+  """Function that finds the user in the database"""
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  find_user = cur.execute("""SELECT * FROM customers WHERE
+    user_id = ?""", [user_id]).fetchone()
+  con.close()
+  return find_user
+
+
+def get_user_from_stripe(stripe_id: str):
+  """Function that finds the user id from their stripe id"""
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  find_user = cur.execute("""SELECT * FROM customers WHERE
+    stripe_id = ?""", [stripe_id]).fetchone()
+  con.close()
+  return find_user[0]
+
+
+def delete_order(order_id: int) -> None:
+  """Function to delete a specific purchase by its order ID"""
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  cur.execute("""DELETE FROM orders WHERE order_id = ?""", [order_id])
   con.commit()
   con.close()
 
@@ -133,9 +162,9 @@ def get_purchases(user_id: int):
   cur = con.cursor()
   purchased_products = cur.execute(
       """SELECT products.product_id, productType, purchaseDate, 
-    expiryDate FROM orders JOIN products ON 
-    orders.product_id = products.product_id 
-    WHERE orders.user_id = ?""", [user_id]).fetchall()
+    expiryDate, receipt_pdf FROM orders JOIN products ON 
+    orders.product_id = products.product_id WHERE orders.user_id = ?""",
+      [user_id]).fetchall()
   con.close()
   return purchased_products
 
