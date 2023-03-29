@@ -321,7 +321,7 @@ def customer_portal(user_id: int):
     received_url = get_payment_manager(user_id)
 
     if received_url:
-      return redirect(received_url, code=303)
+      return jsonify({"Portal": received_url})
     else:
       return jsonify({"error": "Could not generate customer portal URL."}), 404
 
