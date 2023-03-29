@@ -2,7 +2,7 @@
 
 import stripe
 from stripe import error as stripe_errors
-from datetime import datetime, timedelta
+from datetime import datetime
 import requests
 from flask import jsonify
 

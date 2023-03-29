@@ -233,8 +233,8 @@ def get_purchases(user_id: int):
   purchased_products = cur.execute(
       """SELECT products.product_id, productType, purchaseDate, 
     expiryDate FROM orders JOIN products ON 
-    orders.product_id = products.product_id""").fetchall()
-  #WHERE orders.user_id = ?""", [user_id]).fetchall()
+    orders.product_id = products.product_id 
+    WHERE orders.user_id = ?""", [user_id]).fetchall()
   con.close()
   return purchased_products
 
