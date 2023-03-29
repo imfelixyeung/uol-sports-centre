@@ -81,12 +81,15 @@ def redirect_checkout():
     return jsonify({"message": "Missing authorization header"}, 401)
 
   payment_mode = "payment"
+  monthly = True
   products = request.get_json()
   user_id = 1
   for product in products:
     user_id = product["data"]["userId"]
     if product["type"] == "membership":
       payment_mode = "subscription"
+      if product["data"]["period"] == "yearly":
+        monthly = False
 
   #The start date and end date used for filtering
   start_date = int(round(datetime.now().timestamp() * 1000))
@@ -113,7 +116,8 @@ def redirect_checkout():
   # current customer in the last 7 days
   bookings_count = len(response.json()["bookings"])
 
-  return make_a_purchase(user_id, products, payment_mode, bookings_count)
+  return make_a_purchase(user_id, products, payment_mode, bookings_count,
+                         monthly)
 
 
 @app.route("/make-purchasable", methods=["POST"])

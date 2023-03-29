@@ -41,6 +41,7 @@ def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
                     bookings_count: int,
+                    monthly: bool,
                     success_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
@@ -70,17 +71,20 @@ def make_a_purchase(user_id: int,
         membership = True
 
   for product in products:
+
     # Gets the product ID and price from the products table
     product_id = get_product(product["type"])[0]
+    # Gets the product price from the products table
+    product_price = stripe.Product.retrieve(product_id).default_price
 
     if product["type"] != "membership":
       bookings_count += 1
 
     if get_product(product["type"])[3] == "membership":
       payment_intent = {}
-
-    # Gets the product price from the products table
-    product_price = stripe.Product.retrieve(product_id).default_price
+      if not monthly:
+        product_price = stripe.Price.retrieve(
+            "price_1Mr2RQK4xeIGYs5lOoC2mCbo").stripe_id
 
     if bookings_count > 2:
       discount = [{"coupon": apply_discount()}]
