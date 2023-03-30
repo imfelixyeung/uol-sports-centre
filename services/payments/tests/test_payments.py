@@ -96,7 +96,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }]
-      response = make_a_purchase(111, products, "subscription", 6, False)
+      response = make_a_purchase(111, products, "subscription", 6, "")
 
       # Check if session URL is returned
       self.assertIsNotNone(response)
@@ -163,7 +163,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_get_prices(self):
     """Test that gets the pricing list"""
 
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "500", "session")
 
     with app.test_client() as client:
       response = client.get("/get-prices/session")
@@ -176,7 +176,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
       assert len(data) == 1
       self.assertEqual(data[0]["productName"], "product-test")
-      self.assertEqual(data[0]["price"], "5")
+      self.assertEqual(data[0]["price"], "5.0")
 
   def test_create_checkout_success(self):
     """Tests the create checkout functionality for the success case"""
@@ -187,7 +187,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     new_customer = stripe.Customer.create()
 
     #Add test product to payments service
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "500", "session")
 
     #Assert valid checkout URL response
     session_url = create_checkout(new_customer.stripe_id, "product-test")
@@ -282,7 +282,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     # Adding a temp purchase
     add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
-                 None, test_booking_id)
+                 5, None, test_booking_id)
 
     test_order = get_order(1234)
 
@@ -324,7 +324,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
     # Adding a temp purchase
     add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
-                 None, test_booking_id)
+                 5, None, test_booking_id)
 
     mock_stripe.return_value = {"status": 200}
 

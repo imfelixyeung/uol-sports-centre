@@ -10,10 +10,10 @@ from flask import request, jsonify, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
-                          update_expiry, delete_order, get_sales,
-                          get_pricing_lists, get_order, get_user,
-                          get_user_from_stripe, get_product, get_pending,
-                          delete_pending, add_product, init_database)
+                          update_expiry, get_sales, get_pricing_lists,
+                          get_order, get_user, get_user_from_stripe,
+                          get_product, get_pending, delete_pending, add_product,
+                          init_database)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -72,7 +72,7 @@ def get_sales_lastweek(product_type: str):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/checkout-session/", methods=["POST"])
+@app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():
   """It returns an url for checkout"""
 
@@ -84,15 +84,13 @@ def redirect_checkout():
   cancel_url = LOCAL_DOMAIN
 
   payment_mode = "payment"
-  monthly = True
   products = request.get_json()
   user_id = 1
   for product in products:
     user_id = product["data"]["userId"]
-    if product["type"] == "membership":
+    if product["type"] == "membership-yearly" or product[
+        "type"] == "membership-monthly":
       payment_mode = "subscription"
-      if product["data"]["period"] == "yearly":
-        monthly = False
     if product["type"] == "success":
       success_url = product["data"]["url"]
     if product["type"] == "cancel":
@@ -123,8 +121,8 @@ def redirect_checkout():
   # current customer in the last 7 days
   bookings_count = len(response.json()["bookings"])
 
-  return make_a_purchase(user_id, products, payment_mode, bookings_count,
-                         monthly, success_url, cancel_url)
+  return make_a_purchase(user_id, products, payment_mode, bookings_count, auth,
+                         success_url, cancel_url)
 
 
 @app.route("/make-purchasable", methods=["POST"])
@@ -165,7 +163,7 @@ def webhook_received():
   signature = request.headers.get("stripe-signature")
 
   if not signature:
-    return jsonify({"message": "signature missing"}), 400
+    return jsonify({"message": "signature missing"}), 401
 
   #Stripe signature verification
   try:
@@ -179,7 +177,7 @@ def webhook_received():
   except stripe_errors.SignatureVerificationError as signature_error:
     #Invalid Signature
     return make_response(jsonify({"Invalid Signature": str(signature_error)}),
-                         400)
+                         401)
 
   #Checkout session completion
   if event.type == "checkout.session.completed":
@@ -202,6 +200,7 @@ def webhook_received():
     # Iterate through the retrieved line items
     for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
+      price = float(purchased_item.price.unit_amount) / 100
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] != "membership":
@@ -210,13 +209,15 @@ def webhook_received():
         pending_bookings = get_pending(session.stripe_id)
         for booking in pending_bookings:
           try:
-            requests.post("http://gateway/api/booking/bookings/book/",
-                          json={
-                              "userId": booking[0],
-                              "eventId": booking[1],
-                              "starts": booking[2]
-                          },
-                          timeout=5)
+            requests.post(
+                "http://gateway/api/booking/bookings/book/",
+                json={
+                    "userId": booking[0],
+                    "eventId": booking[1],
+                    "starts": booking[2]
+                },
+                timeout=5,
+                headers={"Authorization": f"{pending_bookings[0][4]}"})
 
           # Case there was a request error
           except requests.exceptions.RequestException as request_error:
@@ -241,10 +242,10 @@ def webhook_received():
                                400)
 
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf, expiry_time)
+                     charge_id, invoice.invoice_pdf, price, expiry_time)
       else:
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf)
+                     charge_id, invoice.invoice_pdf, price)
 
     #remove pending booking transactions as purchase is complete
     delete_pending(session.stripe_id)
@@ -306,14 +307,14 @@ def get_purchased_products(user_id: int):
                                algorithms=["HS256"])
 
   except jwt.exceptions.DecodeError:
-    return jsonify({"message": "Invalid token."}, 400)
+    return jsonify({"message": "Invalid token."}, 401)
 
   if decoded_token["user"]["role"] == "USER":
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
 
   else:
-    return make_response(jsonify({"message": "access denied"}), 400)
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/customer-portal/<int:user_id>", methods=["GET"])
@@ -335,7 +336,7 @@ def customer_portal(user_id: int):
                                algorithms=["HS256"])
 
   except jwt.exceptions.DecodeError:
-    return jsonify({"message": "Invalid token."}, 400)
+    return jsonify({"message": "Invalid token."}, 401)
 
   if decoded_token["user"]["role"] == "USER":
     received_url = get_payment_manager(user_id)
@@ -356,7 +357,7 @@ def change_product_price():
   auth = request.headers.get("Authorization")
 
   if auth is None:
-    return jsonify({"message": "Missing authorization header"}, 400)
+    return jsonify({"message": "Missing authorization header"}, 401)
 
   # Extract the token from the "Authorization" header
   token = auth.split()[1]
@@ -445,7 +446,7 @@ def refund(booking_id):
     return jsonify({"error": str(refund_error)}), 400
 
   # For now, delete order
-  delete_order(order[0])
+  #delete_order(order[0])
 
   return jsonify({"message": "Refund processed successfully."}), 200
 
@@ -474,7 +475,7 @@ def get_receipt(booking_id):
   return jsonify({"receipt": receipt}), 200
 
 
-@app.route("/initialise-payments", methods=["POST"])
+#@app.route("/initialise-payments", methods=["POST"])
 def init_payments():
   """Endpoint to initialise the database for products"""
   init_database()
@@ -482,20 +483,28 @@ def init_payments():
 
   for product in products:
     name = product.name
-    price = stripe.Price.retrieve(product.default_price)
+
     if name == "Session":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "session")
     elif name == "Activity":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "activity")
     elif name == "Facility":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "facility")
-    elif name == "Membership":
+    elif name == "Membership-Monthly":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "membership")
-
-  return jsonify("Payments Initialised"), 200
+    elif name == "Membership-Yearly":
+      price = stripe.Price.retrieve(product.default_price)
+      add_product(name, product.id, price.unit_amount, "membership")
 
 
 @app.route("/health")
 def get_health():
   """Gets the health of the microservice"""
   return {"status": "healthy" if check_health() else "degraded"}
+
+
+init_payments()
