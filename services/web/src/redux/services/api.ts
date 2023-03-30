@@ -27,6 +27,8 @@ import type {
   CreateFacilityActivityResponse,
   CreateFacilityRequest,
   CreateFacilityResponse,
+  CreateFacilityTimeRequest,
+  CreateFacilityTimeResponse,
   FacilitiesResponse,
   FacilityActivitiesResponse,
   FacilityActivityResponse,
@@ -165,6 +167,19 @@ export const api = createApi({
     getFacilityTimes: builder.query<FacilityTimesResponse, void>({
       query: () => '/facilities/times/',
       providesTags: ['FacilityTime'],
+    }),
+
+    createFacilityTimes: builder.mutation<
+      CreateFacilityTimeResponse,
+      CreateFacilityTimeRequest & Token
+    >({
+      query: ({token, ...times}) => ({
+        url: '/facilities/times/',
+        method: 'POST',
+        body: times,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['FacilityTime'],
     }),
 
     getFacilityTime: builder.query<FacilityTimeResponse, number>({
@@ -372,6 +387,7 @@ export const {
   useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
+  useCreateFacilityTimesMutation,
   useUpdateFacilityTimeMutation,
   useGetUserRecordQuery,
   useCreateUserMutation,
