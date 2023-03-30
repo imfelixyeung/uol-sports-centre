@@ -41,7 +41,7 @@ def change_discount(amount):
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN":
-    return jsonify(change_discount_amount(amount))
+    return change_discount_amount(amount)
 
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
