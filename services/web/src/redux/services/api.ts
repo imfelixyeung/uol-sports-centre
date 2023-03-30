@@ -40,6 +40,8 @@ import type {
   UpdateFacilityResponse,
 } from './types/facilities';
 import type {
+  CheckoutSessionRequest,
+  CheckoutSessionResponse,
   GetCustomerPortalRequest,
   GetCustomerPortalResponse,
 } from './types/payments';
@@ -365,6 +367,22 @@ export const api = createApi({
         headers: {Authorization: `Bearer ${token}`},
       }),
     }),
+
+    createCheckoutSession: builder.mutation<
+      CheckoutSessionResponse,
+      CheckoutSessionRequest & Token
+    >({
+      query: ({items, metadata, token, userId}) => ({
+        url: '/payments/checkout-session/',
+        method: 'POST',
+        body: [
+          ...items.map(item => ({...item, data: {...item.data, userId}})),
+          {type: 'success', data: {url: metadata.successUrl, userId: userId}},
+          {type: 'cancel', data: {url: metadata.cancelUrl, userId: userId}},
+        ],
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
   }),
 });
 
@@ -397,4 +415,5 @@ export const {
   useGetBookingQuery,
   useGetBookingEventsQuery,
   useGetCustomerPortalQuery,
+  useCreateCheckoutSessionMutation,
 } = api;

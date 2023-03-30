@@ -41,6 +41,7 @@ interface BookingProps {
   duration?: number;
   eventId: number;
   availableBooking?: AvailableBooking;
+  onBook?: () => void;
 }
 
 interface BookingsProps {
@@ -97,7 +98,9 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
                 <>
                   {availableBooking ? (
                     <>
-                      <Button intent="primary">Book</Button>
+                      <Button intent="primary" onClick={booking.onBook}>
+                        Book
+                      </Button>
                       {inBasket ? (
                         <Button
                           intent="secondary"

@@ -52,7 +52,7 @@ const EmployeePage = () => {
             onChange={e => setUserIdSelected(parseInt(e.target.value))}
           />
         </label>
-        {userIdSelected && userData.data ? (
+        {userIdSelected && userData.currentData ? (
           <>
             <Typography.h2>Create booking for customer</Typography.h2>
             <CreateBookingForm userId={userIdSelected} />
@@ -78,7 +78,8 @@ const CreateBookingForm: FC<{
   const [filter, setFilter] = useState<BookingAvailabilityRequest>({});
   const [bookBooking] = useBookBookingMutation();
   const availableBookingsData = useGetAvailableBookingsQuery(filter);
-  const availableBookings = availableBookingsData.data?.availableBookings;
+  const availableBookings =
+    availableBookingsData.currentData?.availableBookings;
 
   const bookings = useAppSelector(selectBookings);
   const dispatch = useAppDispatch();

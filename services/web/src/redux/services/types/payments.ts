@@ -20,8 +20,32 @@ export type GetSalesResponse = void;
 
 /** POST /checkout-session/ */
 
-export type CheckoutSessionRequest = void;
-export type CheckoutSessionResponse = void;
+export type CheckoutSessionItem =
+  | {
+      type: 'activity' | 'session';
+      data: {
+        eventId: number;
+        starts: string;
+      };
+    }
+  | {
+      type: 'membership';
+      data: {
+        period: 'monthly' | 'yearly';
+      };
+    };
+
+export interface CheckoutSessionMetadata {
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export type CheckoutSessionRequest = {
+  items: CheckoutSessionItem[];
+  metadata: CheckoutSessionMetadata;
+  userId: number;
+};
+export type CheckoutSessionResponse = string;
 
 /** POST /make-purchasable */
 
