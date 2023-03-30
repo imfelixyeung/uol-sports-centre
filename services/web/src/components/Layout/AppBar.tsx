@@ -1,7 +1,10 @@
 import {UserCircleIcon} from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import {useRouter} from 'next/router';
+import toast from 'react-hot-toast';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import AppIcon from '../AppIcon/AppIcon';
-import {buttonStyles} from '../Button';
+import Button, {buttonStyles} from '../Button';
 import Typography from '../Typography';
 
 const navLinks = [
@@ -12,6 +15,18 @@ const navLinks = [
 ];
 
 const AppBar = () => {
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await toast.promise(auth.logout(), {
+      loading: 'Logging out...',
+      success: 'You are now logged out',
+      error: 'Something went wrong',
+    });
+    await router.push('/');
+  };
+
   return (
     <div className="bg-black">
       <header className="container flex flex-col items-center justify-between gap-3 py-6 md:flex-row">
@@ -43,15 +58,33 @@ const AppBar = () => {
             ))}
           </ul>
         </nav>
-        <Link
-          href="/dashboard"
-          className={buttonStyles({
-            intent: 'primary',
-            className: 'hidden md:block',
-          })}
-        >
-          Account
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className={buttonStyles({
+              intent: 'primary',
+              className: 'hidden md:block',
+            })}
+          >
+            Account
+          </Link>
+          {auth.session ? (
+            <Button
+              intent="primary"
+              type="button"
+              onClick={() => void handleLogout()}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Link
+              href={`/auth/login?redirect=${encodeURIComponent('/dashboard')}`}
+              className={buttonStyles({intent: 'primary'})}
+            >
+              Login
+            </Link>
+          )}
+        </div>
       </header>
     </div>
   );
