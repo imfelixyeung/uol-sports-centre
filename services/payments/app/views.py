@@ -72,7 +72,7 @@ def get_sales_lastweek(product_type: str):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/checkout-session/", methods=["POST"])
+@app.route("/checkout-session", methods=["POST"])
 def redirect_checkout():
   """It returns an url for checkout"""
 
@@ -165,7 +165,7 @@ def webhook_received():
   signature = request.headers.get("stripe-signature")
 
   if not signature:
-    return jsonify({"message": "signature missing"}), 400
+    return jsonify({"message": "signature missing"}), 401
 
   #Stripe signature verification
   try:
@@ -179,7 +179,7 @@ def webhook_received():
   except stripe_errors.SignatureVerificationError as signature_error:
     #Invalid Signature
     return make_response(jsonify({"Invalid Signature": str(signature_error)}),
-                         400)
+                         401)
 
   #Checkout session completion
   if event.type == "checkout.session.completed":
@@ -306,14 +306,14 @@ def get_purchased_products(user_id: int):
                                algorithms=["HS256"])
 
   except jwt.exceptions.DecodeError:
-    return jsonify({"message": "Invalid token."}, 400)
+    return jsonify({"message": "Invalid token."}, 401)
 
   if decoded_token["user"]["role"] == "USER":
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
 
   else:
-    return make_response(jsonify({"message": "access denied"}), 400)
+    return make_response(jsonify({"message": "access denied"}), 403)
 
 
 @app.route("/customer-portal/<int:user_id>", methods=["GET"])
@@ -335,7 +335,7 @@ def customer_portal(user_id: int):
                                algorithms=["HS256"])
 
   except jwt.exceptions.DecodeError:
-    return jsonify({"message": "Invalid token."}, 400)
+    return jsonify({"message": "Invalid token."}, 401)
 
   if decoded_token["user"]["role"] == "USER":
     received_url = get_payment_manager(user_id)
@@ -356,7 +356,7 @@ def change_product_price():
   auth = request.headers.get("Authorization")
 
   if auth is None:
-    return jsonify({"message": "Missing authorization header"}, 400)
+    return jsonify({"message": "Missing authorization header"}, 401)
 
   # Extract the token from the "Authorization" header
   token = auth.split()[1]
