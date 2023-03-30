@@ -33,5 +33,6 @@ CREATE TABLE pending (
     event_id INTEGER NOT NULL,
     starts TEXT NOT NULL,
     checkout_id TEXT NOT NULL,
+    auth TEXT NOT NULL,
     PRIMARY KEY (user_id, event_id, starts)
 );
