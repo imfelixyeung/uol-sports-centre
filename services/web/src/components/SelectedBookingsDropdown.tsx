@@ -11,7 +11,9 @@ import Button from './Button';
 import ChevronDownIcon from './Icons/ChevronDownIcon';
 import Typography from './Typography';
 
-const SelectedBookingsDropdown: FC = () => {
+const SelectedBookingsDropdown: FC<{
+  onBook?: () => void;
+}> = ({onBook}) => {
   const bookings = useAppSelector(selectBookings);
   const dispatch = useAppDispatch();
 
@@ -62,7 +64,9 @@ const SelectedBookingsDropdown: FC = () => {
               >
                 Clear
               </Button>
-              <Button intent="primary">Book Selected</Button>
+              <Button intent="primary" onClick={onBook}>
+                Book Selected
+              </Button>
             </div>
             {/* <Popover.Close /> */}
             <Popover.Arrow />

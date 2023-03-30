@@ -17,7 +17,7 @@ export const signInWithCredentials = async (
   const {email, password} = credentials;
   const {rememberMe} = options;
 
-  const user = await UserRegistry.getUserByEmail(email);
+  const user = await UserRegistry.getUserByEmail(email.toLowerCase());
 
   if (!user) {
     // user not found
@@ -55,7 +55,7 @@ export const registerWithCredentials = async (
   const {email, password} = credentials;
   const {rememberMe} = options;
 
-  const user = await UserRegistry.getUserByEmail(email);
+  const user = await UserRegistry.getUserByEmail(email.toLowerCase());
 
   if (user) {
     // user already exists
@@ -66,7 +66,7 @@ export const registerWithCredentials = async (
 
   // create user
   const newUser = await UserRegistry.createUser({
-    email,
+    email: email.toLowerCase(),
     password: hashedPassword,
   });
 
@@ -86,7 +86,7 @@ export const registerWithCredentials = async (
 export const resetPassword = async (options: ResetPassword) => {
   const {email, password, newPassword} = options;
 
-  const user = await UserRegistry.getUserByEmail(email);
+  const user = await UserRegistry.getUserByEmail(email.toLowerCase());
 
   if (!user) {
     // user not found
