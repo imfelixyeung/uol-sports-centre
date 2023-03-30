@@ -41,7 +41,6 @@ def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
                     bookings_count: int,
-                    monthly: bool,
                     success_url: Optional[str] = LOCAL_DOMAIN,
                     cancel_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
@@ -81,11 +80,8 @@ def make_a_purchase(user_id: int,
     if product["type"] != "membership":
       bookings_count += 1
 
-    if get_product(product["type"])[3] == "membership":
+    if product["type"] == "membership":
       payment_intent = {}
-      if not monthly:
-        product_price = stripe.Price.retrieve(
-            "price_1Mr2RQK4xeIGYs5lOoC2mCbo").stripe_id
 
     if bookings_count > 2:
       discount = [{"coupon": apply_discount()}]
@@ -94,8 +90,9 @@ def make_a_purchase(user_id: int,
 
     line_items.append(line_item)
 
-    if membership:
-      add_purchase(str(user_id), product_id, str(datetime.now()), "", "")
+    if membership and get_product(product["type"])[3] != "membership":
+      price = float(product_price.unit_amount) / 100
+      add_purchase(str(user_id), product_id, str(datetime.now()), "", "", price)
 
   if not membership:
     try:
@@ -146,19 +143,25 @@ def change_price(new_price: float, product_name: str):
   if not product:
     return jsonify({"error": {"message": "Product not found."}}), 404
 
+  recurring = None
+  if product_name == "membership-yearly":
+    recurring = {"interval": "year"}
+  elif product_name == "membership-monthly":
+    recurring = {"interval": "month"}
+
   # Getting the old and new price from stripe
   try:
     old_stripe_price = stripe.Product.retrieve(product[0]).default_price
     new_stripe_price = stripe.Price.create(unit_amount_decimal=int(new_price *
                                                                    100),
                                            currency="gbp",
-                                           product=product[0])
+                                           product=product[0],
+                                           recurring=recurring)
 
     stripe.Product.modify(product[0], default_price=new_stripe_price.stripe_id)
     stripe.Price.modify(old_stripe_price, active=False)
   except StripeError as error:
     return jsonify({"error": {"message": str(error)}}), 400
-
   update_price(product_name, new_price)
 
 
