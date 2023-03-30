@@ -16,6 +16,9 @@ tags:
   - name: booking
     description: Booking microservice
 
+  - name: payments
+    description: Payments microservice
+
   - name: status
     description: status microservice
 
@@ -231,6 +234,197 @@ paths:
       tags:
         - auth
       description: "Returns the health of the auth service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
+  /payments/checkout-session/{user_id}:
+    post:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 6
+      tags:
+        - payments
+      description: "Generates checkout sessions for products in stripe"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/discount/apply:
+    post:
+      tags:
+        - payments
+      description: "Applies a discount to a certain product"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/change-price:
+    post:
+      tags:
+        - payments
+      description: "Allows the user with management authority to change price"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/webhook:
+    post:
+      tags:
+        - payments
+      description: "Provides purchased products to user after successful payment"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/purchased-products/{userID}:
+    get:
+      parameters:
+        - name: userID
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 6
+
+      tags:
+        - payments
+      description: "Retrieves all purchased products for a given user"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/get-prices/{product_type}:
+    get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
+
+      tags:
+        - payments
+      description: "Returns pricing list for the chosen product type"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/discount/change/{amount}:
+    get:
+      parameters:
+        - name: amount
+          in: path
+          schema:
+            type: number
+          required: true
+      tags:
+        - payments
+      description: "Enables a user with management authority to change the discount amount"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/sales/{product_type}:
+    get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
+      tags:
+        - payments
+      description: "Returns the sales of the past week as dictionaries for the specified product type"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/customer-portal/{user_id}:
+    get:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
+      tags:
+        - payments
+      description: "Generates a stripe customer portal URL for the customer"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/cancel-membership/{user_id}:
+    get:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: number
+          required: true
+
+      tags:
+        - payments
+      description: "Cancels existing membership for the given user"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/refund/{booking_id}:
+    get:
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+
+      tags:
+        - payments
+      description: "Endpoint to process refunds for booking"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/receipt/{booking_id}:
+    get:
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+
+      tags:
+        - payments
+      description: "Endpoint for returning a link for the receipt"
+
+      responses:
+        "200":
+          description: OK
+
+  /payments/health:
+    get:
+      tags:
+        - payments
+      description: "Returns the health of the payments service"
 
       responses:
         "200":

@@ -25,3 +25,13 @@ services:
     build:
       context: ./docs
       target: ci
+
+  payments:
+    build:
+      context: ./services/payments
+      target: ci
+    environment:
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - STRIPE_API=${STRIPE_API}
+      - APP_PORT=${APP_PORT}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
