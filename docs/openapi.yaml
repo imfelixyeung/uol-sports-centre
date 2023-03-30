@@ -272,20 +272,41 @@ paths:
                   type:
                     type: string
                     description: The type of product purchased
+                    example: session
                   data:
                     type: object
                     description: Additional data associated with the product
-                    properties:
-                      eventId:
-                        type: integer
-                        description: The ID of the event
-                      userId:
-                        type: integer
-                        description: The ID of the user
-                      starts:
-                        type: string
-                        format: date-time
-                        description: The start time of the event
+                    oneOf:
+                      - properties:
+                          eventId:
+                            type: integer
+                            description: The ID of the event
+                            example: 1
+                          userId:
+                            type: integer
+                            description: The ID of the user
+                            example: 1
+                          starts:
+                            type: string
+                            format: date-time
+                            description: The start time of the event
+                            example: "2022-01-01T00:00:00Z"
+                        required:
+                          - userId
+                          - eventId
+                          - starts
+
+                      - properties:
+                          url:
+                            type: string
+                            format: url
+                            description: The page to return to following checkout (url is only needed for success/cancel objects)
+                            example: http://successful/checkout/url
+                        required:
+                          - url
+                required:
+                  - type
+                  - data
 
       responses:
         "200":
