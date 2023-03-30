@@ -10,7 +10,7 @@
     "clean": "gts clean",
     "fix": "gts fix",
     "build": "node esbuild.mjs",
-    "start": "pnpm db:push && node dist/index.js",
+    "start": "pnpm db:push && pnpm db:seed && node dist/index.js",
     "dev": "pnpm db:push && pnpm db:seed && tsx watch --clear-screen=false src/index.ts",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
