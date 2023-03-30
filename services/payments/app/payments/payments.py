@@ -125,8 +125,7 @@ def make_a_purchase(user_id: int,
             expires_at=(int(datetime.timestamp(datetime.now())) + 1800))
 
       for product in products:
-        if product["type"] != "membership" and product[
-            "type"] != "success" and product["type"] != "cancel":
+        if product["type"] != "success" and product["type"] != "cancel":
           add_pending(product["data"]["userId"], product["data"]["eventId"],
                       product["data"]["starts"], auth, session.stripe_id)
 
