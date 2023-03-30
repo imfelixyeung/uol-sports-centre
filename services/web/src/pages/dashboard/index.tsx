@@ -21,10 +21,6 @@ const UserDashboardPage = () => {
     userId: session?.user.id,
     token: token!,
   });
-  const customerPortalData = useGetCustomerPortalQuery({
-    userId: session!.user.id,
-    token: token!,
-  });
 
   const navSection = (
     <section className="my-16">
@@ -148,7 +144,6 @@ const UserDashboardPage = () => {
               </Link>
             </>
           )}
-          <a href={customerPortalData.data?.Portal}>Go to Billing Portal</a>
         </div>
         <main className="bg-white text-black">
           {/* Desktop */}

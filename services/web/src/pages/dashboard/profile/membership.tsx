@@ -1,19 +1,28 @@
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import toast from 'react-hot-toast';
-import Button, {buttonStyles} from '~/components/Button';
+import {buttonStyles} from '~/components/Button';
 import type {MembershipCardProps} from '~/components/MembershipCard';
 import MembershipCard from '~/components/MembershipCard';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
 import {memberships} from '~/data/memberships';
+import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
+import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
-import {useCreateCheckoutSessionMutation} from '~/redux/services/api';
+import {
+  useCreateCheckoutSessionMutation,
+  useGetCustomerPortalQuery,
+} from '~/redux/services/api';
 
 const MembershipPage = () => {
   const {user} = useUser();
   const {token, session} = useAuth();
+  const customerPortalData = useGetCustomerPortalQuery({
+    userId: session!.user.id,
+    token: token!,
+  });
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const router = useRouter();
 
@@ -106,13 +115,19 @@ const MembershipPage = () => {
           >
             Back
           </Link>
-          <Button intent="secondary" outline>
-            Manage Payment Details{' '}
-          </Button>
+          <a
+            href={customerPortalData.data?.Portal}
+            className={buttonStyles({
+              intent: 'primary',
+              outline: true,
+            })}
+          >
+            Manage Payment Details
+          </a>
         </div>
       </div>
     </div>
   );
 };
 
-export default MembershipPage;
+export default withPageAuthRequired(withUserOnboardingRequired(MembershipPage));
