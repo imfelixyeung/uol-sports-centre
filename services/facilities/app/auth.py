@@ -15,8 +15,6 @@ def authenticate(auth_token):
 
   secret_key = typing.cast(str, os.getenv("JWT_SIGNING_SECRET"))
 
-  logging.warning("authkey: %s", os.environ.get("AUTH_JWT_SECRET_KEY"))
-
   if not secret_key:
     secret_key = "test"
     logging.warning("No JWT_SECRET_KEY found, using default")
