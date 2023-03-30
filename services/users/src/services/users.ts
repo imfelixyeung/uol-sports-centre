@@ -11,7 +11,7 @@ export async function editMembership(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    throw error('Error editing membership');
+    throw error('Error editing membership\n' + err);
   }
 }
 
@@ -20,7 +20,7 @@ export async function returnFullRecord(userID: number) {
   try {
     return await UserDBA.getUser(userID);
   } catch (err) {
-    throw error('Error getting user');
+    throw error('Error getting user\n' + err);
   }
 }
 
@@ -29,7 +29,7 @@ export async function editFirstName(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    throw error('Error editing first name');
+    throw error('Error editing first name\n' + err);
   }
 }
 
@@ -38,7 +38,7 @@ export async function editSurname(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    throw error('Error editing Surname name');
+    throw error('Error editing Surname name\n' + err);
   }
 }
 
@@ -47,12 +47,8 @@ export async function editPaymentID(userData: EditUserDBA) {
   try {
     return await UserDBA.editUser(userData);
   } catch (err) {
-    throw error('Error editing payment ID');
+    throw error('Error editing payment ID\n' + err);
   }
-}
-
-export function seedDatabase(): undefined {
-  return undefined;
 }
 
 export async function createNewUser(userData: CreateUserDBA) {
@@ -60,7 +56,7 @@ export async function createNewUser(userData: CreateUserDBA) {
   try {
     return await UserDBA.createUser(userData);
   } catch (err) {
-    throw error('Error creating user');
+    throw error('Error creating user\n' + err);
   }
 }
 
@@ -69,6 +65,6 @@ export async function deleteExistingUser(userID: number) {
   try {
     return await UserDBA.deleteUser(userID);
   } catch (err) {
-    throw error('Error deleting user');
+    throw error('Error deleting user\n' + err);
   }
 }

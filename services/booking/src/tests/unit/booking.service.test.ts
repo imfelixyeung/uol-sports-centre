@@ -7,12 +7,9 @@ import bookingService from '@/services/booking.service';
 import {
   bookingToDTO,
   CreateBookingDTO,
-  PossibleBookingDTO,
   UpdateBookingDTO,
 } from '@/dto/booking.dto';
 import {PaginatedBookings} from '@/types/responses';
-import {EventDTO} from '@/dto/event.dto';
-import {ActivitiesResponse} from '@/types/external';
 
 beforeEach(() => {
   mockReset(prismaMock);
