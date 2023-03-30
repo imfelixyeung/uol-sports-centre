@@ -66,6 +66,7 @@ def add_purchase(customer_id: str,
                  purchase_date: str,
                  charge_id: str,
                  invoice_pdf: str,
+                 purchase_price: float,
                  expiry: Optional[str] = None,
                  booking_id: Optional[int] = None):
   """Function that adds a new purchase to the database"""
@@ -80,10 +81,11 @@ def add_purchase(customer_id: str,
       expiryDate, 
       chargeID, 
       receipt_pdf, 
-      booking_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?)""",
+      booking_id,
+      purchase_price)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
       (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
-       booking_id))
+       booking_id, purchase_price))
   con.commit()
   con.close()
 
@@ -195,8 +197,7 @@ def get_sales(product_type: str):
   # get sales for each product
   for product in products:
     product_sales = cur.execute(
-        "SELECT COUNT(*), SUM(products.price) FROM orders "
-        "JOIN products ON orders.product_id = products.product_id "
+        "SELECT COUNT(*), SUM(orders.purchase_price) FROM orders "
         "WHERE orders.product_id = ? "
         "AND orders.purchaseDate BETWEEN ? AND ?",
         (product[0], datetime.now() - timedelta(days=7),
@@ -207,7 +208,7 @@ def get_sales(product_type: str):
           "product_name": product[1],
           "product_type": product[2],
           "units_sold": product_sales[0],
-          "total_sales": float(product_sales[1]) / 100
+          "total_sales": product_sales[1]
       })
   con.close()
 

@@ -95,7 +95,8 @@ def make_a_purchase(user_id: int,
     line_items.append(line_item)
 
     if membership:
-      add_purchase(str(user_id), product_id, str(datetime.now()), "", "")
+      price = float(product_price.unit_amount) / 100
+      add_purchase(str(user_id), product_id, str(datetime.now()), "", "", price)
 
   if not membership:
     try:

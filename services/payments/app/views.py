@@ -10,10 +10,10 @@ from flask import request, jsonify, make_response
 
 from app import app
 from app.database import (check_health, get_purchases, add_purchase,
-                          update_expiry, delete_order, get_sales,
-                          get_pricing_lists, get_order, get_user,
-                          get_user_from_stripe, get_product, get_pending,
-                          delete_pending, add_product, init_database)
+                          update_expiry, get_sales, get_pricing_lists,
+                          get_order, get_user, get_user_from_stripe,
+                          get_product, get_pending, delete_pending, add_product,
+                          init_database)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -202,6 +202,7 @@ def webhook_received():
     # Iterate through the retrieved line items
     for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
+      price = float(purchased_item.price.unit_amount) / 100
 
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] != "membership":
@@ -241,10 +242,10 @@ def webhook_received():
                                400)
 
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf, expiry_time)
+                     charge_id, invoice.invoice_pdf, price, expiry_time)
       else:
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf)
+                     charge_id, invoice.invoice_pdf, price)
 
     #remove pending booking transactions as purchase is complete
     delete_pending(session.stripe_id)
@@ -445,7 +446,7 @@ def refund(booking_id):
     return jsonify({"error": str(refund_error)}), 400
 
   # For now, delete order
-  delete_order(order[0])
+  #delete_order(order[0])
 
   return jsonify({"message": "Refund processed successfully."}), 200
 
