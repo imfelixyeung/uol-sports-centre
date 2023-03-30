@@ -16,7 +16,12 @@ export type UpdateDiscountResponse = void;
 export type GetSalesRequest = {
   productType: ProductType;
 };
-export type GetSalesResponse = void;
+export type GetSalesResponse = {
+  product_name: string;
+  product_type: string;
+  units_sold: number;
+  total_sales: number;
+}[];
 
 /** POST /checkout-session/ */
 
@@ -61,7 +66,9 @@ export type GetPurchasedProductsRequest = {
 export type GetCustomerPortalRequest = {
   userId: number;
 };
-export type GetCustomerPortalResponse = string;
+export type GetCustomerPortalResponse = {
+  Portal: string;
+};
 
 /** POST /change-price */
 export type ChangePriceRequest = void;

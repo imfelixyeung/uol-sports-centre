@@ -126,7 +126,7 @@ const UserDashboardPage = () => {
               <Link href="/management">Go to Management Portal</Link>
             </>
           )}
-          <a href={customerPortalData.data}>Go to Billing Portal</a>
+          <a href={customerPortalData.data?.Portal}>Go to Billing Portal</a>
         </div>
         <main className="bg-white text-black">
           {/* Desktop */}

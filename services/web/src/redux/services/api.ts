@@ -44,6 +44,8 @@ import type {
   CheckoutSessionResponse,
   GetCustomerPortalRequest,
   GetCustomerPortalResponse,
+  GetSalesRequest,
+  GetSalesResponse,
 } from './types/payments';
 import type {StatusReportResponse} from './types/status';
 import type {
@@ -383,6 +385,13 @@ export const api = createApi({
         headers: {Authorization: `Bearer ${token}`},
       }),
     }),
+
+    getSalesSummary: builder.query<GetSalesResponse, GetSalesRequest & Token>({
+      query: ({token, productType}) => ({
+        url: `/payments/sales/${productType}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
   }),
 });
 
@@ -416,4 +425,5 @@ export const {
   useGetBookingEventsQuery,
   useGetCustomerPortalQuery,
   useCreateCheckoutSessionMutation,
+  useGetSalesSummaryQuery,
 } = api;
