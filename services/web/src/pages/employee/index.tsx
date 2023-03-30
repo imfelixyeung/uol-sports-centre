@@ -21,8 +21,9 @@ import {
 import type {BookingAvailabilityRequest} from '~/redux/services/types/bookings';
 
 const EmployeePage = () => {
-  const [userIdSelected, setUserIdSelected] = useState<number | null>(null);
   const {token} = useAuth();
+  const [userIdSelected, setUserIdSelected] = useState<number | null>(null);
+
   const userData = useGetUserRecordQuery(
     {
       userId: userIdSelected!,

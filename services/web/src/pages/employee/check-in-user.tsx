@@ -11,8 +11,9 @@ import type {QrBooking} from '~/schema/qrBooking';
 import {qrBookingSchema} from '~/schema/qrBooking';
 
 const CheckInUserPage = () => {
-  const [booking, setBooking] = useState<QrBooking | null>(null);
   const {token} = useAuth();
+  const [booking, setBooking] = useState<QrBooking | null>(null);
+
   const userData = useGetUserRecordQuery(
     {
       userId: booking?.userId ?? -1,
