@@ -320,9 +320,10 @@ def get_purchased_products(user_id: int):
   except jwt.exceptions.DecodeError:
     return jsonify({"message": "Invalid token."}, 401)
 
-  if decoded_token["user"]["role"] == "USER":
-    purchased_products = get_purchases(user_id)
-    return jsonify(purchased_products)
+  allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
+  if decoded_token["user"]["role"] in allowed_roles:
+      purchased_products = get_purchases(user_id)
+      return jsonify(purchased_products
 
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
@@ -429,7 +430,8 @@ def cancel_membership(user_id: int):
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "USER":
+  allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
+  if decoded_token["user"]["role"] in allowed_roles:
     #Check if user exists
     if get_user(user_id) is None:
       return jsonify({"error": "User not found."}), 404
