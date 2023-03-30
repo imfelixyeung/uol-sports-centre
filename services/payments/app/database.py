@@ -146,7 +146,10 @@ def get_pricing_lists(product_type: str):
   if not products:
     return None
   else:
-    return [{"productName": row[0], "price": row[1]} for row in products]
+    return [{
+        "productName": row[0],
+        "price": str(float(row[1]) / 100)
+    } for row in products]
 
 
 def get_purchases(user_id: int):

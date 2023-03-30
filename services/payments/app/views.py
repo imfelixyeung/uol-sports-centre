@@ -84,15 +84,15 @@ def redirect_checkout():
   cancel_url = LOCAL_DOMAIN
 
   payment_mode = "payment"
-  monthly = True
   products = request.get_json()
   user_id = 1
   for product in products:
     user_id = product["data"]["userId"]
-    if product["type"] == "membership":
+    if product["type"] == "membership-yearly" or product[
+        "type"] == "membership-monthly":
       payment_mode = "subscription"
-      if product["data"]["period"] == "yearly":
-        monthly = False
+    if product["type"] == "membership-yearly":
+      monthly = False
     if product["type"] == "success":
       success_url = product["data"]["url"]
     if product["type"] == "cancel":
@@ -124,7 +124,7 @@ def redirect_checkout():
   bookings_count = len(response.json()["bookings"])
 
   return make_a_purchase(user_id, products, payment_mode, bookings_count,
-                         monthly, success_url, cancel_url)
+                         success_url, cancel_url)
 
 
 @app.route("/make-purchasable", methods=["POST"])
@@ -475,7 +475,7 @@ def get_receipt(booking_id):
   return jsonify({"receipt": receipt}), 200
 
 
-@app.route("/initialise-payments", methods=["POST"])
+#@app.route("/initialise-payments", methods=["POST"])
 def init_payments():
   """Endpoint to initialise the database for products"""
   init_database()
@@ -483,20 +483,28 @@ def init_payments():
 
   for product in products:
     name = product.name
-    price = stripe.Price.retrieve(product.default_price)
+
     if name == "Session":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "session")
     elif name == "Activity":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "activity")
     elif name == "Facility":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "facility")
-    elif name == "Membership":
+    elif name == "Membership-Monthly":
+      price = stripe.Price.retrieve(product.default_price)
       add_product(name, product.id, price.unit_amount, "membership")
-
-  return jsonify("Payments Initialised"), 200
+    elif name == "Membership-Yearly":
+      price = stripe.Price.retrieve(product.default_price)
+      add_product(name, product.id, price.unit_amount, "membership")
 
 
 @app.route("/health")
 def get_health():
   """Gets the health of the microservice"""
   return {"status": "healthy" if check_health() else "degraded"}
+
+
+init_payments()
