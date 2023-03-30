@@ -4,6 +4,7 @@ from flask import Flask, Blueprint, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.models import Facility
 from app.create_dictionaries import make_facility
+from app.auth import authenticate
 
 
 class FacilitiesRouter:
@@ -45,6 +46,8 @@ class FacilitiesRouter:
                                 methods=["DELETE"])
 
   def get_facilities(self):
+    """Get all facilities"""
+
     # Check to see if page and limit have been supplied
     if request.args.get("page") and request.args.get("limit"):
       try:
@@ -76,6 +79,10 @@ class FacilitiesRouter:
 
   def add_facility(self):
     # Get data from body of post request
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
     name = data.get("name")
     description = data.get("description")
@@ -126,6 +133,10 @@ class FacilitiesRouter:
     return return_value
 
   def update_facility(self, facility_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     data = request.json
 
     # Get item to be updated
@@ -168,6 +179,10 @@ class FacilitiesRouter:
     return return_value
 
   def delete_facility(self, facility_id: int):
+
+    if not authenticate(request.headers.get("Authorization")):
+      return {"status": "Failed", "message": "Permission denied"}, 403
+
     to_delete = Facility.query.get(facility_id)
 
     # If the requested
