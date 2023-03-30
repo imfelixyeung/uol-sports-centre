@@ -437,9 +437,9 @@ describe('Test DELETE /bookings/:id endpoint', () => {
     expect(response.body.status).toBe('error');
   });
 
-  it('should 403 if a user tries deleting a booking', async () => {
+  it('should 403 if a user tries deleting a booking that is not theirs', async () => {
     const response = await request(BASE_URL)
-      .delete('/bookings/1')
+      .delete('/bookings/4')
       .set('Authorization', `Bearer ${USER_TOKEN}`);
 
     expect(response.statusCode).toBe(403);
@@ -475,6 +475,17 @@ describe('Test DELETE /bookings/:id endpoint', () => {
     expect(response.body.status).toBe('OK');
     expect(response.body.booking).toBeDefined();
     expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[6]));
+  });
+
+  it('should delete booking if is user and is their own booking', async () => {
+    const response = await request(BASE_URL)
+      .delete('/bookings/2')
+      .set('Authorization', `Bearer ${USER_TOKEN}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body.booking).toBeDefined();
+    expect(response.body.booking).toStrictEqual(bookingToDTO(BOOKINGS[1]));
   });
 });
 

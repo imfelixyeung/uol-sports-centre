@@ -36,12 +36,7 @@ bookingRouter.put(
 );
 
 // delete specific booking
-bookingRouter.delete(
-  '/:id',
-  jwt(jwtArgs),
-  roleAccess([UserRole.ADMIN, UserRole.EMPLOYEE]),
-  BookingController.deleteBookingById
-);
+bookingRouter.delete('/:id', jwt(jwtArgs), BookingController.deleteBookingById);
 
 bookingRouter.use(authErrorHandler);
 
