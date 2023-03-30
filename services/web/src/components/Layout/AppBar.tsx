@@ -1,6 +1,6 @@
 import {
   UserCircleIcon,
-  ArrowLeftOnRectangleIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
@@ -53,7 +53,7 @@ const AppBar = () => {
                 square
                 onClick={() => void handleLogout()}
               >
-                <ArrowLeftOnRectangleIcon className="h-6" />
+                <ArrowRightOnRectangleIcon className="h-6" />
               </Button>
             )}
           </span>
@@ -78,7 +78,7 @@ const AppBar = () => {
                 href="/dashboard"
                 className={buttonStyles({
                   intent: 'primary',
-                  className: 'hidden md:block',
+                  className: 'hidden !text-base md:block',
                 })}
               >
                 Account
@@ -87,7 +87,7 @@ const AppBar = () => {
                 intent="secondary"
                 type="button"
                 onClick={() => void handleLogout()}
-                className="hidden md:block"
+                className="hidden !text-base md:block"
               >
                 Logout
               </Button>
