@@ -34,9 +34,10 @@ export type CheckoutSessionItem =
       };
     }
   | {
-      type: 'membership';
+      type: 'membership-yearly' | 'membership-monthly';
       data: {
-        period: 'monthly' | 'yearly';
+        eventId: number;
+        starts: string;
       };
     };
 
@@ -50,7 +51,9 @@ export type CheckoutSessionRequest = {
   metadata: CheckoutSessionMetadata;
   userId: number;
 };
-export type CheckoutSessionResponse = string;
+export type CheckoutSessionResponse = {
+  Checkout: string;
+};
 
 /** POST /make-purchasable */
 

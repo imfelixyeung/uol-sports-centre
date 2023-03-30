@@ -381,12 +381,12 @@ export const api = createApi({
       CheckoutSessionRequest & Token
     >({
       query: ({items, metadata, token, userId}) => ({
-        url: '/payments/checkout-session/',
+        url: '/payments/checkout-session',
         method: 'POST',
         body: [
           ...items.map(item => ({...item, data: {...item.data, userId}})),
-          // {type: 'success', data: {url: metadata.successUrl, userId: userId}},
-          // {type: 'cancel', data: {url: metadata.cancelUrl, userId: userId}},
+          {type: 'success', data: {url: metadata.successUrl, userId: userId}},
+          {type: 'cancel', data: {url: metadata.cancelUrl, userId: userId}},
         ],
         headers: {Authorization: `Bearer ${token}`},
       }),

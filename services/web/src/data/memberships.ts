@@ -1,12 +1,12 @@
 export interface Membership {
-  id: string;
+  id: 'individual' | 'membership-monthly' | 'membership-yearly';
   name: string;
   price: string;
   buttonLabel: string;
   bestValue?: boolean;
 }
 
-export const memberships = [
+export const memberships: Membership[] = [
   {
     id: 'individual',
     name: 'Individual bookings',
@@ -14,13 +14,13 @@ export const memberships = [
     buttonLabel: 'Book',
   },
   {
-    id: 'monthly',
+    id: 'membership-monthly',
     name: 'Monthly',
     price: '£35 / month',
     buttonLabel: 'Buy',
   },
   {
-    id: 'yearly',
+    id: 'membership-yearly',
     name: 'Yearly',
     price: '£300 / year',
     buttonLabel: 'Buy',

@@ -11,9 +11,13 @@ export interface MembershipCardProps {
   } & {
     buttonProps?: ButtonProps;
   };
+  onCallToAction?: () => void;
 }
 
-const MembershipCard: FC<MembershipCardProps> = ({membership}) => {
+const MembershipCard: FC<MembershipCardProps> = ({
+  membership,
+  onCallToAction,
+}) => {
   const {buttonLabel, name, price, bestValue, current, buttonProps} =
     membership;
   return (
@@ -42,7 +46,7 @@ const MembershipCard: FC<MembershipCardProps> = ({membership}) => {
       </div>
       <div className="flex items-center justify-between gap-3 bg-[#2C2C2C] p-3 text-white">
         <Typography.span>{price}</Typography.span>
-        <Button intent="primary" {...buttonProps}>
+        <Button intent="primary" {...buttonProps} onClick={onCallToAction}>
           {buttonLabel}
         </Button>
       </div>
