@@ -24,9 +24,15 @@ export const UserProvider: FC<PropsWithChildren> = ({children}) => {
   const auth = useAuth();
   const userId = auth.session?.user.id ?? null;
 
-  const userData = useGetUserRecordQuery(userId!, {
-    skip: userId === null,
-  });
+  const userData = useGetUserRecordQuery(
+    {
+      userId: userId!,
+      token: auth.token!,
+    },
+    {
+      skip: userId === null,
+    }
+  );
 
   const user =
     userId !== null && !userData.isError ? userData.data?.user ?? null : null;

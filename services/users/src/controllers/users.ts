@@ -51,22 +51,21 @@ async function viewFullRecord(req: express.Request, res: express.Response) {
       message: 'Malformed parameters as ID is not a number or is missing',
       error: params.error,
     });
-  // need to call the service
   // check if errors are thrown
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
       message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
@@ -130,20 +129,20 @@ async function updateMembership(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not not authorised to update membership. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not not authorised to update membership. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
@@ -202,20 +201,20 @@ async function updateFirstName(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to update first name. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not authorised to update first name. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
@@ -272,20 +271,20 @@ async function updateSurname(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to update surname name. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not authorised to update surname. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
@@ -340,20 +339,20 @@ async function updatePaymentID(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to update Payment ID. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not authorised to update Payment ID. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
@@ -402,20 +401,20 @@ async function createUser(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== body.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to create new user. Your ID is ${token.id} and the ID you are trying to view is ${body.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== body.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${body.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not authorised to create new user. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
@@ -462,20 +461,20 @@ async function deleteUser(req: express.Request, res: express.Response) {
     });
 
   // check if role from JWT is user and if yes, check if the id from the JWT is the same as the id from the request
-  // if yes, continue
-  // if no, return 400
-  if (token.role === 'USER' && token.id !== params.data.id) {
-    return res.status(400).json({
-      status: 'error',
-      message: `You are not authorised to delete user. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
-    });
+  if (token.role === 'USER') {
+    if (token.id !== params.data.id) {
+      return res.status(401).json({
+        status: 'error',
+        message: `You are not authorised to view this record. Your ID is ${token.id} and the ID you are trying to view is ${params.data.id}`,
+      });
+    }
   }
   // check if the role from JWT is ADMIN or EMPLOYEE and if yes, continue
-  // else return 400
+  // else return 401
   else if (token.role !== 'ADMIN' && token.role !== 'EMPLOYEE') {
-    return res.status(400).json({
+    return res.status(401).json({
       status: 'error',
-      message: `You are not authorised to delete user. Your role is ${token.role}`,
+      message: `You are not authorised to view this record. Your role is ${token.role}`,
     });
   }
 
