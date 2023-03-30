@@ -10,6 +10,7 @@ export const buttonStyles = cva(
       intent: {
         primary: 'bg-primary text-black',
         secondary: 'bg-secondary text-black',
+        danger: 'bg-danger text-white',
       },
       wide: {
         true: 'min-w-[12rem]',
