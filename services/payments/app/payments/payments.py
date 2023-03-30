@@ -41,6 +41,7 @@ def make_a_purchase(user_id: int,
                     products: list[dict],
                     payment_mode: str,
                     bookings_count: int,
+                    auth: str,
                     success_url: Optional[str] = LOCAL_DOMAIN,
                     cancel_url: Optional[str] = LOCAL_DOMAIN):
   """redirects user to stripe checkout for chosen subscription"""
@@ -71,28 +72,29 @@ def make_a_purchase(user_id: int,
         membership = True
 
   for product in products:
+    if product["type"] != "success" and product["type"] != "cancel":
+      # Gets the product ID and price from the products table
+      product_id = get_product(product["type"])[0]
+      # Gets the product price from the products table
+      product_price = stripe.Product.retrieve(product_id).default_price
 
-    # Gets the product ID and price from the products table
-    product_id = get_product(product["type"])[0]
-    # Gets the product price from the products table
-    product_price = stripe.Product.retrieve(product_id).default_price
+      if product["type"] != "membership":
+        bookings_count += 1
 
-    if product["type"] != "membership":
-      bookings_count += 1
+      if product["type"] == "membership":
+        payment_intent = {}
 
-    if product["type"] == "membership":
-      payment_intent = {}
+      if bookings_count > 2:
+        discount = [{"coupon": apply_discount()}]
 
-    if bookings_count > 2:
-      discount = [{"coupon": apply_discount()}]
+      line_item = {"price": product_price, "quantity": 1}
 
-    line_item = {"price": product_price, "quantity": 1}
+      line_items.append(line_item)
 
-    line_items.append(line_item)
-
-    if membership and get_product(product["type"])[3] != "membership":
-      price = float(product_price.unit_amount) / 100
-      add_purchase(str(user_id), product_id, str(datetime.now()), "", "", price)
+      if membership and get_product(product["type"])[3] != "membership":
+        price = float(product_price.unit_amount) / 100
+        add_purchase(str(user_id), product_id, str(datetime.now()), "", "",
+                     price)
 
   if not membership:
     try:
@@ -125,7 +127,7 @@ def make_a_purchase(user_id: int,
       for product in products:
         if product["type"] != "membership":
           add_pending(product["data"]["userId"], product["data"]["eventId"],
-                      product["data"]["starts"], session.stripe_id)
+                      product["data"]["starts"], auth, session.stripe_id)
 
       return jsonify({"Checkout": session.url})
 

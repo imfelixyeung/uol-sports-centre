@@ -121,7 +121,7 @@ def redirect_checkout():
   # current customer in the last 7 days
   bookings_count = len(response.json()["bookings"])
 
-  return make_a_purchase(user_id, products, payment_mode, bookings_count,
+  return make_a_purchase(user_id, products, payment_mode, bookings_count, auth,
                          success_url, cancel_url)
 
 
@@ -209,13 +209,15 @@ def webhook_received():
         pending_bookings = get_pending(session.stripe_id)
         for booking in pending_bookings:
           try:
-            requests.post("http://gateway/api/booking/bookings/book/",
-                          json={
-                              "userId": booking[0],
-                              "eventId": booking[1],
-                              "starts": booking[2]
-                          },
-                          timeout=5)
+            requests.post(
+                "http://gateway/api/booking/bookings/book/",
+                json={
+                    "userId": booking[0],
+                    "eventId": booking[1],
+                    "starts": booking[2]
+                },
+                timeout=5,
+                headers={"Authorization": f"{pending_bookings[0][4]}"})
 
           # Case there was a request error
           except requests.exceptions.RequestException as request_error:
