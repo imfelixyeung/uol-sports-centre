@@ -146,9 +146,9 @@ def change_price(new_price: float, product_name: str):
     return jsonify({"error": {"message": "Product not found."}}), 404
 
   recurring = None
-  if product_name == "membership-yearly":
+  if product_name == "Membership-Yearly":
     recurring = {"interval": "year"}
-  elif product_name == "membership-monthly":
+  elif product_name == "Membership-Monthly":
     recurring = {"interval": "month"}
 
   # Getting the old and new price from stripe

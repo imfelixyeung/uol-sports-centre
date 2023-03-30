@@ -13,7 +13,7 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_sales, get_pricing_lists,
                           get_order, get_user, get_user_from_stripe,
                           get_product, get_pending, delete_pending, add_product,
-                          init_database, check_pending)
+                          init_database, check_pending, update_price)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
