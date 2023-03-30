@@ -107,6 +107,7 @@ const onboardingSteps: OnboardingStep[] = [
 ];
 
 const OnboardingPage: NextPageWithLayout = () => {
+  const {token} = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [createUser] = useCreateUserMutation();
   const auth = useAuth();
@@ -165,6 +166,7 @@ const OnboardingPage: NextPageWithLayout = () => {
                   id: auth.session!.user.id,
                   firstName: values.firstName,
                   lastName: values.lastName,
+                  token: token!,
                 }).unwrap(),
                 {
                   loading: 'Onboarding...',

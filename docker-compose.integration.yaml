@@ -58,6 +58,7 @@ services:
       - PORT=80
       - HOST=users
       - DATABASE_URL=postgresql://users:mysecretpassword@users-db:5432/dev
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     volumes:
@@ -174,6 +175,29 @@ services:
     networks:
       - network
 
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_API} --forward-to http://payments/webhook
+    networks:
+      - network
+  payments:
+    build:
+      context: ./services/payments
+      target: dev
+    environment:
+      - APP_PORT=80
+      - DEBUG=true
+      - STRIPE_API=${STRIPE_API}
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    volumes:
+      - ./persistence/payments/data:/app/data
+      - ./services/payments:/app
+    depends_on:
+      - stripe-cli
+
   gateway:
     build: ./gateway
     env_file:
@@ -187,6 +211,7 @@ services:
       - status
       - facilities
       - booking
+      - payments
     networks:
       - network
 

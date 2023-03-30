@@ -94,21 +94,31 @@ services:
     environment:
       - PORT=80
       - HOST=users
-      - DATABASE_URL=postgresql://users:mysecretpassword@users-database:5432/prod
+      - DATABASE_URL=postgresql://users:mysecretpassword@users-db:5432/prod
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
+    depends_on:
+      users-db:
+        condition: service_healthy
 
-  users-database:
+  users-db:
     image: postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=mysecretpassword
       - POSTGRES_USER=users
-      - POSTGRES_DB=users-database
+      - POSTGRES_DB=prod
     networks:
       - network
     volumes:
       - ./persistence/users/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "users", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
 
   booking:
     build:

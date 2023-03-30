@@ -27,26 +27,139 @@ async function main() {
 
   const poolEvents: Prisma.EventCreateInput[] = [];
 
-  // Mon, Tues, Wed, Thurs 8am - 8pm
-  for (let day = 0; day < 4; day++) {
-    poolEvents.push({
-      activityId: KnownActivities.PoolOpenUse,
-      name: 'Pool Open Use',
-      day,
-      time: 8 * 60, // 8am
-      duration: 12 * 60, // 12hrs
-      type: 'OPEN_USE',
-    });
+  // Mon 8am - 8pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 0,
+    time: 8 * 60, // 8am
+    duration: 12 * 60, // 12hrs
+    type: 'OPEN_USE',
+  });
 
-    poolEvents.push({
-      activityId: KnownActivities.PoolLaneSwim,
-      name: 'Pool Lane Swimming',
-      day,
-      time: 8 * 60, // 8am
-      duration: 12 * 60, // 12hrs
-      type: 'OPEN_USE',
-    });
-  }
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 0,
+    time: 8 * 60, // 8am
+    duration: 12 * 60, // 12hrs
+    type: 'OPEN_USE',
+  });
+
+  // Tue 8am - 2pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 1,
+    time: 8 * 60, // 8am
+    duration: 6 * 60, // 6hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 1,
+    time: 8 * 60, // 8am
+    duration: 6 * 60, // 6hrs
+    type: 'OPEN_USE',
+  });
+
+  // Tue 2pm - 4pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolLesson,
+    name: 'Pool Lesson',
+    day: 1,
+    time: 14 * 60, // 2pm
+    duration: 2 * 60, // 2hrs
+    type: 'OPEN_USE',
+  });
+
+  // Tue 4pm - 8pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 1,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 1,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
+    type: 'OPEN_USE',
+  });
+
+  // Wed 8am - 8pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 2,
+    time: 8 * 60, // 8am
+    duration: 12 * 60, // 12hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 2,
+    time: 8 * 60, // 8am
+    duration: 12 * 60, // 12hrs
+    type: 'OPEN_USE',
+  });
+
+  // Thu 8am - 2pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 3,
+    time: 8 * 60, // 8am
+    duration: 6 * 60, // 6hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 3,
+    time: 8 * 60, // 8am
+    duration: 6 * 60, // 6hrs
+    type: 'OPEN_USE',
+  });
+
+  // Thu 2pm - 4pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolLesson,
+    name: 'Pool Lesson',
+    day: 3,
+    time: 14 * 60, // 2pm
+    duration: 2 * 60, // 2hrs
+    type: 'OPEN_USE',
+  });
+
+  // Thu 4pm - 8pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 3,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 3,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
+    type: 'OPEN_USE',
+  });
 
   // Fri 8am-10am
   poolEvents.push({
@@ -77,13 +190,13 @@ async function main() {
     type: 'OPEN_USE',
   });
 
-  // Sat 8am - 8pm
+  // Sat 8am - 2pm
   poolEvents.push({
     activityId: KnownActivities.PoolOpenUse,
     name: 'Pool Open Use',
     day: 5,
     time: 8 * 60, // 8am
-    duration: 12 * 60, // 12hrs
+    duration: 6 * 60, // 6hrs
     type: 'OPEN_USE',
   });
 
@@ -92,7 +205,36 @@ async function main() {
     name: 'Pool Lane Swimming',
     day: 5,
     time: 8 * 60, // 8am
-    duration: 12 * 60, // 12hrs
+    duration: 6 * 60, // 6hrs
+    type: 'OPEN_USE',
+  });
+
+  // Sat 2pm - 4pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolLesson,
+    name: 'Pool Lesson',
+    day: 5,
+    time: 14 * 60, // 2pm
+    duration: 2 * 60, // 2hrs
+    type: 'OPEN_USE',
+  });
+
+  // Sat 4pm - 8pm
+  poolEvents.push({
+    activityId: KnownActivities.PoolOpenUse,
+    name: 'Pool Open Use',
+    day: 5,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
+    type: 'OPEN_USE',
+  });
+
+  poolEvents.push({
+    activityId: KnownActivities.PoolLaneSwim,
+    name: 'Pool Lane Swimming',
+    day: 5,
+    time: 16 * 60, // 4pm
+    duration: 4 * 60, // 4hrs
     type: 'OPEN_USE',
   });
 

@@ -39,7 +39,7 @@ ci-management:
   
 ci-users:
 	docker compose -f docker-compose.ci.yaml build users
-	docker compose -f docker-compose.ci.yaml run users
+	docker compose -f docker-compose.ci.yaml --env-file .env.ci run users
 
 ci-booking:
 	docker compose -f docker-compose.integration.yaml build
