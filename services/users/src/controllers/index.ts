@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import {z} from 'zod';
 import {getJwtFromRequest} from '../utils/getJwtFromRequest';
+import {JwtData} from '../utils/JwtData';
 
 // inspired by https://github.com/colinhacks/zod/discussions/2032#discussioncomment-4943969
 // and inspired by https://trpc.io/
@@ -20,9 +21,9 @@ export const createController = <
   }) => Promise<unknown>;
 }): Handler => {
   return async (req: Request, res: Response) => {
-    let token: string | null = null;
+    const token: string | null = null;
     if (authRequired) {
-      token = getJwtFromRequest(req);
+      const token: JwtData | null = getJwtFromRequest(req);
       if (!token)
         return res.status(401).json({
           success: false,

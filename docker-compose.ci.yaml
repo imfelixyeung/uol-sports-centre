@@ -20,8 +20,22 @@ services:
     build:
       context: ./services/users
       target: ci
+    environment:
+      - PORT=80
+      - HOST=0.0.0.0
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
 
   docs:
     build:
       context: ./docs
       target: ci
+
+  payments:
+    build:
+      context: ./services/payments
+      target: ci
+    environment:
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - STRIPE_API=${STRIPE_API}
+      - APP_PORT=${APP_PORT}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
