@@ -72,7 +72,7 @@ export type GetCustomerPortalResponse = {
 
 /** POST /change-price */
 export type ChangePriceRequest = {
-  price: string;
+  price: number;
   productName: string;
 };
 export type ChangePriceResponse = void;

@@ -123,7 +123,7 @@ const UpdatePricesForm: FC<{
         await toast.promise(
           updatePrice({
             productName,
-            price: productPrice,
+            price: Number(productPrice) * 100,
             token: token!,
           }).unwrap(),
           {
