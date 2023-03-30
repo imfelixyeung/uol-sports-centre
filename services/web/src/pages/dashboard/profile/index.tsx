@@ -39,6 +39,7 @@ const ProfileEditForm = () => {
   const {session} = useAuth();
   const [updateFirstName] = useUpdateUserFirstNameMutation();
   const [updateLastName] = useUpdateUserLastNameMutation();
+  const {token} = useAuth();
 
   if (!user || !session) return null;
 
@@ -53,8 +54,8 @@ const ProfileEditForm = () => {
         const {firstName, lastName} = values;
         await toast.promise(
           Promise.all([
-            updateFirstName({id: user.id, firstName}),
-            updateLastName({id: user.id, lastName}),
+            updateFirstName({id: user.id, firstName, token: token!}),
+            updateLastName({id: user.id, lastName, token: token!}),
           ]),
           {
             loading: 'Updating...',
