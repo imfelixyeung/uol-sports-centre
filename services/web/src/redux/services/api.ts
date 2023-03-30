@@ -385,8 +385,8 @@ export const api = createApi({
         method: 'POST',
         body: [
           ...items.map(item => ({...item, data: {...item.data, userId}})),
-          {type: 'success', data: {url: metadata.successUrl, userId: userId}},
-          {type: 'cancel', data: {url: metadata.cancelUrl, userId: userId}},
+          // {type: 'success', data: {url: metadata.successUrl, userId: userId}},
+          // {type: 'cancel', data: {url: metadata.cancelUrl, userId: userId}},
         ],
         headers: {Authorization: `Bearer ${token}`},
       }),
