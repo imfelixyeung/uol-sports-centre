@@ -1,3 +1,4 @@
+import Memberships from '~/components/LandingPage/Memberships';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
@@ -24,29 +25,38 @@ const PricingPage = () => {
   return (
     <>
       <PageHero title="Pricing" />
-      <div className="container my-8">
-        <Typography.h2>Facilities Prices</Typography.h2>
-        <div className="grid w-full place-items-center py-2 ring-2 ring-inset ring-white">
+      <div className="container my-8 grid grid-cols-2 gap-3">
+        <div className="py-6 px-3 ring-2 ring-inset ring-white">
           {facilityPrices.map(facility => (
             <>
-              <Typography.h3>{facility.productName}</Typography.h3>
-              <Typography.h3>
+              <Typography.h3>{facility.productName} Price</Typography.h3>
+              <Typography.h3
+                styledAs="h1"
+                desktopStyledAs="display2"
+                className="text-center !font-normal"
+              >
                 £{(Number(facility.price) / 100).toFixed(2)}
               </Typography.h3>
             </>
           ))}
         </div>
-        <Typography.h2>Activities Prices</Typography.h2>
-        <div className="grid w-full place-items-center py-2 ring-2 ring-inset ring-white">
+        <div className="py-6 px-3 ring-2 ring-inset ring-white">
           {activityPrices.map(activity => (
             <>
-              <Typography.h3>{activity.productName}</Typography.h3>
-              <Typography.h3>
+              <Typography.h3>{activity.productName} Price</Typography.h3>
+              <Typography.h3
+                styledAs="h1"
+                desktopStyledAs="display2"
+                className="text-center !font-normal"
+              >
                 £{(Number(activity.price) / 100).toFixed(2)}
               </Typography.h3>
             </>
           ))}
         </div>
+      </div>
+      <div className="container my-8">
+        <Memberships />
       </div>
     </>
   );
