@@ -1,8 +1,10 @@
+import {useRouter} from 'next/router';
 import {memberships} from '~/data/memberships';
 import MembershipCard from '../MembershipCard';
 import Typography from '../Typography';
 
 const Memberships = () => {
+  const router = useRouter();
   return (
     <div className="container flex flex-col gap-6 py-8">
       <Typography.h2 styledAs="h1" uppercase>
@@ -11,7 +13,12 @@ const Memberships = () => {
       <div className="grid gap-3 md:grid-cols-3">
         {memberships.map((membership, index) => (
           <div key={index} className="grow">
-            <MembershipCard membership={membership} />
+            <MembershipCard
+              membership={membership}
+              onCallToAction={() => {
+                void router.push('/dashboard/profile/membership');
+              }}
+            />
           </div>
         ))}
       </div>
