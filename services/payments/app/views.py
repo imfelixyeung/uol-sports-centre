@@ -322,8 +322,8 @@ def get_purchased_products(user_id: int):
 
   allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
   if decoded_token["user"]["role"] in allowed_roles:
-      purchased_products = get_purchases(user_id)
-      return jsonify(purchased_products
+    purchased_products = get_purchases(user_id)
+    return jsonify(purchased_products)
 
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
