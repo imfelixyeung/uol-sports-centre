@@ -1,17 +1,23 @@
 """Module to authenticate user"""
 import os
+import logging
 import jwt
+import typing
+from dotenv import load_dotenv
 
 role = "ADMIN"
+
+load_dotenv()
 
 
 def authenticate(auth_token):
   """Authenticate user to ensure they can access specific functions"""
 
-  secret_key = os.getenv("JWT_SECRET_KEY")
+  secret_key = typing.cast(str, os.getenv("JWT_SIGNING_SECRET"))
 
   if not secret_key:
     secret_key = "test"
+    logging.warning("No JWT_SECRET_KEY found, using default")
 
   #HS256 is the algorithm used to encode the token
   token = str.replace(str(auth_token), "Bearer ", "")

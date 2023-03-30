@@ -21,11 +21,15 @@ const UserDashboardPage = () => {
 
   const navSection = (
     <section className="my-16">
-      <div className="flex flex-wrap justify-between gap-3">
+      <div className="grid grid-cols-1 justify-between gap-3 lg:grid-cols-3">
         <Link href="/dashboard/bookings" className="grow">
           <Card variant="default" title="Booking" />
         </Link>
-        <Card variant="alt" title="Memberships" grow />
+
+        <Link href="/dashboard/profile/membership" className="grow">
+          <Card variant="alt" title="Memberships" grow />
+        </Link>
+
         <Link href="/dashboard/profile" className="grow">
           <Card variant="red" title="Profile" />
         </Link>
@@ -82,7 +86,9 @@ const UserDashboardPage = () => {
         </>
       ) : (
         <>
-          <div className="bg-black/30 p-3">No upcoming bookings...</div>
+          <div className="rounded-sm bg-gray-300 p-3">
+            No upcoming bookings...
+          </div>
           <Link
             href="/dashboard/bookings/new"
             className={buttonStyles({
@@ -106,17 +112,33 @@ const UserDashboardPage = () => {
           title={`Hello ${user?.firstName ?? ''}!`}
           subtitle="Welcome to a sports centre"
         />
-        <div className="container my-3 flex flex-col gap-3">
+        <div className="container my-3 mb-9 flex gap-3">
           {['EMPLOYEE', 'MANAGER', 'ADMIN'].includes(
             session?.user.role ?? ''
           ) && (
             <>
-              <Link href="/employee">Go to Employee Portal</Link>
+              <Link
+                href="/employee"
+                className={buttonStyles({
+                  intent: 'secondary',
+                  className: 'grow',
+                })}
+              >
+                Go to Employee Portal
+              </Link>
             </>
           )}
           {['MANAGER', 'ADMIN'].includes(session?.user.role ?? '') && (
             <>
-              <Link href="/management">Go to Management Portal</Link>
+              <Link
+                href="/management"
+                className={buttonStyles({
+                  intent: 'secondary',
+                  className: 'grow',
+                })}
+              >
+                Go to Management Portal
+              </Link>
             </>
           )}
         </div>

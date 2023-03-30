@@ -279,7 +279,7 @@ class BookingController {
    *
    * @memberof BookingController
    */
-  async deleteBookingById(req: express.Request, res: express.Response) {
+  async deleteBookingById(req: Request, res: express.Response) {
     logger.debug('Received deleteBookingById request');
 
     const deleteBookingParamsSchema = z.object({
@@ -295,6 +295,41 @@ class BookingController {
         error: params.error,
       });
 
+    // try find the booking to get the owner of the booking
+    const testBooking = await bookingService
+      .getById(params.data.id)
+      .catch(err => {
+        logger.error(`Unable to get booking ${params.data.id}: ${err}`);
+        return new Error(err);
+      });
+
+    if (testBooking instanceof Error) {
+      if (testBooking instanceof NotFoundError) {
+        return res.status(404).json({
+          status: 'error',
+          error: 'Booking not found',
+        });
+      } else {
+        return res.status(500).json({
+          status: 'error',
+          error: testBooking,
+        });
+      }
+    }
+
+    // if user is not admin, or the user is not the owner of the booking, return 403
+    if (
+      ![UserRole.ADMIN, UserRole.EMPLOYEE].includes(req.auth?.user.role) &&
+      req.auth?.user.id !== testBooking.userId
+    ) {
+      logger.debug('User is not admin/employee or owner of booking');
+      return res.status(403).json({
+        status: 'error',
+        error: 'You are not allowed to delete this booking',
+      });
+    }
+
+    // delete the booking
     const booking = await bookingService
       .deleteById(params.data.id)
       .catch(err => {

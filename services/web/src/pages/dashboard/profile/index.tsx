@@ -21,6 +21,7 @@ const ProfilePage = () => {
     <div className="flex grow flex-col">
       <PageHero
         title={user ? `${user.firstName} ${user.lastName}` : 'Loading...'}
+        subtitle={`User ID: ${user?.id || 'null'}`}
         side={<MembershipBanner />}
       />
       <div className="grow bg-white text-black">
@@ -106,7 +107,7 @@ const ProfileEditForm = () => {
           <Button type="submit" intent="secondary" outline>
             Back
           </Button>
-          <Button type="submit" intent="secondary" outline>
+          <Button type="submit" intent="primary" outline>
             Update Profile
           </Button>
         </div>

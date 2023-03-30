@@ -1,4 +1,5 @@
-import Button from '~/components/Button';
+import Link from 'next/link';
+import Button, {buttonStyles} from '~/components/Button';
 import type {MembershipCardProps} from '~/components/MembershipCard';
 import MembershipCard from '~/components/MembershipCard';
 import PageHero from '~/components/PageHero';
@@ -38,7 +39,7 @@ const MembershipPage = () => {
       />
       <div className="grow bg-white py-8 text-black">
         <section className="container">
-          <Typography.h2>Membership Management</Typography.h2>
+          <Typography.h2 className="mb-8">Membership Management</Typography.h2>
           <div className="grid gap-3 lg:grid-cols-3">
             {_memberships.map((membership, index) => (
               <MembershipCard key={index} membership={membership} />
@@ -48,9 +49,15 @@ const MembershipPage = () => {
       </div>
       <div className="bg-white py-8 text-black">
         <div className="container flex flex-wrap items-center justify-between">
-          <Button intent="secondary" outline>
+          <Link
+            href="/dashboard/profile"
+            className={buttonStyles({
+              intent: 'secondary',
+              outline: true,
+            })}
+          >
             Back
-          </Button>
+          </Link>
           <Button intent="secondary" outline>
             Manage Payment Details{' '}
           </Button>

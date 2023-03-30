@@ -16,9 +16,9 @@ export interface FancyChevronPageNavProps {
 const FancyChevronPageNav: FC<FancyChevronPageNavProps> = ({image, links}) => {
   return (
     <div className="container my-12">
-      <div className="flex items-center gap-16">
+      <div className="flex items-center justify-center gap-16">
         <img src={image} alt="" className="w-full max-w-md object-cover" />
-        <div className="flex grow flex-col gap-6">
+        <div className="flex max-w-lg grow flex-col gap-6">
           {links.map((link, index) => {
             const reverse = index % 2 === 1;
             const Icon = reverse
