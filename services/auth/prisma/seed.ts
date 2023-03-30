@@ -11,7 +11,7 @@ const seed = async () => {
   const usersCount = await db.user.count();
   if (usersCount > 0) return console.log('Already previously seeded');
 
-  const emails = roles.map(role => `${role}@example.com`);
+  const emails = roles.map(role => `${role}@example.com`.toLowerCase());
 
   const registrationPromises = emails.map(email =>
     registerWithCredentials({email, password: PASSWORD}, {rememberMe: false})
@@ -21,7 +21,7 @@ const seed = async () => {
 
   const users = await db.user.findMany();
   const updateRolePromises = users.map(user => {
-    const role = user.email.split('@')[0] as UserRole;
+    const role = user.email.split('@')[0].toUpperCase() as UserRole;
     return updateUserById(user.id, {role});
   });
 

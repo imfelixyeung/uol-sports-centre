@@ -20,6 +20,10 @@ services:
     build:
       context: ./services/users
       target: ci
+    environment:
+      - PORT=80
+      - HOST=0.0.0.0
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
 
   docs:
     build:

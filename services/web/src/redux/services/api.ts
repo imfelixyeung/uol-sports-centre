@@ -11,6 +11,8 @@ import type {
   UpdateUserRoleRequest,
 } from './types/auth';
 import type {
+  BookBookingRequest,
+  BookBookingResponse,
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
   GetBookingEventsRequest,
@@ -29,6 +31,7 @@ import type {
   FacilityActivitiesResponse,
   FacilityActivityResponse,
   FacilityResponse,
+  FacilityTimeRequest,
   FacilityTimeResponse,
   FacilityTimesResponse,
   UpdateFacilityActivityRequest,
@@ -134,24 +137,26 @@ export const api = createApi({
 
     createFacility: builder.mutation<
       CreateFacilityResponse,
-      CreateFacilityRequest
+      CreateFacilityRequest & Token
     >({
-      query: facility => ({
+      query: ({token, ...facility}) => ({
         url: '/facilities/facilities/',
         body: facility,
         method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['Facility'],
     }),
 
     updateFacility: builder.mutation<
       UpdateFacilityResponse,
-      UpdateFacilityRequest
+      UpdateFacilityRequest & Token
     >({
-      query: ({id, ...facility}) => ({
+      query: ({token, id, ...facility}) => ({
         url: `/facilities/facilities/${id}`,
         body: facility,
         method: 'PUT',
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['Facility'],
     }),
@@ -166,6 +171,16 @@ export const api = createApi({
       providesTags: ['FacilityTime'],
     }),
 
+    updateFacilityTime: builder.mutation<void, FacilityTimeRequest & Token>({
+      query: ({token, id, ...rest}) => ({
+        url: `/facilities/times/${id}`,
+        body: rest,
+        method: 'PUT',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['FacilityTime'],
+    }),
+
     getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
       query: () => '/facilities/activities/',
       providesTags: ['FacilityActivity'],
@@ -178,24 +193,26 @@ export const api = createApi({
 
     updateFacilityActivity: builder.mutation<
       UpdateFacilityActivityResponse,
-      UpdateFacilityActivityRequest
+      UpdateFacilityActivityRequest & Token
     >({
-      query: ({id, ...activity}) => ({
+      query: ({token, id, ...activity}) => ({
         url: `/facilities/activities/${id}`,
         body: activity,
         method: 'PUT',
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['FacilityActivity'],
     }),
 
     createFacilityActivity: builder.mutation<
       CreateFacilityActivityResponse,
-      CreateFacilityActivityRequest
+      CreateFacilityActivityRequest & Token
     >({
-      query: activity => ({
+      query: ({token, ...activity}) => ({
         url: '/facilities/activities/',
         body: activity,
         method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['FacilityActivity'],
     }),
@@ -205,35 +222,41 @@ export const api = createApi({
       providesTags: ['User'],
     }),
 
-    createUser: builder.mutation<UsersCreateResponse, UsersCreateRequest>({
-      query: user => ({
+    createUser: builder.mutation<
+      UsersCreateResponse,
+      UsersCreateRequest & Token
+    >({
+      query: ({token, ...user}) => ({
         url: '/users/createUser',
         method: 'POST',
         body: user,
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['User'],
     }),
 
     updateUserFirstName: builder.mutation<
       UsersUpdateFirstNameResponse,
-      UsersUpdateFirstNameRequest
+      UsersUpdateFirstNameRequest & Token
     >({
-      query: user => ({
+      query: ({token, ...user}) => ({
         url: `/users/${user.id}/updateFirstName`,
         method: 'PUT',
         body: {firstName: user.firstName},
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['User'],
     }),
 
     updateUserLastName: builder.mutation<
       UsersUpdateLastNameResponse,
-      UsersUpdateLastNameRequest
+      UsersUpdateLastNameRequest & Token
     >({
-      query: user => ({
+      query: ({token, ...user}) => ({
         url: `/users/${user.id}/updateSurname`,
         method: 'PUT',
         body: {lastName: user.lastName},
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['User'],
     }),
@@ -263,6 +286,19 @@ export const api = createApi({
         };
       },
       providesTags: ['BookingAvailability', 'BookingEvent'],
+    }),
+
+    bookBooking: builder.mutation<
+      BookBookingResponse,
+      BookBookingRequest & Token
+    >({
+      query: ({event, starts, token, user}) => ({
+        url: '/booking/bookings/book',
+        method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {event, starts, user},
+      }),
+      invalidatesTags: ['Booking'],
     }),
 
     getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
@@ -329,11 +365,13 @@ export const {
   useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
+  useUpdateFacilityTimeMutation,
   useGetUserRecordQuery,
   useCreateUserMutation,
   useUpdateUserFirstNameMutation,
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
+  useBookBookingMutation,
   useGetBookingsQuery,
   useGetBookingQuery,
   useGetBookingEventsQuery,
