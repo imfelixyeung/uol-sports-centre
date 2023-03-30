@@ -1,5 +1,6 @@
 """Initializes the instance of the facilities flask app"""
 import logging
+import os
 from flask import Flask
 
 from app.admin import Admin
@@ -12,6 +13,7 @@ def create_app(testing=False, config=None) -> Flask:
   # Setup flask
   app = Flask(__name__)
   app.config.from_object("app.config")
+  # app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
 
   # if is testing, apply custom config
   if testing:
