@@ -17,6 +17,7 @@ CREATE TABLE orders (
     chargeID TEXT NOT NULL,
     receipt_pdf TEXT,
     booking_id INTEGER,
+    purchase_price TEXT,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 DROP TABLE IF EXISTS customers;
