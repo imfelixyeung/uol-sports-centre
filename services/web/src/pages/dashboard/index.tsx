@@ -112,17 +112,33 @@ const UserDashboardPage = () => {
           title={`Hello ${user?.firstName ?? ''}!`}
           subtitle="Welcome to a sports centre"
         />
-        <div className="container my-3 flex flex-col gap-3">
+        <div className="container my-3 mb-9 flex gap-3">
           {['EMPLOYEE', 'MANAGER', 'ADMIN'].includes(
             session?.user.role ?? ''
           ) && (
             <>
-              <Link href="/employee">Go to Employee Portal</Link>
+              <Link
+                href="/employee"
+                className={buttonStyles({
+                  intent: 'secondary',
+                  className: 'grow',
+                })}
+              >
+                Go to Employee Portal
+              </Link>
             </>
           )}
           {['MANAGER', 'ADMIN'].includes(session?.user.role ?? '') && (
             <>
-              <Link href="/management">Go to Management Portal</Link>
+              <Link
+                href="/management"
+                className={buttonStyles({
+                  intent: 'secondary',
+                  className: 'grow',
+                })}
+              >
+                Go to Management Portal
+              </Link>
             </>
           )}
         </div>
