@@ -465,7 +465,7 @@ paths:
     get:
       tags:
         - users
-      description: "Returns the record in database for a specified user"
+      description: "Returns the record in database for a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Returns full record of a user"
 
       responses:
@@ -488,7 +488,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the first name of a specified user"
+      description: "Updates the first name of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates first name of a user"
 
       responses:
@@ -517,7 +517,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the surname of a specified user"
+      description: "Updates the surname of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates surname of a user"
 
       responses:
@@ -546,7 +546,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the Payment ID of a specified user"
+      description: "Updates the Payment ID of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates payment ID of a user"
 
       responses:
@@ -575,7 +575,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the Membership of a specified user"
+      description: "Updates the Membership of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates membership of a user"
 
       responses:
@@ -647,7 +647,7 @@ paths:
     post:
       tags:
         - users
-      description: "Creates a new users in the users database"
+      description: "Creates a new users in the users database. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Creates a new user"
 
       responses:
@@ -682,7 +682,7 @@ paths:
     delete:
       tags:
         - users
-      description: "Delete an existing user in the users database"
+      description: "Delete an existing user in the users database. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Delete a user"
 
       responses:
