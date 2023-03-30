@@ -47,6 +47,7 @@ import type {
   UsersUpdateFirstNameResponse,
   UsersUpdateLastNameRequest,
   UsersUpdateLastNameResponse,
+  UsersViewFullRecordRequest,
   UsersViewFullRecordResponse,
 } from './types/users';
 
@@ -217,8 +218,14 @@ export const api = createApi({
       invalidatesTags: ['FacilityActivity'],
     }),
 
-    getUserRecord: builder.query<UsersViewFullRecordResponse, number>({
-      query: userId => `/users/${userId}/viewFullRecord`,
+    getUserRecord: builder.query<
+      UsersViewFullRecordResponse,
+      UsersViewFullRecordRequest & Token
+    >({
+      query: ({token, userId}) => ({
+        url: `/users/${userId}/viewFullRecord`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
       providesTags: ['User'],
     }),
 
