@@ -21,11 +21,15 @@ const UserDashboardPage = () => {
 
   const navSection = (
     <section className="my-16">
-      <div className="flex flex-wrap justify-between gap-3">
+      <div className="grid grid-cols-1 justify-between gap-3 lg:grid-cols-3">
         <Link href="/dashboard/bookings" className="grow">
           <Card variant="default" title="Booking" />
         </Link>
-        <Card variant="alt" title="Memberships" grow />
+
+        <Link href="/dashboard/profile/membership" className="grow">
+          <Card variant="alt" title="Memberships" grow />
+        </Link>
+
         <Link href="/dashboard/profile" className="grow">
           <Card variant="red" title="Profile" />
         </Link>
