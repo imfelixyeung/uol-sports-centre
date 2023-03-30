@@ -38,19 +38,24 @@ const DashboardBookingsPage = () => {
         />
         <main className="grow bg-white text-black">
           <div className="container py-8">
-            {bookings.length === 0 && <>You have no bookings.</>}
-            <Bookings
-              bookings={bookings.map(booking => ({
-                datetime: new Date(booking.starts),
-                eventId: booking.eventId,
-                id: booking.id,
-              }))}
-              title={
-                <Typography.h2 styledAs="h1" uppercase>
-                  Your Bookings
-                </Typography.h2>
-              }
-            />
+            {bookings.length === 0 ? (
+              <div className="rounded-sm bg-gray-300 py-8 text-center">
+                You have no bookings.
+              </div>
+            ) : (
+              <Bookings
+                bookings={bookings.map(booking => ({
+                  datetime: new Date(booking.starts),
+                  eventId: booking.eventId,
+                  id: booking.id,
+                }))}
+                title={
+                  <Typography.h2 styledAs="h1" uppercase>
+                    Your Bookings
+                  </Typography.h2>
+                }
+              />
+            )}
           </div>
         </main>
       </div>

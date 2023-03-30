@@ -72,27 +72,28 @@ const NewBookingsPage = () => {
         <main className="grow bg-white text-black">
           <div className="container py-8">
             <BookingFilterForm onFilterChange={setFilter} />
-            {availableBookings.length === 0 && (
-              <>
-                No bookings available based on your filter, try changing the
-                filter.
-              </>
+
+            {availableBookings.length === 0 ? (
+              <div className="rounded-sm bg-gray-300 py-8 text-center">
+                There are no available bookings based on your filters.
+              </div>
+            ) : (
+              <Bookings
+                bookings={availableBookings.map(booking => ({
+                  datetime: new Date(booking.starts),
+                  capacity: booking.capacity,
+                  duration: booking.duration,
+                  eventId: booking.event.id,
+                  availableBooking: booking,
+                  onBook: () => void onBook([booking]),
+                }))}
+                title={
+                  <SelectedBookingsDropdown
+                    onBook={() => void onBook(bookings)}
+                  />
+                }
+              />
             )}
-            <Bookings
-              bookings={availableBookings.map(booking => ({
-                datetime: new Date(booking.starts),
-                capacity: booking.capacity,
-                duration: booking.duration,
-                eventId: booking.event.id,
-                availableBooking: booking,
-                onBook: () => void onBook([booking]),
-              }))}
-              title={
-                <SelectedBookingsDropdown
-                  onBook={() => void onBook(bookings)}
-                />
-              }
-            />
           </div>
         </main>
       </div>

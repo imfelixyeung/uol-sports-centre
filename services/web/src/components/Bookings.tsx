@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import localizedFormatPlugin from 'dayjs/plugin/localizedFormat';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import Link from 'next/link';
 import type {FC, ReactNode} from 'react';
 import {useMemo, useState} from 'react';
@@ -25,6 +26,7 @@ import IconToggleGroup from './IconToggleGroup';
 import ScrollArea from './ScrollArea';
 import Typography from './Typography';
 dayjs.extend(localizedFormatPlugin);
+dayjs.extend(advancedFormat);
 
 const availableViews = [
   {id: 'calendar', name: 'Calendar View', Icon: CalendarIcon},
@@ -71,7 +73,8 @@ const Bookings: FC<BookingsProps> = ({title, bookings}) => {
       <div
         className={clsx(
           'mt-3',
-          currentView === 'grid' && 'grid grid-cols-2 gap-3 xl:grid-cols-3',
+          currentView === 'grid' &&
+            'grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3',
           currentView === 'list' && 'grid gap-3',
           currentView === 'calendar' && 'hidden'
         )}
@@ -195,7 +198,7 @@ const BookingsCalendarView: FC<{
           {dates.map(date => (
             <tr key={date.toISOString()}>
               <th className="sticky left-0 z-50 bg-black p-2">
-                {dayjs(date).format('ll')}
+                {dayjs(date).format('ddd, Do MMMM')}
               </th>
               {hours.map(hour => {
                 const starts = dayjs(date).add(hour, 'hour');

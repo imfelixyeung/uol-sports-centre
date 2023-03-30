@@ -43,11 +43,12 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
   return last_row_id
 
 
-def add_pending(user_id: int, event_id: int, starts: str, checkout_id: str):
+def add_pending(user_id: int, event_id: int, starts: str, auth: str,
+                checkout_id: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  cur.execute("""INSERT INTO pending VALUES (?, ?, ?, ?)""",
-              (user_id, event_id, starts, checkout_id))
+  cur.execute("""INSERT INTO pending VALUES (?, ?, ?, ?, ?)""",
+              (user_id, event_id, starts, checkout_id, auth))
   con.commit()
   con.close()
 
@@ -277,6 +278,27 @@ def delete_product(product_id: str):
   cur.execute("DELETE FROM products WHERE product_id = ?", (product_id,))
   connection.commit()
   connection.close()
+
+
+def check_pending(user_id: int, event_id: int, starts: str, auth: str):
+  session = "not_found"
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  pendings = cur.execute(
+      """SELECT * FROM pending WHERE user_id = ? 
+      AND event_id = ? AND starts = ?""",
+      (user_id, event_id, starts)).fetchall()
+  if len(pendings) != 0:
+    cur.execute(
+        """UPDATE pending SET auth = ? WHERE user_id = ? 
+        AND event_id = ? AND starts = ?""", (auth, user_id, event_id, starts))
+    session = cur.execute(
+        """SELECT checkout_id FROM pending WHERE user_id = ? 
+      AND event_id = ? AND starts = ?""",
+        (user_id, event_id, starts)).fetchone()
+  con.commit()
+  con.close()
+  return session
 
 
 def check_health() -> bool:
