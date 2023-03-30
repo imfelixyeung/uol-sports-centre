@@ -48,7 +48,7 @@ services:
       test: [ "CMD", "pg_isready", "-U", "auth", "-d", "dev" ]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
 
   users:
     build:
@@ -82,7 +82,7 @@ services:
       test: [ "CMD", "pg_isready", "-U", "users", "-d", "dev" ]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
 
   status:
     build:
@@ -115,7 +115,7 @@ services:
       test: [ "CMD", "pg_isready", "-U", "status", "-d", "dev" ]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 50
 
   facilities:
     build:
@@ -157,7 +157,7 @@ services:
         ]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
     networks:
       - network
 
@@ -172,7 +172,7 @@ services:
       test: [ "CMD", "pg_isready", "-U", "booking", "-d", "test" ]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
     networks:
       - network
 
