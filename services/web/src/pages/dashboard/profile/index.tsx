@@ -21,7 +21,7 @@ const ProfilePage = () => {
     <div className="flex grow flex-col">
       <PageHero
         title={user ? `${user.firstName} ${user.lastName}` : 'Loading...'}
-        subtitle={`User ID: ${user?.id}`}
+        subtitle={`User ID: ${user?.id || 'null'}`}
         side={<MembershipBanner />}
       />
       <div className="grow bg-white text-black">
