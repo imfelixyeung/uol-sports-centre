@@ -95,6 +95,7 @@ services:
       - PORT=80
       - HOST=users
       - DATABASE_URL=postgresql://users:mysecretpassword@users-database:5432/prod
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
 

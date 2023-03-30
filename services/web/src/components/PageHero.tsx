@@ -9,6 +9,7 @@ interface PageHeroProps {
   subtitleStyles?: TypographyStyleProps;
   actions?: ReactNode;
   backgroundImage?: string;
+  side?: ReactNode;
 }
 
 const PageHero: FC<PageHeroProps> = ({
@@ -25,6 +26,7 @@ const PageHero: FC<PageHeroProps> = ({
   },
   actions,
   backgroundImage = '/assets/images/patterns/hero.svg',
+  side,
 }) => {
   return (
     <div className="relative">
@@ -41,6 +43,9 @@ const PageHero: FC<PageHeroProps> = ({
               <div className="flex flex-col gap-3 md:flex-row">{actions}</div>
             )}
           </div>
+          {side && (
+            <div className="flex items-center justify-center py-16">{side}</div>
+          )}
         </div>
       </div>
       {backgroundImage && (

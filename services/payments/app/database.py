@@ -207,7 +207,7 @@ def get_sales(product_type: str):
           "product_name": product[1],
           "product_type": product[2],
           "units_sold": product_sales[0],
-          "total_sales": product_sales[1]
+          "total_sales": float(product_sales[1]) / 100
       })
   con.close()
 
@@ -215,7 +215,7 @@ def get_sales(product_type: str):
   return sales
 
 
-def update_price(product_name: str, new_price: int):
+def update_price(product_name: str, new_price: float):
   """Updates the price of a given product to a given price"""
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()

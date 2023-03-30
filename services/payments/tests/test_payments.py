@@ -246,7 +246,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     """Function that checks the functionality of get_sales_lastweek end point"""
 
     # Mock the jwt.decode function to return a mocked decoded token
-    mock_jwt.return_value = {"user": {"role": "MANAGER"}}
+    mock_jwt.return_value = {"user": {"role": "ADMIN"}}
 
     # Line inspired by stack-overflaw #
     # Solution by https://stackoverflow.com/questions/

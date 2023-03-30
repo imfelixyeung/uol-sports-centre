@@ -10,18 +10,17 @@ const MembershipBanner = () => {
   const membership = user.membership ?? 'No membership...';
 
   return (
-    <div className="w-full bg-white/20 p-8">
+    <div className="w-full bg-white p-8 text-black">
       <div className="flex justify-between">
         <Typography.h3>{membership}</Typography.h3>
-        <Typography.h3>{'£xxx/yr'}</Typography.h3>
+        <Typography.p>{'£xxx/yr'}</Typography.p>
       </div>
-      <Typography.p>Allows for x free bookings per week</Typography.p>
-      <div className="flex justify-end">
+      <div className="mt-3 flex justify-end">
         <Link
-          className={buttonStyles({intent: 'primary'})}
+          className={buttonStyles({intent: 'primary', outline: true})}
           href="/dashboard/profile/membership"
         >
-          Manage Membership
+          Manage
         </Link>
       </div>
     </div>
