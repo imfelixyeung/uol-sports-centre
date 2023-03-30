@@ -82,6 +82,8 @@ export const api = createApi({
     'Facility',
     'FacilityActivity',
     'FacilityTime',
+    'Price',
+    'Discount',
   ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -408,6 +410,7 @@ export const api = createApi({
         method: 'GET',
         headers: {Authorization: `Bearer ${token}`},
       }),
+      invalidatesTags: ['Discount'],
     }),
 
     getPrices: builder.query<GetPricesResponse, GetPricesRequest & Token>({
@@ -415,6 +418,7 @@ export const api = createApi({
         url: `/payments/get-prices/${productType}`,
         headers: {Authorization: `Bearer ${token}`},
       }),
+      providesTags: ['Price'],
     }),
 
     changePrices: builder.mutation<
@@ -430,6 +434,7 @@ export const api = createApi({
           new_price: price,
         },
       }),
+      invalidatesTags: ['Price'],
     }),
   }),
 });
