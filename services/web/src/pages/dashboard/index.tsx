@@ -86,7 +86,9 @@ const UserDashboardPage = () => {
         </>
       ) : (
         <>
-          <div className="bg-black/30 p-3">No upcoming bookings...</div>
+          <div className="rounded-sm bg-gray-300 p-3">
+            No upcoming bookings...
+          </div>
           <Link
             href="/dashboard/bookings/new"
             className={buttonStyles({
