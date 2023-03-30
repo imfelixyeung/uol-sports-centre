@@ -13,7 +13,7 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_sales, get_pricing_lists,
                           get_order, get_user, get_user_from_stripe,
                           get_product, get_pending, delete_pending, add_product,
-                          init_database, check_pending, update_price)
+                          init_database, check_pending)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -499,19 +499,19 @@ def init_payments():
 
     if name == "Session":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "session")
+      add_product(name, product.id, price.unit_amount, "Session")
     elif name == "Activity":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "activity")
+      add_product(name, product.id, price.unit_amount, "Activity")
     elif name == "Facility":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "facility")
+      add_product(name, product.id, price.unit_amount, "Facility")
     elif name == "Membership-Monthly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "membership")
+      add_product(name, product.id, price.unit_amount, "Membership")
     elif name == "Membership-Yearly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "membership")
+      add_product(name, product.id, price.unit_amount, "Membership")
 
 
 @app.route("/health")
