@@ -1,4 +1,7 @@
-import {UserCircleIcon} from '@heroicons/react/24/solid';
+import {
+  UserCircleIcon,
+  ArrowLeftOnRectangleIcon,
+} from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import toast from 'react-hot-toast';
@@ -29,21 +32,31 @@ const AppBar = () => {
 
   return (
     <div className="bg-black">
-      <header className="container flex flex-col items-center justify-between gap-3 py-6 md:flex-row">
+      <header className="flex flex-col items-center justify-between gap-3 py-6 md:container md:flex-row">
         <div className="relative flex w-full items-center justify-center md:w-auto">
           <Link href="/">
             <AppIcon />
           </Link>
-          <Link
-            href="/dashboard"
-            className={buttonStyles({
-              intent: 'primary',
-              className: 'absolute right-0 md:hidden',
-              square: true,
-            })}
-          >
-            <UserCircleIcon className="h-6" />
-          </Link>
+          <span className="absolute right-4 flex gap-2 md:hidden">
+            <Link
+              href="/dashboard"
+              className={buttonStyles({
+                intent: 'primary',
+                square: true,
+              })}
+            >
+              <UserCircleIcon className="h-6" />
+            </Link>
+            {auth.session && (
+              <Button
+                intent="secondary"
+                square
+                onClick={() => void handleLogout()}
+              >
+                <ArrowLeftOnRectangleIcon className="h-6" />
+              </Button>
+            )}
+          </span>
         </div>
         <nav>
           <ul className="flex gap-6 font-bold">
@@ -59,27 +72,33 @@ const AppBar = () => {
           </ul>
         </nav>
         <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className={buttonStyles({
-              intent: 'primary',
-              className: 'hidden md:block',
-            })}
-          >
-            Account
-          </Link>
           {auth.session ? (
-            <Button
-              intent="primary"
-              type="button"
-              onClick={() => void handleLogout()}
-            >
-              Logout
-            </Button>
+            <>
+              <Link
+                href="/dashboard"
+                className={buttonStyles({
+                  intent: 'primary',
+                  className: 'hidden md:block',
+                })}
+              >
+                Account
+              </Link>
+              <Button
+                intent="secondary"
+                type="button"
+                onClick={() => void handleLogout()}
+                className="hidden md:block"
+              >
+                Logout
+              </Button>
+            </>
           ) : (
             <Link
               href={`/auth/login?redirect=${encodeURIComponent('/dashboard')}`}
-              className={buttonStyles({intent: 'primary'})}
+              className={buttonStyles({
+                intent: 'primary',
+                className: 'hidden md:block',
+              })}
             >
               Login
             </Link>
