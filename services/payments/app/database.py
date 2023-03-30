@@ -280,6 +280,27 @@ def delete_product(product_id: str):
   connection.close()
 
 
+def check_pending(user_id: int, event_id: int, starts: str, auth: str):
+  session = "not_found"
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  pendings = cur.execute(
+      """SELECT * FROM pending WHERE user_id = ? 
+      AND event_id = ? AND starts = ?""",
+      (user_id, event_id, starts)).fetchall()
+  if len(pendings) != 0:
+    cur.execute(
+        """UPDATE pending SET auth = ? WHERE user_id = ? 
+        AND event_id = ? AND starts = ?""", (auth, user_id, event_id, starts))
+    session = cur.execute(
+        """SELECT checkout_id FROM pending WHERE user_id = ? 
+      AND event_id = ? AND starts = ?""",
+        (user_id, event_id, starts)).fetchone()
+  con.commit()
+  con.close()
+  return session
+
+
 def check_health() -> bool:
   """Gets the health of the database"""
   try:

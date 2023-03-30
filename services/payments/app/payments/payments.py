@@ -108,7 +108,7 @@ def make_a_purchase(user_id: int,
             discounts=discount,
             success_url=success_url,
             cancel_url=cancel_url,
-        )
+            expires_at=(int(datetime.timestamp(datetime.now())) + 1800))
 
       # If it is not a subscription:
       else:
@@ -122,10 +122,11 @@ def make_a_purchase(user_id: int,
             cancel_url=cancel_url,
             payment_intent_data=payment_intent,
             invoice_creation={"enabled": True},
-        )
+            expires_at=(int(datetime.timestamp(datetime.now())) + 1800))
 
       for product in products:
-        if product["type"] != "membership":
+        if product["type"] != "membership" and product[
+            "type"] != "success" and product["type"] != "cancel":
           add_pending(product["data"]["userId"], product["data"]["eventId"],
                       product["data"]["starts"], auth, session.stripe_id)
 

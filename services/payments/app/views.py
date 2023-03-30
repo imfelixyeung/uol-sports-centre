@@ -13,7 +13,7 @@ from app.database import (check_health, get_purchases, add_purchase,
                           update_expiry, get_sales, get_pricing_lists,
                           get_order, get_user, get_user_from_stripe,
                           get_product, get_pending, delete_pending, add_product,
-                          init_database)
+                          init_database, check_pending)
 from app.payments import (make_a_purchase, get_payment_manager, change_price,
                           change_discount_amount, cancel_subscription,
                           make_purchasable)
@@ -86,11 +86,21 @@ def redirect_checkout():
   payment_mode = "payment"
   products = request.get_json()
   user_id = 1
+
   for product in products:
-    user_id = product["data"]["userId"]
-    if product["type"] == "membership-yearly" or product[
-        "type"] == "membership-monthly":
-      payment_mode = "subscription"
+    if product["type"] != "success" and product["type"] != "cancel":
+      if product["type"] != "membership-monthly" and product[
+          "type"] != "membership-yearly":
+        session = check_pending(product["data"]["userId"],
+                                product["data"]["eventId"],
+                                product["data"]["starts"], auth)
+        if session != "not_found":
+          checkout = stripe.checkout.Session.retrieve(session[0])
+          return {"Checkout": checkout.url}
+      user_id = product["data"]["userId"]
+      if product["type"] == "membership-yearly" or product[
+          "type"] == "membership-monthly":
+        payment_mode = "subscription"
     if product["type"] == "success":
       success_url = product["data"]["url"]
     if product["type"] == "cancel":
