@@ -11,6 +11,9 @@ export interface UsersResponse {
 }
 
 export type UsersViewFullRecordResponse = UsersResponse;
+export type UsersViewFullRecordRequest = {
+  userId: number;
+};
 
 export type UsersCreateRequest = Pick<User, 'id' | 'firstName' | 'lastName'>;
 export type UsersCreateResponse = UsersResponse;

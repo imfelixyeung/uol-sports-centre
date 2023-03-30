@@ -1,6 +1,10 @@
+import dayjs from 'dayjs';
+import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
@@ -16,11 +20,19 @@ import {
   useCreateFacilityMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
+  useGetFacilityTimeQuery,
+  useGetFacilityTimesQuery,
   useUpdateAuthUserMutation,
   useUpdateFacilityActivityMutation,
   useUpdateFacilityMutation,
+  useUpdateFacilityTimeMutation,
 } from '~/redux/services/api';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
+dayjs.extend(customParseFormatPlugin);
+
+const SalesGraphs = dynamic(() => import('~/components/SalesGraph'), {
+  ssr: false,
+});
 
 const ManagementPage: NextPage = () => {
   return (
@@ -37,14 +49,15 @@ const ManagementPage: NextPage = () => {
         <AddFacilityForm />
         <Typography.h2>Amend facility</Typography.h2>
         <UpdateFacilityForm />
+        <Typography.h2>Amend facility opening hours</Typography.h2>
+        <UpdateOpeningHoursForm />
         <Typography.h2>Add activity</Typography.h2>
         <AddActivityForm />
         <Typography.h2>Amend activity</Typography.h2>
         <UpdateActivityForm />
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
-        <Typography.h3>Total facility bookings</Typography.h3>
-        <Typography.h3>Total activity bookings</Typography.h3>
+        <SalesGraphs />
         <Typography.h2>Manage users</Typography.h2>
         <Link href="/management/users">Manage</Link>
       </section>
@@ -116,16 +129,20 @@ const UpdateDiscountForm = () => {
 
 const AddFacilityForm = () => {
   const [createFacility] = useCreateFacilityMutation();
+  const {token} = useAuth();
   return (
     <Formik
       initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, description} = values;
-        await toast.promise(createFacility({name, capacity, description}), {
-          loading: 'Adding facility...',
-          success: 'Facility added',
-          error: 'Something went wrong',
-        });
+        await toast.promise(
+          createFacility({name, capacity, description, token: token!}),
+          {
+            loading: 'Adding facility...',
+            success: 'Facility added',
+            error: 'Something went wrong',
+          }
+        );
         actions.setSubmitting(false);
       }}
     >
@@ -147,6 +164,7 @@ const UpdateFacilityForm = () => {
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
     null
   );
+  const {token} = useAuth();
 
   if (!facilitiesData.data) return null;
   const facilities = facilitiesData.data;
@@ -187,6 +205,7 @@ const UpdateFacilityForm = () => {
                 name,
                 capacity,
                 description,
+                token: token!,
               }),
               {
                 loading: 'Updating facility...',
@@ -216,6 +235,7 @@ const UpdateFacilityForm = () => {
 };
 
 const AddActivityForm = () => {
+  const {token} = useAuth();
   const [createActivity] = useCreateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const facilities = facilitiesData.data;
@@ -232,6 +252,7 @@ const AddActivityForm = () => {
             capacity,
             duration,
             facility_id: facilityId,
+            token: token!,
           }),
           {
             loading: 'Adding new activity...',
@@ -264,6 +285,7 @@ const AddActivityForm = () => {
 };
 
 const UpdateActivityForm = () => {
+  const {token} = useAuth();
   const [updateActivity] = useUpdateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const activitiesData = useGetFacilityActivitiesQuery();
@@ -316,6 +338,7 @@ const UpdateActivityForm = () => {
                 facility_id: facilityId,
                 name,
                 id: selectedActivityId,
+                token: token!,
               }).unwrap(),
               {
                 loading: 'Updating activity',
@@ -345,5 +368,125 @@ const UpdateActivityForm = () => {
         </Formik>
       )}
     </>
+  );
+};
+
+const UpdateOpeningHoursForm = () => {
+  const timesData = useGetFacilityTimesQuery();
+  const facilitiesData = useGetFacilitiesQuery();
+  const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
+    null
+  );
+
+  if (!timesData.data) return null;
+  if (!facilitiesData.data) return null;
+  const facilities = facilitiesData.data;
+  const times = timesData.data;
+
+  const selectedTimes = times.filter(
+    time => time.facility_id === selectedFacilityId
+  );
+
+  return (
+    <>
+      <select
+        className="border-2 border-black/20 bg-[#fff] p-2 text-black"
+        value={selectedFacilityId ?? 'null'}
+        onChange={e => setSelectedFacilityId(parseInt(e.target.value))}
+      >
+        <option value="null" disabled>
+          Select a facility
+        </option>
+        {facilities.map(facility => (
+          <option value={facility.id} key={facility.id}>
+            {facility.name}
+          </option>
+        ))}
+      </select>
+      {selectedFacilityId !== null &&
+        selectedTimes.map(time => (
+          <UpdateOpeningHourForm key={time.id} timeId={time.id} />
+        ))}
+    </>
+  );
+};
+
+const daysOfTheWeek = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+
+const UpdateOpeningHourForm: FC<{
+  timeId: number;
+}> = ({timeId}) => {
+  const {token} = useAuth();
+  const timeData = useGetFacilityTimeQuery(timeId);
+  const [updateFacility] = useUpdateFacilityTimeMutation();
+  const time = timeData.data;
+
+  if (!time) return null;
+
+  const todayMorning = dayjs()
+    .set('hour', 0)
+    .set('minute', 0)
+    .set('second', 0)
+    .set('millisecond', 0);
+  const formattedOpen = todayMorning
+    .add(time.opening_time, 'minutes')
+    .format('HH:mm');
+  const formattedClose = todayMorning
+    .add(time.closing_time, 'minutes')
+    .format('HH:mm');
+
+  return (
+    <Formik
+      enableReinitialize
+      initialValues={{
+        day: time.day,
+        open: formattedOpen,
+        close: formattedClose,
+      }}
+      onSubmit={async (values, actions) => {
+        const {close, day, open} = values;
+        const openingTime = dayjs(open, 'HH:mm').diff(todayMorning, 'minutes');
+        const closingTime = dayjs(close, 'HH:mm').diff(todayMorning, 'minutes');
+
+        await toast.promise(
+          updateFacility({
+            id: timeId,
+            day,
+            opening_time: openingTime,
+            closing_time: closingTime,
+            token: token!,
+          }),
+          {
+            loading: 'Updating opening hours...',
+            success: 'Opening hours updated',
+            error: 'Something went wrong',
+          }
+        );
+        actions.setSubmitting(false);
+      }}
+    >
+      <Form className="flex gap-3">
+        <FormField label="Day" required name="day" as="select">
+          {daysOfTheWeek.map(day => (
+            <option key={day} value={day}>
+              {day}
+            </option>
+          ))}
+        </FormField>
+        <FormField label="Opening" required name="open" type="time" />
+        <FormField label="Closing" required name="close" type="time" />
+        <Button type="submit" intent="primary">
+          Update
+        </Button>
+      </Form>
+    </Formik>
   );
 };

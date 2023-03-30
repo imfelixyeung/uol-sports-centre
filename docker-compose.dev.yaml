@@ -22,6 +22,7 @@ services:
     environment:
       - FLASK_RUN_PORT=80
       - FLASK_RUN_HOST=facilities
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     volumes:
@@ -59,7 +60,7 @@ services:
       - ./persistence/auth/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: [ "CMD", "pg_isready", "-U", "auth", "-d", "dev" ]
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
       interval: 5s
       timeout: 15s
       retries: 5
@@ -72,6 +73,7 @@ services:
       - PORT=80
       - HOST=users
       - DATABASE_URL=postgresql://users:mysecretpassword@users-db:5432/dev
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
     networks:
       - network
     volumes:
@@ -94,7 +96,7 @@ services:
       - ./persistence/users/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: [ "CMD", "pg_isready", "-U", "users", "-d", "dev" ]
+      test: ["CMD", "pg_isready", "-U", "users", "-d", "dev"]
       interval: 5s
       timeout: 15s
       retries: 5
@@ -129,7 +131,7 @@ services:
       - ./persistence/status/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: [ "CMD", "pg_isready", "-U", "status", "-d", "dev" ]
+      test: ["CMD", "pg_isready", "-U", "status", "-d", "dev"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -184,10 +186,34 @@ services:
       - ./persistence/booking/db:/var/lib/postgresql/data
     healthcheck:
       # Healthcheck inspired from https://stackoverflow.com/a/55835081
-      test: [ "CMD", "pg_isready", "-U", "booking", "-d", "dev" ]
+      test: ["CMD", "pg_isready", "-U", "booking", "-d", "dev"]
       interval: 5s
       timeout: 15s
       retries: 5
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_API} --forward-to http://payments/webhook
+    networks:
+      - network
+
+  payments:
+    build:
+      context: ./services/payments
+      target: dev
+    environment:
+      - APP_PORT=80
+      - DEBUG=true
+      - STRIPE_API=${STRIPE_API}
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    volumes:
+      - ./persistence/payments/data:/app/data
+      - ./services/payments:/app
+    depends_on:
+      - stripe-cli
 
   gateway:
     build: ./gateway

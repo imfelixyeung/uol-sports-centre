@@ -16,6 +16,9 @@ tags:
   - name: booking
     description: Booking microservice
 
+  - name: payments
+    description: Payments microservice
+
   - name: status
     description: status microservice
 
@@ -126,6 +129,9 @@ paths:
         - auth
       description: "Returns all users in the auth service (paginated)"
 
+      security:
+        - JWT: []
+
       parameters:
         - name: pageIndex
           in: query
@@ -142,6 +148,12 @@ paths:
             minimum: 0
           required: false
           example: 20
+        - name: role
+          in: query
+          schema:
+            $ref: "#/components/schemas/UserRole"
+          required: false
+          example: "USER"
 
       responses:
         "200":
@@ -164,6 +176,9 @@ paths:
       tags:
         - auth
       description: "Returns a user in the auth service"
+
+      security:
+        - JWT: []
 
       parameters:
         - name: userId
@@ -192,6 +207,9 @@ paths:
       tags:
         - auth
       description: "Updates a user in the auth service"
+
+      security:
+        - JWT: []
 
       parameters:
         - name: userId
@@ -236,6 +254,683 @@ paths:
         "200":
           $ref: "#/components/responses/HealthCheck"
 
+  /payments/checkout-session:
+    post:
+      tags:
+        - payments
+      description: Generates checkout sessions for products in stripe
+      requestBody:
+        description: Gets the data needed for checkout
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: The type of product purchased
+                    example: session
+                  data:
+                    type: object
+                    description: Additional data associated with the product
+                    oneOf:
+                      - properties:
+                          eventId:
+                            type: integer
+                            description: The ID of the event
+                            example: 1
+                          userId:
+                            type: integer
+                            description: The ID of the user
+                            example: 1
+                          starts:
+                            type: string
+                            format: date-time
+                            description: The start time of the event
+                            example: "2022-01-01T00:00:00Z"
+                        required:
+                          - userId
+                          - eventId
+                          - starts
+
+                      - properties:
+                          url:
+                            type: string
+                            format: url
+                            description: The page to return to following checkout (url is only needed for success/cancel objects)
+                            example: http://successful/checkout/url
+                        required:
+                          - url
+                required:
+                  - type
+                  - data
+
+      responses:
+        "200":
+          description: Successful operation on checkout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checkout:
+                    type: string
+                    format: url
+                    example: http://successful/checkout
+                    description: Url for the successful checkout session
+
+        "401":
+          description: Missing authorization header
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Missing authorization header"
+                    description: Returns meaningful message for this case
+
+        "504":
+          description: Request timed out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "The request timed out"
+                    description: Returns meaningful message for this case
+
+        "500":
+          description: An error occured during request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An error occured during request"
+                    description: Returns meaningful message for this case
+
+  /payments/change-price:
+    post:
+      tags:
+        - payments
+      description: "Allows the user with management authority to change price"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_price:
+                  type: number
+                  description: The new price for the product
+                  example: 13.99
+                product_name:
+                  type: string
+                  description: The name of the product to be changed
+                  example: "session"
+
+      responses:
+        "200":
+          description: Successful operation returns a message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Discount amount changed successfully"
+
+        "500":
+          description: Stripe error occured
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "A stripe error has occured"
+
+  /payments/webhook:
+    post:
+      tags:
+        - payments
+      description: "Provides purchased products to user after successful payment"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+
+      responses:
+        "200":
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    example: ""
+
+        "400":
+          description: Invalid request or invalid payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occured with the transaction"
+        "401":
+          description: Error for signature missing or invalid signature
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Signature missing"
+
+  /payments/purchased-products/{userID}:
+    get:
+      parameters:
+        - name: userID
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 6
+
+      tags:
+        - payments
+      description: "Retrieves all purchased products for a given user"
+
+      responses:
+        "200":
+          description: Returns the purchased products for the given user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: integer
+                      example: 1
+                    product_type:
+                      type: string
+                      example: "session"
+                    purchase_date:
+                      type: string
+                      format: date-time
+                      example: "2022-01-01T00:00:00Z"
+                    expiry_date:
+                      type: string
+                      format: date-time
+                      example: "2022-01-01T00:00:00Z"
+                    receipt_pdf:
+                      type: string
+                      format: Url
+                      example: http://successful/pdf/downloadlink
+
+        "400":
+          description: Missing authorization token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing authentication token
+                    description: Missing authentication token error message
+
+        "401":
+          description: Invalid authorization token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid token"
+                    description: Invalid token error message
+
+        "403":
+          description: Called by a not authorized user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied"
+                    description: Authorization denial
+
+  /payments/get-prices/{product_type}:
+    get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "session"
+
+      tags:
+        - payments
+      description: "Returns pricing list for the chosen product type"
+
+      responses:
+        "200":
+          description: Returns the pricing list for the given product type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_name:
+                      type: string
+                      description: The name of the product
+                      example: "Monthly subscription"
+                    product_price:
+                      type: integer
+                      description: The price of the products
+                      example: 15.00
+
+        "404":
+          description: No prices found for the specified product type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message for this Case
+                    example: "No prices found"
+
+  /payments/discount/change/{amount}:
+    get:
+      parameters:
+        - name: amount
+          in: path
+          schema:
+            type: number
+          required: true
+          example: 0.9
+      tags:
+        - payments
+      description: "Enables a user with management authority to change the discount amount"
+
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Discount amount changed successfully"
+
+        "401":
+          description: Authentication header missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Missing authorization header"
+
+        "403":
+          description: The user does not have the authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied"
+
+        "500":
+          description: Stripe error occured
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An error occured with stripe during the operation"
+
+  /payments/sales/{product_type}:
+    get:
+      parameters:
+        - name: product_type
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "session"
+          description: The product type to get the sales for
+      tags:
+        - payments
+      description: "Returns the sales of the past week as dictionaries for the specified product type"
+
+      responses:
+        "200":
+          description: Sales data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sales:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_name:
+                          type: string
+                          example: "Monthly subscription"
+                        product_type:
+                          type: string
+                          example: "Subscription"
+                        units_sold:
+                          type: number
+                          example: 110
+                        total_sales:
+                          type: number
+                          example: 2090.00
+
+        "401":
+          description: Authorization header is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Authorization header is missing"
+        "403":
+          description: User does not have the necessary authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Access denied
+
+  /payments/customer-portal/{user_id}:
+    get:
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          example: 1
+          description: user ID which passed in as a parameter
+      tags:
+        - payments
+      description: "Generates a stripe customer portal URL for the customer"
+
+      responses:
+        "200":
+          description: Returns the customer portal Url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Portal:
+                    type: string
+                    description: Customer portal URL generated
+
+        "400":
+          description: Missing authorization token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing authentication token
+                    description: Missing authentication token error message
+
+        "401":
+          description: Invalid authorization token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid token"
+                    description: Invalid token error message
+
+        "403":
+          description: Called by a not authorized user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied"
+                    description: Authorization denial
+
+        "404":
+          description: Case where the customer portal was not generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Could not generate customer portal URL"
+                    description: Error message in case the customer portal could not be generated
+
+  /payments/cancel-membership/{user_id}:
+    get:
+      description: "Cancels existing membership for the given user"
+      parameters:
+        - name: user_id
+          required: true
+          in: path
+          schema:
+            type: integer
+      tags:
+        - payments
+      requestBody:
+        description: JWT token used for authentication
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Authorization:
+                  type: string
+                  description: "JWT token received as parameter"
+
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    example: "200"
+
+        "401":
+          description: Missing authorization header
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Missing authorization header"
+
+        "403":
+          description: Access is denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access denied"
+
+        "404":
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User not found"
+
+  /payments/refund/{booking_id}:
+    get:
+      description: Endpoint to process a booking
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: Booking ID to be refunded
+
+      tags:
+        - payments
+
+      responses:
+        "200":
+          description: Refund processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Successful refund message
+                    example: Refund processed successfully.
+
+        "400":
+          description: Failed to process refund
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: There was an error refunding your booking.
+
+        "404":
+          description: Booking not found for the given booking id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: Purchase not found.
+
+  /payments/receipt/{booking_id}:
+    get:
+      description: Gets the download link for the receipt of specified booking
+      parameters:
+        - name: booking_id
+          in: path
+          schema:
+            type: number
+          required: true
+
+      tags:
+        - payments
+
+      responses:
+        "200":
+          description: The download link for the receipt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receipt:
+                    type: string
+                    format: Url
+                    description: URL for downloading the receipt
+                    example: http://successful/receipt/link
+
+        "404":
+          description: The booking ID was not found or no receipt available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: URL for downloading the receipt
+                    example: Purchase not found
+
+  /payments/health:
+    get:
+      tags:
+        - payments
+      description: "Returns the health of the payments service"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheck"
+
   /status/report:
     get:
       tags:
@@ -271,7 +966,7 @@ paths:
     get:
       tags:
         - users
-      description: "Returns the record in database for a specified user"
+      description: "Returns the record in database for a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Returns full record of a user"
 
       responses:
@@ -294,7 +989,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the first name of a specified user"
+      description: "Updates the first name of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates first name of a user"
 
       responses:
@@ -323,7 +1018,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the surname of a specified user"
+      description: "Updates the surname of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates surname of a user"
 
       responses:
@@ -352,7 +1047,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the Payment ID of a specified user"
+      description: "Updates the Payment ID of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates payment ID of a user"
 
       responses:
@@ -381,7 +1076,7 @@ paths:
     put:
       tags:
         - users
-      description: "Updates the Membership of a specified user"
+      description: "Updates the Membership of a specified user. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Updates membership of a user"
 
       responses:
@@ -453,7 +1148,7 @@ paths:
     post:
       tags:
         - users
-      description: "Creates a new users in the users database"
+      description: "Creates a new users in the users database. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Creates a new user"
 
       responses:
@@ -488,7 +1183,7 @@ paths:
     delete:
       tags:
         - users
-      description: "Delete an existing user in the users database"
+      description: "Delete an existing user in the users database. Requires matching ID in JWT and path, or admin role or employee role."
       summary: "Delete a user"
 
       responses:
@@ -991,7 +1686,7 @@ paths:
       tags:
         - facility
       summary: Add a new facility
-      description: Add a new facility
+      description: Add a new facility. Requires "admin" role in auth token to access.
       operationId: add_facility
       requestBody:
         description: Create a new facility
@@ -1055,7 +1750,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the facility with the specified ID
+      summary: Updates the facility with the specified ID. Requires "admin" role in auth token.
       description: Updates the facility with the specified ID
       operationId: update_facility
       parameters:
@@ -1088,7 +1783,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the facility with the specified ID
+      summary: Deletes the facility with the specified ID. Requires "admin" role in auth token.
       description: Deletes the facility with the specified ID
       operationId: delete_facility
       parameters:
@@ -1156,7 +1851,7 @@ paths:
     post:
       tags:
         - facility
-      summary: Add a new opening time
+      summary: Add a new opening time. Requires "admin" role in auth token.
       description: Add a new opening time
       operationId: add_open_time
       requestBody:
@@ -1228,7 +1923,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the opening time with the specified ID
+      summary: Updates the opening time with the specified ID. Requires "admin" role in auth token.
       description: Updates the opening time with the specified ID
       operationId: update_open_time
       parameters:
@@ -1261,7 +1956,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the opening time with the specified ID
+      summary: Deletes the opening time with the specified ID. Requires "admin" role in auth token.
       description: Deletes the opening time with the specified ID
       operationId: delete_open_time
       parameters:
@@ -1329,7 +2024,7 @@ paths:
     post:
       tags:
         - facility
-      summary: Add a new activity
+      summary: Add a new activity. Requires "admin" role in auth token.
       description: Add a new activity
       operationId: add_activity
       requestBody:
@@ -1401,7 +2096,7 @@ paths:
     put:
       tags:
         - facility
-      summary: Updates the activity with the specified ID
+      summary: Updates the activity with the specified ID. Requires "admin" role in auth token.
       description: Updates the activity with the specified ID
       operationId: update_activity
       parameters:
@@ -1434,7 +2129,7 @@ paths:
     delete:
       tags:
         - facility
-      summary: Deletes the activity with the specified ID
+      summary: Deletes the activity with the specified ID. Requires "admin" role in auth token.
       description: Deletes the activity with the specified ID
       operationId: delete_activity
       parameters:
@@ -1496,9 +2191,9 @@ components:
       type: string
       description: User's role
       enum:
-        - user
-        - employee
-        - admin
+        - USER
+        - EMPLOYEE
+        - ADMIN
     AuthUserData:
       type: object
       properties:
@@ -1766,6 +2461,9 @@ components:
               password:
                 type: string
                 description: "The user's password"
+              rememberMe:
+                type: boolean
+                description: "If the refresh token should be long lived"
 
     PasswordReset:
       description: "Password reset (email old new password)"
