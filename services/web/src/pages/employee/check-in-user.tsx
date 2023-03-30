@@ -12,9 +12,16 @@ import {qrBookingSchema} from '~/schema/qrBooking';
 
 const CheckInUserPage = () => {
   const [booking, setBooking] = useState<QrBooking | null>(null);
-  const userData = useGetUserRecordQuery(booking?.userId ?? -1, {
-    skip: !booking,
-  });
+  const {token} = useAuth();
+  const userData = useGetUserRecordQuery(
+    {
+      userId: booking?.userId ?? -1,
+      token: token!,
+    },
+    {
+      skip: !booking,
+    }
+  );
   const customer = userData.data?.user;
 
   const onResult: OnResultFunction = result => {
