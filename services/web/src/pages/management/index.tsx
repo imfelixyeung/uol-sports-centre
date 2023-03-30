@@ -15,17 +15,22 @@ import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {
+  useChangeDiscountAmountMutation,
+  useChangePricesMutation,
   useCreateFacilityActivityMutation,
   useCreateFacilityMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
   useGetFacilityTimeQuery,
   useGetFacilityTimesQuery,
+  useGetPricesQuery,
   useUpdateAuthUserMutation,
   useUpdateFacilityActivityMutation,
   useUpdateFacilityMutation,
   useUpdateFacilityTimeMutation,
 } from '~/redux/services/api';
+import type {ProductType} from '~/redux/services/types/payments';
+import {productTypes} from '~/redux/services/types/payments';
 import getErrorFromAPIResponse from '~/utils/getErrorFromAPIResponse';
 dayjs.extend(customParseFormatPlugin);
 
@@ -39,7 +44,12 @@ const ManagementPage: NextPage = () => {
       <PageHero title="Managemer Dashboard" />
       <section className="container flex flex-col gap-3 py-8">
         <Typography.h2>Amend Prices</Typography.h2>
-        <form action="">Form</form>
+        {productTypes.map(productType => (
+          <UpdatePricesFormWrapper
+            key={productType}
+            productType={productType}
+          />
+        ))}
         <Typography.h2>Change discount amount</Typography.h2>
         <UpdateDiscountForm />
         <Typography.h2>Add new employee</Typography.h2>
@@ -66,6 +76,74 @@ export default withPageAuthRequired(
   withUserOnboardingRequired(ManagementPage),
   {rolesAllowed: ['ADMIN', 'MANAGER']}
 );
+
+const UpdatePricesFormWrapper: FC<{
+  productType: ProductType;
+}> = ({productType}) => {
+  const {token} = useAuth();
+  const pricesData = useGetPricesQuery({
+    productType,
+    token: token!,
+  });
+
+  const prices = pricesData.data;
+
+  if (!prices) return <>Maybe loading</>;
+
+  return (
+    <>
+      {prices.map((price, index) => {
+        return (
+          <UpdatePricesForm
+            key={index}
+            productName={price.productName}
+            productPrice={price.price}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+const UpdatePricesForm: FC<{
+  productName: string;
+  productPrice: string;
+}> = ({productName, productPrice}) => {
+  const {token} = useAuth();
+  const [updatePrice] = useChangePricesMutation();
+
+  return (
+    <Formik
+      initialValues={{
+        productName,
+        productPrice,
+      }}
+      onSubmit={async (values, actions) => {
+        const {productName, productPrice} = values;
+        await toast.promise(
+          updatePrice({
+            productName,
+            price: productPrice,
+            token: token!,
+          }).unwrap(),
+          {
+            loading: 'Updating price...',
+            success: 'Price updated',
+            error: 'Something went wrong...',
+          }
+        );
+        actions.setSubmitting(false);
+      }}
+      enableReinitialize
+    >
+      <Form>
+        <FormField label="Product Name" required name="productName" />
+        <FormField label="Product Price" required name="productPrice" />
+        <Button intent="primary">Save</Button>
+      </Form>
+    </Formik>
+  );
+};
 
 const AddNewEmployeeForm = () => {
   const [updateAuthUser] = useUpdateAuthUserMutation();
@@ -104,15 +182,29 @@ const AddNewEmployeeForm = () => {
 };
 
 const UpdateDiscountForm = () => {
-  const discount = 0.15;
+  const [changeDiscountAmount] = useChangeDiscountAmountMutation();
+  const {token} = useAuth();
+  const discount = 0;
   return (
     <Formik
       initialValues={{discount}}
-      onSubmit={(values, actions) => {
+      onSubmit={async (values, actions) => {
         const {discount} = values;
+
+        await toast.promise(
+          changeDiscountAmount({
+            amount: discount,
+            token: token!,
+          }).unwrap(),
+          {
+            loading: 'Updating discount amount...',
+            success: 'Discount amount updated',
+            error: 'Something went wrong...',
+          }
+        );
+
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Discount" required name="discount" />

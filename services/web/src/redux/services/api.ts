@@ -40,10 +40,16 @@ import type {
   UpdateFacilityResponse,
 } from './types/facilities';
 import type {
+  ChangeDiscountRequest,
+  ChangeDiscountResponse,
+  ChangePriceRequest,
+  ChangePriceResponse,
   CheckoutSessionRequest,
   CheckoutSessionResponse,
   GetCustomerPortalRequest,
   GetCustomerPortalResponse,
+  GetPricesRequest,
+  GetPricesResponse,
   GetSalesRequest,
   GetSalesResponse,
 } from './types/payments';
@@ -392,6 +398,39 @@ export const api = createApi({
         headers: {Authorization: `Bearer ${token}`},
       }),
     }),
+
+    changeDiscountAmount: builder.mutation<
+      ChangeDiscountResponse,
+      ChangeDiscountRequest & Token
+    >({
+      query: ({token, amount}) => ({
+        url: `/payments/discount/change/${amount}`,
+        method: 'GET',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    getPrices: builder.query<GetPricesResponse, GetPricesRequest & Token>({
+      query: ({token, productType}) => ({
+        url: `/payments/get-prices/${productType}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    changePrices: builder.mutation<
+      ChangePriceResponse,
+      ChangePriceRequest & Token
+    >({
+      query: ({token, price, productName}) => ({
+        url: '/payments/change-price',
+        method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {
+          product_name: productName,
+          new_price: price,
+        },
+      }),
+    }),
   }),
 });
 
@@ -426,4 +465,7 @@ export const {
   useGetCustomerPortalQuery,
   useCreateCheckoutSessionMutation,
   useGetSalesSummaryQuery,
+  useChangeDiscountAmountMutation,
+  useGetPricesQuery,
+  useChangePricesMutation,
 } = api;

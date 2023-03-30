@@ -7,10 +7,10 @@ export const productTypes = [
 export type ProductType = (typeof productTypes)[number];
 
 /** GET /discount/change/<int:amount> */
-export type UpdateDiscountRequest = {
+export type ChangeDiscountRequest = {
   amount: number;
 };
-export type UpdateDiscountResponse = void;
+export type ChangeDiscountResponse = void;
 
 /** GET /sales/<string:product_type> */
 export type GetSalesRequest = {
@@ -71,14 +71,20 @@ export type GetCustomerPortalResponse = {
 };
 
 /** POST /change-price */
-export type ChangePriceRequest = void;
+export type ChangePriceRequest = {
+  price: string;
+  productName: string;
+};
 export type ChangePriceResponse = void;
 
 /** GET /get-prices/<string:product_type> */
 export type GetPricesRequest = {
   productType: ProductType;
 };
-export type GetPricesResponse = void;
+export type GetPricesResponse = {
+  price: string;
+  productName: string;
+}[];
 
 /** GET /cancel-membership/<int:user_id> */
 export type CancelMembershipRequest = {
