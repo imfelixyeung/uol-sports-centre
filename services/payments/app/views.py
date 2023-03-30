@@ -91,8 +91,6 @@ def redirect_checkout():
     if product["type"] == "membership-yearly" or product[
         "type"] == "membership-monthly":
       payment_mode = "subscription"
-    if product["type"] == "membership-yearly":
-      monthly = False
     if product["type"] == "success":
       success_url = product["data"]["url"]
     if product["type"] == "cancel":
