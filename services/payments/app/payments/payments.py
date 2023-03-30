@@ -188,10 +188,11 @@ def change_discount_amount(amount: float):
     """
   try:
     # Retrieve the current coupon
-    stripe.Coupon.retrieve("VOz7neAM")
+    coupon = stripe.Coupon.retrieve("VOz7neAM")
 
     # Delete the current coupon
-    stripe.Coupon.delete("VOz7neAM")
+    if coupon:
+      stripe.Coupon.delete("VOz7neAM")
 
     # Create a new coupon with the same ID but the new percent amount
     stripe.Coupon.create(id="VOz7neAM", percent_off=amount, duration="forever")
