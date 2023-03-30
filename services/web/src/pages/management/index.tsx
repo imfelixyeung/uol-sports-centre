@@ -114,6 +114,7 @@ const UpdatePricesForm: FC<{
 
   return (
     <Formik
+      enableReinitialize
       initialValues={{
         productName,
         productPrice,
@@ -134,10 +135,9 @@ const UpdatePricesForm: FC<{
         );
         actions.setSubmitting(false);
       }}
-      enableReinitialize
     >
       <Form>
-        <FormField label="Product Name" required name="productName" />
+        <FormField label="Product Name" required name="productName" disabled />
         <FormField label="Product Price" required name="productPrice" />
         <Button intent="primary">Save</Button>
       </Form>
@@ -151,6 +151,7 @@ const AddNewEmployeeForm = () => {
 
   return (
     <Formik
+      enableReinitialize
       initialValues={{userId: undefined} as unknown as {userId: number}}
       onSubmit={async function (values, actions) {
         const {userId} = values;
@@ -187,6 +188,7 @@ const UpdateDiscountForm = () => {
   const discount = 0;
   return (
     <Formik
+      enableReinitialize
       initialValues={{discount}}
       onSubmit={async (values, actions) => {
         const {discount} = values;
@@ -221,6 +223,7 @@ const AddFacilityForm = () => {
   const {token} = useAuth();
   return (
     <Formik
+      enableReinitialize
       initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, description} = values;
@@ -332,6 +335,7 @@ const AddActivityForm = () => {
 
   return (
     <Formik
+      enableReinitialize
       initialValues={{name: '', duration: 60, capacity: 0, facilityId: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, duration, facilityId} = values;
