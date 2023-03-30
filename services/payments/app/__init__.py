@@ -8,5 +8,4 @@ app = Flask(__name__, static_url_path="", static_folder="public")
 
 # initialises the database
 init_database()
-
 from app import views  #pylint: disable=wrong-import-position

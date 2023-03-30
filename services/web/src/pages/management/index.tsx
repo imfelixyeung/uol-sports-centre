@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
-import type {FC} from 'react';
 import dynamic from 'next/dynamic';
+import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
 import * as Yup from 'yup';
@@ -126,16 +126,20 @@ const UpdateDiscountForm = () => {
 
 const AddFacilityForm = () => {
   const [createFacility] = useCreateFacilityMutation();
+  const {token} = useAuth();
   return (
     <Formik
       initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, description} = values;
-        await toast.promise(createFacility({name, capacity, description}), {
-          loading: 'Adding facility...',
-          success: 'Facility added',
-          error: 'Something went wrong',
-        });
+        await toast.promise(
+          createFacility({name, capacity, description, token: token!}),
+          {
+            loading: 'Adding facility...',
+            success: 'Facility added',
+            error: 'Something went wrong',
+          }
+        );
         actions.setSubmitting(false);
       }}
     >
@@ -157,6 +161,7 @@ const UpdateFacilityForm = () => {
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(
     null
   );
+  const {token} = useAuth();
 
   if (!facilitiesData.data) return null;
   const facilities = facilitiesData.data;
@@ -197,6 +202,7 @@ const UpdateFacilityForm = () => {
                 name,
                 capacity,
                 description,
+                token: token!,
               }),
               {
                 loading: 'Updating facility...',
@@ -226,6 +232,7 @@ const UpdateFacilityForm = () => {
 };
 
 const AddActivityForm = () => {
+  const {token} = useAuth();
   const [createActivity] = useCreateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const facilities = facilitiesData.data;
@@ -242,6 +249,7 @@ const AddActivityForm = () => {
             capacity,
             duration,
             facility_id: facilityId,
+            token: token!,
           }),
           {
             loading: 'Adding new activity...',
@@ -274,6 +282,7 @@ const AddActivityForm = () => {
 };
 
 const UpdateActivityForm = () => {
+  const {token} = useAuth();
   const [updateActivity] = useUpdateFacilityActivityMutation();
   const facilitiesData = useGetFacilitiesQuery();
   const activitiesData = useGetFacilityActivitiesQuery();
@@ -326,6 +335,7 @@ const UpdateActivityForm = () => {
                 facility_id: facilityId,
                 name,
                 id: selectedActivityId,
+                token: token!,
               }).unwrap(),
               {
                 loading: 'Updating activity',
@@ -411,6 +421,7 @@ const daysOfTheWeek = [
 const UpdateOpeningHourForm: FC<{
   timeId: number;
 }> = ({timeId}) => {
+  const {token} = useAuth();
   const timeData = useGetFacilityTimeQuery(timeId);
   const [updateFacility] = useUpdateFacilityTimeMutation();
   const time = timeData.data;
@@ -448,6 +459,7 @@ const UpdateOpeningHourForm: FC<{
             day,
             opening_time: openingTime,
             closing_time: closingTime,
+            token: token!,
           }),
           {
             loading: 'Updating opening hours...',
