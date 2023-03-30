@@ -24,6 +24,7 @@ module.exports = {
         secondary: '#EEEEEE',
         black: '#1A1A1A',
         white: '#EEEEEE',
+        danger: '#D32F2F',
       },
       fontFamily: {
         body: ['Saira', ...defaultTheme.fontFamily.sans],

@@ -84,3 +84,14 @@ export type GetBookingResponse = {
   status: string;
   booking: Booking;
 };
+
+export type BookBookingRequest = {
+  user: number;
+  event: number;
+  starts: string;
+};
+
+export type BookBookingResponse = {
+  status: string;
+  booking: Booking[];
+};

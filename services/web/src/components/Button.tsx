@@ -10,12 +10,13 @@ export const buttonStyles = cva(
       intent: {
         primary: 'bg-primary text-black',
         secondary: 'bg-secondary text-black',
+        danger: 'bg-danger text-white',
       },
       wide: {
         true: 'min-w-[12rem]',
       },
       outline: {
-        true: 'border-4 border-black',
+        true: 'border-2 border-black',
       },
       square: {
         true: 'p-2',
