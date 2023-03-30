@@ -91,6 +91,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
+
       - name: Run ci tests in docker
         run: make ci-users
 
@@ -124,3 +131,22 @@ jobs:
       - name: Run linters
         run: make lint
         working-directory: ./services/facilities
+
+  payments-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo STRIPE_WEBHOOK=${{ secrets.STRIPE_WEBHOOK_TEST }} >> .env.ci
+          echo STRIPE_API=${{ secrets.STRIPE_API_KEY_TEST }} >> .env.ci
+          echo APP_PORT=${{ secrets.APP_PORT }} >> .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
+
+      - name: Run ci tests in docker
+        run: make ci-payments
