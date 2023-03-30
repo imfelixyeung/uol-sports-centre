@@ -10,8 +10,17 @@ const FormField: FC<
     required?: boolean;
     disabled?: boolean;
     as?: keyof ReactHTML;
+    type?: string;
   }>
-> = ({name, label, required = false, disabled = false, as: is, children}) => {
+> = ({
+  name,
+  label,
+  required = false,
+  disabled = false,
+  as: is,
+  children,
+  type,
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const context = useFormikContext<Record<string, string>>();
   const id = useId();
@@ -32,6 +41,7 @@ const FormField: FC<
         className="border-2 border-black/20 bg-[#fff] p-2 text-black"
         disabled={disabled}
         as={is}
+        type={type}
       >
         {children}
       </Field>
