@@ -29,6 +29,7 @@ import type {
   FacilityActivitiesResponse,
   FacilityActivityResponse,
   FacilityResponse,
+  FacilityTimeRequest,
   FacilityTimeResponse,
   FacilityTimesResponse,
   UpdateFacilityActivityRequest,
@@ -164,6 +165,15 @@ export const api = createApi({
     getFacilityTime: builder.query<FacilityTimeResponse, number>({
       query: timeId => `/facilities/times/${timeId}`,
       providesTags: ['FacilityTime'],
+    }),
+
+    updateFacilityTime: builder.mutation<void, FacilityTimeRequest>({
+      query: ({id, ...rest}) => ({
+        url: `/facilities/times/${id}`,
+        body: rest,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['FacilityTime'],
     }),
 
     getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
@@ -329,6 +339,7 @@ export const {
   useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
+  useUpdateFacilityTimeMutation,
   useGetUserRecordQuery,
   useCreateUserMutation,
   useUpdateUserFirstNameMutation,
