@@ -306,12 +306,13 @@ export const api = createApi({
 
     updateUserMembership: builder.mutation<
       UsersUpdateMembershipResponse,
-      UsersUpdateMembershipRequest
+      UsersUpdateMembershipRequest & Token
     >({
-      query: user => ({
+      query: ({token, ...user}) => ({
         url: `/users/${user.id}/updateMembership`,
         method: 'PUT',
         body: {membership: user.membership},
+        headers: {Authorization: `Bearer ${token}`},
       }),
       invalidatesTags: ['User'],
     }),

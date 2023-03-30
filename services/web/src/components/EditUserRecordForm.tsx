@@ -1,6 +1,7 @@
 import {Form, Formik} from 'formik';
 import type {FC} from 'react';
 import toast from 'react-hot-toast';
+import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {
   useGetUserRecordQuery,
   useUpdateUserFirstNameMutation,
@@ -13,8 +14,11 @@ import FormField from './FormField';
 export const EditUserRecordForm: FC<{
   userId: number;
 }> = ({userId}) => {
-  // const {token} = useAuth();
-  const userData = useGetUserRecordQuery(userId);
+  const {token} = useAuth();
+  const userData = useGetUserRecordQuery({
+    userId: userId,
+    token: token!,
+  });
   const [updateFirstName] = useUpdateUserFirstNameMutation();
   const [updateLastName] = useUpdateUserLastNameMutation();
   const [updateMembership] = useUpdateUserMembershipMutation();
@@ -37,9 +41,9 @@ export const EditUserRecordForm: FC<{
         const {firstName, lastName, membership} = values;
         await toast.promise(
           Promise.all([
-            updateFirstName({id: user.id, firstName}),
-            updateLastName({id: user.id, lastName}),
-            updateMembership({id: user.id, membership}),
+            updateFirstName({id: user.id, firstName, token: token!}).unwrap(),
+            updateLastName({id: user.id, lastName, token: token!}).unwrap(),
+            updateMembership({id: user.id, membership, token: token!}).unwrap(),
           ]),
           {
             loading: 'Updating...',
