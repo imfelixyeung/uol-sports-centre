@@ -11,6 +11,8 @@ import type {
   UpdateUserRoleRequest,
 } from './types/auth';
 import type {
+  BookBookingRequest,
+  BookBookingResponse,
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
   GetBookingEventsRequest,
@@ -29,6 +31,7 @@ import type {
   FacilityActivitiesResponse,
   FacilityActivityResponse,
   FacilityResponse,
+  FacilityTimeRequest,
   FacilityTimeResponse,
   FacilityTimesResponse,
   UpdateFacilityActivityRequest,
@@ -166,6 +169,15 @@ export const api = createApi({
       providesTags: ['FacilityTime'],
     }),
 
+    updateFacilityTime: builder.mutation<void, FacilityTimeRequest>({
+      query: ({id, ...rest}) => ({
+        url: `/facilities/times/${id}`,
+        body: rest,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['FacilityTime'],
+    }),
+
     getFacilityActivities: builder.query<FacilityActivitiesResponse, void>({
       query: () => '/facilities/activities/',
       providesTags: ['FacilityActivity'],
@@ -265,6 +277,19 @@ export const api = createApi({
       providesTags: ['BookingAvailability', 'BookingEvent'],
     }),
 
+    bookBooking: builder.mutation<
+      BookBookingResponse,
+      BookBookingRequest & Token
+    >({
+      query: ({event, starts, token, user}) => ({
+        url: '/booking/bookings/book',
+        method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {event, starts, user},
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
     getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
       {
         query: ({limit = null, page = null, userId: user = null, token}) => {
@@ -329,11 +354,13 @@ export const {
   useUpdateFacilityActivityMutation,
   useGetFacilityTimesQuery,
   useGetFacilityTimeQuery,
+  useUpdateFacilityTimeMutation,
   useGetUserRecordQuery,
   useCreateUserMutation,
   useUpdateUserFirstNameMutation,
   useUpdateUserLastNameMutation,
   useGetAvailableBookingsQuery,
+  useBookBookingMutation,
   useGetBookingsQuery,
   useGetBookingQuery,
   useGetBookingEventsQuery,
