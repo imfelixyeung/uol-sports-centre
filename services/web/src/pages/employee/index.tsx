@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
+import BookingActivity from '~/components/BookingActivity';
 import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
 import {buttonStyles} from '~/components/Button';
@@ -17,6 +18,7 @@ import {useAppDispatch, useAppSelector} from '~/redux/hooks';
 import {
   useBookBookingMutation,
   useGetAvailableBookingsQuery,
+  useGetBookingsQuery,
   useGetUserRecordQuery,
 } from '~/redux/services/api';
 import type {BookingAvailabilityRequest} from '~/redux/services/types/bookings';
@@ -57,8 +59,10 @@ const EmployeePage = () => {
           <>
             <Typography.h2>Create booking for customer</Typography.h2>
             <CreateBookingForm userId={userIdSelected} />
+
             <Typography.h3>View/Amend booking for customer</Typography.h3>
-            <form action="">Form</form>
+            <ViewBookingsForm userId={userIdSelected} />
+
             <Typography.h3>View/Amend user info</Typography.h3>
             <EditUserRecordForm userId={userIdSelected} />
           </>
@@ -73,6 +77,44 @@ const EmployeePage = () => {
 export default withPageAuthRequired(withUserOnboardingRequired(EmployeePage), {
   rolesAllowed: ['ADMIN', 'MANAGER', 'EMPLOYEE'],
 });
+
+const ViewBookingsForm: FC<{
+  userId: number;
+}> = ({userId}) => {
+  const {token} = useAuth();
+  const userBookingsData = useGetBookingsQuery({
+    token: token!,
+    userId: userId,
+  });
+
+  const userBookings = userBookingsData.currentData?.bookings;
+  if (!userBookings)
+    return (
+      <div className="bg-white p-3 text-black">
+        <Typography.h3>View/Amend booking for customer</Typography.h3>
+      </div>
+    );
+
+  return (
+    <div className="bg-white p-3 text-black">
+      {userBookings.map(booking => (
+        <BookingActivity
+          key={booking.id}
+          datetime={new Date(booking.starts)}
+          eventId={booking.eventId}
+          action={
+            <Link
+              href={`/dashboard/booking/${booking.id}`}
+              className={buttonStyles({intent: 'primary'})}
+            >
+              View
+            </Link>
+          }
+        />
+      ))}
+    </div>
+  );
+};
 
 const CreateBookingForm: FC<{
   userId: number;
