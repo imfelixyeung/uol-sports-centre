@@ -125,8 +125,7 @@ def make_a_purchase(user_id: int,
             expires_at=(int(datetime.timestamp(datetime.now())) + 1800))
 
       for product in products:
-        if product["type"] != "membership" and product[
-            "type"] != "success" and product["type"] != "cancel":
+        if product["type"] != "success" and product["type"] != "cancel":
           add_pending(product["data"]["userId"], product["data"]["eventId"],
                       product["data"]["starts"], auth, session.stripe_id)
 
@@ -147,9 +146,9 @@ def change_price(new_price: float, product_name: str):
     return jsonify({"error": {"message": "Product not found."}}), 404
 
   recurring = None
-  if product_name == "membership-yearly":
+  if product_name == "Membership-Yearly":
     recurring = {"interval": "year"}
-  elif product_name == "membership-monthly":
+  elif product_name == "Membership-Monthly":
     recurring = {"interval": "month"}
 
   # Getting the old and new price from stripe
@@ -189,10 +188,11 @@ def change_discount_amount(amount: float):
     """
   try:
     # Retrieve the current coupon
-    stripe.Coupon.retrieve("VOz7neAM")
+    coupon = stripe.Coupon.retrieve("VOz7neAM")
 
     # Delete the current coupon
-    stripe.Coupon.delete("VOz7neAM")
+    if coupon:
+      stripe.Coupon.delete("VOz7neAM")
 
     # Create a new coupon with the same ID but the new percent amount
     stripe.Coupon.create(id="VOz7neAM", percent_off=amount, duration="forever")
