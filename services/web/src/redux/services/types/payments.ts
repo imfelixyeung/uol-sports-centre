@@ -29,14 +29,14 @@ export type CheckoutSessionItem =
   | {
       type: 'activity' | 'session';
       data: {
-        eventId: number;
+        event: number;
         starts: string;
       };
     }
   | {
       type: 'Membership-Yearly' | 'Membership-Monthly';
       data: {
-        eventId: number;
+        event: number;
         starts: string;
       };
     };
@@ -49,7 +49,7 @@ export interface CheckoutSessionMetadata {
 export type CheckoutSessionRequest = {
   items: CheckoutSessionItem[];
   metadata: CheckoutSessionMetadata;
-  userId: number;
+  user: number;
 };
 export type CheckoutSessionResponse = {
   Checkout: string;

@@ -42,7 +42,7 @@ const MembershipPage = () => {
           {
             type: membership.id,
             data: {
-              eventId: 0,
+              event: 0,
               starts: new Date().toISOString(),
             },
           },
@@ -52,7 +52,7 @@ const MembershipPage = () => {
           cancelUrl: `${window.location.origin}/dashboard/bookings`,
         },
         token: token!,
-        userId: session!.user.id,
+        user: session!.user.id,
       }).unwrap(),
       {
         loading: 'Creating checkout session...',

@@ -40,7 +40,7 @@ const NewBookingsPage = () => {
         items: bookings.map(booking => ({
           type: 'activity',
           data: {
-            eventId: booking.event.id,
+            event: booking.event.id,
             starts: booking.starts,
           },
         })),
@@ -49,7 +49,7 @@ const NewBookingsPage = () => {
           cancelUrl: `${window.location.origin}/dashboard/bookings`,
         },
         token: token!,
-        userId: session!.user.id,
+        user: session!.user.id,
       }).unwrap(),
       {
         loading: 'Creating checkout session...',
