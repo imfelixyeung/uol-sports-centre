@@ -517,6 +517,34 @@ describe('Test GET /bookings/availability', () => {
     expect(response.body.status).toBe('OK');
   });
 
+  it('should return the same available bookings with and without start/end params for the same day', async () => {
+    const availability = await request(BASE_URL).get('/bookings/availability');
+
+    const availabilityWithTimeFilters = await request(BASE_URL)
+      .get('/bookings/availability')
+      .query({
+        start: new Date().setHours(0, 0, 0, 0),
+        end: new Date().setHours(23, 59, 59, 999),
+      });
+
+    expect(availability.statusCode).toBe(200);
+    expect(availability.body.status).toBe('OK');
+    expect(availability.body.availableBookings).toBeDefined();
+
+    expect(availabilityWithTimeFilters.statusCode).toBe(200);
+    expect(availabilityWithTimeFilters.body.status).toBe('OK');
+    expect(availabilityWithTimeFilters.body.availableBookings).toBeDefined();
+
+    expect(availability.body.availableBookings).toStrictEqual(
+      availabilityWithTimeFilters.body.availableBookings
+    );
+
+    expect(availability.body.availableBookings[0].starts).toBeDefined();
+    expect(availability.body.availableBookings[0].starts).toContain(
+      new Date().toISOString().split('T')[0]
+    );
+  });
+
   it('should have more tests', async () => {});
 });
 
