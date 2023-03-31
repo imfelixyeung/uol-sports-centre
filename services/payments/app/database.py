@@ -149,7 +149,7 @@ def get_pricing_lists(product_type: str):
   else:
     return [{
         "productName": row[0],
-        "price": str(float(row[1]) / 100)
+        "price": str(float(row[1]))
     } for row in products]
 
 
