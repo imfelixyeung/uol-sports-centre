@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import toast from 'react-hot-toast';
-import {buttonStyles} from '~/components/Button';
+import Button, {buttonStyles} from '~/components/Button';
 import type {MembershipCardProps} from '~/components/MembershipCard';
 import MembershipCard from '~/components/MembershipCard';
 import PageHero from '~/components/PageHero';
@@ -132,15 +132,14 @@ const MembershipPage = () => {
       </div>
       <div className="bg-white py-8 text-black">
         <div className="container flex flex-wrap items-center justify-between">
-          <Link
-            href="/dashboard/profile"
-            className={buttonStyles({
-              intent: 'secondary',
-              outline: true,
-            })}
+          <Button
+            type="button"
+            intent="secondary"
+            outline
+            onClick={() => void router.back()}
           >
             Back
-          </Link>
+          </Button>
           <a
             href={customerPortalData.data?.Portal}
             className={buttonStyles({
