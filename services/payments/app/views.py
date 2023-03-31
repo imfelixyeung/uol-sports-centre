@@ -41,7 +41,7 @@ def change_discount(amount):
                              algorithms=["HS256"])
 
   if decoded_token["user"]["role"] == "ADMIN":
-    return jsonify(change_discount_amount(amount))
+    return change_discount_amount(amount)
 
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
@@ -212,22 +212,22 @@ def webhook_received():
       product = stripe.Product.retrieve(purchased_item.price.product)
       price = float(purchased_item.price.unit_amount) / 100
 
+      pending = get_pending(session.stripe_id)
       #If a product is a booking, complete pending bookings
       if get_product(product.name)[3] != "membership":
         payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
         charge_id = payment_intent.latest_charge
-        pending_bookings = get_pending(session.stripe_id)
-        for booking in pending_bookings:
+        pending = get_pending(session.stripe_id)
+        for booking in pending:
           try:
-            requests.post(
-                "http://gateway/api/booking/bookings/book/",
-                json={
-                    "userId": booking[0],
-                    "eventId": booking[1],
-                    "starts": booking[2]
-                },
-                timeout=5,
-                headers={"Authorization": f"{pending_bookings[0][4]}"})
+            requests.post("http://gateway/api/booking/bookings/book/",
+                          json={
+                              "userId": booking[0],
+                              "eventId": booking[1],
+                              "starts": booking[2]
+                          },
+                          timeout=5,
+                          headers={"Authorization": f"{pending[0][4]}"})
 
           # Case there was a request error
           except requests.exceptions.RequestException as request_error:
@@ -239,14 +239,15 @@ def webhook_received():
       #If item is a subscription, add an expiry date and update users
       user_id = get_user_from_stripe(session.customer)
       if get_product(product.name)[3] == "membership":
+
         try:
-          requests.post(f"http://gateway/api/users/{user_id}/updateMembership",
-                        json={"membership": product.name},
-                        timeout=5)
+          requests.put(f"http://gateway/api/users/{user_id}/updateMembership",
+                       json={"membership": product.name},
+                       timeout=5,
+                       headers={"Authorization": f"{pending[0][4]}"})
 
         # Case there was a request error
         except requests.exceptions.RequestException as request_error:
-
           # Return with appropiate status code
           return make_response(jsonify({"Invalid request": str(request_error)}),
                                400)
@@ -319,7 +320,8 @@ def get_purchased_products(user_id: int):
   except jwt.exceptions.DecodeError:
     return jsonify({"message": "Invalid token."}, 401)
 
-  if decoded_token["user"]["role"] == "USER":
+  allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
+  if decoded_token["user"]["role"] in allowed_roles:
     purchased_products = get_purchases(user_id)
     return jsonify(purchased_products)
 
@@ -428,7 +430,8 @@ def cancel_membership(user_id: int):
                              env.JWT_SIGNING_SECRET,
                              algorithms=["HS256"])
 
-  if decoded_token["user"]["role"] == "USER":
+  allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
+  if decoded_token["user"]["role"] in allowed_roles:
     #Check if user exists
     if get_user(user_id) is None:
       return jsonify({"error": "User not found."}), 404
@@ -496,19 +499,19 @@ def init_payments():
 
     if name == "Session":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "session")
+      add_product(name, product.id, price.unit_amount, "Session")
     elif name == "Activity":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "activity")
+      add_product(name, product.id, price.unit_amount, "Activity")
     elif name == "Facility":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "facility")
+      add_product(name, product.id, price.unit_amount, "Facility")
     elif name == "Membership-Monthly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "membership")
+      add_product(name, product.id, price.unit_amount, "Membership")
     elif name == "Membership-Yearly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "membership")
+      add_product(name, product.id, price.unit_amount, "Membership")
 
 
 @app.route("/health")
