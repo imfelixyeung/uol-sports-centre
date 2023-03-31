@@ -96,7 +96,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }]
-      response = make_a_purchase(111, products, "subscription", 6, "")
+      response = make_a_purchase(111, products, "subscription", 6, "", "", "")
 
       # Check if session URL is returned
       self.assertIsNotNone(response)
@@ -176,7 +176,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
       assert len(data) == 1
       self.assertEqual(data[0]["productName"], "product-test")
-      self.assertEqual(data[0]["price"], "5.0")
+      self.assertEqual(data[0]["price"], 5.0)
 
   def test_create_checkout_success(self):
     """Tests the create checkout functionality for the success case"""
