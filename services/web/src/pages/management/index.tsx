@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
-import * as Yup from 'yup';
 import Button from '~/components/Button';
 import FormField from '~/components/FormField';
 import PageHero from '~/components/PageHero';
@@ -91,7 +90,6 @@ const AddNewEmployeeForm = () => {
         );
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="User Id" required name="userId" />
@@ -112,7 +110,6 @@ const UpdateDiscountForm = () => {
         const {discount} = values;
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Discount" required name="discount" />
@@ -259,7 +256,6 @@ const AddActivityForm = () => {
         );
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Facility" required name="facilityId" as="select">
