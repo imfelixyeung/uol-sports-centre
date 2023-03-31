@@ -1,8 +1,8 @@
 export const productTypes = [
-  'facility',
-  'activity',
-  'session',
-  'membership',
+  'Facility',
+  'Activity',
+  'Session',
+  'Membership',
 ] as const;
 export type ProductType = (typeof productTypes)[number];
 
@@ -34,7 +34,7 @@ export type CheckoutSessionItem =
       };
     }
   | {
-      type: 'membership-yearly' | 'membership-monthly';
+      type: 'Membership-Yearly' | 'Membership-Monthly';
       data: {
         eventId: number;
         starts: string;

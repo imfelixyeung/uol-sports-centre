@@ -58,7 +58,7 @@ const NewBookingsPage = () => {
       }
     );
 
-    await router.push(checkoutUrl);
+    await router.push(checkoutUrl.Checkout);
   };
 
   return (

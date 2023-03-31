@@ -1,5 +1,5 @@
 export interface Membership {
-  id: 'individual' | 'membership-monthly' | 'membership-yearly';
+  id: 'Individual' | 'Membership-Monthly' | 'Membership-Yearly';
   name: string;
   price: string;
   buttonLabel: string;
@@ -8,19 +8,19 @@ export interface Membership {
 
 export const memberships: Membership[] = [
   {
-    id: 'individual',
+    id: 'Individual',
     name: 'Individual bookings',
     price: 'From £25',
     buttonLabel: 'Book',
   },
   {
-    id: 'membership-monthly',
+    id: 'Membership-Monthly',
     name: 'Monthly',
     price: '£35 / month',
     buttonLabel: 'Buy',
   },
   {
-    id: 'membership-yearly',
+    id: 'Membership-Yearly',
     name: 'Yearly',
     price: '£300 / year',
     buttonLabel: 'Buy',

@@ -26,12 +26,12 @@ const MembershipPage = () => {
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const router = useRouter();
 
-  const currentMembership = 'individual';
+  const currentMembership = 'Individual';
 
   const onMembershipBuyCTA = async (
     membership: MembershipCardProps['membership']
   ) => {
-    if (membership.id === 'individual') {
+    if (membership.id === 'Individual') {
       await router.push('/dashboard/bookings/new');
       return;
     }
