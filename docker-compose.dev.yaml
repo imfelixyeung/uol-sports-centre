@@ -63,7 +63,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "auth", "-d", "dev"]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
 
   users:
     build:
@@ -99,7 +99,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "users", "-d", "dev"]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
 
   status:
     build:
@@ -134,7 +134,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "status", "-d", "dev"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 50
 
   booking:
     build:
@@ -189,7 +189,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "booking", "-d", "dev"]
       interval: 5s
       timeout: 15s
-      retries: 5
+      retries: 50
 
   stripe-cli:
     image: stripe/stripe-cli
