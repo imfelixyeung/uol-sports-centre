@@ -4,7 +4,7 @@ CREATE TABLE products (
     productName TEXT NOT NULL,
     price TEXT NOT NULL,
     productType TEXT CHECK(
-        productType IN ('facility', 'activity', 'session', 'membership')
+        productType IN ('Facility', 'Activity', 'Session', 'Membership')
     ) NOT NULL
 );
 DROP TABLE IF EXISTS orders;
@@ -29,10 +29,11 @@ CREATE TABLE customers (
 );
 DROP TABLE IF EXISTS pending;
 CREATE TABLE pending (
+    pending_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL,
     starts TEXT NOT NULL,
     checkout_id TEXT NOT NULL,
     auth TEXT NOT NULL,
-    PRIMARY KEY (user_id, event_id, starts)
+    productType TEXT NOT NULL
 );

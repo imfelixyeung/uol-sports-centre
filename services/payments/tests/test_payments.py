@@ -43,7 +43,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       data = {
           "product_name": "Subscription-test",
           "product_price": 15.0,
-          "product_type": "membership"
+          "product_type": "Membership"
       }
 
       response = client.post("/make-purchasable", json=data)
@@ -57,9 +57,9 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       init_database()
 
       #Add test products to database
-      add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+      add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
       add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15",
-                  "membership")
+                  "Membership")
 
       #Make a new temp customer on Stripe
       new_customer = stripe.Customer.create()
@@ -84,19 +84,19 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       products = [{
           "type": "product-test",
           "data": {
-              "userId": 111,
-              "eventId": 1,
+              "user": 111,
+              "event": 1,
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }, {
           "type": "subscription-test",
           "data": {
-              "userId": 111,
-              "eventId": 2,
+              "user": 111,
+              "event": 2,
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }]
-      response = make_a_purchase(111, products, "subscription", 6, "")
+      response = make_a_purchase(111, products, "subscription", 6, "", "", "")
 
       # Check if session URL is returned
       self.assertIsNotNone(response)
@@ -113,8 +113,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
-    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "membership")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
+    add_product("subscription-test", "prod_NUNbPMJPMIEvWk", "15", "Membership")
     connection = sqlite3.connect(DATABASE_URL)
     cur = connection.cursor()
 
@@ -140,7 +140,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     #Add test products to the databse
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
 
     #Update price of product
     update_price("product-test", 10)
@@ -163,10 +163,10 @@ class TestingPaymentsMicroservice(unittest.TestCase):
   def test_get_prices(self):
     """Test that gets the pricing list"""
 
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "500", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
 
     with app.test_client() as client:
-      response = client.get("/get-prices/session")
+      response = client.get("/get-prices/Session")
 
       self.assertEqual(response.status_code, 200)
       self.assertEqual(response.content_type, "application/json")
@@ -176,7 +176,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
 
       assert len(data) == 1
       self.assertEqual(data[0]["productName"], "product-test")
-      self.assertEqual(data[0]["price"], "5.0")
+      self.assertEqual(data[0]["price"], 5.0)
 
   def test_create_checkout_success(self):
     """Tests the create checkout functionality for the success case"""
@@ -187,7 +187,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     new_customer = stripe.Customer.create()
 
     #Add test product to payments service
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "500", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "500", "Session")
 
     #Assert valid checkout URL response
     session_url = create_checkout(new_customer.stripe_id, "product-test")
@@ -270,7 +270,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     init_database()
 
     # Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
 
     # Create temp new customer on stripe
     new_customer = stripe.Customer.create()
@@ -312,7 +312,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     create_test_database()
 
     # Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "session")
+    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
 
     # Create temp new customer on stripe
     new_customer = stripe.Customer.create()

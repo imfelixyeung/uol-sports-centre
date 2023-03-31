@@ -3,10 +3,10 @@ import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
-import * as Yup from 'yup';
 import Button from '~/components/Button';
 import FormField from '~/components/FormField';
 import PageHero from '~/components/PageHero';
@@ -17,6 +17,7 @@ import {withUserOnboardingRequired} from '~/providers/user';
 import {
   useCreateFacilityActivityMutation,
   useCreateFacilityMutation,
+  useCreateFacilityTimesMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
   useGetFacilityTimeQuery,
@@ -57,6 +58,8 @@ const ManagementPage: NextPage = () => {
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
         <SalesGraphs />
+        <Typography.h2>Manage users</Typography.h2>
+        <Link href="/management/users">Manage</Link>
       </section>
     </>
   );
@@ -91,7 +94,6 @@ const AddNewEmployeeForm = () => {
         );
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="User Id" required name="userId" />
@@ -112,7 +114,6 @@ const UpdateDiscountForm = () => {
         const {discount} = values;
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Discount" required name="discount" />
@@ -126,20 +127,41 @@ const UpdateDiscountForm = () => {
 
 const AddFacilityForm = () => {
   const [createFacility] = useCreateFacilityMutation();
+  const [createTimes] = useCreateFacilityTimesMutation();
   const {token} = useAuth();
   return (
     <Formik
       initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, description} = values;
-        await toast.promise(
-          createFacility({name, capacity, description, token: token!}),
+        const result = await toast.promise(
+          createFacility({name, capacity, description, token: token!}).unwrap(),
           {
             loading: 'Adding facility...',
             success: 'Facility added',
             error: 'Something went wrong',
           }
         );
+
+        await toast.promise(
+          Promise.all([
+            daysOfTheWeek.map(day =>
+              createTimes({
+                token: token!,
+                closing_time: 0,
+                facility_id: result.facility.id,
+                opening_time: 0,
+                day,
+              })
+            ),
+          ]),
+          {
+            loading: 'Adding facility times...',
+            success: 'Facility times added',
+            error: 'Something went wrong',
+          }
+        );
+
         actions.setSubmitting(false);
       }}
     >
@@ -259,7 +281,6 @@ const AddActivityForm = () => {
         );
         actions.setSubmitting(false);
       }}
-      validationSchema={Yup.object({userId: Yup.number().required('Required')})}
     >
       <Form>
         <FormField label="Facility" required name="facilityId" as="select">

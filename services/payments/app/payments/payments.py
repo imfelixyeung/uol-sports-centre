@@ -6,7 +6,8 @@ from typing import Optional
 from stripe.error import StripeError
 from datetime import datetime
 import requests
-from flask import jsonify
+import json
+from flask import jsonify, make_response
 
 from app.interfaces import create_portal, LOCAL_DOMAIN
 from app.database import (add_product, get_user, get_product, add_customer,
@@ -37,13 +38,9 @@ def make_purchasable(product_name: str, product_price: float,
     return 500, str(e)
 
 
-def make_a_purchase(user_id: int,
-                    products: list[dict],
-                    payment_mode: str,
-                    bookings_count: int,
-                    auth: str,
-                    success_url: Optional[str] = LOCAL_DOMAIN,
-                    cancel_url: Optional[str] = LOCAL_DOMAIN):
+def make_a_purchase(user_id: int, products: list[dict], payment_mode: str,
+                    bookings_count: int, auth: str, success_url: str,
+                    cancel_url: str):
   """redirects user to stripe checkout for chosen subscription"""
   stripe_user = get_user(user_id)
   if stripe_user is None:
@@ -66,7 +63,7 @@ def make_a_purchase(user_id: int,
 
   #Validate user has an unexpired membership for membership discount
   for purchase in purchases:
-    if purchase[1] == "membership":
+    if purchase[1] == "Membership":
       if datetime.now() < datetime.strptime(purchase[3],
                                             "%Y-%m-%d %H:%M:%S.%f"):
         membership = True
@@ -78,10 +75,12 @@ def make_a_purchase(user_id: int,
       # Gets the product price from the products table
       product_price = stripe.Product.retrieve(product_id).default_price
 
-      if product["type"] != "membership":
+      if product["type"] != "Membership-Monthly" and product[
+          "type"] != "Membership-Yearly":
         bookings_count += 1
 
-      if product["type"] == "membership":
+      if product["type"] == "Membership-Monthly" or product[
+          "type"] == "Membership-Yearly":
         payment_intent = {}
 
       if bookings_count > 2:
@@ -91,10 +90,28 @@ def make_a_purchase(user_id: int,
 
       line_items.append(line_item)
 
-      if membership and get_product(product["type"])[3] != "membership":
-        price = float(product_price.unit_amount) / 100
-        add_purchase(str(user_id), product_id, str(datetime.now()), "", "",
-                     price)
+      if membership and (product["type"] != "Membership-Monthly" and
+                         product["type"] != "Membership-Yearly"):
+        price = float(stripe.Price.retrieve(product_price).unit_amount) / 100
+
+        try:
+          response = requests.post("http://gateway/api/booking/bookings/book/",
+                                   json={
+                                       "user": product["data"]["user"],
+                                       "event": product["data"]["event"],
+                                       "starts": product["data"]["starts"]
+                                   },
+                                   timeout=5,
+                                   headers={"Authorization": f"{auth}"})
+          booked = json.loads(response.text)
+          add_purchase(str(user_id), product_id, str(datetime.now()), "", "",
+                       price, None, booked["booking"]["id"])
+        # Case there was a request error
+        except requests.exceptions.RequestException as request_error:
+
+          # Return with appropiate status code
+          return make_response(jsonify({"Invalid request": str(request_error)}),
+                               400)
 
   if not membership:
     try:
@@ -125,10 +142,10 @@ def make_a_purchase(user_id: int,
             expires_at=(int(datetime.timestamp(datetime.now())) + 1800))
 
       for product in products:
-        if product["type"] != "membership" and product[
-            "type"] != "success" and product["type"] != "cancel":
-          add_pending(product["data"]["userId"], product["data"]["eventId"],
-                      product["data"]["starts"], auth, session.stripe_id)
+        if product["type"] != "success" and product["type"] != "cancel":
+          add_pending(product["data"]["user"], product["data"]["event"],
+                      product["data"]["starts"], auth, session.stripe_id,
+                      product["type"])
 
       return jsonify({"Checkout": session.url})
 
@@ -147,9 +164,9 @@ def change_price(new_price: float, product_name: str):
     return jsonify({"error": {"message": "Product not found."}}), 404
 
   recurring = None
-  if product_name == "membership-yearly":
+  if product_name == "Membership-Yearly":
     recurring = {"interval": "year"}
-  elif product_name == "membership-monthly":
+  elif product_name == "Membership-Monthly":
     recurring = {"interval": "month"}
 
   # Getting the old and new price from stripe
@@ -173,7 +190,7 @@ def apply_discount():
 
   # Apply the discount
   try:
-    coupon = stripe.Coupon.retrieve("VOz7neAM")
+    coupon = stripe.Coupon.retrieve("Multiple-Bookings")
 
   except stripe_errors.StripeError as error_coupon:
     return error_coupon
@@ -189,13 +206,22 @@ def change_discount_amount(amount: float):
     """
   try:
     # Retrieve the current coupon
-    stripe.Coupon.retrieve("VOz7neAM")
+    coupon = stripe.Coupon.retrieve("Multiple-Bookings")
 
     # Delete the current coupon
-    stripe.Coupon.delete("VOz7neAM")
+    if coupon:
+      stripe.Coupon.delete("Multiple-Bookings")
 
     # Create a new coupon with the same ID but the new percent amount
-    stripe.Coupon.create(id="VOz7neAM", percent_off=amount, duration="forever")
+    stripe.Coupon.create(id="Multiple-Bookings",
+                         percent_off=amount,
+                         duration="forever",
+                         applies_to={
+                             "products": [
+                                 "prod_NccVNTyzzYnn5Q", "prod_NcH2t0pyrS1Gje",
+                                 "prod_NcGw30aHirjbtF"
+                             ]
+                         })
 
     return {"message": "Discount amount changed successfully"}, 200
 

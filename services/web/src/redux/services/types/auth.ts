@@ -28,6 +28,14 @@ export interface Tokens {
   refreshToken: RefreshToken;
 }
 
+export interface AuthUser {
+  id: number;
+  email: string;
+  role: AuthUserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type LoginRequest = Credentials;
 
 export type RegisterRequest = Credentials;
@@ -60,3 +68,23 @@ export interface UpdateUserRoleRequest {
   userId: number;
   role: AuthUserRole;
 }
+
+export interface GetAuthUsersResponse {
+  success: boolean;
+  data: AuthUser[];
+}
+
+export type GetAuthUsersRequest = {
+  role?: AuthUserRole;
+  pageIndex?: number;
+  limit?: number;
+};
+
+export interface GetAuthUserResponse {
+  success: boolean;
+  data: AuthUser;
+}
+
+export type GetAuthUserRequest = {
+  userId: number;
+};

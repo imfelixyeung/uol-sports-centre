@@ -6,7 +6,7 @@ import {createController} from '.';
 const usersControllers = {
   getUsers: createController({
     querySchema: z.object({
-      pageIndex: z.number().int().gte(0).default(0),
+      pageIndex: z.coerce.number().int().gte(0).default(0),
       pageSize: z.coerce.number().int().gte(1).default(20),
       role: z.nativeEnum(UserRole).optional(),
     }),
