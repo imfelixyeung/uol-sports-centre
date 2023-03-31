@@ -50,8 +50,8 @@ const ViewBookingPage = () => {
     );
 
     // if error, don't redirect
-    if (cancellation instanceof Error) return;
-    router.push('/dashboard/bookings');
+    if (!(cancellation instanceof Error))
+      await router.push('/dashboard/bookings');
   };
 
   return (
@@ -69,7 +69,7 @@ const ViewBookingPage = () => {
                   <Button
                     intent="secondary"
                     type="button"
-                    onClick={handleCancelBooking}
+                    onClick={handleCancelBooking} // eslint-disable-line
                   >
                     Cancel Booking
                   </Button>
