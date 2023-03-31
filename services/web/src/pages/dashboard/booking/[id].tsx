@@ -4,11 +4,15 @@ import {QRCodeSVG} from 'qrcode.react';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
+import {toast} from 'react-hot-toast';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
-import {useGetBookingQuery} from '~/redux/services/api';
+import {
+  useCancelBookingMutation,
+  useGetBookingQuery,
+} from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 
 const ViewBookingPage = () => {
@@ -20,6 +24,8 @@ const ViewBookingPage = () => {
     {skip: !bookingId}
   );
 
+  const [cancelBooking] = useCancelBookingMutation();
+
   if (!bookingId) return <>Not found</>;
   if (Array.isArray(bookingId)) return <>Not found</>;
 
@@ -29,6 +35,23 @@ const ViewBookingPage = () => {
   const qrBooking: QrBooking = {
     bookingIds: [booking.id],
     userId: session!.user.id,
+  };
+
+  const handleCancelBooking = async () => {
+    const cancellation = await toast.promise(
+      cancelBooking({bookingId: booking.id, token: token!})
+        .unwrap()
+        .catch(() => new Error('Error cancelling booking')),
+      {
+        loading: 'Cancelling booking',
+        success: 'Booking cancelled',
+        error: 'Error cancelling booking',
+      }
+    );
+
+    // if error, don't redirect
+    if (cancellation instanceof Error) return;
+    router.push('/dashboard/bookings');
   };
 
   return (
@@ -43,7 +66,11 @@ const ViewBookingPage = () => {
                 variant="page"
                 datetime={new Date(booking.starts)}
                 action={
-                  <Button intent="secondary" type="button">
+                  <Button
+                    intent="secondary"
+                    type="button"
+                    onClick={handleCancelBooking}
+                  >
                     Cancel Booking
                   </Button>
                 }

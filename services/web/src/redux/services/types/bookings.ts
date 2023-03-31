@@ -85,6 +85,15 @@ export type GetBookingResponse = {
   booking: Booking;
 };
 
+export type CancelBookingRequest = {
+  bookingId: number;
+};
+
+export type CancelBookingResponse = {
+  status: string;
+  booking: Booking;
+};
+
 export type BookBookingRequest = {
   user: number;
   event: number;

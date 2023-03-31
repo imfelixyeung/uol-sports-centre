@@ -19,6 +19,8 @@ import type {
   BookBookingResponse,
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
+  CancelBookingResponse,
+  CancelBookingRequest,
   GetBookingEventsRequest,
   GetBookingEventsResponse,
   GetBookingRequest,
@@ -397,6 +399,18 @@ export const api = createApi({
       providesTags: ['Booking'],
     }),
 
+    cancelBooking: builder.mutation<
+      CancelBookingResponse,
+      CancelBookingRequest & Token
+    >({
+      query: ({bookingId, token}) => ({
+        url: `/booking/bookings/${bookingId}`,
+        method: 'DELETE',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
     getBookingEvents: builder.query<
       GetBookingEventsResponse,
       GetBookingEventsRequest
@@ -449,5 +463,6 @@ export const {
   useBookBookingMutation,
   useGetBookingsQuery,
   useGetBookingQuery,
+  useCancelBookingMutation,
   useGetBookingEventsQuery,
 } = api;
