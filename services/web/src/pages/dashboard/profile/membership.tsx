@@ -71,11 +71,17 @@ const MembershipPage = () => {
       return {
         ...membership,
         current,
-        buttonLabel: current ? 'Cancel' : membership.buttonLabel,
+        buttonLabel: current
+          ? membership.id === 'Individual'
+            ? membership.buttonLabel
+            : 'Cancel'
+          : membership.buttonLabel,
         bestValue: false,
         buttonProps: {
           intent: current
-            ? 'danger'
+            ? membership.id === 'Individual'
+              ? 'secondary'
+              : 'danger'
             : membership.bestValue
             ? 'primary'
             : 'secondary',
