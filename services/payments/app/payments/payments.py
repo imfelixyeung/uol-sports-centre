@@ -126,7 +126,7 @@ def make_a_purchase(user_id: int,
 
       for product in products:
         if product["type"] != "success" and product["type"] != "cancel":
-          add_pending(product["data"]["userId"], product["data"]["eventId"],
+          add_pending(product["data"]["user"], product["data"]["event"],
                       product["data"]["starts"], auth, session.stripe_id)
 
       return jsonify({"Checkout": session.url})

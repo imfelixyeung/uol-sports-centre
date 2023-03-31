@@ -91,13 +91,13 @@ def redirect_checkout():
     if product["type"] != "success" and product["type"] != "cancel":
       if product["type"] != "membership-monthly" and product[
           "type"] != "membership-yearly":
-        session = check_pending(product["data"]["userId"],
-                                product["data"]["eventId"],
+        session = check_pending(product["data"]["user"],
+                                product["data"]["event"],
                                 product["data"]["starts"], auth)
         if session != "not_found":
           checkout = stripe.checkout.Session.retrieve(session[0])
           return {"Checkout": checkout.url}
-      user_id = product["data"]["userId"]
+      user_id = product["data"]["user"]
       if product["type"] == "membership-yearly" or product[
           "type"] == "membership-monthly":
         payment_mode = "subscription"
@@ -222,8 +222,8 @@ def webhook_received():
           try:
             requests.post("http://gateway/api/booking/bookings/book/",
                           json={
-                              "userId": booking[0],
-                              "eventId": booking[1],
+                              "user": booking[0],
+                              "event": booking[1],
                               "starts": booking[2]
                           },
                           timeout=5,

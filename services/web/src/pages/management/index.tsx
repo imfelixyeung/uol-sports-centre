@@ -3,6 +3,7 @@ import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
 import {Form, Formik} from 'formik';
 import type {NextPage} from 'next';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
@@ -57,6 +58,8 @@ const ManagementPage: NextPage = () => {
         <Typography.h2>Data visualisation from today to today-7</Typography.h2>
         <Typography.h3>Total sales</Typography.h3>
         <SalesGraphs />
+        <Typography.h2>Manage users</Typography.h2>
+        <Link href="/management/users">Manage</Link>
       </section>
     </>
   );
