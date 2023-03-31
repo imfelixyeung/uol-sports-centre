@@ -1,7 +1,6 @@
 import type {GetStaticPaths, GetStaticProps} from 'next';
 import {useRouter} from 'next/router';
 import {QRCodeSVG} from 'qrcode.react';
-import {toast} from 'react-hot-toast';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
@@ -13,7 +12,6 @@ import {withUserOnboardingRequired} from '~/providers/user';
 import {
   useCancelBookingMutation,
   useGetBookingQuery,
-,
 } from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 
@@ -26,8 +24,6 @@ const ViewBookingPage = () => {
     {bookingId: parseInt(bookingId as string), token: token!},
     {skip: !bookingId}
   );
-
-  const [cancelBooking] = useCancelBookingMutation();
 
   if (!bookingId) return <>Not found</>;
   if (Array.isArray(bookingId)) return <>Not found</>;
@@ -51,7 +47,7 @@ const ViewBookingPage = () => {
         error: 'Failed to cancel booking',
       }
     );
-    router.reload();
+    router.push('/dashboard/bookings');
   };
 
   return (
