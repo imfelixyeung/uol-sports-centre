@@ -5,6 +5,7 @@ import {toast} from 'react-hot-toast';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
+import {toast} from 'react-hot-toast';
 import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
@@ -12,6 +13,7 @@ import {withUserOnboardingRequired} from '~/providers/user';
 import {
   useCancelBookingMutation,
   useGetBookingQuery,
+,
 } from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 
@@ -24,6 +26,8 @@ const ViewBookingPage = () => {
     {bookingId: parseInt(bookingId as string), token: token!},
     {skip: !bookingId}
   );
+
+  const [cancelBooking] = useCancelBookingMutation();
 
   if (!bookingId) return <>Not found</>;
   if (Array.isArray(bookingId)) return <>Not found</>;

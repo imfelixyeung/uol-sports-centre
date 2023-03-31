@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import {Field, Form, Formik} from 'formik';
 import type {FC} from 'react';
 import {
@@ -7,6 +9,9 @@ import {
 } from '~/redux/services/api';
 import type {BookingAvailabilityRequest} from '~/redux/services/types/bookings';
 import FormikAutoSubmit from './FormikAutoSubmit';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const BookingFilterForm: FC<{
   onFilterChange: (
@@ -30,16 +35,13 @@ const BookingFilterForm: FC<{
   )
     return <>Something went wrong...</>;
 
-  const todayStart = dayjs().set('hour', 0).set('minute', 0).set('second', 0);
+  const todayStart = dayjs().tz('Europe/London').startOf('day').add(6, 'hour');
   const twoWeeksFromNow = todayStart
     .add(2, 'week')
     .set('hour', 23)
     .set('minute', 59)
     .set('second', 59);
-  const todayEnd = todayStart
-    .set('hour', 23)
-    .set('minute', 59)
-    .set('second', 59);
+  const todayEnd = todayStart.endOf('day').add(-1, 'hour');
   const minDate = todayStart.format('YYYY-MM-DDTHH:mm');
   const maxDate = twoWeeksFromNow.format('YYYY-MM-DDTHH:mm');
   const defaultEnd = todayEnd.format('YYYY-MM-DDTHH:mm');

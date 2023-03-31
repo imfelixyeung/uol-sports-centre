@@ -44,11 +44,20 @@ def add_product(name: str, product_id: str, price: str, product_type: str):
 
 
 def add_pending(user_id: int, event_id: int, starts: str, auth: str,
-                checkout_id: str):
+                checkout_id: str, product_type: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
-  cur.execute("""INSERT INTO pending VALUES (?, ?, ?, ?, ?)""",
-              (user_id, event_id, starts, checkout_id, auth))
+  cur.execute("""INSERT INTO pending VALUES (NULL, ?, ?, ?, ?, ?, ?)""",
+              (user_id, event_id, starts, checkout_id, auth, product_type))
+  con.commit()
+  con.close()
+
+
+def add_booking(user_id: int, event_id: int, starts: str):
+  con = sqlite3.connect(DATABASE_URL)
+  cur = con.cursor()
+  cur.execute("""UPDATE orders SET booking_id pending VALUES (?, ?, ?, ?, ?)""",
+              (user_id, event_id, starts))
   con.commit()
   con.close()
 
@@ -147,10 +156,7 @@ def get_pricing_lists(product_type: str):
   if not products:
     return None
   else:
-    return [{
-        "productName": row[0],
-        "price": str(float(row[1]))
-    } for row in products]
+    return [{"productName": row[0], "price": float(row[1])} for row in products]
 
 
 def get_purchases(user_id: int):
@@ -179,8 +185,8 @@ def get_pending(checkout_id: str):
   con = sqlite3.connect(DATABASE_URL)
   cur = con.cursor()
   pending_bookings = cur.execute(
-      """SELECT * FROM pending WHERE checkout_id = ?""",
-      [checkout_id]).fetchall()
+      """SELECT * FROM pending WHERE 
+      checkout_id = ? ORDER BY(pending_id) ASC""", [checkout_id]).fetchall()
   con.close()
   return pending_bookings
 

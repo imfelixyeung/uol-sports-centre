@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type {FC} from 'react';
 import {useState} from 'react';
 import {toast} from 'react-hot-toast';
+import BookingActivity from '~/components/BookingActivity';
 import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
 import {buttonStyles} from '~/components/Button';
@@ -17,6 +18,7 @@ import {useAppDispatch, useAppSelector} from '~/redux/hooks';
 import {
   useBookBookingMutation,
   useGetAvailableBookingsQuery,
+  useGetBookingsQuery,
   useGetUserRecordQuery,
 } from '~/redux/services/api';
 import type {BookingAvailabilityRequest} from '~/redux/services/types/bookings';
@@ -45,23 +47,34 @@ const EmployeePage = () => {
         Check in user
       </Link>
       <section className="container py-8">
-        <Typography.h2>User Id, Enter user id to continue</Typography.h2>
-        <label>
-          <span>User Id</span>
-          <input
-            type="number"
-            className="border-2 border-black/20 bg-[#fff] p-2 text-black"
-            onChange={e => setUserIdSelected(parseInt(e.target.value))}
-          />
-        </label>
+        <section className="mb-8">
+          <Typography.h2>User Id, Enter user id to continue</Typography.h2>
+          <label>
+            <span>User Id</span>
+            <input
+              type="number"
+              className="border-2 border-black/20 bg-[#fff] p-2 text-black"
+              onChange={e => setUserIdSelected(parseInt(e.target.value))}
+            />
+          </label>
+        </section>
+
         {userIdSelected && userData.currentData ? (
           <>
-            <Typography.h2>Create booking for customer</Typography.h2>
-            <CreateBookingForm userId={userIdSelected} />
-            <Typography.h3>View/Amend booking for customer</Typography.h3>
-            <form action="">Form</form>
-            <Typography.h3>View/Amend user info</Typography.h3>
-            <EditUserRecordForm userId={userIdSelected} />
+            <section className="mb-8">
+              <Typography.h2>Create booking for customer</Typography.h2>
+              <CreateBookingForm userId={userIdSelected} />
+            </section>
+
+            <section className="mb-8">
+              <Typography.h3>View/Amend booking for customer</Typography.h3>
+              <ViewBookingsForm userId={userIdSelected} />
+            </section>
+
+            <section className="mb-8">
+              <Typography.h3>View/Amend user info</Typography.h3>
+              <EditUserRecordForm userId={userIdSelected} />
+            </section>
           </>
         ) : (
           <>User not found, they might not have gone through onboarding yet</>
@@ -74,6 +87,48 @@ const EmployeePage = () => {
 export default withPageAuthRequired(withUserOnboardingRequired(EmployeePage), {
   rolesAllowed: ['ADMIN', 'MANAGER', 'EMPLOYEE'],
 });
+
+const ViewBookingsForm: FC<{
+  userId: number;
+}> = ({userId}) => {
+  const {token} = useAuth();
+  const userBookingsData = useGetBookingsQuery({
+    token: token!,
+    userId: userId,
+  });
+
+  const userBookings = userBookingsData.currentData?.bookings;
+  if (!userBookings)
+    return (
+      <div className="bg-white p-3 text-black">
+        <Typography.h3>View/Amend booking for customer</Typography.h3>
+      </div>
+    );
+
+  return (
+    <div className="bg-white p-3 text-black">
+      {userBookings.length === 0 ? (
+        <Typography.p>No bookings found for this user</Typography.p>
+      ) : (
+        userBookings.map(booking => (
+          <BookingActivity
+            key={booking.id}
+            datetime={new Date(booking.starts)}
+            eventId={booking.eventId}
+            action={
+              <Link
+                href={`/dashboard/booking/${booking.id}`}
+                className={buttonStyles({intent: 'primary'})}
+              >
+                View
+              </Link>
+            }
+          />
+        ))
+      )}
+    </div>
+  );
+};
 
 const CreateBookingForm: FC<{
   userId: number;
