@@ -35,13 +35,13 @@ const BookingFilterForm: FC<{
   )
     return <>Something went wrong...</>;
 
-  const todayStart = dayjs().tz('Europe/London').startOf('day');
+  const todayStart = dayjs().tz('Europe/London').startOf('day').add(6, 'hour');
   const twoWeeksFromNow = todayStart
     .add(2, 'week')
     .set('hour', 23)
     .set('minute', 59)
     .set('second', 59);
-  const todayEnd = todayStart.endOf('day');
+  const todayEnd = todayStart.endOf('day').add(-1, 'hour');
   const minDate = todayStart.format('YYYY-MM-DDTHH:mm');
   const maxDate = twoWeeksFromNow.format('YYYY-MM-DDTHH:mm');
   const defaultEnd = todayEnd.format('YYYY-MM-DDTHH:mm');
