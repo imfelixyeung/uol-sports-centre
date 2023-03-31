@@ -47,7 +47,7 @@ const ViewBookingPage = () => {
         error: 'Failed to cancel booking',
       }
     );
-    router.push('/dashboard/bookings');
+    await router.push('/dashboard/bookings');
   };
 
   return (
