@@ -1,6 +1,10 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import dayjs from 'dayjs';
 import type {
+  GetAuthUserRequest,
+  GetAuthUserResponse,
+  GetAuthUsersRequest,
+  GetAuthUsersResponse,
   GetSessionResponse,
   LoginRequest,
   LoginResponse,
@@ -47,6 +51,8 @@ import type {
   UsersUpdateFirstNameResponse,
   UsersUpdateLastNameRequest,
   UsersUpdateLastNameResponse,
+  UsersUpdateMembershipRequest,
+  UsersUpdateMembershipResponse,
   UsersViewFullRecordRequest,
   UsersViewFullRecordResponse,
 } from './types/users';
@@ -61,6 +67,7 @@ export const api = createApi({
     baseUrl: '/api',
   }),
   tagTypes: [
+    'AuthUser',
     'User',
     'Booking',
     'BookingEvent',
@@ -113,6 +120,34 @@ export const api = createApi({
       }),
     }),
 
+    getAuthUsers: builder.query<
+      GetAuthUsersResponse,
+      GetAuthUsersRequest & Token
+    >({
+      query: ({token, role = null, pageIndex = null, limit = null}) => {
+        const search = new URLSearchParams();
+        if (role !== null) search.set('role', role);
+        if (pageIndex !== null) search.set('pageIndex', pageIndex.toString());
+        if (limit !== null) search.set('limit', limit.toString());
+
+        return {
+          url: `/auth/users?${search.toString()}`,
+          headers: {Authorization: `Bearer ${token}`},
+        };
+      },
+      providesTags: ['AuthUser'],
+    }),
+
+    getAuthUser: builder.query<GetAuthUserResponse, GetAuthUserRequest & Token>(
+      {
+        query: ({token, userId}) => ({
+          url: `/auth/users/${userId}`,
+          headers: {Authorization: `Bearer ${token}`},
+        }),
+        providesTags: ['AuthUser'],
+      }
+    ),
+
     updateAuthUser: builder.mutation<void, UpdateUserRoleRequest & Token>({
       query: ({token, role, userId}) => ({
         url: `/auth/users/${userId}`,
@@ -120,6 +155,7 @@ export const api = createApi({
         headers: {Authorization: `Bearer ${token}`},
         body: {role},
       }),
+      invalidatesTags: ['AuthUser'],
     }),
 
     getStatusReport: builder.query<StatusReportResponse, void>({
@@ -268,6 +304,19 @@ export const api = createApi({
       invalidatesTags: ['User'],
     }),
 
+    updateUserMembership: builder.mutation<
+      UsersUpdateMembershipResponse,
+      UsersUpdateMembershipRequest & Token
+    >({
+      query: ({token, ...user}) => ({
+        url: `/users/${user.id}/updateMembership`,
+        method: 'PUT',
+        body: {membership: user.membership},
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     getAvailableBookings: builder.query<
       BookingAvailabilityResponse,
       BookingAvailabilityRequest
@@ -361,6 +410,9 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useGetAuthUsersQuery,
+  useGetAuthUserQuery,
+  useUpdateUserMembershipMutation,
   useUpdateAuthUserMutation,
   useGetFacilitiesQuery,
   useGetFacilityQuery,

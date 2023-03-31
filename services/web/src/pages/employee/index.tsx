@@ -5,6 +5,7 @@ import {toast} from 'react-hot-toast';
 import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
 import {buttonStyles} from '~/components/Button';
+import {EditUserRecordForm} from '~/components/EditUserRecordForm';
 import PageHero from '~/components/PageHero';
 import SelectedBookingsDropdown from '~/components/SelectedBookingsDropdown';
 import Typography from '~/components/Typography';
@@ -52,15 +53,17 @@ const EmployeePage = () => {
             onChange={e => setUserIdSelected(parseInt(e.target.value))}
           />
         </label>
-        {userIdSelected && userData.data ? (
+        {userIdSelected && userData.currentData ? (
           <>
             <Typography.h2>Create booking for customer</Typography.h2>
             <CreateBookingForm userId={userIdSelected} />
             <Typography.h3>View/Amend booking for customer</Typography.h3>
             <form action="">Form</form>
+            <Typography.h3>View/Amend user info</Typography.h3>
+            <EditUserRecordForm userId={userIdSelected} />
           </>
         ) : (
-          <>User not found</>
+          <>User not found, they might not have gone through onboarding yet</>
         )}
       </section>
     </div>
@@ -78,7 +81,8 @@ const CreateBookingForm: FC<{
   const [filter, setFilter] = useState<BookingAvailabilityRequest>({});
   const [bookBooking] = useBookBookingMutation();
   const availableBookingsData = useGetAvailableBookingsQuery(filter);
-  const availableBookings = availableBookingsData.data?.availableBookings;
+  const availableBookings =
+    availableBookingsData.currentData?.availableBookings;
 
   const bookings = useAppSelector(selectBookings);
   const dispatch = useAppDispatch();
