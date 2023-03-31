@@ -46,6 +46,8 @@ import type {
   UpdateFacilityResponse,
 } from './types/facilities';
 import type {
+  CancelMembershipRequest,
+  CancelMembershipResponse,
   ChangeDiscountRequest,
   ChangeDiscountResponse,
   ChangePriceRequest,
@@ -93,6 +95,7 @@ export const api = createApi({
     'FacilityTime',
     'Price',
     'Discount',
+    'Membership',
   ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -280,7 +283,7 @@ export const api = createApi({
         url: `/users/${userId}/viewFullRecord`,
         headers: {Authorization: `Bearer ${token}`},
       }),
-      providesTags: ['User'],
+      providesTags: ['User', 'Membership'],
     }),
 
     createUser: builder.mutation<
@@ -499,6 +502,18 @@ export const api = createApi({
       }),
       invalidatesTags: ['Price'],
     }),
+
+    cancelMembership: builder.mutation<
+      CancelMembershipResponse,
+      CancelMembershipRequest & Token
+    >({
+      query: ({token, userId}) => ({
+        url: `/cancel-membership/${userId}`,
+        method: 'GET',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['Membership'],
+    }),
   }),
 });
 
@@ -540,4 +555,5 @@ export const {
   useChangeDiscountAmountMutation,
   useGetPricesQuery,
   useChangePricesMutation,
+  useCancelMembershipMutation,
 } = api;

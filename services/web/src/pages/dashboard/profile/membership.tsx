@@ -12,6 +12,7 @@ import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
 import {
+  useCancelMembershipMutation,
   useCreateCheckoutSessionMutation,
   useGetCustomerPortalQuery,
 } from '~/redux/services/api';
@@ -19,6 +20,7 @@ import {
 const MembershipPage = () => {
   const {user} = useUser();
   const {token, session} = useAuth();
+  const [cancelMembership] = useCancelMembershipMutation();
   const customerPortalData = useGetCustomerPortalQuery({
     userId: session!.user.id,
     token: token!,
@@ -26,13 +28,31 @@ const MembershipPage = () => {
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const router = useRouter();
 
-  const currentMembership = 'Individual';
+  const currentMembership = (user?.membership ?? 'Individual') as
+    | 'Membership-Yearly'
+    | 'Membership-Monthly'
+    | 'Individual';
 
   const onMembershipBuyCTA = async (
     membership: MembershipCardProps['membership']
   ) => {
     if (membership.id === 'Individual') {
       await router.push('/dashboard/bookings/new');
+      return;
+    }
+
+    if (currentMembership === membership.id) {
+      await toast.promise(
+        cancelMembership({
+          token: token!,
+          userId: session!.user.id,
+        }).unwrap(),
+        {
+          loading: 'Cancelling membership...',
+          success: 'Membership cancelled',
+          error: 'Something went wrong...',
+        }
+      );
       return;
     }
 
