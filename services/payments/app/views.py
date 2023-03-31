@@ -20,6 +20,7 @@ from app.payments import (make_a_purchase, get_payment_manager, change_price,
 from app.interfaces import LOCAL_DOMAIN
 
 import env
+import json
 
 stripe.api_key = env.STRIPE_API_KEY
 
@@ -89,8 +90,8 @@ def redirect_checkout():
 
   for product in products:
     if product["type"] != "success" and product["type"] != "cancel":
-      if product["type"] != "membership-monthly" and product[
-          "type"] != "membership-yearly":
+      if product["type"] != "Membership-Monthly" and product[
+          "type"] != "Membership-Yearly":
         session = check_pending(product["data"]["user"],
                                 product["data"]["event"],
                                 product["data"]["starts"], auth)
@@ -98,8 +99,8 @@ def redirect_checkout():
           checkout = stripe.checkout.Session.retrieve(session[0])
           return {"Checkout": checkout.url}
       user_id = product["data"]["user"]
-      if product["type"] == "membership-yearly" or product[
-          "type"] == "membership-monthly":
+      if product["type"] == "Membership-Yearly" or product[
+          "type"] == "Membership-Monthly":
         payment_mode = "subscription"
     if product["type"] == "success":
       success_url = product["data"]["url"]
@@ -204,41 +205,41 @@ def webhook_received():
     expiry_time = str(datetime.now() + relativedelta(months=1))
 
     #Add purchase to database, inserting relavant fields for product type
-    payment_intent = None
     charge_id = ""
 
+    pending = get_pending(session.stripe_id)
+    booked_ids = []
+    for booking in pending:
+      if booking[6] != "Membership-Monthly" and booking[
+          6] != "Membership-Yearly":
+        try:
+          response = requests.post(
+              "http://gateway/api/booking/bookings/book/",
+              json={
+                  "user": booking[1],
+                  "event": booking[2],
+                  "starts": booking[3]
+              },
+              timeout=5,
+              headers={"Authorization": f"{pending[0][5]}"})
+          booked = json.loads(response.text)
+          booked_ids.append(booked["booking"]["id"])
+        # Case there was a request error
+        except requests.exceptions.RequestException as request_error:
+
+          # Return with appropiate status code
+          return make_response(jsonify({"Invalid request": str(request_error)}),
+                               400)
+
     # Iterate through the retrieved line items
+    booking_index = 0
     for purchased_item in session.list_line_items(limit=100).data:
       product = stripe.Product.retrieve(purchased_item.price.product)
       price = float(purchased_item.price.unit_amount) / 100
 
-      pending = get_pending(session.stripe_id)
-      #If a product is a booking, complete pending bookings
-      if get_product(product.name)[3] != "membership":
-        payment_intent = stripe.PaymentIntent.retrieve(session.payment_intent)
-        charge_id = payment_intent.latest_charge
-        pending = get_pending(session.stripe_id)
-        for booking in pending:
-          try:
-            requests.post("http://gateway/api/booking/bookings/book/",
-                          json={
-                              "user": booking[0],
-                              "event": booking[1],
-                              "starts": booking[2]
-                          },
-                          timeout=5,
-                          headers={"Authorization": f"{pending[0][4]}"})
-
-          # Case there was a request error
-          except requests.exceptions.RequestException as request_error:
-
-            # Return with appropiate status code
-            return make_response(
-                jsonify({"Invalid request": str(request_error)}), 400)
-
       #If item is a subscription, add an expiry date and update users
       user_id = get_user_from_stripe(session.customer)
-      if get_product(product.name)[3] == "membership":
+      if get_product(product.name)[3] == "Membership":
 
         try:
           requests.put(f"http://gateway/api/users/{user_id}/updateMembership",
@@ -256,7 +257,9 @@ def webhook_received():
                      charge_id, invoice.invoice_pdf, price, expiry_time)
       else:
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf, price)
+                     charge_id, invoice.invoice_pdf, price, None,
+                     booked_ids[booking_index])
+        booking_index = booking_index + 1
 
     #remove pending booking transactions as purchase is complete
     delete_pending(session.stripe_id)
@@ -350,7 +353,8 @@ def customer_portal(user_id: int):
   except jwt.exceptions.DecodeError:
     return jsonify({"message": "Invalid token."}, 401)
 
-  if decoded_token["user"]["role"] == "USER":
+  allowed_roles = ["USER", "ADMIN", "EMPLOYEE"]
+  if decoded_token["user"]["role"] in allowed_roles:
     received_url = get_payment_manager(user_id)
 
     if received_url:
@@ -477,7 +481,9 @@ def get_receipt(booking_id):
 
   # Check if receipt exists
   if len(purchase) < 7 or not purchase[6]:
-    return jsonify({"error": "Receipt not found for this purchase."}), 404
+    return jsonify({
+        "error": """Receipt not found for this purchase (User may be member)."""
+    }), 404
 
   receipt = purchase[6]
 
@@ -499,19 +505,24 @@ def init_payments():
 
     if name == "Session":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "Session")
+      add_product(name, product.id, str(float(price.unit_amount) / 100),
+                  "Session")
     elif name == "Activity":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "Activity")
+      add_product(name, product.id, str(float(price.unit_amount) / 100),
+                  "Activity")
     elif name == "Facility":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "Facility")
+      add_product(name, product.id, str(float(price.unit_amount) / 100),
+                  "Facility")
     elif name == "Membership-Monthly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "Membership")
+      add_product(name, product.id, str(float(price.unit_amount) / 100),
+                  "Membership")
     elif name == "Membership-Yearly":
       price = stripe.Price.retrieve(product.default_price)
-      add_product(name, product.id, price.unit_amount, "Membership")
+      add_product(name, product.id, str(float(price.unit_amount) / 100),
+                  "Membership")
 
 
 @app.route("/health")
