@@ -7,11 +7,11 @@ import {useGetPricesQuery} from '~/redux/services/api';
 const PricingPage = () => {
   const {token} = useAuth();
   const activityPricesData = useGetPricesQuery({
-    productType: 'activity',
+    productType: 'Activity',
     token: token!,
   });
   const facilityPricesData = useGetPricesQuery({
-    productType: 'facility',
+    productType: 'Facility',
     token: token!,
   });
 
@@ -35,7 +35,7 @@ const PricingPage = () => {
                 desktopStyledAs="display2"
                 className="text-center !font-normal"
               >
-                £{(Number(facility.price) / 100).toFixed(2)}
+                £{Number(facility.price).toFixed(2)}
               </Typography.h3>
             </>
           ))}
@@ -49,7 +49,7 @@ const PricingPage = () => {
                 desktopStyledAs="display2"
                 className="text-center !font-normal"
               >
-                £{(Number(activity.price) / 100).toFixed(2)}
+                £{Number(activity.price).toFixed(2)}
               </Typography.h3>
             </>
           ))}
