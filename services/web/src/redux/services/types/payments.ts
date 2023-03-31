@@ -95,18 +95,8 @@ export type CancelMembershipRequest = {
 };
 export type CancelMembershipResponse = void;
 
-/** GET /refund/<int:booking_id> */
-export type RefundRequest = {
-  bookingId: number;
-};
-export type RefundResponse = void;
-
 /** GET /receipt/<int:booking_id> */
 export type GetReceiptRequest = {
   bookingId: number;
 };
 export type GetReceiptResponse = void;
-
-/** POST /initialise-payments */
-export type InitialisePaymentsRequest = void;
-export type InitialisePaymentsResponse = void;
