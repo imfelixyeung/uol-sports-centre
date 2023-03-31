@@ -46,25 +46,34 @@ const EmployeePage = () => {
         Check in user
       </Link>
       <section className="container py-8">
-        <Typography.h2>User Id, Enter user id to continue</Typography.h2>
-        <label>
-          <span>User Id</span>
-          <input
-            type="number"
-            className="border-2 border-black/20 bg-[#fff] p-2 text-black"
-            onChange={e => setUserIdSelected(parseInt(e.target.value))}
-          />
-        </label>
+        <section className="mb-8">
+          <Typography.h2>User Id, Enter user id to continue</Typography.h2>
+          <label>
+            <span>User Id</span>
+            <input
+              type="number"
+              className="border-2 border-black/20 bg-[#fff] p-2 text-black"
+              onChange={e => setUserIdSelected(parseInt(e.target.value))}
+            />
+          </label>
+        </section>
+
         {userIdSelected && userData.currentData ? (
           <>
-            <Typography.h2>Create booking for customer</Typography.h2>
-            <CreateBookingForm userId={userIdSelected} />
+            <section className="mb-8">
+              <Typography.h2>Create booking for customer</Typography.h2>
+              <CreateBookingForm userId={userIdSelected} />
+            </section>
 
-            <Typography.h3>View/Amend booking for customer</Typography.h3>
-            <ViewBookingsForm userId={userIdSelected} />
+            <section className="mb-8">
+              <Typography.h3>View/Amend booking for customer</Typography.h3>
+              <ViewBookingsForm userId={userIdSelected} />
+            </section>
 
-            <Typography.h3>View/Amend user info</Typography.h3>
-            <EditUserRecordForm userId={userIdSelected} />
+            <section className="mb-8">
+              <Typography.h3>View/Amend user info</Typography.h3>
+              <EditUserRecordForm userId={userIdSelected} />
+            </section>
           </>
         ) : (
           <>User not found, they might not have gone through onboarding yet</>
@@ -97,21 +106,25 @@ const ViewBookingsForm: FC<{
 
   return (
     <div className="bg-white p-3 text-black">
-      {userBookings.map(booking => (
-        <BookingActivity
-          key={booking.id}
-          datetime={new Date(booking.starts)}
-          eventId={booking.eventId}
-          action={
-            <Link
-              href={`/dashboard/booking/${booking.id}`}
-              className={buttonStyles({intent: 'primary'})}
-            >
-              View
-            </Link>
-          }
-        />
-      ))}
+      {userBookings.length === 0 ? (
+        <Typography.p>No bookings found for this user</Typography.p>
+      ) : (
+        userBookings.map(booking => (
+          <BookingActivity
+            key={booking.id}
+            datetime={new Date(booking.starts)}
+            eventId={booking.eventId}
+            action={
+              <Link
+                href={`/dashboard/booking/${booking.id}`}
+                className={buttonStyles({intent: 'primary'})}
+              >
+                View
+              </Link>
+            }
+          />
+        ))
+      )}
     </div>
   );
 };
