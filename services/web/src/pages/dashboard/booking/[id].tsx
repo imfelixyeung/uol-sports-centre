@@ -1,6 +1,7 @@
 import type {GetStaticPaths, GetStaticProps} from 'next';
 import {useRouter} from 'next/router';
 import {QRCodeSVG} from 'qrcode.react';
+import {toast} from 'react-hot-toast';
 import BookingActivity from '~/components/BookingActivity';
 import Button from '~/components/Button';
 import Seo from '~/components/Seo';
@@ -8,13 +9,17 @@ import Typography from '~/components/Typography';
 import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
-import {useGetBookingQuery} from '~/redux/services/api';
+import {
+  useCancelBookingMutation,
+  useGetBookingQuery,
+} from '~/redux/services/api';
 import type {QrBooking} from '~/schema/qrBooking';
 
 const ViewBookingPage = () => {
   const router = useRouter();
   const {session, token} = useAuth();
   const bookingId = router.query.id;
+  const [cancelBooking] = useCancelBookingMutation();
   const bookingData = useGetBookingQuery(
     {bookingId: parseInt(bookingId as string), token: token!},
     {skip: !bookingId}
@@ -23,12 +28,26 @@ const ViewBookingPage = () => {
   if (!bookingId) return <>Not found</>;
   if (Array.isArray(bookingId)) return <>Not found</>;
 
-  const booking = bookingData.data?.booking;
-  if (!booking) return <>Not found</>;
+  const booking = bookingData.currentData?.booking;
+  if (!booking) return <>Booking not found</>;
+
+  console.log(booking);
 
   const qrBooking: QrBooking = {
     bookingIds: [booking.id],
     userId: session!.user.id,
+  };
+
+  const onCancel = async () => {
+    await toast.promise(
+      cancelBooking({bookingId: parseInt(bookingId), token: token!}).unwrap(),
+      {
+        loading: 'Cancelling booking...',
+        success: 'Booking cancelled',
+        error: 'Failed to cancel booking',
+      }
+    );
+    router.reload();
   };
 
   return (
@@ -43,7 +62,11 @@ const ViewBookingPage = () => {
                 variant="page"
                 datetime={new Date(booking.starts)}
                 action={
-                  <Button intent="secondary" type="button">
+                  <Button
+                    intent="secondary"
+                    type="button"
+                    onClick={() => void onCancel()}
+                  >
                     Cancel Booking
                   </Button>
                 }
