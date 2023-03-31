@@ -84,15 +84,15 @@ class TestingPaymentsMicroservice(unittest.TestCase):
       products = [{
           "type": "product-test",
           "data": {
-              "userId": 111,
-              "eventId": 1,
+              "user": 111,
+              "event": 1,
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }, {
           "type": "subscription-test",
           "data": {
-              "userId": 111,
-              "eventId": 2,
+              "user": 111,
+              "event": 2,
               "starts": "2020-01-01T10:00:00.000Z"
           }
       }]

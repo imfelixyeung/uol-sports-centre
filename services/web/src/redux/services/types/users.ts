@@ -23,3 +23,6 @@ export type UsersUpdateFirstNameResponse = UsersResponse;
 
 export type UsersUpdateLastNameRequest = Pick<User, 'id' | 'lastName'>;
 export type UsersUpdateLastNameResponse = UsersResponse;
+
+export type UsersUpdateMembershipRequest = Pick<User, 'id' | 'membership'>;
+export type UsersUpdateMembershipResponse = UsersResponse;

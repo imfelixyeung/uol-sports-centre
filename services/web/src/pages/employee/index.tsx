@@ -5,6 +5,7 @@ import {toast} from 'react-hot-toast';
 import BookingFilterForm from '~/components/BookingFilterForm';
 import Bookings from '~/components/Bookings';
 import {buttonStyles} from '~/components/Button';
+import {EditUserRecordForm} from '~/components/EditUserRecordForm';
 import PageHero from '~/components/PageHero';
 import SelectedBookingsDropdown from '~/components/SelectedBookingsDropdown';
 import Typography from '~/components/Typography';
@@ -59,9 +60,11 @@ const EmployeePage = () => {
             <CreateBookingForm userId={userIdSelected} />
             <Typography.h3>View/Amend booking for customer</Typography.h3>
             <form action="">Form</form>
+            <Typography.h3>View/Amend user info</Typography.h3>
+            <EditUserRecordForm userId={userIdSelected} />
           </>
         ) : (
-          <>User not found</>
+          <>User not found, they might not have gone through onboarding yet</>
         )}
       </section>
     </div>
