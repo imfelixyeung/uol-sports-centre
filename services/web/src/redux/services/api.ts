@@ -47,6 +47,22 @@ import type {
   UpdateFacilityRequest,
   UpdateFacilityResponse,
 } from './types/facilities';
+import type {
+  CancelMembershipRequest,
+  CancelMembershipResponse,
+  ChangeDiscountRequest,
+  ChangeDiscountResponse,
+  ChangePriceRequest,
+  ChangePriceResponse,
+  CheckoutSessionRequest,
+  CheckoutSessionResponse,
+  GetCustomerPortalRequest,
+  GetCustomerPortalResponse,
+  GetPricesRequest,
+  GetPricesResponse,
+  GetSalesRequest,
+  GetSalesResponse,
+} from './types/payments';
 import type {StatusReportResponse} from './types/status';
 import type {
   UsersCreateRequest,
@@ -79,6 +95,9 @@ export const api = createApi({
     'Facility',
     'FacilityActivity',
     'FacilityTime',
+    'Price',
+    'Discount',
+    'Membership',
   ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -279,7 +298,7 @@ export const api = createApi({
         url: `/users/${userId}/viewFullRecord`,
         headers: {Authorization: `Bearer ${token}`},
       }),
-      providesTags: ['User'],
+      providesTags: ['User', 'Membership'],
     }),
 
     createUser: builder.mutation<
@@ -374,6 +393,18 @@ export const api = createApi({
       invalidatesTags: ['Booking'],
     }),
 
+    cancelBooking: builder.mutation<
+      CancelBookingResponse,
+      CancelBookingRequest & Token
+    >({
+      query: ({bookingId, token}) => ({
+        url: `/booking/bookings/${bookingId}`,
+        method: 'DELETE',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
     getBookings: builder.query<GetBookingsResponse, GetBookingsRequest & Token>(
       {
         query: ({limit = null, page = null, userId: user = null, token}) => {
@@ -399,18 +430,6 @@ export const api = createApi({
       providesTags: ['Booking'],
     }),
 
-    cancelBooking: builder.mutation<
-      CancelBookingResponse,
-      CancelBookingRequest & Token
-    >({
-      query: ({bookingId, token}) => ({
-        url: `/booking/bookings/${bookingId}`,
-        method: 'DELETE',
-        headers: {Authorization: `Bearer ${token}`},
-      }),
-      invalidatesTags: ['Booking'],
-    }),
-
     getBookingEvents: builder.query<
       GetBookingEventsResponse,
       GetBookingEventsRequest
@@ -428,6 +447,87 @@ export const api = createApi({
         };
       },
       providesTags: ['BookingEvent'],
+    }),
+
+    getCustomerPortal: builder.query<
+      GetCustomerPortalResponse,
+      GetCustomerPortalRequest & Token
+    >({
+      query: ({userId, token}) => ({
+        url: `/payments/customer-portal/${userId}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    createCheckoutSession: builder.mutation<
+      CheckoutSessionResponse,
+      CheckoutSessionRequest & Token
+    >({
+      query: ({items, metadata, token, user}) => ({
+        url: '/payments/checkout-session',
+        method: 'POST',
+        body: [
+          ...items.map(item => ({...item, data: {...item.data, user}})),
+          {type: 'success', data: {url: metadata.successUrl, user}},
+          {type: 'cancel', data: {url: metadata.cancelUrl, user}},
+        ],
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    getSalesSummary: builder.query<GetSalesResponse, GetSalesRequest & Token>({
+      query: ({token, productType}) => ({
+        url: `/payments/sales/${productType}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    }),
+
+    changeDiscountAmount: builder.mutation<
+      ChangeDiscountResponse,
+      ChangeDiscountRequest & Token
+    >({
+      query: ({token, amount}) => ({
+        url: `/payments/discount/change/${amount}`,
+        method: 'GET',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['Discount'],
+    }),
+
+    getPrices: builder.query<GetPricesResponse, GetPricesRequest & Token>({
+      query: ({token, productType}) => ({
+        url: `/payments/get-prices/${productType}`,
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      providesTags: ['Price'],
+    }),
+
+    changePrices: builder.mutation<
+      ChangePriceResponse,
+      ChangePriceRequest & Token
+    >({
+      query: ({token, price, productName}) => ({
+        url: '/payments/change-price',
+        method: 'POST',
+        headers: {Authorization: `Bearer ${token}`},
+        body: {
+          product_name: productName,
+          new_price: price,
+        },
+      }),
+      invalidatesTags: ['Price'],
+    }),
+
+    cancelMembership: builder.mutation<
+      CancelMembershipResponse,
+      CancelMembershipRequest & Token
+    >({
+      query: ({token, userId}) => ({
+        url: `/cancel-membership/${userId}`,
+        method: 'GET',
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+      invalidatesTags: ['Membership'],
     }),
   }),
 });
@@ -465,4 +565,11 @@ export const {
   useGetBookingQuery,
   useCancelBookingMutation,
   useGetBookingEventsQuery,
+  useGetCustomerPortalQuery,
+  useCreateCheckoutSessionMutation,
+  useGetSalesSummaryQuery,
+  useChangeDiscountAmountMutation,
+  useGetPricesQuery,
+  useChangePricesMutation,
+  useCancelMembershipMutation,
 } = api;

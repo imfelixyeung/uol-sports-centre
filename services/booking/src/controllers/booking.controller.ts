@@ -425,12 +425,18 @@ class BookingController {
     });
 
     const query = bookBodySchema.safeParse(req.body);
-    if (!query.success)
+    if (!query.success) {
+      console.log({
+        status: 'error',
+        message: 'malformed parameters',
+        error: query.error,
+      });
       return res.status(400).json({
         status: 'error',
         message: 'malformed parameters',
         error: query.error,
       });
+    }
 
     // if the user is not booking for themselves and they are not an admin, return an error
     if (

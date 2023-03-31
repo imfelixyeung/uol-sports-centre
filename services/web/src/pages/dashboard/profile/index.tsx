@@ -1,4 +1,5 @@
 import {Form, Formik} from 'formik';
+import {useRouter} from 'next/router';
 import {toast} from 'react-hot-toast';
 import Button from '~/components/Button';
 import FormField from '~/components/FormField';
@@ -38,6 +39,7 @@ export default withPageAuthRequired(withUserOnboardingRequired(ProfilePage));
 const ProfileEditForm = () => {
   const {user} = useUser();
   const {session} = useAuth();
+  const router = useRouter();
   const [updateFirstName] = useUpdateUserFirstNameMutation();
   const [updateLastName] = useUpdateUserLastNameMutation();
   const {token} = useAuth();
@@ -104,9 +106,15 @@ const ProfileEditForm = () => {
         </div>
         <hr />
         <div className="my-8 flex justify-between">
-          <Button type="submit" intent="secondary" outline>
+          <Button
+            type="button"
+            intent="secondary"
+            outline
+            onClick={() => void router.back()}
+          >
             Back
           </Button>
+
           <Button type="submit" intent="primary" outline>
             Update Profile
           </Button>

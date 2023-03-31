@@ -9,7 +9,10 @@ import {withPageAuthRequired} from '~/providers/auth';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {withUserOnboardingRequired} from '~/providers/user';
 import {useUser} from '~/providers/user/hooks/useUser';
-import {useGetBookingsQuery} from '~/redux/services/api';
+import {
+  useGetBookingsQuery,
+  useGetCustomerPortalQuery,
+} from '~/redux/services/api';
 
 const UserDashboardPage = () => {
   const {session, token} = useAuth();

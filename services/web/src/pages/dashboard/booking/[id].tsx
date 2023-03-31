@@ -19,39 +19,35 @@ const ViewBookingPage = () => {
   const router = useRouter();
   const {session, token} = useAuth();
   const bookingId = router.query.id;
+  const [cancelBooking] = useCancelBookingMutation();
   const bookingData = useGetBookingQuery(
     {bookingId: parseInt(bookingId as string), token: token!},
     {skip: !bookingId}
   );
 
-  const [cancelBooking] = useCancelBookingMutation();
-
   if (!bookingId) return <>Not found</>;
   if (Array.isArray(bookingId)) return <>Not found</>;
 
-  const booking = bookingData.data?.booking;
-  if (!booking) return <>Not found</>;
+  const booking = bookingData.currentData?.booking;
+  if (!booking) return <>Booking not found</>;
+
+  console.log(booking);
 
   const qrBooking: QrBooking = {
     bookingIds: [booking.id],
     userId: session!.user.id,
   };
 
-  const handleCancelBooking = async () => {
-    const cancellation = await toast.promise(
-      cancelBooking({bookingId: booking.id, token: token!})
-        .unwrap()
-        .catch(() => new Error('Error cancelling booking')),
+  const onCancel = async () => {
+    await toast.promise(
+      cancelBooking({bookingId: parseInt(bookingId), token: token!}).unwrap(),
       {
-        loading: 'Cancelling booking',
+        loading: 'Cancelling booking...',
         success: 'Booking cancelled',
-        error: 'Error cancelling booking',
+        error: 'Failed to cancel booking',
       }
     );
-
-    // if error, don't redirect
-    if (!(cancellation instanceof Error))
-      await router.push('/dashboard/bookings');
+    await router.push('/dashboard/bookings');
   };
 
   return (
@@ -69,7 +65,7 @@ const ViewBookingPage = () => {
                   <Button
                     intent="secondary"
                     type="button"
-                    onClick={handleCancelBooking} // eslint-disable-line
+                    onClick={() => void onCancel()}
                   >
                     Cancel Booking
                   </Button>
