@@ -37,7 +37,11 @@ export type FacilityTimeRequest = Partial<FacilityTime> &
   Pick<FacilityTime, 'id'>;
 
 export type CreateFacilityRequest = Omit<Facility, 'id'>;
-export type CreateFacilityResponse = Facility;
+export type CreateFacilityResponse = {
+  status: string;
+  message: string;
+  facility: Facility;
+};
 
 export type CreateFacilityActivityRequest = Omit<FacilityActivity, 'id'>;
 export type CreateFacilityActivityResponse = FacilityActivity;
@@ -55,3 +59,6 @@ export type UpdateFacilityActivityResponse = {
   message: string;
   activity: FacilityActivity;
 };
+
+export type CreateFacilityTimeRequest = Omit<FacilityTime, 'id'>;
+export type CreateFacilityTimeResponse = FacilityTime;

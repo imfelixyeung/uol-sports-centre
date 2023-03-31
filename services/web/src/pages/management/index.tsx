@@ -17,6 +17,7 @@ import {withUserOnboardingRequired} from '~/providers/user';
 import {
   useCreateFacilityActivityMutation,
   useCreateFacilityMutation,
+  useCreateFacilityTimesMutation,
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
   useGetFacilityTimeQuery,
@@ -126,20 +127,41 @@ const UpdateDiscountForm = () => {
 
 const AddFacilityForm = () => {
   const [createFacility] = useCreateFacilityMutation();
+  const [createTimes] = useCreateFacilityTimesMutation();
   const {token} = useAuth();
   return (
     <Formik
       initialValues={{name: '', description: '', capacity: 0}}
       onSubmit={async (values, actions) => {
         const {name, capacity, description} = values;
-        await toast.promise(
-          createFacility({name, capacity, description, token: token!}),
+        const result = await toast.promise(
+          createFacility({name, capacity, description, token: token!}).unwrap(),
           {
             loading: 'Adding facility...',
             success: 'Facility added',
             error: 'Something went wrong',
           }
         );
+
+        await toast.promise(
+          Promise.all([
+            daysOfTheWeek.map(day =>
+              createTimes({
+                token: token!,
+                closing_time: 0,
+                facility_id: result.facility.id,
+                opening_time: 0,
+                day,
+              })
+            ),
+          ]),
+          {
+            loading: 'Adding facility times...',
+            success: 'Facility times added',
+            error: 'Something went wrong',
+          }
+        );
+
         actions.setSubmitting(false);
       }}
     >
