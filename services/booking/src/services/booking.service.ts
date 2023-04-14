@@ -141,7 +141,7 @@ class BookingService {
 
     // check if there are any valid events
     if (validEvents.events.length > 0) {
-      let currentDay = validEvents.events[0].day;
+      let currentDay = validEvents.events[0]!.day;
       let currentDayCount = 0;
 
       // for each event, generate a list of possible bookings

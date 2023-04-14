@@ -8,7 +8,7 @@ import {
   userWithoutPassword,
 } from '../users';
 
-const users: User[] = [
+const users: [User, User] = [
   {
     id: 0,
     email: 'example@example.com',

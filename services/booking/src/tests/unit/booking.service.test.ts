@@ -122,7 +122,7 @@ describe('Test BookingService', () => {
     // we consume the id here (aka we don't need it)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {id: _, ...mockBookingWithoutId} = mockBooking;
-    expect(prismaMock.booking.create.mock.calls[0][0]).toEqual({
+    expect(prismaMock.booking.create.mock.calls[0]![0]).toEqual({
       data: mockBookingWithoutId,
     });
   });
