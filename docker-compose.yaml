@@ -154,6 +154,12 @@ services:
       timeout: 15s
       retries: 50
 
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_API} --forward-to http://payments/webhook
+    networks:
+      - network
+
   payments:
     build:
       context: ./services/payments
@@ -168,6 +174,9 @@ services:
 
     networks:
       - network
+
+    depends_on:
+      - stripe-cli
 
   gateway:
     build: ./gateway
