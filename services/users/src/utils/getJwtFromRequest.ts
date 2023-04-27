@@ -1,5 +1,5 @@
 import {Request} from 'express';
-import {JsonWebToken, jsonWebTokenSchema} from '../schema/jwt';
+import {jsonWebTokenSchema} from '../schema/jwt';
 import jwt from 'jsonwebtoken';
 import {z} from 'zod';
 import {env} from '../env';
@@ -10,6 +10,8 @@ export const getJwtFromRequest = (req: Request) => {
 
   if (!authorization.startsWith('Bearer ')) return null;
   const token = authorization.split('Bearer ')[1];
+
+  if (!token) return null;
 
   try {
     const decodedToken = jwt.verify(token, env.JWT_SIGNING_SECRET);
