@@ -257,7 +257,8 @@ def webhook_received():
                      invoice.invoice_pdf, price, expiry_time)
       else:
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     invoice.invoice_pdf, price, None, booked_ids[booking_index])
+                     invoice.invoice_pdf, price, None,
+                     booked_ids[booking_index])
         booking_index = booking_index + 1
 
     #remove pending booking transactions as purchase is complete
