@@ -14,7 +14,6 @@ CREATE TABLE orders (
     product_id TEXT NOT NULL,
     purchaseDate TEXT NOT NULL,
     expiryDate TEXT,
-    chargeID TEXT NOT NULL,
     receipt_pdf TEXT,
     booking_id INTEGER,
     purchase_price TEXT,
