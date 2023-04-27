@@ -12,7 +12,15 @@ import {
   ADMIN_TOKEN,
 } from './base';
 
-const BOOKINGS: Booking[] = [
+const BOOKINGS: [
+  Booking,
+  Booking,
+  Booking,
+  Booking,
+  Booking,
+  Booking,
+  Booking
+] = [
   {
     id: 1,
     eventId: 1,

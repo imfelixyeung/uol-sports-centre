@@ -21,7 +21,11 @@ const seed = async () => {
 
   const users = await db.user.findMany();
   const updateRolePromises = users.map(user => {
-    const role = user.email.split('@')[0].toUpperCase() as UserRole;
+    const rawRole = user.email.split('@')[0];
+
+    if (!rawRole) throw new Error('Unexpected seeded email role');
+
+    const role = rawRole.toUpperCase() as UserRole;
     return updateUserById(user.id, {role});
   });
 
