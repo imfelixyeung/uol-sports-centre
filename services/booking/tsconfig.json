@@ -8,7 +8,9 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src/**/*.ts", "prisma/**/*.ts"]
 }
