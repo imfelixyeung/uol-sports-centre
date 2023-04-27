@@ -11,10 +11,15 @@ import {useGetBookingsQuery} from '~/redux/services/api';
 
 const DashboardBookingsPage = () => {
   const {session, token} = useAuth();
-  const bookingsData = useGetBookingsQuery({
-    userId: session?.user.id,
-    token: token!,
-  });
+  const bookingsData = useGetBookingsQuery(
+    {
+      userId: session?.user.id,
+      token: token!,
+    },
+    {
+      pollingInterval: 5000,
+    }
+  );
 
   const bookings = bookingsData.data?.bookings;
 
