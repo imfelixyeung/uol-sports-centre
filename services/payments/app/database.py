@@ -91,9 +91,9 @@ def add_purchase(customer_id: str,
       receipt_pdf, 
       booking_id,
       purchase_price)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-      (customer_id, product_id, purchase_date, expiry, invoice_pdf,
-       booking_id, purchase_price))
+      VALUES (?, ?, ?, ?, ?, ?, ?)""",
+      (customer_id, product_id, purchase_date, expiry, invoice_pdf, booking_id,
+       purchase_price))
   con.commit()
   con.close()
 
