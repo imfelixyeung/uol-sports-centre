@@ -74,7 +74,6 @@ def add_customer(user_id: int, stripe_id: str):
 def add_purchase(customer_id: str,
                  product_id: str,
                  purchase_date: str,
-                 charge_id: str,
                  invoice_pdf: str,
                  purchase_price: float,
                  expiry: Optional[str] = None,
@@ -89,12 +88,11 @@ def add_purchase(customer_id: str,
       product_id, 
       purchaseDate, 
       expiryDate, 
-      chargeID, 
       receipt_pdf, 
       booking_id,
       purchase_price)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-      (customer_id, product_id, purchase_date, expiry, charge_id, invoice_pdf,
+      (customer_id, product_id, purchase_date, expiry, invoice_pdf,
        booking_id, purchase_price))
   con.commit()
   con.close()
