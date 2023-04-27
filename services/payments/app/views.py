@@ -205,8 +205,6 @@ def webhook_received():
     expiry_time = str(datetime.now() + relativedelta(months=1))
 
     #Add purchase to database, inserting relavant fields for product type
-    charge_id = ""
-
     pending = get_pending(session.stripe_id)
     booked_ids = []
     for booking in pending:
