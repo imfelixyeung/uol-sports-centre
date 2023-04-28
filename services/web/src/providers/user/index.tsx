@@ -31,6 +31,7 @@ export const UserProvider: FC<PropsWithChildren> = ({children}) => {
     },
     {
       skip: userId === null,
+      pollingInterval: 5000,
     }
   );
 
