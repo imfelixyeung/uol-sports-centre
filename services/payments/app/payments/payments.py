@@ -231,12 +231,11 @@ def change_discount_amount(amount: float):
 def get_payment_manager(user_id: int):
   """Returns portal session for payments and subscription"""
   # Get the Stripe customer ID for the current user from the database
-  stripe_customer_id = get_user(user_id)[1]
-  if stripe_customer_id is None:
-
+  if get_user(user_id) is None:
     new_customer = stripe.Customer.create()
     add_customer(user_id, new_customer.stripe_id)
-    stripe_customer_id = get_user(user_id)[1]
+
+  stripe_customer_id = get_user(user_id)[1]
 
   #Return portal for customer
   portal_session = create_portal(stripe_customer_id)
