@@ -442,25 +442,26 @@ def cancel_membership(user_id: int):
     return make_response(jsonify({"message": "access denied"}), 403)
 
 
-@app.route("/refund/<int:booking_id>", methods=["GET"])
-def refund(booking_id):
-  """Endpoint to process refunds for booking"""
+#Refund no longer implemented
+#@app.route("/refund/<int:booking_id>", methods=["GET"])
+#def refund(booking_id):
+#  """Endpoint to process refunds for booking"""
 
-  # Retrieve the purchase information from the database
-  order = get_order(booking_id)
+# Retrieve the purchase information from the database
+#  order = get_order(booking_id)
 
-  # Checks if the purchase exists
-  if not order:
-    return jsonify({"error": "Purchase not found."}), 404
+# Checks if the purchase exists
+#  if not order:
+#    return jsonify({"error": "Purchase not found."}), 404
 
-  # Refund the payment using Stripe API
-  try:
-    stripe.Refund.create(charge=order[5])
+# Refund the payment using Stripe API
+#  try:
+#    stripe.Refund.create(charge=order[5])
 
-  except stripe_errors.StripeError as refund_error:
-    return jsonify({"error": str(refund_error)}), 400
+#  except stripe_errors.StripeError as refund_error:
+#    return jsonify({"error": str(refund_error)}), 400
 
-  return jsonify({"message": "Refund processed successfully."}), 200
+#  return jsonify({"message": "Refund processed successfully."}), 200
 
 
 @app.route("/receipt/<int:booking_id>", methods=["GET"])
@@ -475,12 +476,12 @@ def get_receipt(booking_id):
     return jsonify({"error": "Purchase not found."}), 404
 
   # Check if receipt exists
-  if len(purchase) < 7 or not purchase[6]:
+  if len(purchase) < 7 or not purchase[5]:
     return jsonify({
         "error": """Receipt not found for this purchase (User may be member)."""
     }), 404
 
-  receipt = purchase[6]
+  receipt = purchase[5]
 
   # Checks if the receipt exists
   if not receipt:
