@@ -205,8 +205,6 @@ def webhook_received():
     expiry_time = str(datetime.now() + relativedelta(months=1))
 
     #Add purchase to database, inserting relavant fields for product type
-    charge_id = ""
-
     pending = get_pending(session.stripe_id)
     booked_ids = []
     for booking in pending:
@@ -254,10 +252,10 @@ def webhook_received():
                                400)
 
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf, price, expiry_time)
+                     invoice.invoice_pdf, price, expiry_time)
       else:
         add_purchase(user_id, purchased_item.price.product, transaction_time,
-                     charge_id, invoice.invoice_pdf, price, None,
+                     invoice.invoice_pdf, price, None,
                      booked_ids[booking_index])
         booking_index = booking_index + 1
 
@@ -462,9 +460,6 @@ def refund(booking_id):
   except stripe_errors.StripeError as refund_error:
     return jsonify({"error": str(refund_error)}), 400
 
-  # For now, delete order
-  #delete_order(order[0])
-
   return jsonify({"message": "Refund processed successfully."}), 200
 
 
@@ -494,7 +489,6 @@ def get_receipt(booking_id):
   return jsonify({"receipt": receipt}), 200
 
 
-#@app.route("/initialise-payments", methods=["POST"])
 def init_payments():
   """Endpoint to initialise the database for products"""
   init_database()

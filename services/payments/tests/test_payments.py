@@ -281,8 +281,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     test_booking_id = 1234
 
     # Adding a temp purchase
-    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
-                 5, None, test_booking_id)
+    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "pdf", 5, None,
+                 test_booking_id)
 
     test_order = get_order(1234)
 
@@ -323,8 +323,8 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     test_booking_id = 1234
 
     # Adding a temp purchase
-    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "ci_1234", "pdf",
-                 5, None, test_booking_id)
+    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "pdf", 5, None,
+                 test_booking_id)
 
     mock_stripe.return_value = {"status": 200}
 
