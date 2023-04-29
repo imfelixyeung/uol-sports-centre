@@ -243,7 +243,7 @@ def webhook_received():
           requests.put(f"http://gateway/api/users/{user_id}/updateMembership",
                        json={"membership": product.name},
                        timeout=5,
-                       headers={"Authorization": f"{pending[0][4]}"})
+                       headers={"Authorization": f"{pending[0][5]}"})
 
         # Case there was a request error
         except requests.exceptions.RequestException as request_error:
