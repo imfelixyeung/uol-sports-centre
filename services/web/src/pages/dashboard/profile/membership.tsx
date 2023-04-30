@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {useRouter} from 'next/router';
 import toast from 'react-hot-toast';
 import Button, {buttonStyles} from '~/components/Button';
@@ -68,8 +67,8 @@ const MembershipPage = () => {
           },
         ],
         metadata: {
-          successUrl: `${window.location.origin}/dashboard/bookings`,
-          cancelUrl: `${window.location.origin}/dashboard/bookings`,
+          successUrl: `${window.location.origin}/dashboard/profile`,
+          cancelUrl: `${window.location.origin}/dashboard/profile`,
         },
         token: token!,
         user: session!.user.id,

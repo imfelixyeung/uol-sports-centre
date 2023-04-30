@@ -10,19 +10,19 @@ export const memberships: Membership[] = [
   {
     id: 'Individual',
     name: 'Individual bookings',
-    price: 'From £25',
+    price: 'From £{{price}}',
     buttonLabel: 'Book',
   },
   {
     id: 'Membership-Monthly',
     name: 'Monthly',
-    price: '£35 / month',
+    price: '£{{price}} / month',
     buttonLabel: 'Buy',
   },
   {
     id: 'Membership-Yearly',
     name: 'Yearly',
-    price: '£300 / year',
+    price: '£{{price}} / year',
     buttonLabel: 'Buy',
     bestValue: true,
   },
