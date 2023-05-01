@@ -2,17 +2,16 @@
 
 import stripe
 from stripe import error as stripe_errors
-from typing import Optional
 from stripe.error import StripeError
 from datetime import datetime
 import requests
 import json
 from flask import jsonify, make_response
 
-from app.interfaces import create_portal, LOCAL_DOMAIN
+from app.interfaces import create_portal
 from app.database import (add_product, get_user, get_product, add_customer,
                           update_price, get_pricing_lists, get_purchases,
-                          get_order, delete_order, add_pending, add_purchase)
+                          add_pending, add_purchase)
 
 
 def make_purchasable(product_name: str, product_price: float,
@@ -232,12 +231,11 @@ def change_discount_amount(amount: float):
 def get_payment_manager(user_id: int):
   """Returns portal session for payments and subscription"""
   # Get the Stripe customer ID for the current user from the database
-  stripe_customer_id = get_user(user_id)[1]
-  if stripe_customer_id is None:
-
+  if get_user(user_id) is None:
     new_customer = stripe.Customer.create()
     add_customer(user_id, new_customer.stripe_id)
-    stripe_customer_id = get_user(user_id)[1]
+
+  stripe_customer_id = get_user(user_id)[1]
 
   #Return portal for customer
   portal_session = create_portal(stripe_customer_id)
@@ -272,32 +270,33 @@ def cancel_subscription(user_id: int):
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 
-  # Updating the membership status in the user microservice
+  #Updating the membership status in the user microservice
   response_users = requests.post(
       f"http://gateway/api/users/{user_id}/updateMembership",
-      json={"membership": subscription},
+      json={"membership": ""},
       timeout=5)
 
   return response_users.status_code
 
 
-def refund_booking(booking_id: int):
-  """Refunds the booking to the user for the given booking id"""
-  # Retrieve the purchase information from the database
-  order = get_order(booking_id)
+#Refund no longer implemented
+#def refund_booking(booking_id: int):
+#  """Refunds the booking to the user for the given booking id"""
+# Retrieve the purchase information from the database
+#  order = get_order(booking_id)
 
-  # Checks if the purchase exists
-  if not order:
-    return "Purchase not found"
+# Checks if the purchase exists
+#  if not order:
+#    return "Purchase not found"
 
-  # Refund the payment using Stripe API
-  try:
-    stripe.Refund.create(charge=order[5])
+# Refund the payment using Stripe API
+#  try:
+#    stripe.Refund.create(charge=order[5])
 
-  except stripe_errors.StripeError as refund_error:
-    return refund_error
+#  except stripe_errors.StripeError as refund_error:
+#    return refund_error
 
-  # For now, delete order
-  delete_order(order[0])
+# For now, delete order
+#  delete_order(order[0])
 
-  return order
+#  return order

@@ -4,7 +4,7 @@ import sqlite3
 import json
 from flask import Flask
 from unittest import mock
-from unittest.mock import patch
+#from unittest.mock import patch
 
 import urllib.request
 import stripe
@@ -295,7 +295,7 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     # Check if the receipt URL is correct
     response_json = response.json
     if response_json is not None:
-      self.assertEqual(response_json["receipt"], test_order[6])
+      self.assertEqual(response_json["receipt"], test_order[5])
     else:
       self.fail("Response JSON is None")
 
@@ -304,42 +304,43 @@ class TestingPaymentsMicroservice(unittest.TestCase):
     delete_customer(111, new_customer.stripe_id)
     delete_product("prod_NUNazbUQcwZQaU")
 
-  @patch("stripe.Refund.create")
-  def test_refund(self, mock_stripe):
-    """ Function to test functionality of refund endpoint"""
+  #Refund no longer implemented
+  #@patch("stripe.Refund.create")
+  #def test_refund(self, mock_stripe):
+  #  """ Function to test functionality of refund endpoint"""
 
-    # Initialise the database
-    create_test_database()
+  # Initialise the database
+  #  create_test_database()
 
-    # Add test products to the database
-    add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
+  # Add test products to the database
+  #  add_product("product-test", "prod_NUNazbUQcwZQaU", "5", "Session")
 
-    # Create temp new customer on stripe
-    new_customer = stripe.Customer.create()
+  # Create temp new customer on stripe
+  #  new_customer = stripe.Customer.create()
 
-    # Add customer to database with '111' as ID
-    add_customer(111, new_customer.stripe_id)
+  # Add customer to database with '111' as ID
+  #  add_customer(111, new_customer.stripe_id)
 
-    test_booking_id = 1234
+  #  test_booking_id = 1234
 
-    # Adding a temp purchase
-    add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "pdf", 5, None,
-                 test_booking_id)
+  # Adding a temp purchase
+  #  add_purchase("111", "prod_NUNazbUQcwZQaU", "2022-12-31", "pdf", 5, None,
+  #               test_booking_id)
 
-    mock_stripe.return_value = {"status": 200}
+  #  mock_stripe.return_value = {"status": 200}
 
-    # Call the endpoint
-    response = self.client.get(f"/refund/{test_booking_id}")
+  # Call the endpoint
+  #  response = self.client.get(f"/refund/{test_booking_id}")
 
-    # Check the response
-    self.assertEqual(response.status_code, 200)
-    self.assertEqual(response.json,
-                     {"message": "Refund processed successfully."})
+  # Check the response
+  #  self.assertEqual(response.status_code, 200)
+  #  self.assertEqual(response.json,
+  #                   {"message": "Refund processed successfully."})
 
-    #Delete temp customer
-    stripe.Customer.delete(new_customer.stripe_id)
-    delete_customer(111, new_customer.stripe_id)
-    delete_product("prod_NUNazbUQcwZQaU")
+  #Delete temp customer
+  #  stripe.Customer.delete(new_customer.stripe_id)
+  #  delete_customer(111, new_customer.stripe_id)
+  #  delete_product("prod_NUNazbUQcwZQaU")
 
 
 if __name__ == "__main__":
