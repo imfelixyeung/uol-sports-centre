@@ -14,6 +14,7 @@ import {
   useCancelMembershipMutation,
   useCreateCheckoutSessionMutation,
   useGetCustomerPortalQuery,
+  useGetPricesQuery,
 } from '~/redux/services/api';
 
 const MembershipPage = () => {
@@ -26,6 +27,34 @@ const MembershipPage = () => {
   });
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const router = useRouter();
+
+  const activityPricesData = useGetPricesQuery({
+    productType: 'Activity',
+    token: token!,
+  });
+  const facilityPricesData = useGetPricesQuery({
+    productType: 'Facility',
+    token: token!,
+  });
+  const membershipsData = useGetPricesQuery({
+    productType: 'Membership',
+    token: token!,
+  });
+
+  const activityPrices = activityPricesData.data;
+  const facilityPrices = facilityPricesData.data;
+
+  if (
+    activityPricesData.isLoading ||
+    facilityPricesData.isLoading ||
+    membershipsData.isLoading
+  )
+    return <>Loading</>;
+  if (!activityPrices || !facilityPrices) return <>Something went wrong</>;
+
+  const lowestPrice = [...activityPrices, ...facilityPrices]
+    .map(price => price.price)
+    .sort((a, b) => (a > b ? 1 : a < b ? -1 : 0))[0];
 
   const currentMembership = (user?.membership ?? 'Individual') as
     | 'Membership-Yearly'
@@ -84,11 +113,20 @@ const MembershipPage = () => {
     await router.push(url);
   };
 
+  if (!lowestPrice) return <>Something went wrong</>;
+
   const _memberships: MembershipCardProps['membership'][] = memberships.map(
     membership => {
       const current = membership.id === currentMembership;
+      const price =
+        membership.id === 'Individual'
+          ? lowestPrice
+          : membershipsData.data?.find(
+              data => data.productName === membership.id
+            )?.price ?? 'Unknown';
       return {
         ...membership,
+        price: membership.price.replace('{{price}}', price),
         current,
         buttonLabel: current
           ? membership.id === 'Individual'
