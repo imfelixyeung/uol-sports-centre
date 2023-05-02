@@ -270,13 +270,7 @@ def cancel_subscription(user_id: int):
   subscription = f"{customer.subscriptions.data[0].id}"
   stripe.Subscription.delete(subscription)
 
-  #Updating the membership status in the user microservice
-  response_users = requests.post(
-      f"http://gateway/api/users/{user_id}/updateMembership",
-      json={"membership": ""},
-      timeout=5)
-
-  return response_users.status_code
+  return 200
 
 
 #Refund no longer implemented

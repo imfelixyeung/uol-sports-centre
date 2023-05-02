@@ -437,6 +437,11 @@ def cancel_membership(user_id: int):
     #Check if user exists
     if get_user(user_id) is None:
       return jsonify({"error": "User not found."}), 404
+    #Updating the membership status in the user microservice
+    requests.put(f"http://gateway/api/users/{user_id}/updateMembership",
+                 json={"membership": ""},
+                 timeout=5,
+                 headers={"Authorization": f"{auth}"})
     return jsonify(cancel_subscription(user_id))
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
