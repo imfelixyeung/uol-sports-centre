@@ -281,14 +281,6 @@ def webhook_received():
         update_expiry(customer, product,
                       str(datetime.now() + relativedelta(months=expiry)))
 
-  #Cause subscription to expire if deleted
-  elif event.type == "customer.subscription.deleted":
-    subscription = event.data.object
-    customer = subscription.customer
-    product = subscription.items.data[1].price.product
-    #Redundant?
-    #update_expiry(customer, product, str(datetime.now()))
-
   #Delete pending bookings if session expired
   elif event.type == "checkout.session.expired":
     session = stripe.checkout.Session.retrieve(
@@ -437,7 +429,13 @@ def cancel_membership(user_id: int):
     #Check if user exists
     if get_user(user_id) is None:
       return jsonify({"error": "User not found."}), 404
-    return jsonify(cancel_subscription(user_id))
+    #Updating the membership status in the user microservice
+    requests.put(f"http://gateway/api/users/{user_id}/updateMembership",
+                 json={"membership": ""},
+                 timeout=5,
+                 headers={"Authorization": f"{auth}"})
+    cancel_subscription(user_id)
+    return make_response(jsonify({"message": "success"}), 200)
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
 
