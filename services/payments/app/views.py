@@ -281,14 +281,6 @@ def webhook_received():
         update_expiry(customer, product,
                       str(datetime.now() + relativedelta(months=expiry)))
 
-  #Cause subscription to expire if deleted
-  elif event.type == "customer.subscription.deleted":
-    subscription = event.data.object
-    customer = subscription.customer
-    product = subscription.items.data[1].price.product
-    #Redundant?
-    #update_expiry(customer, product, str(datetime.now()))
-
   #Delete pending bookings if session expired
   elif event.type == "checkout.session.expired":
     session = stripe.checkout.Session.retrieve(
