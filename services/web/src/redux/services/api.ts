@@ -19,8 +19,8 @@ import type {
   BookBookingResponse,
   BookingAvailabilityRequest,
   BookingAvailabilityResponse,
-  CancelBookingResponse,
   CancelBookingRequest,
+  CancelBookingResponse,
   GetBookingEventsRequest,
   GetBookingEventsResponse,
   GetBookingRequest,
@@ -523,7 +523,7 @@ export const api = createApi({
       CancelMembershipRequest & Token
     >({
       query: ({token, userId}) => ({
-        url: `/cancel-membership/${userId}`,
+        url: `/payments/cancel-membership/${userId}`,
         method: 'GET',
         headers: {Authorization: `Bearer ${token}`},
       }),
