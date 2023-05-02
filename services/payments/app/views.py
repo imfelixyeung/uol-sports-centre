@@ -434,7 +434,8 @@ def cancel_membership(user_id: int):
                  json={"membership": ""},
                  timeout=5,
                  headers={"Authorization": f"{auth}"})
-    return jsonify(cancel_subscription(user_id))
+    cancel_subscription(user_id)
+    return make_response(jsonify({"message": "success"}), 200)
   else:
     return make_response(jsonify({"message": "access denied"}), 403)
 
