@@ -16,7 +16,8 @@ const MembershipBanner = () => {
 
   if (!user || !membershipsData.data) return null;
 
-  const {membership} = user;
+  const {membership: _membership} = user;
+  const membership = _membership || null; // empty string is not a membership
   const membershipData = membershipsData.data.find(
     data => data.productName === membership
   );
