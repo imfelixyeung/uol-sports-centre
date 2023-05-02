@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "env": {
+    "targets": {
+      "node": 18
+    }
+  },
+  "jsc": {
+    "parser": {
+      "syntax": "typescript"
+    },
+    "target": "es2015",
+    "loose": true,
+    "keepClassNames": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "minify": true,
+  "sourceMaps": "inline"
+}

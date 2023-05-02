@@ -1,0 +1,12 @@
+{
+  "extends": "./node_modules/gts/",
+  "root": true,
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  }
+}

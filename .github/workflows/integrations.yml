@@ -1,0 +1,152 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  web-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-web
+
+  auth-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-auth
+
+  docs-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-docs
+
+  status-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ci tests in docker
+        run: make ci-status
+
+  booking-ci-checks:
+    runs-on: ubuntu-latest
+    env:
+      HOST: localhost
+      PORT: 12345
+      DEBUG: false
+      DATABASE_URL: file:./dev.db
+
+    strategy:
+      matrix:
+        node-version: [18, 19]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: services/booking/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./services/booking
+
+      - name: Run linter
+        run: pnpm run lint
+        working-directory: ./services/booking
+
+      - name: Build
+        run: pnpm run build
+        working-directory: ./services/booking
+
+      - name: Test
+        run: pnpm run test:unit
+        working-directory: ./services/booking
+
+  users-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
+
+      - name: Run ci tests in docker
+        run: make ci-users
+
+  facilities-ci-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup env
+        run: make setup-dev
+        working-directory: ./services/facilities
+
+      - name: Update env
+        run: make update-env
+        working-directory: ./services/facilities
+
+      - name: Run tests
+        run: make test
+        working-directory: ./services/facilities
+
+      - name: Run linters
+        run: make lint
+        working-directory: ./services/facilities
+
+  payments-ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Creates the ci environment file
+      # inspired by https://stackoverflow.com/a/61567211
+      - name: Create .env.ci file
+        run: |
+          touch .env.ci
+          echo STRIPE_WEBHOOK=${{ secrets.STRIPE_WEBHOOK_TEST }} >> .env.ci
+          echo STRIPE_API=${{ secrets.STRIPE_API_KEY_TEST }} >> .env.ci
+          echo APP_PORT=${{ secrets.APP_PORT }} >> .env.ci
+          echo AUTH_JWT_SIGNING_SECRET=${{ secrets.AUTH_JWT_SIGNING_SECRET_TEST }} >> .env.ci
+
+      - name: Run ci tests in docker
+        run: make ci-payments

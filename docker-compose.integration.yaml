@@ -1,0 +1,240 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=web
+    networks:
+      - network
+    volumes:
+      - ./services/web:/app
+      - /app/node_modules
+
+  auth:
+    build:
+      context: ./services/auth
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=0.0.0.0
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/dev
+    networks:
+      - network
+    volumes:
+      - ./services/auth:/app
+      - /app/node_modules
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: [ "CMD", "pg_isready", "-U", "auth", "-d", "dev" ]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  users:
+    build:
+      context: ./services/users
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=users
+      - DATABASE_URL=postgresql://users:mysecretpassword@users-db:5432/dev
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    volumes:
+      - ./services/users:/app
+      - /app/node_modules
+    depends_on:
+      users-db:
+        condition: service_healthy
+
+  users-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=users
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: [ "CMD", "pg_isready", "-U", "users", "-d", "dev" ]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  status:
+    build:
+      context: ./services/status
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=status
+      - DATABASE_URL=postgresql://status:status@status-db:5432/dev
+    networks:
+      - network
+    volumes:
+      - ./services/status:/app
+      - /app/node_modules
+    depends_on:
+      status-db:
+        condition: service_healthy
+
+  status-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=status
+      - POSTGRES_USER=status
+      - POSTGRES_DB=dev
+    networks:
+      - network
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: [ "CMD", "pg_isready", "-U", "status", "-d", "dev" ]
+      interval: 5s
+      timeout: 5s
+      retries: 50
+
+  facilities:
+    build:
+      context: ./services/facilities
+      dockerfile: Dockerfile.dev
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    volumes:
+      - ./services/facilities:/app
+    networks:
+      - network
+
+  booking:
+    build:
+      context: ./services/booking
+      target: dev
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
+      - DEBUG=true
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    volumes:
+      - ./services/booking:/app
+      - /app/node_modules
+    depends_on:
+      booking-db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "scripts/healthcheck.js",
+          "booking",
+          "80"
+        ]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+    networks:
+      - network
+
+  booking-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=booking
+      - POSTGRES_USER=booking
+      - POSTGRES_DB=test
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "booking", "-d", "test" ]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+    networks:
+      - network
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_API} --forward-to http://payments/webhook
+    networks:
+      - network
+  payments:
+    build:
+      context: ./services/payments
+      target: dev
+    environment:
+      - APP_PORT=80
+      - DEBUG=true
+      - STRIPE_API=${STRIPE_API}
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    volumes:
+      - ./persistence/payments/data:/app/data
+      - ./services/payments:/app
+    depends_on:
+      - stripe-cli
+
+  gateway:
+    build: ./gateway
+    env_file:
+      - .env.dev
+    ports:
+      - "${APP_PORT}:80"
+    links:
+      - web
+      - auth
+      - users
+      - status
+      - facilities
+      - booking
+      - payments
+    networks:
+      - network
+
+  booking-ci:
+    build:
+      context: ./services/booking
+      target: ci
+    environment:
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/test
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    depends_on:
+      booking-db:
+        condition: service_healthy
+      booking:
+        condition: service_healthy
+      facilities:
+        condition: service_started
+      gateway:
+        condition: service_started
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

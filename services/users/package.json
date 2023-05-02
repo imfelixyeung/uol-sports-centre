@@ -1,0 +1,42 @@
+{
+  "name": "users",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "fix": "gts fix",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --packages=external",
+    "start": "pnpm db:push && node dist/index.js",
+    "dev": "pnpm db:push && tsx watch --clear-screen=false src/index.ts",
+    "ci": "pnpm type-check && pnpm lint && pnpm build && pnpm test",
+    "db:push": "prisma db push"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "@prisma/client": "^4.11.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "ts-node": "^10.9.1",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.0",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^18.14.5",
+    "esbuild": "^0.17.11",
+    "gts": "^3.1.1",
+    "jest": "^29.5.0",
+    "jest-mock-extended": "^3.0.4",
+    "prisma": "^4.11.0",
+    "ts-jest": "^29.0.5",
+    "tsx": "^3.12.3",
+    "typescript": "~4.7.4"
+  }
+}

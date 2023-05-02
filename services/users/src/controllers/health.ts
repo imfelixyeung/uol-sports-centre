@@ -1,0 +1,16 @@
+// This is a controller that returns the health of the service
+
+import {Handler} from 'express';
+import {getHealth} from '../services/health';
+
+// This is a controller that returns the health of the service
+const get: Handler = async (req, res) => {
+  const health = await getHealth();
+  return res.json(health);
+};
+
+const healthControllers = {
+  get,
+};
+
+export default healthControllers;

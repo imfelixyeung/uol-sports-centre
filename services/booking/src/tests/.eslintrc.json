@@ -1,0 +1,11 @@
+{
+  "extends": "../../.eslintrc.json",
+  "rules": {
+    "node/no-unpublished-import": [
+      "error",
+      {
+        "allowModules": ["supertest", "jest-mock-extended", "dotenv"]
+      }
+    ]
+  }
+}

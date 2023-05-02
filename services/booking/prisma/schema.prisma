@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  eventId Int
+  starts  DateTime
+  created DateTime
+  updated DateTime
+
+  event Event @relation(fields: [eventId], references: [id])
+}
+
+enum EventType {
+  // Open use means many people can book seperately to use the facility
+  OPEN_USE
+
+  // Session means that one person books out that facility
+  SESSION
+
+  // Team event means that the facility is unavailable for use within that time
+  TEAM_EVENT
+}
+
+model Event {
+  id         Int       @id @default(autoincrement())
+  name       String
+  activityId Int
+  day        Int
+  time       Int
+  duration   Int
+  type       EventType
+
+  bookings Booking[]
+}

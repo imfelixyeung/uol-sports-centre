@@ -1,0 +1,197 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=web
+    networks:
+      - network
+
+  facilities:
+    build: ./services/facilities
+    environment:
+      - FLASK_RUN_PORT=80
+      - FLASK_RUN_HOST=facilities
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+
+  auth:
+    restart: always
+    build:
+      context: ./services/auth
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=0.0.0.0
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+      - JWT_REFRESH_SIGNING_SECRET=${AUTH_JWT_REFRESH_SIGNING_SECRET}
+      - DATABASE_URL=postgresql://auth:auth@auth-db:5432/prod
+    networks:
+      - network
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  auth-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_USER=auth
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/auth/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  status:
+    build:
+      context: ./services/status
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=status
+      - DATABASE_URL=postgresql://status:status@status-db:5432/prod
+    networks:
+      - network
+    depends_on:
+      status-db:
+        condition: service_healthy
+
+  status-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=status
+      - POSTGRES_USER=status
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/status/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "status", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  users:
+    build:
+      context: ./services/users
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=users
+      - DATABASE_URL=postgresql://users:mysecretpassword@users-db:5432/prod
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    depends_on:
+      users-db:
+        condition: service_healthy
+
+  users-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=users
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/users/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "users", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  booking:
+    build:
+      context: ./services/booking
+      target: prod
+    environment:
+      - PORT=80
+      - HOST=booking
+      - DATABASE_URL=postgresql://booking:booking@booking-db:5432/prod
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+    networks:
+      - network
+    depends_on:
+      booking-db:
+        condition: service_healthy
+
+  booking-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=booking
+      - POSTGRES_USER=booking
+      - POSTGRES_DB=prod
+    networks:
+      - network
+    volumes:
+      - ./persistence/booking/db:/var/lib/postgresql/data
+    healthcheck:
+      # Healthcheck inspired from https://stackoverflow.com/a/55835081
+      test: ["CMD", "pg_isready", "-U", "booking", "-d", "prod"]
+      interval: 5s
+      timeout: 15s
+      retries: 50
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_API} --forward-to http://payments/webhook
+    networks:
+      - network
+
+  payments:
+    build:
+      context: ./services/payments
+      target: prod
+    volumes:
+      - ./persistence/payments/data:/app/data
+    environment:
+      - APP_PORT=80
+      - STRIPE_API=${STRIPE_API}
+      - STRIPE_WEBHOOK=${STRIPE_WEBHOOK}
+      - JWT_SIGNING_SECRET=${AUTH_JWT_SIGNING_SECRET}
+
+    networks:
+      - network
+
+    depends_on:
+      - stripe-cli
+
+  gateway:
+    build: ./gateway
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:80"
+    networks:
+      - network
+    links:
+      - web
+      - auth
+      - status
+      - users
+
+networks:
+  network:
+    driver: bridge

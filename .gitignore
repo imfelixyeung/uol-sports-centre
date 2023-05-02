@@ -1,0 +1,13 @@
+# Mac
+.DS_Store
+
+# environment files
+.env
+.env.dev
+.env.ci
+
+# Persistence
+/persistence
+
+# databases
+*.db

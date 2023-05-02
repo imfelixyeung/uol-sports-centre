@@ -1,0 +1,17 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "format:fix": "prettier --config .prettierrc --ignore-path .prettierignore --write .",
+    "format:check": "prettier --config .prettierrc --ignore-path .prettierignore --check .",
+    "ci": "pnpm format:check && openapi-spec-validator --errors=all openapi.yaml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^2.8.4"
+  }
+}
