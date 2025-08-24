@@ -4,25 +4,53 @@ import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {useGetPricesQuery} from '~/redux/services/api';
 import MembershipCard from '../MembershipCard';
 import Typography from '../Typography';
+import {env} from '~/env.mjs';
+import {
+  mockFacilityPrices,
+  mockActivityPrices,
+  mockMembershipPrices,
+} from '~/data/mock';
 
 const Memberships = () => {
   const router = useRouter();
   const {token} = useAuth();
-  const activityPricesData = useGetPricesQuery({
-    productType: 'Activity',
-    token: token!,
-  });
-  const facilityPricesData = useGetPricesQuery({
-    productType: 'Facility',
-    token: token!,
-  });
-  const membershipsData = useGetPricesQuery({
-    productType: 'Membership',
-    token: token!,
-  });
+  const activityPricesData = useGetPricesQuery(
+    {
+      productType: 'Activity',
+      token: token!,
+    },
+    {
+      skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+    }
+  );
+  const facilityPricesData = useGetPricesQuery(
+    {
+      productType: 'Facility',
+      token: token!,
+    },
+    {
+      skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+    }
+  );
+  const membershipsData = useGetPricesQuery(
+    {
+      productType: 'Membership',
+      token: token!,
+    },
+    {
+      skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+    }
+  );
 
-  const activityPrices = activityPricesData.data;
-  const facilityPrices = facilityPricesData.data;
+  const activityPrices = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilityPrices
+    : activityPricesData.data;
+  const facilityPrices = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockActivityPrices
+    : facilityPricesData.data;
+  const membershipsPrices = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockMembershipPrices
+    : membershipsData.data;
 
   if (
     activityPricesData.isLoading ||
@@ -49,7 +77,7 @@ const Memberships = () => {
           const price =
             membership.id === 'Individual'
               ? lowestPrice
-              : membershipsData.data?.find(
+              : membershipsPrices?.find(
                   data => data.productName === membership.id
                 )?.price ?? 'Unknown';
 

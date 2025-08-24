@@ -146,7 +146,7 @@ const OnboardingPage: NextPageWithLayout = () => {
           />
         </div>
       </aside>
-      <main className="grow bg-white py-16 px-8 text-black">
+      <main className="grow bg-white px-8 py-16 text-black">
         <Formik
           initialValues={{
             firstName: '',

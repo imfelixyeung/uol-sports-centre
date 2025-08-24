@@ -5,6 +5,12 @@ import OpeningHours from '~/components/OpeningHours';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
 import {
+  mockFacilities,
+  mockFacilityActivities,
+  mockFacilityTimes,
+} from '~/data/mock';
+import {env} from '~/env.mjs';
+import {
   useGetFacilityActivitiesQuery,
   useGetFacilityQuery,
   useGetFacilityTimesQuery,
@@ -14,18 +20,29 @@ dayjs.extend(durationPlugin);
 const FacilitiesPage = () => {
   const router = useRouter();
   const facilityId = Number(router.query.facilityId as string);
-  const facilityData = useGetFacilityQuery(facilityId);
-  const facility = facilityData.data?.facility;
+  const facilityData = useGetFacilityQuery(facilityId, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
+  const facility = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilities.find(f => f.id === facilityId)
+    : facilityData.data?.facility;
 
-  const facilityTimesData = useGetFacilityTimesQuery();
-  const facilityTimes = facilityTimesData.data?.filter(
-    time => time.facility_id === facilityId
-  );
+  const facilityTimesData = useGetFacilityTimesQuery(undefined, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
 
-  const facilityActivitiesData = useGetFacilityActivitiesQuery();
-  const facilityActivities = facilityActivitiesData.data?.filter(
-    activity => activity.facility_id === facilityId
-  );
+  const facilityTimes = (
+    env.NEXT_PUBLIC_USE_MOCK_DATA ? mockFacilityTimes : facilityTimesData.data
+  )?.filter(time => time.facility_id === facilityId);
+
+  const facilityActivitiesData = useGetFacilityActivitiesQuery(undefined, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
+  const facilityActivities = (
+    env.NEXT_PUBLIC_USE_MOCK_DATA
+      ? mockFacilityActivities
+      : facilityActivitiesData.data
+  )?.filter(activity => activity.facility_id === facilityId);
 
   return (
     <div className="flex grow flex-col">

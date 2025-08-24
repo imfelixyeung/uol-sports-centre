@@ -2,13 +2,20 @@ import Link from 'next/link';
 import {useGetFacilitiesQuery} from '~/redux/services/api';
 import {ProductCarousel} from '../ProductCarousel';
 import Typography from '../Typography';
+import {env} from '~/env.mjs';
+import {FacilitiesResponse} from '~/redux/services/types/facilities';
+import {mockFacilities} from '~/data/mock';
 
 const Facilities = () => {
-  const facilitiesData = useGetFacilitiesQuery();
-  const facilities = facilitiesData.data;
+  const facilitiesData = useGetFacilitiesQuery(undefined, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
+  const facilities = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilities
+    : facilitiesData.data;
 
   if (facilitiesData.isLoading) return <>Loading...</>;
-  if (facilitiesData.isError || !facilities)
+  if ((facilitiesData.isError && !env.NEXT_PUBLIC_USE_MOCK_DATA) || !facilities)
     return <>Something went wrong...</>;
 
   return (

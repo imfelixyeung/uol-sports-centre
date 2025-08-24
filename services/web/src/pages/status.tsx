@@ -6,6 +6,8 @@ import type {FC} from 'react';
 import Seo from '~/components/Seo';
 import {StatusOverview} from '~/components/Status';
 import Typography from '~/components/Typography';
+import {mockStatuses} from '~/data/mock';
+import {env} from '~/env.mjs';
 import {useGetStatusReportQuery} from '~/redux/services/api';
 import type {ServiceStatus} from '~/redux/services/types/status';
 dayjs.extend(relativeTime);
@@ -13,12 +15,17 @@ dayjs.extend(relativeTime);
 const StatusPage = () => {
   const statusReportData = useGetStatusReportQuery(undefined, {
     pollingInterval: ms('1m'),
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
   });
+  const statusReport = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockStatuses
+    : statusReportData.data;
   if (statusReportData.isLoading) return <div>Loading...</div>;
-  if (statusReportData.isError) return <div>Error... Try again later</div>;
-  if (!statusReportData.data) return <div>No data...</div>;
+  if (!env.NEXT_PUBLIC_USE_MOCK_DATA && statusReportData.isError)
+    return <div>Error... Try again later</div>;
+  if (!statusReport) return <div>No data...</div>;
 
-  const report = statusReportData.data.data;
+  const report = statusReport.data;
 
   return (
     <>

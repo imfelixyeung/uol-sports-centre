@@ -2,23 +2,33 @@ import clsx from 'clsx';
 import FancyChevronPageNav from '~/components/FancyChevronPageNav';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
+import {mockFacilities, mockFacilityActivities} from '~/data/mock';
+import {env} from '~/env.mjs';
 import {
   useGetFacilitiesQuery,
   useGetFacilityActivitiesQuery,
 } from '~/redux/services/api';
 
 const FacilitiesPage = () => {
-  const facilitiesData = useGetFacilitiesQuery();
-  const facilities = facilitiesData.data;
-  const activitiesData = useGetFacilityActivitiesQuery();
-  const activities = activitiesData.data;
+  const facilitiesData = useGetFacilitiesQuery(undefined, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
+  const facilities = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilities
+    : facilitiesData.data;
+  const activitiesData = useGetFacilityActivitiesQuery(undefined, {
+    skip: !!env.NEXT_PUBLIC_USE_MOCK_DATA,
+  });
+  const activities = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilityActivities
+    : activitiesData.data;
 
   if (facilitiesData.isLoading || activitiesData.isLoading)
     return <>Loading...</>;
 
   if (
-    facilitiesData.isError ||
-    activitiesData.isError ||
+    (!env.NEXT_PUBLIC_USE_MOCK_DATA &&
+      (facilitiesData.isError || activitiesData.isError)) ||
     !facilities ||
     !activities
   )

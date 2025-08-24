@@ -79,7 +79,7 @@ const BookingActivity: FC<BookingActivityProps> = ({
   return (
     <div
       className={clsx(
-        'bg-black py-3 px-6 text-white shadow-card',
+        'bg-black px-6 py-3 text-white shadow-card',
         variant && action && 'relative'
       )}
     >

@@ -1,6 +1,8 @@
 import Memberships from '~/components/LandingPage/Memberships';
 import PageHero from '~/components/PageHero';
 import Typography from '~/components/Typography';
+import {mockActivityPrices, mockFacilityPrices} from '~/data/mock';
+import {env} from '~/env.mjs';
 import {useAuth} from '~/providers/auth/hooks/useAuth';
 import {useGetPricesQuery} from '~/redux/services/api';
 
@@ -15,8 +17,12 @@ const PricingPage = () => {
     token: token!,
   });
 
-  const activityPrices = activityPricesData.data;
-  const facilityPrices = facilityPricesData.data;
+  const activityPrices = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockActivityPrices
+    : activityPricesData.data;
+  const facilityPrices = env.NEXT_PUBLIC_USE_MOCK_DATA
+    ? mockFacilityPrices
+    : facilityPricesData.data;
 
   if (activityPricesData.isLoading || facilityPricesData.isLoading)
     return <>Loading</>;
@@ -26,7 +32,7 @@ const PricingPage = () => {
     <>
       <PageHero title="Pricing" />
       <div className="container my-8 grid grid-cols-2 gap-3">
-        <div className="py-6 px-3 ring-2 ring-inset ring-white">
+        <div className="px-3 py-6 ring-2 ring-inset ring-white">
           {facilityPrices.map(facility => (
             <>
               <Typography.h3>{facility.productName} Price</Typography.h3>
@@ -40,7 +46,7 @@ const PricingPage = () => {
             </>
           ))}
         </div>
-        <div className="py-6 px-3 ring-2 ring-inset ring-white">
+        <div className="px-3 py-6 ring-2 ring-inset ring-white">
           {activityPrices.map(activity => (
             <>
               <Typography.h3>{activity.productName} Price</Typography.h3>
